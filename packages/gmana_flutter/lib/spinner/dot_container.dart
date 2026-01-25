@@ -23,7 +23,7 @@ class DotContainer extends StatelessWidget {
 
     return AnimatedBuilder(
       animation: controller,
-      builder: (_, __) {
+      builder: (_, _) {
         final isForward = controller.value <= config.offsetInterval.end;
         final offsetTween = Tween<Offset>(
           begin: isForward ? Offset.zero : Offset(0, config.maxOffset),
