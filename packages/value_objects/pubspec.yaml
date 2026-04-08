@@ -1,0 +1,17 @@
+name: value_objects
+description: Production-ready value objects with configurable validation for Email, Password, Text, and Number
+version: 0.0.1
+
+environment:
+  sdk: ^3.7.2
+  flutter: ">=1.17.0"
+
+resolution: workspace
+
+dependencies:
+  fpdart: ^1.2.0
+  meta: ^1.17.0
+
+dev_dependencies:
+  test: ^1.24.0
+  lints: ^6.1.0
