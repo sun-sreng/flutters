@@ -1,11 +1,14 @@
 {
   "dart.lineLength": 120,
   "cSpell.words": [
+    "alllowercase",
+    "ALLUPPERCASE",
     "bimap",
     "blocklisted",
     "companyname",
     "dartdoc",
     "fpdart",
+    "José",
     "Luhn",
     "missingusername",
     "mononyms",
