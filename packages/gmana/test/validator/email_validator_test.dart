@@ -1,28 +1,28 @@
-import 'package:gmana/validator/email_validator.dart';
+import 'package:gmana/validator/email_field_validator.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('EmailValidator', () {
+  group('EmailFieldValidator', () {
     test('rejects empty values', () {
       expect(
-        const EmailValidator().validate(null),
+        const EmailFieldValidator().validate(null),
         'Please enter an email address',
       );
       expect(
-        const EmailValidator().validate(''),
+        const EmailFieldValidator().validate(''),
         'Please enter an email address',
       );
     });
 
     test('rejects malformed emails', () {
       expect(
-        const EmailValidator().validate('invalid'),
+        const EmailFieldValidator().validate('invalid'),
         'Please enter a valid email address',
       );
     });
 
     test('accepts valid emails', () {
-      expect(const EmailValidator().validate('user@example.com'), isNull);
+      expect(const EmailFieldValidator().validate('user@example.com'), isNull);
     });
   });
 }

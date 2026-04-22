@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gmana/validator/email_validator.dart';
+import 'package:gmana/validator/email_field_validator.dart';
 import 'package:gmana_flutter/form/models/field_config.dart';
 
 import 'base_field.dart';
@@ -25,7 +25,10 @@ class GEmailField extends GBaseField {
            keyboardType: TextInputType.emailAddress,
            textInputAction: textInputAction ?? TextInputAction.next,
            inputFormatters: inputFormatters,
-           validator: EmailValidator(additionalValidator: additionalValidator).validate,
+           validator:
+               EmailFieldValidator(
+                 additionalValidator: additionalValidator,
+               ).validate,
            onChanged: onChanged,
            prefixIcon: prefixIcon ?? Icons.email,
          ),

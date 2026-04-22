@@ -1,15 +1,6 @@
-import 'package:flutter/material.dart';
+import 'linear_spinner.dart';
 
-class GSpinnerLinear extends StatelessWidget {
+@Deprecated('Use LinearSpinner instead.')
+class GSpinnerLinear extends LinearSpinner {
   const GSpinnerLinear({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(bottom: 10.0),
-      child: const LinearProgressIndicator(
-        valueColor: AlwaysStoppedAnimation(Colors.purple),
-      ),
-    );
-  }
 }

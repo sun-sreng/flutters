@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../models/field_config.dart';
-import '../validators/password_validator.dart';
+import '../validators/confirm_password_validator.dart';
 import '../widgets/visibility_toggle.dart';
 import 'base_field.dart';
 
@@ -47,10 +47,12 @@ class _GConfirmPasswordFieldContent extends StatefulWidget {
   const _GConfirmPasswordFieldContent({required this.config});
 
   @override
-  State<_GConfirmPasswordFieldContent> createState() => _GConfirmPasswordFieldContentState();
+  State<_GConfirmPasswordFieldContent> createState() =>
+      _GConfirmPasswordFieldContentState();
 }
 
-class _GConfirmPasswordFieldContentState extends State<_GConfirmPasswordFieldContent> {
+class _GConfirmPasswordFieldContentState
+    extends State<_GConfirmPasswordFieldContent> {
   bool _obscureText = true;
 
   @override
@@ -67,7 +69,10 @@ class _GConfirmPasswordFieldContentState extends State<_GConfirmPasswordFieldCon
         labelText: widget.config.labelText,
         hintText: widget.config.hintText,
         prefixIcon: Icon(widget.config.prefixIcon),
-        suffixIcon: VisibilityToggle(onVisibilityChanged: (obscure) => setState(() => _obscureText = obscure)),
+        suffixIcon: VisibilityToggle(
+          onVisibilityChanged:
+              (obscure) => setState(() => _obscureText = obscure),
+        ),
       ),
     );
   }

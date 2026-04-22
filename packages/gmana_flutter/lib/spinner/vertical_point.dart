@@ -1,1 +1,1 @@
-export 'package:gmana/math/vertical_point.dart';
+export 'package:gmana/math/wave_vertical_offset.dart';

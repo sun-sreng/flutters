@@ -1,8 +1,8 @@
-import 'package:gmana/extensions/natural_duration_ext.dart';
+import 'package:gmana/extensions/duration_natural_language_ext.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('NaturalLanguageDurationExtension', () {
+  group('DurationNaturalLanguageX', () {
     test('formats clock strings', () {
       expect(
         const Duration(hours: 1, minutes: 3, seconds: 7).toClockString(),

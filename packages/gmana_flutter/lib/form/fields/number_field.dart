@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gmana/validator/number_field_validator.dart';
 
 import '../models/field_config.dart';
-import '../validators/number_validator.dart';
 import 'base_field.dart';
 
 /// A number input field with min/max validation.
@@ -30,7 +30,7 @@ class GNumberField extends GBaseField {
              if (additionalFormatters != null) ...additionalFormatters,
            ],
            validator:
-               NumberValidator(
+               NumberFieldValidator(
                  minValue: minValue,
                  maxValue: maxValue,
                  additionalValidator: additionalValidator,

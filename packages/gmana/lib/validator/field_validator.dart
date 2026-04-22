@@ -1,5 +1,7 @@
-/// Interface for field validators, separating validation logic from UI.
-abstract class FieldValidator {
-  /// Returns an error message when [value] is invalid, otherwise `null`.
-  String? validate(String? value);
-}
+import 'string_field_validator.dart' show StringFieldValidator;
+
+export 'string_field_validator.dart' show StringFieldValidator;
+
+/// Backward-compatible alias for [StringFieldValidator].
+@Deprecated('Use StringFieldValidator instead.')
+typedef FieldValidator = StringFieldValidator;

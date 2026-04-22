@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:gmana/utils/throttle.dart';
+import 'package:gmana/utils/throttler.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('Throttle suppresses calls during the cooldown window', () async {
-    final throttle = Throttle(milliseconds: 20);
+  test('Throttler suppresses calls during the cooldown window', () async {
+    final throttle = Throttler(milliseconds: 20);
     var count = 0;
 
     throttle.run(() => count += 1);

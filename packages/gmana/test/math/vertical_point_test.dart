@@ -1,10 +1,10 @@
-import 'package:gmana/math/vertical_point.dart';
+import 'package:gmana/math/wave_vertical_offset.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('verticalPoint computes the expected wave position', () {
+  test('waveVerticalOffset computes the expected wave position', () {
     expect(
-      verticalPoint(
+      waveVerticalOffset(
         value: 0,
         verticalShift: 10,
         amplitude: 5,

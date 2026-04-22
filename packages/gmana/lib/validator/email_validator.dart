@@ -1,24 +1,7 @@
-import 'package:gmana/validator/field_validator.dart';
+import 'email_field_validator.dart' show EmailFieldValidator;
 
-/// Validator for email fields, ensuring valid email format.
-class EmailValidator implements FieldValidator {
-  /// Optional extra validation applied after the built-in email checks.
-  final String? Function(String?)? additionalValidator;
+export 'email_field_validator.dart' show EmailFieldValidator;
 
-  /// Creates an email validator.
-  const EmailValidator({this.additionalValidator});
-
-  @override
-  String? validate(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter an email address';
-    }
-
-    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-    if (!emailRegex.hasMatch(value)) {
-      return 'Please enter a valid email address';
-    }
-
-    return additionalValidator?.call(value);
-  }
-}
+/// Backward-compatible alias for [EmailFieldValidator].
+@Deprecated('Use EmailFieldValidator instead.')
+typedef EmailValidator = EmailFieldValidator;

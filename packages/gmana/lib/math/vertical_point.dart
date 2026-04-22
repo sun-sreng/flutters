@@ -1,6 +1,9 @@
-import 'dart:math';
+import 'wave_vertical_offset.dart' show waveVerticalOffset;
 
-/// Computes a vertical point on a sine wave for spinner and animation math.
+export 'wave_vertical_offset.dart' show waveVerticalOffset;
+
+/// Backward-compatible wrapper for [waveVerticalOffset].
+@Deprecated('Use waveVerticalOffset instead.')
 double verticalPoint({
   required double value,
   required double verticalShift,
@@ -8,6 +11,11 @@ double verticalPoint({
   required double phaseShift,
   required double waveLength,
 }) {
-  final period = 2 * pi / waveLength;
-  return amplitude * sin(period * (value + phaseShift)) + verticalShift;
+  return waveVerticalOffset(
+    value: value,
+    verticalShift: verticalShift,
+    amplitude: amplitude,
+    phaseShift: phaseShift,
+    waveLength: waveLength,
+  );
 }

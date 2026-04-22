@@ -1,37 +1,8 @@
-import 'dart:async';
+import 'debouncer.dart' show Debouncer;
 
-/// Default debounce time in milliseconds.
-const kDefaultDebounceTime = 150;
+export 'debouncer.dart'
+    show DebouncedCallbackX, Debouncer, kDefaultDebounceTime;
 
-/// A small utility to debounce function execution.
-class Debounce {
-  /// Debounce delay in milliseconds.
-  final int milliseconds;
-
-  Timer? _timer;
-
-  /// Creates a debouncer with the provided [milliseconds] delay.
-  Debounce({this.milliseconds = kDefaultDebounceTime});
-
-  /// Cancels any pending action.
-  void dispose() {
-    if (_timer?.isActive ?? false) {
-      _timer?.cancel();
-    }
-  }
-
-  /// Schedules [action], replacing any pending action.
-  void run(void Function() action) {
-    _timer?.cancel();
-    _timer = Timer(Duration(milliseconds: milliseconds), action);
-  }
-}
-
-/// Extension that debounces a callback inline.
-extension DebounceFunction on void Function() {
-  /// Runs this callback through a newly created debouncer.
-  void debounce({int milliseconds = kDefaultDebounceTime}) {
-    final debounce = Debounce(milliseconds: milliseconds);
-    debounce.run(call);
-  }
-}
+/// Backward-compatible alias for [Debouncer].
+@Deprecated('Use Debouncer instead.')
+typedef Debounce = Debouncer;

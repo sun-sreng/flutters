@@ -1,16 +1,6 @@
-import 'package:flutter/material.dart';
+import 'circular_spinner.dart';
 
-class GCircularProgress extends StatelessWidget {
+@Deprecated('Use CircularSpinner instead.')
+class GCircularProgress extends CircularSpinner {
   const GCircularProgress({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.only(top: 10.0),
-      child: const CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation(Colors.purple),
-      ),
-    );
-  }
 }
