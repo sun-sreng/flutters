@@ -28,8 +28,15 @@ class IdGeneratorUtils {
   /// [characters]: The character set to use.
   /// [random]: The Random instance for generating indices.
   /// Returns a random string of specified length.
-  static String generateRandomString({required int length, required String characters, required Random random}) {
-    final codeUnits = List.generate(length, (_) => characters.codeUnitAt(random.nextInt(characters.length)));
+  static String generateRandomString({
+    required int length,
+    required String characters,
+    required Random random,
+  }) {
+    final codeUnits = List.generate(
+      length,
+      (_) => characters.codeUnitAt(random.nextInt(characters.length)),
+    );
     return String.fromCharCodes(codeUnits);
   }
 

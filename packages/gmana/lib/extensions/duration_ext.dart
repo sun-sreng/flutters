@@ -45,15 +45,18 @@ extension HumanizedDuration on Duration {
   double get totalMinutes => inMicroseconds / Duration.microsecondsPerMinute;
 
   /// Multiplies this duration by the given [factor].
-  Duration operator *(num factor) => Duration(microseconds: (inMicroseconds * factor).round());
+  Duration operator *(num factor) =>
+      Duration(microseconds: (inMicroseconds * factor).round());
 
   // ─── Component accessors ──────────────────────────────────────────────────
 
   /// Divides this duration by the given [divisor].
-  Duration operator /(num divisor) => Duration(microseconds: (inMicroseconds / divisor).round());
+  Duration operator /(num divisor) =>
+      Duration(microseconds: (inMicroseconds / divisor).round());
 
   /// Rounds the duration up to the nearest upper minute.
-  Duration ceilToMinutes() => Duration(minutes: inSeconds % 60 == 0 ? inMinutes : inMinutes + 1);
+  Duration ceilToMinutes() =>
+      Duration(minutes: inSeconds % 60 == 0 ? inMinutes : inMinutes + 1);
 
   /// Clamps this duration to be between [min] and [max].
   Duration clamp(Duration min, Duration max) {
@@ -72,7 +75,8 @@ extension HumanizedDuration on Duration {
   bool isShorterThan(Duration other) => this < other;
 
   /// Returns true if this duration is within [range] difference from [other].
-  bool isWithin(Duration range, Duration other) => (this - other).abs() <= range;
+  bool isWithin(Duration range, Duration other) =>
+      (this - other).abs() <= range;
 
   // ─── Predicates ───────────────────────────────────────────────────────────
 
@@ -93,7 +97,8 @@ extension HumanizedDuration on Duration {
   // ─── Progress / percentage ────────────────────────────────────────────────
 
   /// Rounds the duration to the nearest second.
-  Duration roundToSeconds() => Duration(seconds: (inMilliseconds / 1000).round());
+  Duration roundToSeconds() =>
+      Duration(seconds: (inMilliseconds / 1000).round());
 
   /// Frame count at a given [fps] (e.g. 24, 30, 60).
   int toFrames(double fps) => (inMilliseconds * fps / 1000).round();
@@ -160,7 +165,11 @@ extension HumanizedDuration on Duration {
     final m = abs.inMinutes % 60;
     final s = abs.inSeconds % 60;
 
-    final parts = <String>[if (h > 0) '${h}h', if (m > 0) '${m}m', if (s > 0 && includeSeconds) '${s}s'];
+    final parts = <String>[
+      if (h > 0) '${h}h',
+      if (m > 0) '${m}m',
+      if (s > 0 && includeSeconds) '${s}s',
+    ];
 
     if (parts.isEmpty) return includeSeconds ? '0s' : '0m';
     final body = parts.join(' ');
@@ -186,5 +195,6 @@ extension HumanizedDuration on Duration {
   }
 
   /// Reconstruct from frame count.
-  static Duration fromFrames(int frames, double fps) => Duration(milliseconds: (frames / fps * 1000).round());
+  static Duration fromFrames(int frames, double fps) =>
+      Duration(milliseconds: (frames / fps * 1000).round());
 }

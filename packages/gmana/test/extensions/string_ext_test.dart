@@ -33,7 +33,10 @@ void main() {
     });
 
     test('toUriOrNull', () {
-      expect('https://google.com'.toUriOrNull, equals(Uri.parse('https://google.com')));
+      expect(
+        'https://google.com'.toUriOrNull,
+        equals(Uri.parse('https://google.com')),
+      );
       expect('http://[::1]'.toUriOrNull, equals(Uri.parse('http://[::1]')));
     });
 
@@ -46,15 +49,24 @@ void main() {
   group('StringX Duration', () {
     test('toDuration', () {
       expect('45'.toDuration(), equals(const Duration(seconds: 45)));
-      expect('05:09'.toDuration(), equals(const Duration(minutes: 5, seconds: 9)));
-      expect('02:30:45'.toDuration(), equals(const Duration(hours: 2, minutes: 30, seconds: 45)));
+      expect(
+        '05:09'.toDuration(),
+        equals(const Duration(minutes: 5, seconds: 9)),
+      );
+      expect(
+        '02:30:45'.toDuration(),
+        equals(const Duration(hours: 2, minutes: 30, seconds: 45)),
+      );
       expect(() => '70'.toDuration(), throwsFormatException);
       expect(() => '05:70'.toDuration(), throwsFormatException);
       expect(() => 'abc'.toDuration(), throwsFormatException);
     });
 
     test('toDurationOrNull', () {
-      expect('05:09'.toDurationOrNull, equals(const Duration(minutes: 5, seconds: 9)));
+      expect(
+        '05:09'.toDurationOrNull,
+        equals(const Duration(minutes: 5, seconds: 9)),
+      );
       expect('abc'.toDurationOrNull, isNull);
       expect('70'.toDurationOrNull, isNull);
     });
@@ -108,7 +120,10 @@ void main() {
     });
 
     test('truncateWords', () {
-      expect('Hello World Everyone'.truncateWords(15), equals('Hello World...'));
+      expect(
+        'Hello World Everyone'.truncateWords(15),
+        equals('Hello World...'),
+      );
       expect('HelloWorldEveryone'.truncateWords(15), equals('HelloWorldEv...'));
       expect('Hello'.truncateWords(10), equals('Hello'));
     });

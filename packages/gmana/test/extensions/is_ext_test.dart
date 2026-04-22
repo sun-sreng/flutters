@@ -26,12 +26,18 @@ void main() {
         expect('José'.isValidName, isTrue);
       });
 
-      test('isValidName returns false for invalid names or empty/long names', () {
-        expect(''.isValidName, isFalse);
-        expect('John123'.isValidName, isFalse); // Numbers not allowed
-        expect('John!'.isValidName, isFalse); // Special characters not allowed
-        expect(('a' * 101).isValidName, isFalse); // Over 100 characters
-      });
+      test(
+        'isValidName returns false for invalid names or empty/long names',
+        () {
+          expect(''.isValidName, isFalse);
+          expect('John123'.isValidName, isFalse); // Numbers not allowed
+          expect(
+            'John!'.isValidName,
+            isFalse,
+          ); // Special characters not allowed
+          expect(('a' * 101).isValidName, isFalse); // Over 100 characters
+        },
+      );
     });
 
     group('Password Validation', () {
@@ -140,7 +146,10 @@ void main() {
       test('isValidHexColor returns true for valid hex colors', () {
         expect('#FFF'.isValidHexColor, isTrue);
         expect('#FFFFFF'.isValidHexColor, isTrue);
-        expect('FFF'.isValidHexColor, isTrue); // validation allows skipping the #
+        expect(
+          'FFF'.isValidHexColor,
+          isTrue,
+        ); // validation allows skipping the #
         expect('ZZZ'.isValidHexColor, isFalse);
       });
 

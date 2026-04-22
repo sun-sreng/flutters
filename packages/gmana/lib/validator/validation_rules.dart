@@ -43,7 +43,10 @@ class ValidationRules {
     Validators.required(message: 'Username is required'),
     Validators.minLength(3, message: 'Minimum 3 characters'),
     Validators.maxLength(20, message: 'Maximum 20 characters'),
-    Validators.custom((value) => value?.contains('@') == true ? '' : null, message: 'Cannot contain @ symbol'),
+    Validators.custom(
+      (value) => value?.contains('@') == true ? '' : null,
+      message: 'Cannot contain @ symbol',
+    ),
   ];
 
   /// Validation rules for a one-time password (OTP) field.

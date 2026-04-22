@@ -27,8 +27,13 @@ class IdGeneratorService {
   /// Returns a random string using the nanoid alphabet.
   String generateNanoid({int size = 21}) {
     if (size <= 0) throw ArgumentError.value(size, 'size', 'Must be positive');
-    const alphabet = 'ModuleSymbhasOwnPr-0123456789ABCDEFGHNRVfgctiUvz_KqYTJkLxpZXIjQW';
-    return IdGeneratorUtils.generateRandomString(length: size, characters: alphabet, random: _random);
+    const alphabet =
+        'ModuleSymbhasOwnPr-0123456789ABCDEFGHNRVfgctiUvz_KqYTJkLxpZXIjQW';
+    return IdGeneratorUtils.generateRandomString(
+      length: size,
+      characters: alphabet,
+      random: _random,
+    );
   }
 
   /// Generates a random string with configurable character sets.
@@ -56,7 +61,11 @@ class IdGeneratorService {
     if (useNumbers) characters += IdGeneratorUtils.numbers;
     if (useSymbols) characters += IdGeneratorUtils.symbols;
 
-    return IdGeneratorUtils.generateRandomString(length: length, characters: characters, random: _random);
+    return IdGeneratorUtils.generateRandomString(
+      length: length,
+      characters: characters,
+      random: _random,
+    );
   }
 
   /// Generates a timestamp-based ID with prefix 'G'.

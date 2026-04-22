@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Configuration for animating a single dot in the SpinnerWaveDot widget.
+/// Configuration for animating a single dot in the GSpinnerWaveDot widget.
 class DotAnimationConfig {
   final Interval heightInterval;
   final Interval offsetInterval;

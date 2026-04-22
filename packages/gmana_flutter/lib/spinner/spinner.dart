@@ -1,7 +1,5 @@
-export 'circular_spinner.dart';
-export 'linear_spinner.dart';
-export 'spinner_circular.dart';
+export 'g_circular_spinner.dart';
+export 'g_linear_spinner.dart';
 export 'spinner_dot.dart';
-export 'spinner_linear.dart';
-export 'spinner_wave_dot.dart';
-export 'wave_spinner.dart';
+export 'g_spinner_wave_dot.dart';
+export 'g_wave_spinner.dart';

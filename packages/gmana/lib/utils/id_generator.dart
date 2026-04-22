@@ -21,7 +21,12 @@ class IdGenerator {
   /// Generates a random string with configurable character sets.
   ///
   /// Example: `Gid.randomString(length: 6, useNumbers: false)` -> "AbCdEf"
-  static String randomString({int length = 8, bool useLetters = true, bool useNumbers = true, bool useSymbols = true}) {
+  static String randomString({
+    int length = 8,
+    bool useLetters = true,
+    bool useNumbers = true,
+    bool useSymbols = true,
+  }) {
     return _service.generateRandomString(
       length: length,
       useLetters: useLetters,

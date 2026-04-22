@@ -16,7 +16,10 @@ void registerErrorHandlers() {
   // * Show some error UI when any widget in the app fails to build
   ErrorWidget.builder = (FlutterErrorDetails details) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.red, title: const Text('An error occurred')),
+      appBar: AppBar(
+        backgroundColor: Colors.red,
+        title: const Text('An error occurred'),
+      ),
       body: Center(child: Text(details.toString())),
     );
   };

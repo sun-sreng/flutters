@@ -36,7 +36,9 @@ extension IterableNumX<T extends num> on Iterable<T> {
     if (isEmpty) return null;
     final sorted = toList()..sort();
     final mid = sorted.length ~/ 2;
-    return sorted.length.isOdd ? sorted[mid].toDouble() : (sorted[mid - 1] + sorted[mid]) / 2;
+    return sorted.length.isOdd
+        ? sorted[mid].toDouble()
+        : (sorted[mid - 1] + sorted[mid]) / 2;
   }
 
   /// Smallest element, or `null` if empty.

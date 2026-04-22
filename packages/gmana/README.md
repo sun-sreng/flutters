@@ -1,7 +1,7 @@
 # gmana
 
 <p align="center">
-  A core Dart utility package providing extensions, validation utilities, and functional programming constructs designed for consistency and accelerated development.
+  A core Dart foundation package for functional helpers, extensions, low-level validation primitives, and reusable utility classes.
 </p>
 
 ---
@@ -15,7 +15,7 @@ Add `gmana` to your `pubspec.yaml` dependencies:
 
 ```yaml
 dependencies:
-  gmana: ^0.1.3 # Please check pub.dev for the latest version
+  gmana: ^0.1.4 # Please check pub.dev for the latest version
 ```
 
 Or install it via CLI:
@@ -34,8 +34,19 @@ flutter pub add gmana
 
 - [**Functional Programming**](#functional-programming) (`Either`, `UseCase`, `Failure`, `Unit`)
 - [**Rich Extensions**](#rich-extensions) (`String`, `num`, `Duration`, `Iterable`, `List`, `Stream`)
-- [**Validation Utilities**](#validation-utilities) (String validation & reusable Form Validators)
+- [**Validation Utilities**](#validation-utilities) (String validation, rule builders, and field validators)
 - [**Core Utilities**](#core-utilities) (ID Generators, Encoders)
+
+### Focused Entry Points
+
+Use the umbrella import when you want the whole curated surface, or import only the module you need:
+
+```dart
+import 'package:gmana/extensions.dart';
+import 'package:gmana/functional.dart';
+import 'package:gmana/utilities.dart';
+import 'package:gmana/validation.dart';
+```
 
 ---
 
@@ -173,19 +184,21 @@ print('Jane Doe'.isValidName); // true
 
 ### Form Validator Chains
 
-A configurable backend-friendly validation engine (ideal with Flutter Form fields).
+A configurable validation engine built around reusable rules and field adapters.
 
 ```dart
 final passwordRules = [
-  Validators.required(),
-  Validators.minLength(8),
-  Validators.oneUpperCase(),
-  Validators.oneSpecial(),
+  Validators.required(message: 'Password is required'),
+  Validators.minLength(8, message: 'Minimum 8 characters'),
+  Validators.oneUpperCase(message: 'Add an uppercase letter'),
+  Validators.oneSpecial(message: 'Add a special character'),
 ];
 
-// Combine multiple rules or run them together!
 final error = Validators.validate('weakpass', passwordRules);
-print(error); // "Must contain at least one uppercase letter"
+print(error); // "Add an uppercase letter"
+
+final emailValidator = const EmailFieldValidator();
+print(emailValidator.validate('user@example.com')); // null
 ```
 
 ---

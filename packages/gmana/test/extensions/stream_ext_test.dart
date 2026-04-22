@@ -21,28 +21,37 @@ void main() {
     });
 
     test('whereNotEmpty', () async {
-      final stream = Stream.fromIterable([
-        [1],
-        [],
-        [2, 3]
-      ]).whereNotEmpty;
-      expect(await stream.toList(), equals([[1], [2, 3]]));
+      final stream =
+          Stream.fromIterable([
+            [1],
+            [],
+            [2, 3],
+          ]).whereNotEmpty;
+      expect(
+        await stream.toList(),
+        equals([
+          [1],
+          [2, 3],
+        ]),
+      );
     });
 
     test('lengths', () async {
-      final stream = Stream.fromIterable([
-        [1],
-        [],
-        [2, 3]
-      ]).lengths;
+      final stream =
+          Stream.fromIterable([
+            [1],
+            [],
+            [2, 3],
+          ]).lengths;
       expect(await stream.toList(), equals([1, 0, 2]));
     });
 
     test('flatten', () async {
-      final stream = Stream.fromIterable([
-        [1, 2],
-        [3, 4]
-      ]).flatten();
+      final stream =
+          Stream.fromIterable([
+            [1, 2],
+            [3, 4],
+          ]).flatten();
       expect(await stream.toList(), equals([1, 2, 3, 4]));
     });
 
@@ -59,7 +68,8 @@ void main() {
     });
 
     test('distinctUntilChanged', () async {
-      final stream = Stream.fromIterable([1, 1, 2, 2, 3, 1]).distinctUntilChanged();
+      final stream =
+          Stream.fromIterable([1, 1, 2, 2, 3, 1]).distinctUntilChanged();
       expect(await stream.toList(), equals([1, 2, 3, 1]));
 
       final streamCustom = Stream.fromIterable([
@@ -67,22 +77,39 @@ void main() {
         const MapEntry(1, 'b'),
         const MapEntry(2, 'c'),
       ]).distinctUntilChanged((a, b) => a.key == b.key);
-      expect((await streamCustom.toList()).map((e) => e.value), equals(['a', 'c']));
+      expect(
+        (await streamCustom.toList()).map((e) => e.value),
+        equals(['a', 'c']),
+      );
     });
 
     test('skipUntil', () async {
-      final stream = Stream.fromIterable([1, 2, 3, 4, 5]).skipUntil((e) => e == 3);
+      final stream = Stream.fromIterable([
+        1,
+        2,
+        3,
+        4,
+        5,
+      ]).skipUntil((e) => e == 3);
       expect(await stream.toList(), equals([3, 4, 5]));
     });
 
     test('takeWhileInclusive', () async {
-      final stream = Stream.fromIterable([1, 2, 3, 4, 5]).takeWhileInclusive((e) => e < 3);
+      final stream = Stream.fromIterable([
+        1,
+        2,
+        3,
+        4,
+        5,
+      ]).takeWhileInclusive((e) => e < 3);
       expect(await stream.toList(), equals([1, 2, 3]));
     });
 
     test('debounce', () async {
       final controller = StreamController<int>();
-      final stream = controller.stream.debounce(const Duration(milliseconds: 50));
+      final stream = controller.stream.debounce(
+        const Duration(milliseconds: 50),
+      );
 
       final results = <int>[];
       stream.listen(results.add);
@@ -103,7 +130,9 @@ void main() {
 
     test('throttle', () async {
       final controller = StreamController<int>();
-      final stream = controller.stream.throttle(const Duration(milliseconds: 50));
+      final stream = controller.stream.throttle(
+        const Duration(milliseconds: 50),
+      );
 
       final results = <int>[];
       stream.listen(results.add);
@@ -130,7 +159,9 @@ void main() {
     });
 
     test('onErrorReturnWith', () async {
-      final stream = Stream<int>.error(Exception('error')).onErrorReturnWith((e) => 42);
+      final stream = Stream<int>.error(
+        Exception('error'),
+      ).onErrorReturnWith((e) => 42);
       expect(await stream.first, equals(42));
     });
 
@@ -145,7 +176,11 @@ void main() {
     });
 
     test('scan', () async {
-      final stream = Stream.fromIterable([1, 2, 3]).scan(0, (acc, n) => acc + n);
+      final stream = Stream.fromIterable([
+        1,
+        2,
+        3,
+      ]).scan(0, (acc, n) => acc + n);
       expect(await stream.toList(), equals([1, 3, 6]));
     });
 

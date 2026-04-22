@@ -11,7 +11,8 @@ extension StreamListX<T> on Stream<List<T>> {
   Stream<List<T>> get whereNotEmpty => where((items) => items.isNotEmpty);
 
   /// Filters each emitted list by [predicate].
-  Stream<List<T>> filter(bool Function(T) predicate) => map((items) => items.where(predicate).toList());
+  Stream<List<T>> filter(bool Function(T) predicate) =>
+      map((items) => items.where(predicate).toList());
 
   /// Flat-maps each emitted list.
   Stream<List<R>> flatMapItems<R>(Iterable<R> Function(T) transform) =>
@@ -21,10 +22,12 @@ extension StreamListX<T> on Stream<List<T>> {
   Stream<T> flatten() => expand((items) => items);
 
   /// Maps each element within emitted lists.
-  Stream<List<R>> mapItems<R>(R Function(T) transform) => map((items) => items.map(transform).toList());
+  Stream<List<R>> mapItems<R>(R Function(T) transform) =>
+      map((items) => items.map(transform).toList());
 
   /// Sorts each emitted list by [compare].
-  Stream<List<T>> sortedBy(Comparator<T> compare) => map((items) => [...items]..sort(compare));
+  Stream<List<T>> sortedBy(Comparator<T> compare) =>
+      map((items) => [...items]..sort(compare));
 }
 
 // ─── Stream<T> — general-purpose operators ────────────────────────────────
@@ -105,14 +108,20 @@ extension StreamX<T> on Stream<T> {
   }
 
   /// Recovers from errors by emitting [fallback].
-  Stream<T> onErrorReturn(T fallback) =>
-      transform(StreamTransformer.fromHandlers(handleError: (_, _, sink) => sink.add(fallback)));
+  Stream<T> onErrorReturn(T fallback) => transform(
+    StreamTransformer.fromHandlers(
+      handleError: (_, _, sink) => sink.add(fallback),
+    ),
+  );
 
   // ── Error handling ───────────────────────────────────────────────────────
 
   /// Recovers from errors by emitting the result of [recover].
-  Stream<T> onErrorReturnWith(T Function(Object error) recover) =>
-      transform(StreamTransformer.fromHandlers(handleError: (error, _, sink) => sink.add(recover(error))));
+  Stream<T> onErrorReturnWith(T Function(Object error) recover) => transform(
+    StreamTransformer.fromHandlers(
+      handleError: (error, _, sink) => sink.add(recover(error)),
+    ),
+  );
 
   /// Accumulates state across events using [seed] and [accumulate].
   ///
@@ -158,5 +167,6 @@ extension StreamX<T> on Stream<T> {
   }
 
   /// Emits only non-null values, narrowing the type to [R].
-  Stream<R> whereNotNull<R extends Object>() => where((e) => e != null).cast<R>();
+  Stream<R> whereNotNull<R extends Object>() =>
+      where((e) => e != null).cast<R>();
 }

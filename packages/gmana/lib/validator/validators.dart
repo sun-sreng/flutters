@@ -30,13 +30,19 @@ class Validators {
   /// Creates a custom validation rule using the provided [func].
   ///
   /// The [func] returns `null` for a valid value or a non-null value for error.
-  static ValidationRule custom(ValidationFunction func, {required String message}) {
+  static ValidationRule custom(
+    ValidationFunction func, {
+    required String message,
+  }) {
     return ValidationRule(func, message);
   }
 
   /// Returns a rule that validates if a value is a valid email address.
   static ValidationRule email({String message = 'Invalid email format'}) {
-    return ValidationRule((value) => emailReg.hasMatch(value ?? '') ? null : '', message);
+    return ValidationRule(
+      (value) => emailReg.hasMatch(value ?? '') ? null : '',
+      message,
+    );
   }
 
   /// Returns a rule that checks if a value does not exceed [length] characters.
@@ -56,43 +62,75 @@ class Validators {
   }
 
   /// Returns a rule that requires at least one lowercase letter.
-  static ValidationRule oneLowerCase({String message = 'Must contain at least one lowercase letter'}) {
-    return ValidationRule((value) => lowerCaseReg.hasMatch(value ?? '') ? null : '', message);
+  static ValidationRule oneLowerCase({
+    String message = 'Must contain at least one lowercase letter',
+  }) {
+    return ValidationRule(
+      (value) => lowerCaseReg.hasMatch(value ?? '') ? null : '',
+      message,
+    );
   }
 
   /// Returns a rule that requires at least one numeric digit.
-  static ValidationRule oneNumber({String message = 'Must contain at least one number'}) {
-    return ValidationRule((value) => digitReg.hasMatch(value ?? '') ? null : '', message);
+  static ValidationRule oneNumber({
+    String message = 'Must contain at least one number',
+  }) {
+    return ValidationRule(
+      (value) => digitReg.hasMatch(value ?? '') ? null : '',
+      message,
+    );
   }
 
   /// Returns a rule that requires at least one special character.
-  static ValidationRule oneSpecial({String message = 'Must contain at least one special character'}) {
-    return ValidationRule((value) => specialCharReg.hasMatch(value ?? '') ? null : '', message);
+  static ValidationRule oneSpecial({
+    String message = 'Must contain at least one special character',
+  }) {
+    return ValidationRule(
+      (value) => specialCharReg.hasMatch(value ?? '') ? null : '',
+      message,
+    );
   }
 
   /// Returns a rule that requires at least one uppercase letter.
-  static ValidationRule oneUpperCase({String message = 'Must contain at least one uppercase letter'}) {
-    return ValidationRule((value) => upperCaseReg.hasMatch(value ?? '') ? null : '', message);
+  static ValidationRule oneUpperCase({
+    String message = 'Must contain at least one uppercase letter',
+  }) {
+    return ValidationRule(
+      (value) => upperCaseReg.hasMatch(value ?? '') ? null : '',
+      message,
+    );
   }
 
   /// Returns a rule that checks if a value matches the given [pattern].
   static ValidationRule pattern(String pattern, {required String message}) {
-    return ValidationRule((value) => RegExp(pattern).hasMatch(value ?? '') ? null : '', message);
+    return ValidationRule(
+      (value) => RegExp(pattern).hasMatch(value ?? '') ? null : '',
+      message,
+    );
   }
 
   /// Returns a rule that checks if a value is a valid phone number.
   static ValidationRule phoneNumber({String message = 'Invalid phone number'}) {
-    return ValidationRule((value) => phoneReg.hasMatch(value ?? '') ? null : '', message);
+    return ValidationRule(
+      (value) => phoneReg.hasMatch(value ?? '') ? null : '',
+      message,
+    );
   }
 
   /// Returns a rule that ensures the value is not empty.
   static ValidationRule required({String message = 'This field is required'}) {
-    return ValidationRule((value) => value?.isNotEmpty == true ? null : '', message);
+    return ValidationRule(
+      (value) => value?.isNotEmpty == true ? null : '',
+      message,
+    );
   }
 
   /// Returns a rule that checks if a value is a valid URL.
   static ValidationRule url({String message = 'Invalid URL'}) {
-    return ValidationRule((value) => urlReg.hasMatch(value ?? '') ? null : '', message);
+    return ValidationRule(
+      (value) => urlReg.hasMatch(value ?? '') ? null : '',
+      message,
+    );
   }
 
   /// Runs a list of [rules] against the given [value].

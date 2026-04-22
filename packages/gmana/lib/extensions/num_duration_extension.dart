@@ -47,18 +47,21 @@ extension DurationX on Duration {
   /// ```dart
   /// 2.seconds * 3; // 6 seconds
   /// ```
-  Duration operator *(num factor) => Duration(microseconds: (inMicroseconds * factor).round());
+  Duration operator *(num factor) =>
+      Duration(microseconds: (inMicroseconds * factor).round());
 
   /// Divides this duration by [factor].
   ///
   /// ```dart
   /// 6.seconds / 2; // 3 seconds
   /// ```
-  Duration operator /(num factor) => Duration(microseconds: (inMicroseconds / factor).round());
+  Duration operator /(num factor) =>
+      Duration(microseconds: (inMicroseconds / factor).round());
 
   /// Clamps this duration between [min] and [max].
-  Duration clamp(Duration min, Duration max) =>
-      Duration(microseconds: inMicroseconds.clamp(min.inMicroseconds, max.inMicroseconds));
+  Duration clamp(Duration min, Duration max) => Duration(
+    microseconds: inMicroseconds.clamp(min.inMicroseconds, max.inMicroseconds),
+  );
 
   /// Ensures this duration is at least [min].
   Duration coerceAtLeast(Duration min) => this < min ? min : this;
@@ -84,12 +87,21 @@ extension DurationX on Duration {
 
   /// Human-readable: `2h 30m`, `45s`, `200ms`.
   String toHuman() {
-    // ignore: unnecessary_brace_in_string_interps
-    if (inMicroseconds.abs() < 1000) return '${inMicroseconds}µs';
-    if (inMilliseconds.abs() < 1000) return '${inMillisecondsDouble.toStringAsFixed(0)}ms';
-    if (inSeconds.abs() < 60) return '${inSecondsDouble.toStringAsFixed(1)}s';
-    if (inMinutes.abs() < 60) return '${inMinutes.abs()}m ${inSeconds.abs().remainder(60)}s';
-    if (inHours.abs() < 24) return '${inHours.abs()}h ${inMinutes.abs().remainder(60)}m';
+    if (inMicroseconds.abs() < 1000) {
+      return '$inMicrosecondsµs';
+    }
+    if (inMilliseconds.abs() < 1000) {
+      return '${inMillisecondsDouble.toStringAsFixed(0)}ms';
+    }
+    if (inSeconds.abs() < 60) {
+      return '${inSecondsDouble.toStringAsFixed(1)}s';
+    }
+    if (inMinutes.abs() < 60) {
+      return '${inMinutes.abs()}m ${inSeconds.abs().remainder(60)}s';
+    }
+    if (inHours.abs() < 24) {
+      return '${inHours.abs()}h ${inMinutes.abs().remainder(60)}m';
+    }
     return '${inDaysDouble.toStringAsFixed(1)}d';
   }
 }

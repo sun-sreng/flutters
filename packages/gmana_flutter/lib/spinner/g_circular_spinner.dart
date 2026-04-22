@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CircularSpinner extends StatelessWidget {
-  const CircularSpinner({super.key});
+class GCircularSpinner extends StatelessWidget {
+  const GCircularSpinner({super.key});
 
   @override
   Widget build(BuildContext context) {

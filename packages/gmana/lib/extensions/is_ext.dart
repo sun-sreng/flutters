@@ -33,10 +33,18 @@ class PasswordStrength {
   });
 
   /// Returns true if all password strength criterion are satisfied.
-  bool get isStrong => hasMinLength && hasUppercase && hasLowercase && hasDigit && hasSpecial;
+  bool get isStrong =>
+      hasMinLength && hasUppercase && hasLowercase && hasDigit && hasSpecial;
 
   /// 0–5 score, useful for a strength indicator bar.
-  int get score => [hasMinLength, hasUppercase, hasLowercase, hasDigit, hasSpecial].where((v) => v).length;
+  int get score =>
+      [
+        hasMinLength,
+        hasUppercase,
+        hasLowercase,
+        hasDigit,
+        hasSpecial,
+      ].where((v) => v).length;
 
   /// Returns a list of strings detailing which requirements have not yet been met.
   List<String> get unmetRequirements => [
@@ -162,5 +170,6 @@ extension StringValidation on String {
   }
 
   /// Length bounded — prevents silent acceptance of huge inputs.
-  bool isWithinLength({required int min, required int max}) => length >= min && length <= max;
+  bool isWithinLength({required int min, required int max}) =>
+      length >= min && length <= max;
 }

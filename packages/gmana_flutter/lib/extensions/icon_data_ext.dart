@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 /// Scoped parser — avoids polluting all [String] instances with icon logic.
 abstract final class IconDataExt {
   /// Returns [fallback] (default: [Icons.question_mark]) on any parse failure.
-  static IconData parse(String source, {IconData fallback = Icons.question_mark}) => tryParse(source) ?? fallback;
+  static IconData parse(
+    String source, {
+    IconData fallback = Icons.question_mark,
+  }) => tryParse(source) ?? fallback;
 
   /// Returns `null` if [source] is empty, not valid JSON, or missing [codePoint].
   static IconData? tryParse(String source) {

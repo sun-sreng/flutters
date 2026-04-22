@@ -1,12 +1,13 @@
 # gmana_value_objects
 
 <p align="center">
-  Production-ready value objects with configurable validation for Email, Password, Text, and Number types, built on gmana.
+  Production-ready domain value objects with configurable validation for Email, Password, Text, and Number types, built on gmana.
 </p>
 
 ---
 
 > **Note:** This package is **pure Dart** and perfectly framework independent. You can run these validation objects in your CLI APIs, dart servers, or native Flutter applications.
+> Use `gmana` for low-level rules and field validators; use `gmana_value_objects` when you want typed domain validation and rich error models.
 
 ## 🚀 Installation
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'models/dot_animation_config.dart';
 
-/// A single animated dot for the SpinnerWaveDot widget.
+/// A single animated dot for the GSpinnerWaveDot widget.
 class DotContainer extends StatelessWidget {
   final DotAnimationConfig config;
   final double size;
@@ -40,7 +40,10 @@ class DotContainer extends StatelessWidget {
                   .animate(
                     CurvedAnimation(
                       parent: controller,
-                      curve: isForward ? config.offsetInterval : config.reverseOffsetInterval,
+                      curve:
+                          isForward
+                              ? config.offsetInterval
+                              : config.reverseOffsetInterval,
                     ),
                   )
                   .value,
@@ -51,11 +54,17 @@ class DotContainer extends StatelessWidget {
                     .animate(
                       CurvedAnimation(
                         parent: controller,
-                        curve: isForward ? config.heightInterval : config.reverseHeightInterval,
+                        curve:
+                            isForward
+                                ? config.heightInterval
+                                : config.reverseHeightInterval,
                       ),
                     )
                     .value,
-            decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(dotSize / 2)),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(dotSize / 2),
+            ),
           ),
         );
       },

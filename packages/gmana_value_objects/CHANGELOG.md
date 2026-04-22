@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- docs: clarify `gmana_value_objects` as the typed domain-validation layer built on top of `gmana`
+
 ## 0.0.3 - 2026-04-19
 
 ### Changed

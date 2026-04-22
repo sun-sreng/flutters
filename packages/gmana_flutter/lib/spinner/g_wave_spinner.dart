@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'wave_spinner_painter.dart';
 
-class WaveSpinner extends StatefulWidget {
+class GWaveSpinner extends StatefulWidget {
   final Color color;
 
   final Color trackColor;
@@ -14,7 +14,7 @@ class WaveSpinner extends StatefulWidget {
   final Curve curve;
   final Widget? child;
   final AnimationController? controller;
-  const WaveSpinner({
+  const GWaveSpinner({
     super.key,
     required this.color,
     this.trackColor = const Color(0x68757575),
@@ -27,10 +27,10 @@ class WaveSpinner extends StatefulWidget {
   });
 
   @override
-  State<WaveSpinner> createState() => _WaveSpinnerState();
+  State<GWaveSpinner> createState() => _GWaveSpinnerState();
 }
 
-class _WaveSpinnerState extends State<WaveSpinner>
+class _GWaveSpinnerState extends State<GWaveSpinner>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 

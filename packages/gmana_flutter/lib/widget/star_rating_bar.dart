@@ -43,7 +43,10 @@ class StarRatingBar extends StatelessWidget {
     this.activeStarIcon = Icons.star,
     this.halfStarIcon = Icons.star_half,
     this.inactiveStarIcon = Icons.star_border,
-  }) : assert(ratingValue >= 0 && ratingValue <= maxStars, 'Rating value must be between 0 and $maxStars');
+  }) : assert(
+         ratingValue >= 0 && ratingValue <= maxStars,
+         'Rating value must be between 0 and $maxStars',
+       );
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +54,9 @@ class StarRatingBar extends StatelessWidget {
       children: List.generate(
         maxStars,
         (starIndex) => Padding(
-          padding: EdgeInsets.only(right: starIndex < maxStars - 1 ? starSpacing : 0),
+          padding: EdgeInsets.only(
+            right: starIndex < maxStars - 1 ? starSpacing : 0,
+          ),
           child: _buildStarIcon(starIndex + 1),
         ),
       ),

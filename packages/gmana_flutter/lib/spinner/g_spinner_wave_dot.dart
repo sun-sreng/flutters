@@ -7,19 +7,19 @@ import 'models/dot_animation_config.dart';
 ///
 /// Example:
 /// ```dart
-/// SpinnerWaveDot(
+/// GSpinnerWaveDot(
 ///   size: 50.0,
 ///   color: Colors.blue,
 ///   dotCount: 5,
 /// )
 /// ```
-class SpinnerWaveDot extends StatefulWidget {
+class GSpinnerWaveDot extends StatefulWidget {
   final double size;
   final Color color;
   final int dotCount;
   final Duration duration;
 
-  const SpinnerWaveDot({
+  const GSpinnerWaveDot({
     super.key,
     required this.size,
     required this.color,
@@ -28,10 +28,10 @@ class SpinnerWaveDot extends StatefulWidget {
   });
 
   @override
-  State<SpinnerWaveDot> createState() => _SpinnerWaveDotState();
+  State<GSpinnerWaveDot> createState() => _GSpinnerWaveDotState();
 }
 
-class _SpinnerWaveDotState extends State<SpinnerWaveDot>
+class _GSpinnerWaveDotState extends State<GSpinnerWaveDot>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 

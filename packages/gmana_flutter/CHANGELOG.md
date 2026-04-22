@@ -1,3 +1,8 @@
+## Unreleased
+
+- breaking: rename canonical spinner widgets to `GCircularSpinner`, `GLinearSpinner`, `GWaveSpinner`, and `GSpinnerWaveDot`
+- breaking: remove deprecated spinner aliases and add widget tests for the public form/spinner surface
+
 ## 0.0.7
 
 - doc: update README.md

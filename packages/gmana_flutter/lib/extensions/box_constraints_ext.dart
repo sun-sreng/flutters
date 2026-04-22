@@ -13,7 +13,8 @@ enum Breakpoint {
 
   /// True for tablet and above.
   bool get isAtLeastTablet => index >= Breakpoint.tablet.index;
-  bool get isDesktop => this == Breakpoint.desktop || this == Breakpoint.widescreen;
+  bool get isDesktop =>
+      this == Breakpoint.desktop || this == Breakpoint.widescreen;
   bool get isMobile => this == Breakpoint.mobile;
 
   bool get isTablet => this == Breakpoint.tablet;
@@ -65,11 +66,13 @@ extension BreakpointUtils on BoxConstraints {
   bool get isAtLeastDesktop => maxWidth >= Breakpoints.desktop;
   // Cumulative guards — useful for "at least tablet" style conditions.
   bool get isAtLeastTablet => maxWidth >= Breakpoints.tablet;
-  bool get isDesktop => maxWidth >= Breakpoints.desktop && maxWidth < Breakpoints.widescreen;
+  bool get isDesktop =>
+      maxWidth >= Breakpoints.desktop && maxWidth < Breakpoints.widescreen;
 
   // Exclusive ranges — no overlap.
   bool get isMobile => maxWidth < Breakpoints.tablet;
-  bool get isTablet => maxWidth >= Breakpoints.tablet && maxWidth < Breakpoints.desktop;
+  bool get isTablet =>
+      maxWidth >= Breakpoints.tablet && maxWidth < Breakpoints.desktop;
 
   /// True when both axes are tightly constrained.
   bool get isTight => minWidth == maxWidth && minHeight == maxHeight;
@@ -136,10 +139,11 @@ extension ResponsiveContext on BuildContext {
   MediaQueryData get _mq => MediaQuery.of(this);
 
   /// Shorthand for breakpoint-driven value resolution.
-  T responsive<T>({required T mobile, T? tablet, T? desktop, T? widescreen}) => switch (breakpoint) {
-    Breakpoint.widescreen => widescreen ?? desktop ?? tablet ?? mobile,
-    Breakpoint.desktop => desktop ?? tablet ?? mobile,
-    Breakpoint.tablet => tablet ?? mobile,
-    Breakpoint.mobile => mobile,
-  };
+  T responsive<T>({required T mobile, T? tablet, T? desktop, T? widescreen}) =>
+      switch (breakpoint) {
+        Breakpoint.widescreen => widescreen ?? desktop ?? tablet ?? mobile,
+        Breakpoint.desktop => desktop ?? tablet ?? mobile,
+        Breakpoint.tablet => tablet ?? mobile,
+        Breakpoint.mobile => mobile,
+      };
 }

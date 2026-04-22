@@ -112,10 +112,19 @@ void main() {
     });
 
     test('toHHMMSS', () {
-      expect(const Duration(hours: 2, minutes: 30, seconds: 45).toHHMMSS(), equals('02:30:45'));
-      expect(const Duration(minutes: 5, seconds: 9).toHHMMSS(), equals('05:09'));
+      expect(
+        const Duration(hours: 2, minutes: 30, seconds: 45).toHHMMSS(),
+        equals('02:30:45'),
+      );
+      expect(
+        const Duration(minutes: 5, seconds: 9).toHHMMSS(),
+        equals('05:09'),
+      );
       expect(const Duration(seconds: 45).toHHMMSS(), equals('00:45'));
-      expect(const Duration(hours: -1, minutes: -5, seconds: -9).toHHMMSS(), equals('01:05:09'));
+      expect(
+        const Duration(hours: -1, minutes: -5, seconds: -9).toHHMMSS(),
+        equals('01:05:09'),
+      );
     });
 
     test('toHuman', () {
@@ -131,7 +140,10 @@ void main() {
     test('delay and delayed', () async {
       final start = DateTime.now();
       await 50.milliseconds.delay;
-      expect(DateTime.now().difference(start).inMilliseconds, greaterThanOrEqualTo(45));
+      expect(
+        DateTime.now().difference(start).inMilliseconds,
+        greaterThanOrEqualTo(45),
+      );
 
       final result = await 50.milliseconds.delayed(() => 'done');
       expect(result, equals('done'));

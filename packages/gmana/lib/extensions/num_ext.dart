@@ -46,7 +46,8 @@ extension IntX on int {
   /// ```dart
   /// 1234.digits; // [1, 2, 3, 4]
   /// ```
-  List<int> get digits => toString().replaceAll('-', '').split('').map(int.parse).toList();
+  List<int> get digits =>
+      toString().replaceAll('-', '').split('').map(int.parse).toList();
 
   // Digits
   /// Returns true if the number is even.
@@ -148,17 +149,33 @@ extension NumX on num {
   double lerp(num a, num b) => (a + (b - a) * this).toDouble();
 
   /// Normalizes this value from `[fromMin, fromMax]` into `[toMin, toMax]`.
-  double normalized(num fromMin, num fromMax, [num toMin = 0.0, num toMax = 1.0]) {
+  double normalized(
+    num fromMin,
+    num fromMax, [
+    num toMin = 0.0,
+    num toMax = 1.0,
+  ]) {
     final range = fromMax - fromMin;
     if (range == 0) {
-      throw ArgumentError('Source range cannot be zero (fromMin == fromMax == $fromMin)');
+      throw ArgumentError(
+        'Source range cannot be zero (fromMin == fromMax == $fromMin)',
+      );
     }
     return ((toMax - toMin) * ((this - fromMin) / range) + toMin).toDouble();
   }
 
   /// Same as [normalized] but clamps the result to `[toMin, toMax]`.
-  double normalizedClamped(num fromMin, num fromMax, [num toMin = 0.0, num toMax = 1.0]) =>
-      normalized(fromMin, fromMax, toMin, toMax).clamp(toMin.toDouble(), toMax.toDouble());
+  double normalizedClamped(
+    num fromMin,
+    num fromMax, [
+    num toMin = 0.0,
+    num toMax = 1.0,
+  ]) => normalized(
+    fromMin,
+    fromMax,
+    toMin,
+    toMax,
+  ).clamp(toMin.toDouble(), toMax.toDouble());
 
   // ── Predicates ──────────────────────────────────────────────────────────
 
@@ -183,7 +200,13 @@ extension NumX on num {
   /// Like [normalized] but returns [fallback] instead of throwing when
   /// source range is zero. Useful in reactive/UI code where division by
   /// zero is a transient state rather than a programmer error.
-  double safeNormalized(num fromMin, num fromMax, {num toMin = 0.0, num toMax = 1.0, double fallback = 0.0}) {
+  double safeNormalized(
+    num fromMin,
+    num fromMax, {
+    num toMin = 0.0,
+    num toMax = 1.0,
+    double fallback = 0.0,
+  }) {
     final range = fromMax - fromMin;
     if (range == 0) return fallback;
     return ((toMax - toMin) * ((this - fromMin) / range) + toMin).toDouble();

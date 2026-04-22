@@ -12,9 +12,9 @@ This repository is structured as a monorepo containing the following packages:
 
 | Package | Version | Description | Environment |
 | --- | --- | --- | --- |
-| [**gmana**](./packages/gmana) | `^0.1.3` | The core foundation. Provides rich `String`/`num` extensions, functional programming constructs (`Either`, `UseCase`), and robust string validators. | Pure Dart |
-| [**gmana_flutter**](./packages/gmana_flutter) | `^0.0.6` | The presentation layer. A curated library of standardized UI widgets, theme management services, color contrast utilities, and pre-built form fields. | Flutter |
-| [**gmana_value_objects**](./packages/gmana_value_objects) | `^0.0.2` | The domain layer. A rigorous validation engine built on `fpdart` offering type-safe Value Objects for Emails, Passwords, Numbers, and general Text constraints. | Pure Dart |
+| [**gmana**](./packages/gmana) | `^0.1.4` | The foundation layer. Provides functional helpers, extensions, low-level validation primitives, and utility classes. | Pure Dart |
+| [**gmana_flutter**](./packages/gmana_flutter) | `^0.0.7` | The presentation layer. A curated library of branded `G*` widgets, theme management services, color contrast utilities, and form helpers. | Flutter |
+| [**gmana_value_objects**](./packages/gmana_value_objects) | `^0.0.3` | The domain layer. Provides typed value objects and rich validation errors for domain-safe input handling. | Pure Dart |
 
 ---
 
@@ -29,7 +29,7 @@ If you are strictly building out a backend using Dart (Shelf, Dart Frog, etc) or
 dart pub add gmana gmana_value_objects
 ```
 - Utilize `gmana` for `IdGenerator` logic, extensions, and pure functional tools.
-- Utilize `gmana_value_objects` to enforce strongly-typed Domain models before parsing logic into your database.
+- Utilize `gmana_value_objects` to enforce strongly-typed domain models before parsing logic into your database.
 
 ### 2. Full Flutter Frontend
 For standard Flutter app development, importing all three brings maximum efficiency:
@@ -38,7 +38,7 @@ For standard Flutter app development, importing all three brings maximum efficie
 flutter pub add gmana gmana_flutter gmana_value_objects
 ```
 - Map data elegantly through `gmana` extensions (`myString.toTitleCase`, `timeout.toDuration()`).
-- Build UIs instantly with `gmana_flutter` (`SpinnerWaveDot`, `GAppBar`, `SizedBoxHeight`, `EmailField`).
+- Build UIs instantly with `gmana_flutter` (`GSpinnerWaveDot`, `GAppBar`, `SizedBoxHeight`, `GEmailField`).
 - Connect them safely to your state management (Riverpod/Bloc) via `gmana_value_objects` error validation.
 
 ---

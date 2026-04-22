@@ -14,7 +14,7 @@ Add `gmana_flutter` to your `pubspec.yaml` dependencies:
 
 ```yaml
 dependencies:
-  gmana_flutter: ^0.0.6 # Please check pub.dev for the latest version
+  gmana_flutter: ^0.0.7 # Please check pub.dev for the latest version
 ```
 
 Or install it via CLI:
@@ -27,11 +27,11 @@ flutter pub add gmana_flutter
 
 ## 🎨 Features Overview
 
-`gmana_flutter` provides a rich set of curated UI components, customized form helpers, theme management logic, and UI-aware extensions to speed up development.
+`gmana_flutter` provides branded `G*` widgets, customized form helpers, theme management logic, and UI-aware extensions to speed up development.
 
 - [**Custom Widgets**](#custom-widgets) (`SizedBoxHeight`, `StarRatingBar`, `GAppBar`)
-- [**Form Fields & Buttons**](#form-controls) (`EmailField`, `PasswordField`, `ElevatedButton`)
-- [**Loading Spinners**](#loading-spinners) (`SpinnerCircular`, `SpinnerDot`, `SpinnerWaveDot`)
+- [**Form Fields & Buttons**](#form-controls) (`GEmailField`, `GPasswordField`, `GElevatedButton`)
+- [**Loading Spinners**](#loading-spinners) (`GCircularSpinner`, `GSpinnerDot`, `GSpinnerWaveDot`)
 - [**Theme & Color Services**](#services--extensions) (`ThemeModeService`, `ColorService`)
 - [**Flutter Extensions**](#services--extensions) (`ColorExt`, `ThemeModeExt`)
 
@@ -75,19 +75,21 @@ Ready-to-use form fields that wrap robust validation out of the box (when paired
 ```dart
 Column(
   children: [
-    EmailField(
+    GEmailField(
+      controller: emailController,
+      labelText: 'Email Address',
       onChanged: (val) => print(val),
-      decoration: InputDecoration(labelText: 'Email Address'),
     ),
-    SizedBoxHeight(),
-    PasswordField(
+    const SizedBoxHeight(),
+    GPasswordField(
+      controller: passwordController,
       onChanged: (val) => print(val),
-      decoration: InputDecoration(labelText: 'Password'),
     ),
-    SizedBoxHeight(),
+    const SizedBoxHeight(),
     GElevatedButton(
+      isLoading: false,
       onPressed: () => submitForm(),
-      child: Text('Submit'),
+      text: 'Submit',
     ),
   ],
 )
@@ -101,10 +103,10 @@ Ditch raw Material loaders for stylized, branded loading indicators.
 
 ```dart
 // Easily throw in pre-built spinners across your app
-const SpinnerCircular();
-const SpinnerDot();
-const SpinnerLinear();
-const SpinnerWaveDot();
+const GCircularSpinner();
+const GSpinnerDot(color: Colors.blue);
+const GLinearSpinner();
+const GSpinnerWaveDot(size: 24, color: Colors.blue);
 ```
 
 ---
@@ -179,7 +181,7 @@ class DemoHome extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SpinnerWaveDot(),
+            const GSpinnerWaveDot(size: 24, color: Colors.blue),
             const SizedBoxHeight(),
             Text('Processing Theme Settings...',
               style: TextStyle(

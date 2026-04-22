@@ -11,18 +11,19 @@ abstract final class GColors {
   static const Color primaryDark = Color(0xFFBE3C10); // shade700
   static const Color primaryLight = Color(0xFFFAB577); // shade300
 
-  static const MaterialColor primarySwatch = MaterialColor(0xFFF57224, <int, Color>{
-    50: Color(0xFFFFF6ED),
-    100: Color(0xFFFEECD6),
-    200: Color(0xFFFCD4AC),
-    300: Color(0xFFFAB577),
-    400: Color(0xFFF78B40),
-    500: Color(0xFFF57224),
-    600: Color(0xFFE65110),
-    700: Color(0xFFBE3C10),
-    800: Color(0xFF973015),
-    900: Color(0xFF7A2A14),
-  });
+  static const MaterialColor primarySwatch =
+      MaterialColor(0xFFF57224, <int, Color>{
+        50: Color(0xFFFFF6ED),
+        100: Color(0xFFFEECD6),
+        200: Color(0xFFFCD4AC),
+        300: Color(0xFFFAB577),
+        400: Color(0xFFF78B40),
+        500: Color(0xFFF57224),
+        600: Color(0xFFE65110),
+        700: Color(0xFFBE3C10),
+        800: Color(0xFF973015),
+        900: Color(0xFF7A2A14),
+      });
 
   // ── Semantic ───────────────────────────────────────────────────────────
 
