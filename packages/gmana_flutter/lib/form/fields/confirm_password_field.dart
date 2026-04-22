@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../models/field_config.dart';
 import '../validators/confirm_password_validator.dart';
-import '../widgets/visibility_toggle.dart';
+import '../widgets/obscurable_text_form_field.dart';
 import 'base_field.dart';
 
 class GConfirmPasswordField extends GBaseField {
@@ -37,43 +37,6 @@ class GConfirmPasswordField extends GBaseField {
 
   @override
   Widget build(BuildContext context) {
-    return _GConfirmPasswordFieldContent(config: config);
-  }
-}
-
-class _GConfirmPasswordFieldContent extends StatefulWidget {
-  final GFieldConfig config;
-
-  const _GConfirmPasswordFieldContent({required this.config});
-
-  @override
-  State<_GConfirmPasswordFieldContent> createState() =>
-      _GConfirmPasswordFieldContentState();
-}
-
-class _GConfirmPasswordFieldContentState
-    extends State<_GConfirmPasswordFieldContent> {
-  bool _obscureText = true;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: widget.config.controller,
-      obscureText: _obscureText,
-      keyboardType: widget.config.keyboardType,
-      textInputAction: widget.config.textInputAction,
-      inputFormatters: widget.config.inputFormatters,
-      validator: widget.config.validator,
-      onChanged: widget.config.onChanged,
-      decoration: InputDecoration(
-        labelText: widget.config.labelText,
-        hintText: widget.config.hintText,
-        prefixIcon: Icon(widget.config.prefixIcon),
-        suffixIcon: VisibilityToggle(
-          onVisibilityChanged:
-              (obscure) => setState(() => _obscureText = obscure),
-        ),
-      ),
-    );
+    return GObscurableTextFormField(config: config);
   }
 }

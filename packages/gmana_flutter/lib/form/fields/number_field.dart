@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:gmana/validator/number_field_validator.dart';
 
 import '../models/field_config.dart';
+import '../widgets/configured_text_form_field.dart';
 import 'base_field.dart';
 
 /// A number input field with min/max validation.
@@ -42,18 +43,6 @@ class GNumberField extends GBaseField {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: config.controller,
-      keyboardType: config.keyboardType,
-      textInputAction: config.textInputAction,
-      inputFormatters: config.inputFormatters,
-      validator: config.validator,
-      onChanged: config.onChanged,
-      decoration: InputDecoration(
-        labelText: config.labelText,
-        hintText: config.hintText,
-        prefixIcon: Icon(config.prefixIcon),
-      ),
-    );
+    return GConfiguredTextFormField(config: config);
   }
 }
