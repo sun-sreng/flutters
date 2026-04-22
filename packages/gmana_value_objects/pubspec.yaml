@@ -17,7 +17,7 @@ environment:
 resolution: workspace
 
 dependencies:
-  gmana: ^0.2.0
+  gmana: ^0.1.5
   meta: ^1.17.0
 
 dev_dependencies:

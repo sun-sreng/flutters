@@ -73,14 +73,14 @@ packages:
       path: "../../gmana"
       relative: true
     source: path
-    version: "0.2.0"
+    version: "0.1.5"
   gmana_flutter:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "0.1.0"
+    version: "0.0.8"
   leak_tracker:
     dependency: transitive
     description:

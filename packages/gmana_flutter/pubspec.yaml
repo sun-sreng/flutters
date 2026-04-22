@@ -1,6 +1,6 @@
 name: gmana_flutter
 description: A comprehensive Flutter UI library providing curated widgets, form helpers, theme services, and extensions to accelerate and standardize development.
-version: 0.1.0
+version: 0.0.8
 repository: https://github.com/sun-sreng/flutters/tree/main/packages/gmana_flutter
 homepage: https://github.com/sun-sreng/flutters/tree/main/packages/gmana_flutter
 issue_tracker: https://github.com/sun-sreng/flutters/issues
@@ -21,7 +21,7 @@ resolution: workspace
 dependencies:
   flutter:
     sdk: flutter
-  gmana: ^0.2.0
+  gmana: ^0.1.5
 
 dev_dependencies:
   flutter_test:

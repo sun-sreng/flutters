@@ -12,8 +12,8 @@ This repository is structured as a monorepo containing the following packages:
 
 | Package | Version | Description | Environment |
 | --- | --- | --- | --- |
-| [**gmana**](./packages/gmana) | `^0.2.0` | The foundation layer. Provides functional helpers, extensions, low-level validation primitives, and utility classes. | Pure Dart |
-| [**gmana_flutter**](./packages/gmana_flutter) | `^0.1.0` | The presentation layer. A curated library of branded `G*` widgets, theme management services, color contrast utilities, and form helpers. | Flutter |
+| [**gmana**](./packages/gmana) | `^0.1.5` | The foundation layer. Provides functional helpers, extensions, low-level validation primitives, and utility classes. | Pure Dart |
+| [**gmana_flutter**](./packages/gmana_flutter) | `^0.0.8` | The presentation layer. A curated library of branded `G*` widgets, theme management services, color contrast utilities, and form helpers. | Flutter |
 | [**gmana_value_objects**](./packages/gmana_value_objects) | `^0.0.4` | The domain layer. Provides typed value objects and rich validation errors for domain-safe input handling. | Pure Dart |
 
 ---
