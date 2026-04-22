@@ -1,4 +1,4 @@
-## Unreleased
+## 0.2.0 - 2026-04-23
 
 - breaking: split the public surface into `functional.dart`, `extensions.dart`, `validation.dart`, and `utilities.dart`
 - breaking: remove deprecated validator and utility aliases in favor of canonical rule builders, field validators, and utility classes

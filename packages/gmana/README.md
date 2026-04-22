@@ -15,7 +15,7 @@ Add `gmana` to your `pubspec.yaml` dependencies:
 
 ```yaml
 dependencies:
-  gmana: ^0.1.4 # Please check pub.dev for the latest version
+  gmana: ^0.2.0 # Please check pub.dev for the latest version
 ```
 
 Or install it via CLI:

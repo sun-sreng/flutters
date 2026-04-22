@@ -15,7 +15,7 @@ Add `gmana_value_objects` to your `pubspec.yaml` dependencies:
 
 ```yaml
 dependencies:
-  gmana_value_objects: ^0.0.2 # Please check pub.dev for the latest version
+  gmana_value_objects: ^0.0.4 # Please check pub.dev for the latest version
 ```
 
 Or install it via CLI:

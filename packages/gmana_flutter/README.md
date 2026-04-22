@@ -14,7 +14,7 @@ Add `gmana_flutter` to your `pubspec.yaml` dependencies:
 
 ```yaml
 dependencies:
-  gmana_flutter: ^0.0.7 # Please check pub.dev for the latest version
+  gmana_flutter: ^0.1.0 # Please check pub.dev for the latest version
 ```
 
 Or install it via CLI:

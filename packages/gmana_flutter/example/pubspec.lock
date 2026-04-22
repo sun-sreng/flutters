@@ -68,20 +68,19 @@ packages:
     source: sdk
     version: "0.0.0"
   gmana:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: gmana
-      sha256: "422eee36560d58c7f90130844ed11eed70c01f8e3faaddd3df1198c0f128c8b5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.4"
+      path: "../../gmana"
+      relative: true
+    source: path
+    version: "0.2.0"
   gmana_flutter:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "0.0.7"
+    version: "0.1.0"
   leak_tracker:
     dependency: transitive
     description:
