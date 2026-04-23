@@ -7,6 +7,8 @@ and small design-system constants.
 `gmana` is pure Dart, so it works in CLI tools, server apps, packages, and
 Flutter apps.
 
+For a function-by-function guide with examples, see [doc/api.md](doc/api.md).
+
 ## Installation
 
 ```bash
@@ -45,15 +47,15 @@ import 'package:gmana/validation.dart';
 
 ## What You Can Use
 
-| Area | APIs |
-| --- | --- |
-| Functional results | `Either`, `Left`, `Right`, `Failure`, `Unit`, `UseCase`, `FutureEither` |
-| String extensions | casing, parsing, blank handling, slugs, duration parsing, truncation |
-| Number and duration extensions | `5.seconds`, `2.hours`, rounding, normalization, time formatting |
-| Iterable and list extensions | `sum`, `average`, `median`, `chunked`, `groupBy`, `flatten`, `whereNotNull` |
-| Stream extensions | `debounce`, `throttle`, `scan`, `pairwise`, `whereNotNull`, `onErrorReturn` |
-| Validation | email, password, number, text validators and form-validator adapters |
-| Utilities | `IdGenerator`, `Debouncer`, `Throttler`, `GSpacing`, `waveVerticalOffset` |
+| Area                           | APIs                                                                        |
+| ------------------------------ | --------------------------------------------------------------------------- |
+| Functional results             | `Either`, `Left`, `Right`, `Failure`, `Unit`, `UseCase`, `FutureEither`     |
+| String extensions              | casing, parsing, blank handling, slugs, duration parsing, truncation        |
+| Number and duration extensions | `5.seconds`, `2.hours`, rounding, normalization, time formatting            |
+| Iterable and list extensions   | `sum`, `average`, `median`, `chunked`, `groupBy`, `flatten`, `whereNotNull` |
+| Stream extensions              | `debounce`, `throttle`, `scan`, `pairwise`, `whereNotNull`, `onErrorReturn` |
+| Validation                     | email, password, number, text validators and form-validator adapters        |
+| Utilities                      | `IdGenerator`, `Debouncer`, `Throttler`, `GSpacing`, `waveVerticalOffset`   |
 
 ## Functional Results
 

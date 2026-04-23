@@ -4,6 +4,9 @@ Flutter UI utilities for production apps: form fields, loading indicators,
 theme helpers, color tools, responsive extensions, and small design-system
 tokens.
 
+For a full API guide covering every exported helper, widget, and function, see
+[doc/api.md](doc/api.md).
+
 `gmana_flutter` is the Flutter-facing package in the Gmana ecosystem. Use it
 when you want a practical set of app UI helpers that work from one import:
 
@@ -87,15 +90,15 @@ class HomePage extends StatelessWidget {
 
 ## What You Can Use
 
-| Area | APIs |
-| --- | --- |
-| Widgets | `GAppBar`, `GListTile`, `SizedBoxHeight`, `StarRatingBar` |
-| Forms | `GEmailField`, `GPasswordField`, `GNumberField`, `GTextField`, `GConfirmPasswordField`, `GElevatedButton` |
-| Loading | `GCircularSpinner`, `GLinearSpinner`, `GSpinnerDot`, `GWaveSpinner`, `GSpinnerWaveDot` |
-| Theme | `GColors`, `GFontWeight`, `ThemeModeExt`, `ThemeModeService` |
-| Color | `ColorExt`, `StringColorExtension`, `ColorService` |
-| Layout | `Breakpoint`, `Breakpoints`, `BreakpointUtils`, `ResponsiveContext`, `ContextExt` |
-| Utilities | `IconDataExt`, `IconDataSerialization`, `fromLocale`, `toLocale`, `registerErrorHandlers` |
+| Area      | APIs                                                                                                      |
+| --------- | --------------------------------------------------------------------------------------------------------- |
+| Widgets   | `GAppBar`, `GListTile`, `SizedBoxHeight`, `StarRatingBar`                                                 |
+| Forms     | `GEmailField`, `GPasswordField`, `GNumberField`, `GTextField`, `GConfirmPasswordField`, `GElevatedButton` |
+| Loading   | `GCircularSpinner`, `GLinearSpinner`, `GSpinnerDot`, `GWaveSpinner`, `GSpinnerWaveDot`                    |
+| Theme     | `GColors`, `GFontWeight`, `ThemeModeExt`, `ThemeModeService`                                              |
+| Color     | `ColorExt`, `StringColorExtension`, `ColorService`                                                        |
+| Layout    | `Breakpoint`, `Breakpoints`, `BreakpointUtils`, `ResponsiveContext`, `ContextExt`                         |
+| Utilities | `IconDataExt`, `IconDataSerialization`, `fromLocale`, `toLocale`, `registerErrorHandlers`                 |
 
 ## Theme Setup
 

@@ -9,6 +9,9 @@
 > **Note:** This package is **pure Dart** and perfectly framework independent. You can run these validation objects in your CLI APIs, dart servers, or native Flutter applications.
 > Use `gmana` for low-level rules and field validators; use `gmana_value_objects` when you want typed domain validation and rich error models.
 
+For a complete API guide with examples for every value object, validator, and
+error type, see [doc/api.md](doc/api.md).
+
 ## 🚀 Installation
 
 Add `gmana_value_objects` to your `pubspec.yaml` dependencies:
@@ -38,6 +41,7 @@ dart pub add gmana_value_objects
 ## 🧩 Usage Models
 
 ### Formulating Emails
+
 ```dart
 import 'package:gmana_value_objects/gmana_value_objects.dart';
 
@@ -47,17 +51,18 @@ final email = Email('user@example.com');
 if (email.isValid) {
   print('Email is safe: ${email.valueOrNull}');
 } else {
-  print('Rejection Trigger: ${email.errorOrNull}'); 
+  print('Rejection Trigger: ${email.errorOrNull}');
 }
 
 // Configurable constraints: Automatically block temporary mail structures
 final strictEmail = Email(
   'user@tempmail.com',
-  config: EmailValidationConfig.strict(), 
+  config: EmailValidationConfig.strict(),
 );
 ```
 
 ### Guarding Passwords
+
 Never roll your own password complexity algorithms! Pre-tested templates assure compliance.
 
 ```dart
@@ -77,6 +82,7 @@ final customPassword = Password(
 ```
 
 ### Contextual Text Parsing
+
 Easily guard text models against dangerous payloads using standard presets or bespoke configurations.
 
 ```dart
@@ -98,6 +104,7 @@ final filteredText = TextValue(
 ```
 
 ### Controlling Numbers
+
 Preventing negative integers magically without `double.tryParse` headaches.
 
 ```dart
@@ -115,6 +122,7 @@ final quantity = NumberValue.fromNum(10, config: NumberValidationConfig.positive
 ## 🎯 Clean Architecture Workflows
 
 ### Native Flutter Forms
+
 Take advantage of the natively-bundled `DefaultValidationErrorMessages` for super-fast prototypes!
 
 ```dart
@@ -124,14 +132,14 @@ import 'package:gmana_value_objects/gmana_value_objects.dart';
 class _SignUpFormState extends State<SignUpForm> {
   Email? _email;
   final _messages = DefaultValidationErrorMessages();
-  
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       decoration: InputDecoration(
         labelText: 'Email',
-        errorText: _email?.errorOrNull != null 
-          ? _messages.getMessage(_email!.errorOrNull!) 
+        errorText: _email?.errorOrNull != null
+          ? _messages.getMessage(_email!.errorOrNull!)
           : null,
       ),
       onChanged: (val) => setState(() => _email = Email(val)),
@@ -141,20 +149,21 @@ class _SignUpFormState extends State<SignUpForm> {
 ```
 
 ### Tying cleanly to state providers (Riverpod etc.)
+
 Your provider logic should never leak Domain validation details to Presentation. Ensure the entire state holds safe values!
 
 ```dart
 class SignUpNotifier extends StateNotifier<SignUpState> {
   SignUpNotifier() : super(const SignUpState());
-  
+
   void onEmailChanged(String value) {
     state = state.copyWith(email: Email(value));
   }
-  
+
   Future<void> submit() async {
     // Prevent interaction explicitly
     if (state.email?.isValid != true) return;
-    
+
     // We securely unwrap valueOrNull securely knowing it is completely filtered.
     await _authService.signUp(
       email: state.email!.valueOrNull!,
@@ -164,6 +173,7 @@ class SignUpNotifier extends StateNotifier<SignUpState> {
 ```
 
 ### I18N (Localizing your validation exceptions)
+
 Translating validation is extremely intuitive effectively leaning on Dart 3 pattern matching!
 
 ```dart
@@ -173,12 +183,12 @@ import 'package:gmana_value_objects/gmana_value_objects.dart';
 extension ValidationErrorL10n on ValidationError {
   String localize(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return switch (this) {
       EmailEmpty() => l10n.errorEmailEmpty,
       EmailInvalidFormat() => l10n.errorEmailInvalid,
       PasswordTooShort(:final minLength) => l10n.errorPasswordTooShort(minLength),
-      
+
       // Fallback
       _ => DefaultValidationErrorMessages().getMessage(this),
     };
@@ -189,6 +199,7 @@ extension ValidationErrorL10n on ValidationError {
 ---
 
 ## ⛓ Mapping to your Core Architectures (`gmana`)
+
 `gmana_value_objects` uses `gmana`'s `Either<ValidationError, T>` under the hood and re-exports `Either`, `Left`, and `Right`, so the value-object API stays aligned with the rest of the `gmana` package family.
 
 ```dart
@@ -202,14 +213,14 @@ final class ValidationFailure extends Failure {
 
 final class AppEmail {
   final vo.Either<Failure, String> value;
-  
+
   factory AppEmail(String input) {
     return AppEmail._(
       // Safely swap value-object errors for native Domain Failure variants
       vo.Email(input).value.mapLeft((error) => ValidationFailure(error)),
     );
   }
-  
+
   const AppEmail._(this.value);
 }
 ```
