@@ -1,5 +1,5 @@
 name: example
-description: "A new Flutter project."
+description: Demonstrates gmana_flutter widgets, form helpers, color utilities, and theme-mode extensions.
 publish_to: "none"
 version: 0.0.1
 
