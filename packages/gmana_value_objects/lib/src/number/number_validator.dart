@@ -24,7 +24,7 @@ final class NumberValidator {
     }
 
     final parsed = num.tryParse(trimmed);
-    if (parsed == null) {
+    if (parsed == null || !parsed.isFinite) {
       return const Left(NumberInvalidFormat());
     }
 
@@ -45,7 +45,7 @@ final class NumberValidator {
     }
 
     if (config.maxDecimalPlaces != null) {
-      final decimalPlaces = _countDecimalPlaces(parsed);
+      final decimalPlaces = _countDecimalPlaces(trimmed, parsed);
       if (decimalPlaces > config.maxDecimalPlaces!) {
         return Left(
           NumberDecimalPlacesExceeded(
@@ -59,8 +59,9 @@ final class NumberValidator {
     return Right(parsed);
   }
 
-  int _countDecimalPlaces(num value) {
-    final str = value.toString();
+  int _countDecimalPlaces(String input, num parsed) {
+    final normalized = input.toLowerCase();
+    final str = normalized.contains('e') ? parsed.toString() : normalized;
     if (!str.contains('.')) return 0;
     return str.split('.')[1].length;
   }

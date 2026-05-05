@@ -1,4 +1,4 @@
-/// A package to handle domain value objects like Email, Password, Text, and Number.
+/// A package to handle domain value objects like Email, Password, Text, Number, and Money.
 ///
 /// It provides core abstractions for value objects as well as
 /// concrete implementations for common use cases.
@@ -33,6 +33,14 @@ export 'src/number/number_value.dart';
 export 'src/number/number_errors.dart';
 export 'src/number/number_validation_config.dart';
 export 'src/number/number_validator.dart';
+
+// Money
+export 'src/money/currency.dart';
+export 'src/money/money.dart';
+export 'src/money/money_amount.dart';
+export 'src/money/money_errors.dart';
+export 'src/money/money_validation_config.dart';
+export 'src/money/money_validator.dart';
 
 // Presentation
 export 'src/presentation/validation_error_messages.dart';

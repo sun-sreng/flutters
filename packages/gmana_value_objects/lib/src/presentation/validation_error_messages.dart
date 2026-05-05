@@ -3,12 +3,13 @@ import '../email/email_errors.dart';
 import '../password/password_errors.dart';
 import '../text/text_errors.dart';
 import '../number/number_errors.dart';
+import '../money/money_errors.dart';
 
 /// Default English messages for all validation errors.
 /// Consumers can create their own implementations for i18n.
 abstract interface class ValidationErrorMessages {
   /// Converts a [ValidationError] into a human-readable string message.
-  /// 
+  ///
   /// The [error] parameter is the validation error that needs to be displayed.
   String getMessage(ValidationError error);
 }
@@ -86,6 +87,22 @@ final class DefaultValidationErrorMessages implements ValidationErrorMessages {
         'Number must be between $minValue and $maxValue (current: $currentValue)',
       NumberDecimalPlacesExceeded(:final currentPlaces, :final maxPlaces) =>
         'Too many decimal places (max: $maxPlaces, current: $currentPlaces)',
+
+      // Money errors
+      MoneyEmpty() => 'Money amount cannot be empty',
+      MoneyInvalidFormat() => 'Invalid money amount format',
+      MoneyNegativeNotAllowed(:final minorUnits) =>
+        'Negative money amounts are not allowed (minor units: $minorUnits)',
+      MoneyDecimalPlacesExceeded(:final currentPlaces, :final maxPlaces) =>
+        'Too many money decimal places (max: $maxPlaces, current: $currentPlaces)',
+      MoneyInvalidCurrency(:final currency) =>
+        'Invalid currency code ($currency)',
+      MoneyUnsupportedCurrency(:final currency, :final allowedCurrencies) =>
+        'Unsupported currency $currency (allowed: ${allowedCurrencies.join(', ')})',
+      MoneyTooSmall(:final currentMinorUnits, :final minMinorUnits) =>
+        'Money amount is too small (min minor units: $minMinorUnits, current: $currentMinorUnits)',
+      MoneyTooLarge(:final currentMinorUnits, :final maxMinorUnits) =>
+        'Money amount is too large (max minor units: $maxMinorUnits, current: $currentMinorUnits)',
 
       _ => 'Validation error',
     };

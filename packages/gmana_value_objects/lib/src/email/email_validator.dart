@@ -70,15 +70,21 @@ final class EmailValidator {
 
     final lowerDomain = domain.toLowerCase();
 
-    if (config.blockedDomains.contains(lowerDomain)) {
+    final blockedDomains = config.blockedDomains.map(_normalizeDomain).toSet();
+    if (blockedDomains.contains(lowerDomain)) {
       return Left(EmailBlockedDomain(lowerDomain));
     }
 
-    if (!config.allowDisposable &&
-        config.disposableDomains.contains(lowerDomain)) {
+    final disposableDomains =
+        config.disposableDomains.map(_normalizeDomain).toSet();
+    if (!config.allowDisposable && disposableDomains.contains(lowerDomain)) {
       return Left(EmailDisposableDomain(lowerDomain));
     }
 
     return Right(trimmed.toLowerCase());
+  }
+
+  String _normalizeDomain(String domain) {
+    return domain.trim().toLowerCase();
   }
 }

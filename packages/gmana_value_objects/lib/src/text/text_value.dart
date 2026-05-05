@@ -8,8 +8,8 @@ import 'text_validator.dart';
 ///
 /// Holds either a [TextError] if validation fails, or the raw [String] if it succeeds.
 final class TextValue extends ValueObject<String> {
-  @override
   /// The underlying value, which is either a [TextError] or a valid [String].
+  @override
   final Either<TextError, String> value;
 
   /// Creates a new [TextValue] instance by validating the given [input].
@@ -31,7 +31,7 @@ final class TextValue extends ValueObject<String> {
   /// Internal constructor for [TextValue].
   const TextValue._(this.value);
 
-  @override
   /// Returns a string representation of the [TextValue].
+  @override
   String toString() => 'TextValue(${valueOrNull ?? 'invalid'})';
 }

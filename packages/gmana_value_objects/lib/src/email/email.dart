@@ -8,8 +8,8 @@ import 'email_validator.dart';
 ///
 /// Holds either an [EmailError] if validation fails, or the raw [String] if it succeeds.
 final class Email extends ValueObject<String> {
-  @override
   /// The underlying value, which is either an [EmailError] or a valid [String].
+  @override
   final Either<EmailError, String> value;
 
   /// Creates a new [Email] instance by validating the given [input].
@@ -31,7 +31,7 @@ final class Email extends ValueObject<String> {
   /// Internal constructor for [Email].
   const Email._(this.value);
 
-  @override
   /// Returns a string representation of the [Email].
+  @override
   String toString() => 'Email(${valueOrNull ?? 'invalid'})';
 }

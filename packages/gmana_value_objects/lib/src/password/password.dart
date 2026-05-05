@@ -8,8 +8,8 @@ import 'password_validator.dart';
 ///
 /// Holds either a [PasswordError] if validation fails, or the successful [String] value.
 final class Password extends ValueObject<String> {
-  @override
   /// The underlying value, which is either a [PasswordError] or a valid [String].
+  @override
   final Either<PasswordError, String> value;
 
   /// Creates a new [Password] instance by validating the given [input].
@@ -31,11 +31,11 @@ final class Password extends ValueObject<String> {
   /// Internal constructor for [Password].
   const Password._(this.value);
 
-  @override
   /// Indicates that [Password] data is sensitive and should be handled with care.
+  @override
   bool get isSensitive => true;
 
-  @override
   /// A string representation of this password object, masking the actual value.
+  @override
   String toString() => 'Password(${isValid ? 'valid' : 'invalid'})';
 }

@@ -1,7 +1,7 @@
 # gmana_value_objects
 
 <p align="center">
-  Production-ready domain value objects with configurable validation for Email, Password, Text, and Number types, built on gmana.
+  Production-ready domain value objects with configurable validation for Email, Password, Text, Number, and Money types, built on gmana.
 </p>
 
 ---
@@ -11,6 +11,7 @@
 
 For a complete API guide with examples for every value object, validator, and
 error type, see [doc/api.md](doc/api.md).
+For ecommerce money modeling details, see [doc/money.md](doc/money.md).
 
 ## 🚀 Installation
 
@@ -115,6 +116,27 @@ final percentage = NumberValue('85.5', config: NumberValidationConfig.percentage
 
 // Create securely directly from num instead of parsing strings!
 final quantity = NumberValue.fromNum(10, config: NumberValidationConfig.positiveInteger());
+```
+
+### Modeling Money
+
+Represent prices and balances with a currency-aware value object backed by exact minor units.
+
+```dart
+final usd = Money.fromDecimalString('19.99', Currency.usd);
+final khr = Money.fromDecimalString('1200', Currency.khr);
+const exact = Money(minorUnits: 1234, currency: Currency.usd); // USD 12.34
+
+print(usd.minorUnits); // 1999
+print(usd.currency.code); // USD
+
+// Ecommerce-safe line totals and discounts use exact minor units.
+final unitPrice = Money.fromDecimalString('19.99', Currency.usd);
+final shipping = Money.fromDecimalString('5.00', Currency.usd);
+final total = unitPrice * 2 + shipping;
+final discounted = total.applyDiscountPercent(10);
+
+print(discounted.formatted); // $40.48
 ```
 
 ---

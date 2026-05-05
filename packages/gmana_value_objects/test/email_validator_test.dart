@@ -92,7 +92,7 @@ void main() {
 
     test('blocks custom blocklisted domains', () {
       const validator = EmailValidator(
-        EmailValidationConfig(blockedDomains: {'banned.com'}),
+        EmailValidationConfig(blockedDomains: {' BANNED.com '}),
       );
       validator
           .validate('test@banned.com')
@@ -115,6 +115,7 @@ void main() {
       final email = Email('invalid');
       expect(email.isInvalid, true);
       expect(email.errorOrNull, isA<EmailInvalidFormat>());
+      expect(email.errorOrNull?.code, 'email_invalid_format');
       expect(email.toString(), 'Email(invalid)');
     });
   });

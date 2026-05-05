@@ -8,8 +8,8 @@ import 'number_validator.dart';
 ///
 /// Holds either a [NumberError] if validation fails, or the successful [num] value.
 final class NumberValue extends ValueObject<num> {
-  @override
   /// The underlying value, which is either a [NumberError] or a valid [num].
+  @override
   final Either<NumberError, num> value;
 
   /// Creates a new [NumberValue] instance by parsing and validating the given string [input].
@@ -45,7 +45,7 @@ final class NumberValue extends ValueObject<num> {
   /// Returns the underlying valid numeric value as a [double], or `null` if invalid.
   double? get asDouble => valueOrNull?.toDouble();
 
-  @override
   /// Returns a string representation of the [NumberValue].
+  @override
   String toString() => 'NumberValue(${valueOrNull ?? 'invalid'})';
 }

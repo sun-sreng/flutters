@@ -26,12 +26,14 @@ void main() {
 
     test('returns NumberInvalidFormat for unparsable string', () {
       const validator = NumberValidator();
-      final result = validator.validate('abc');
-
-      result.fold(
-        (l) => expect(l, isA<NumberInvalidFormat>()),
-        (r) => fail('should be left'),
-      );
+      for (final input in ['abc', 'NaN', 'Infinity', '-Infinity']) {
+        validator
+            .validate(input)
+            .fold(
+              (l) => expect(l, isA<NumberInvalidFormat>()),
+              (r) => fail('should be left'),
+            );
+      }
     });
 
     test('respects min/max config', () {
@@ -52,6 +54,20 @@ void main() {
       );
 
       expect(validator.validate('50').isRight(), true);
+    });
+
+    test('counts decimal places from decimal input', () {
+      const validator = NumberValidator(
+        NumberValidationConfig(maxDecimalPlaces: 2),
+      );
+
+      expect(validator.validate('1.23').isRight(), true);
+      validator.validate('1.230').fold((l) {
+        expect(l, isA<NumberDecimalPlacesExceeded>());
+        final error = l as NumberDecimalPlacesExceeded;
+        expect(error.currentPlaces, 3);
+        expect(error.maxPlaces, 2);
+      }, (r) => fail('should be left'));
     });
 
     test('validates percentage config correctly', () {

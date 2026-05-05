@@ -58,8 +58,22 @@ void main() {
   print('Invalid Age (value): ${invalidAgeValue.errorOrNull.runtimeType}');
   print('');
 
-  // 4. Text Example
-  print('4. Text Validation');
+  // 4. Money Example
+  print('4. Money Validation');
+  final usdPrice = Money.fromDecimalString('19.99', Currency.usd);
+  final khrPrice = Money.fromDecimalString('1200', Currency.khr);
+  final shipping = Money.fromDecimalString('5.00', Currency.usd);
+  final discountedTotal = (usdPrice * 2 + shipping).applyDiscountPercent(10);
+
+  print(
+    'USD Price: ${usdPrice.formatted}, minor units: ${usdPrice.minorUnits}',
+  );
+  print('KHR Price: ${khrPrice.formatted}');
+  print('Discounted cart total: ${discountedTotal.formatted}');
+  print('');
+
+  // 5. Text Example
+  print('5. Text Validation');
   final usernameConfig =
       TextValidationConfig.username(); // Letters, numbers, hyphens, underscores
 
