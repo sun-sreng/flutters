@@ -73,7 +73,7 @@ packages:
       path: "../../gmana"
       relative: true
     source: path
-    version: "0.1.5"
+    version: "0.1.6"
   gmana_flutter:
     dependency: "direct main"
     description:
