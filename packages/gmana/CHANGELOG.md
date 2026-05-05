@@ -1,3 +1,11 @@
+## 0.1.6 - 2026-05-06
+
+- feat: add async `Either` helpers with `mapAsync`, `flatMapAsync`, and `foldAsync`
+- feat: add `Either` convenience helpers including `getOrNull`, `contains`, `exists`, `all`, `tap`, and `tapLeft`
+- feat: add `StreamEither`, `StreamEitherUnit`, and `StreamUseCase` for fallible streaming use cases
+- feat: expand `Failure` with optional `code` and structured `details`
+- doc: update README and API guide for the new functional helpers
+
 ## 0.1.5 - 2026-04-23
 
 - breaking: split the public surface into `functional.dart`, `extensions.dart`, `validation.dart`, and `utilities.dart`

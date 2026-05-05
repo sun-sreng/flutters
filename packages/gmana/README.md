@@ -25,7 +25,7 @@ Manual `pubspec.yaml` setup:
 
 ```yaml
 dependencies:
-  gmana: ^0.1.5
+  gmana: ^0.1.6
 ```
 
 ## Imports
@@ -49,7 +49,7 @@ import 'package:gmana/validation.dart';
 
 | Area                           | APIs                                                                        |
 | ------------------------------ | --------------------------------------------------------------------------- |
-| Functional results             | `Either`, `Left`, `Right`, `Failure`, `Unit`, `UseCase`, `FutureEither`     |
+| Functional results             | `Either`, `Left`, `Right`, `Failure`, `Unit`, `UseCase`, `StreamUseCase`    |
 | String extensions              | casing, parsing, blank handling, slugs, duration parsing, truncation        |
 | Number and duration extensions | `5.seconds`, `2.hours`, rounding, normalization, time formatting            |
 | Iterable and list extensions   | `sum`, `average`, `median`, `chunked`, `groupBy`, `flatten`, `whereNotNull` |
