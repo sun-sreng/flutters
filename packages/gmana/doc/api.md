@@ -38,11 +38,18 @@ final message = parseCount('4').fold(
 | `Left<L, R>`                     | Return or construct a failed result.                              |
 | `Right<L, R>`                    | Return or construct a successful result.                          |
 | `fold(left, right)`              | Convert either branch into one return value.                      |
+| `foldAsync(left, right)`         | Convert either branch with async callbacks.                       |
 | `map(transform)`                 | Transform only the right value.                                   |
+| `mapAsync(transform)`            | Transform only the right value with an async callback.            |
 | `flatMap(transform)`             | Chain another `Either`-returning operation.                       |
+| `flatMapAsync(transform)`        | Chain another async `Either`-returning operation.                 |
 | `mapLeft(transform)`             | Transform only the left value.                                    |
 | `getOrElse(fallback)`            | Extract the right value or derive a fallback from the left value. |
 | `leftOrNull()` / `rightOrNull()` | Read one side as nullable.                                        |
+| `getOrNull()`                    | Alias for reading the right value as nullable.                    |
+| `contains(value)`                | Check whether this is a right value equal to `value`.             |
+| `exists(test)` / `all(test)`     | Run predicates against the right value.                           |
+| `tap(callback)` / `tapLeft(...)` | Run side effects for the matching side and keep the same `Either`.|
 | `isLeft()` / `isRight()`         | Check which side is present.                                      |
 | `Failure`                        | Standard failure object with message, code, and optional details. |
 | `NoParams`                       | Placeholder params object for use cases without input.            |
@@ -50,6 +57,9 @@ final message = parseCount('4').fold(
 | `UseCase<T, P>`                  | Clean-architecture callable interface.                            |
 | `FutureEither<T>`                | Alias for `Future<Either<Failure, T>>`.                           |
 | `FutureEitherUnit`               | Alias for `FutureEither<Unit>`.                                   |
+| `StreamUseCase<T, P>`            | Clean-architecture interface for fallible streams.                 |
+| `StreamEither<T>`                | Alias for `Stream<Either<Failure, T>>`.                           |
+| `StreamEitherUnit`               | Alias for `StreamEither<Unit>`.                                   |
 | `GMap`                           | Alias for `Map<String, dynamic>`.                                 |
 
 ## String Extensions

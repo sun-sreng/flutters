@@ -61,8 +61,87 @@ void main() {
         expect(left.rightOrNull(), isNull);
         expect(right.leftOrNull(), isNull);
         expect(right.rightOrNull(), 21);
+        expect(left.getOrNull(), isNull);
+        expect(right.getOrNull(), 21);
         expect(left.getOrElse((value) => value.length), 4);
         expect(right.getOrElse((value) => value.length), 21);
+      },
+    );
+
+    test('predicates inspect Right values without unwrapping', () {
+      const left = Left<String, int>('boom');
+      const right = Right<String, int>(21);
+
+      expect(left.contains(21), isFalse);
+      expect(right.contains(21), isTrue);
+      expect(right.contains(42), isFalse);
+      expect(left.exists((value) => value > 20), isFalse);
+      expect(right.exists((value) => value > 20), isTrue);
+      expect(left.all((value) => value > 20), isTrue);
+      expect(right.all((value) => value > 20), isTrue);
+      expect(right.all((value) => value > 30), isFalse);
+    });
+
+    test('tap and tapLeft run side effects for the matching side', () {
+      const left = Left<String, int>('boom');
+      const right = Right<String, int>(21);
+      final events = <String>[];
+
+      expect(
+        right
+            .tap((value) => events.add('right:$value'))
+            .tapLeft((value) => events.add('left:$value')),
+        right,
+      );
+      expect(
+        left
+            .tap((value) => events.add('right:$value'))
+            .tapLeft((value) => events.add('left:$value')),
+        left,
+      );
+      expect(events, ['right:21', 'left:boom']);
+    });
+
+    test(
+      'async helpers transform Right values and preserve Left values',
+      () async {
+        const left = Left<String, int>('boom');
+        const right = Right<String, int>(21);
+
+        expect(
+          await right.mapAsync((value) async => value * 2),
+          const Right<String, int>(42),
+        );
+        expect(
+          await left.mapAsync((value) async => value * 2),
+          const Left<String, int>('boom'),
+        );
+        expect(
+          await right.flatMapAsync(
+            (value) async => Right<String, int>(value + 1),
+          ),
+          const Right<String, int>(22),
+        );
+        expect(
+          await left.flatMapAsync(
+            (value) async => Right<String, int>(value + 1),
+          ),
+          const Left<String, int>('boom'),
+        );
+        expect(
+          await right.foldAsync(
+            (value) async => 'left:$value',
+            (value) async => 'right:$value',
+          ),
+          'right:21',
+        );
+        expect(
+          await left.foldAsync(
+            (value) async => 'left:$value',
+            (value) async => 'right:$value',
+          ),
+          'left:boom',
+        );
       },
     );
 

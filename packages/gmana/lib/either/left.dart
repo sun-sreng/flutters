@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'either.dart';
 import 'right.dart';
 
@@ -33,6 +35,13 @@ class Left<L, R> extends Either<L, R> {
   @override
   Either<L, R2> flatMap<R2>(Either<L, R2> Function(R right) f) {
     // Left stays unchanged during flatMap
+    return Left<L, R2>(value);
+  }
+
+  @override
+  Future<Either<L, R2>> flatMapAsync<R2>(
+    FutureOr<Either<L, R2>> Function(R right) f,
+  ) async {
     return Left<L, R2>(value);
   }
 
@@ -74,6 +83,11 @@ class Left<L, R> extends Either<L, R> {
   @override
   Either<L, R2> map<R2>(R2 Function(R right) f) {
     // Left stays unchanged during map
+    return Left<L, R2>(value);
+  }
+
+  @override
+  Future<Either<L, R2>> mapAsync<R2>(FutureOr<R2> Function(R right) f) async {
     return Left<L, R2>(value);
   }
 

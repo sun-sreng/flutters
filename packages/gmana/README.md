@@ -91,6 +91,11 @@ final doubled = result.map((value) => value * 2);
 final value = doubled.getOrElse((error) => 0);
 final isSuccess = doubled.isRight();
 final nullable = doubled.rightOrNull();
+final hasTwenty = doubled.contains(20);
+
+final saved = await doubled
+    .tap((value) => print('Saving $value'))
+    .flatMapAsync((value) async => Right<String, int>(value + 1));
 ```
 
 ## Use Cases
@@ -128,6 +133,18 @@ For operations with no meaningful success value, return `unit`:
 ```dart
 FutureEitherUnit saveSettings() async {
   return const Right(unit);
+}
+```
+
+Use `StreamUseCase` when a use case emits fallible values over time:
+
+```dart
+class WatchCountUseCase implements StreamUseCase<int, NoParams> {
+  @override
+  StreamEither<int> call(NoParams params) async* {
+    yield const Right<Failure, int>(1);
+    yield const Left<Failure, int>(Failure('Stream stopped', 'counter_stopped'));
+  }
 }
 ```
 
