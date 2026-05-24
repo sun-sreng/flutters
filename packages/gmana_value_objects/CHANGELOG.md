@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.6 - 2026-05-24
+
+### Changed
+
+- Annotated `Money` as `@immutable` to satisfy strict equality/hashCode lints.
+- Updated lint configuration to use the shared `gmana_lints` workspace ruleset.
+- Internal test, dependency, and documentation polish — no public API changes.
+
 ## 0.0.5 - 2026-05-05
 
 ### Added

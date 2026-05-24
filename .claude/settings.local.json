@@ -36,7 +36,15 @@
       "Bash(rm -rf lib/src)",
       "Bash(cd /Users/rocky/workspace/ssh/flutters/packages/gmana_predicates && dart analyze && dart test 2>&1 | tail -5; rm -rf /tmp/gmana_spinner_baseline)",
       "Bash(awk -F/ '{print $1}')",
-      "Bash(just test *)"
+      "Bash(just test *)",
+      "Bash(just analyze *)",
+      "Bash(./publish.sh --dry-run)",
+      "Bash(echo \"exit=$?\")",
+      "Read(//tmp/**)",
+      "Bash(tail -30 /tmp/publish-dry.log)",
+      "Bash(cat)",
+      "Bash(chmod +x /tmp/dryrun.sh)",
+      "Bash(/tmp/dryrun.sh)"
     ]
   }
 }

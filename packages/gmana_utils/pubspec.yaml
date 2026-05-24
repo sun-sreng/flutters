@@ -2,6 +2,7 @@ name: gmana_utils
 description: Pure Dart runtime utilities — Debouncer, Throttler, and IdGenerator.
 version: 0.0.1
 repository: https://github.com/sun-sreng/flutters/tree/main/packages/gmana_utils
+issue_tracker: https://github.com/sun-sreng/flutters/issues
 
 topics:
   - utility

@@ -17,7 +17,7 @@ format:
 
 # Analyze every package in the workspace.
 analyze:
-    dart analyze .
+    dart analyze --fatal-infos --fatal-warnings .
 
 # Run tests for the core Dart packages.
 test-dart:
@@ -52,7 +52,7 @@ pkg-get package:
 
 # Analyze one package. Example: just pkg-analyze gmana
 pkg-analyze package:
-    cd packages/{{package}} && dart analyze
+    cd packages/{{package}} && dart analyze --fatal-infos --fatal-warnings
 
 # Test one Dart package. Example: just pkg-test gmana
 pkg-test package:
@@ -68,6 +68,6 @@ pkg-publish package:
 
 # Convenience checks for the gmana package.
 gmana-check:
-    dart analyze packages/gmana
+    dart analyze --fatal-infos --fatal-warnings packages/gmana
     dart test packages/gmana
     cd packages/gmana && dart pub publish --dry-run

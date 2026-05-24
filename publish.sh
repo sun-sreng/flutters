@@ -60,12 +60,12 @@ run_for_package() {
   fi
 
   local pub_cmd=(dart pub)
-  local analyze_cmd=(dart analyze)
+  local analyze_cmd=(dart analyze --fatal-infos --fatal-warnings)
   local test_cmd=(dart test)
 
   if grep -qE '^[[:space:]]+flutter:[[:space:]]*$' "$package_dir/pubspec.yaml"; then
     pub_cmd=(flutter pub)
-    analyze_cmd=(flutter analyze)
+    analyze_cmd=(flutter analyze --fatal-infos --fatal-warnings)
     test_cmd=(flutter test)
   fi
 
