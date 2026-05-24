@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.9 - 2026-04-24
 
 - compatibility: re-export spinner widgets from the new `gmana_spinner` package.
 - internal: update `GElevatedButton` to use `GWaveDotSpinner` from `gmana_spinner`.
