@@ -3,6 +3,7 @@ description: Production-ready, library-correctness focused lint rules for Dart a
 version: 0.1.0
 repository: https://github.com/sun-sreng/flutters/tree/main/packages/gmana_lints
 issue_tracker: https://github.com/sun-sreng/flutters/issues
+publish_to: none
 
 topics:
   - lints

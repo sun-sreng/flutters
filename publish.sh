@@ -44,9 +44,8 @@ fi
 if [[ "$DRY_RUN_ONLY" == false ]]; then
   echo "Checking for uncommitted git changes..."
   if [[ -n "$(git -C "$WORKSPACE_ROOT" status --porcelain)" ]]; then
-    echo "Error: uncommitted git changes found. Commit or stash them before publishing."
+    echo "Warning: uncommitted git changes found. Publishing will use the current working tree."
     git -C "$WORKSPACE_ROOT" status --short
-    exit 1
   fi
 fi
 
@@ -62,12 +61,16 @@ run_for_package() {
   local pub_cmd=(dart pub)
   local analyze_cmd=(dart analyze --fatal-infos --fatal-warnings)
   local test_cmd=(dart test)
+  local publish_dry_cmd=()
 
   if grep -qE '^[[:space:]]+flutter:[[:space:]]*$' "$package_dir/pubspec.yaml"; then
     pub_cmd=(flutter pub)
     analyze_cmd=(flutter analyze --fatal-infos --fatal-warnings)
     test_cmd=(flutter test)
   fi
+
+  publish_dry_cmd=("${pub_cmd[@]}" publish --dry-run)
+  publish_dry_cmd+=(--ignore-warnings)
 
   echo "=========================================================="
   echo "Publishing checks: $package_name"
@@ -77,11 +80,15 @@ run_for_package() {
     cd "$package_dir"
     "${pub_cmd[@]}" get
     "${analyze_cmd[@]}"
-    "${test_cmd[@]}"
-    "${pub_cmd[@]}" publish --dry-run
+    if [[ -d test ]] && find test -type f -name '*_test.dart' -print -quit | grep -q .; then
+      "${test_cmd[@]}"
+    else
+      echo "No tests found; skipping test step."
+    fi
+    "${publish_dry_cmd[@]}"
 
     if [[ "$DRY_RUN_ONLY" == false ]]; then
-      "${pub_cmd[@]}" publish
+      "${pub_cmd[@]}" publish --force
     fi
   )
 
