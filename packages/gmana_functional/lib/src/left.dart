@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
+
 import 'either.dart';
 import 'right.dart';
 
@@ -20,6 +22,7 @@ import 'right.dart';
 /// print(result.isRight()); // false
 /// print(result.getLeft()); // 'Something went wrong'
 /// ```
+@immutable
 class Left<L, R> extends Either<L, R> {
   /// The encapsulated value, typically representing an error or failure.
   final L value;

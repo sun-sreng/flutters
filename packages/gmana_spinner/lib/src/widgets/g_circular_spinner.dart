@@ -13,6 +13,7 @@ class GCircularSpinner extends StatelessWidget {
   /// Indicator stroke width.
   final double strokeWidth;
 
+  /// Creates a centered circular spinner.
   const GCircularSpinner({
     super.key,
     this.color = Colors.purple,

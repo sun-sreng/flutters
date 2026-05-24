@@ -5,6 +5,8 @@
 /// [StreamUseCase] interfaces for clean-architecture use cases.
 library;
 
+import 'gmana_functional.dart' show Either, Left, Right, Result, FutureResult, StreamResult, Failure, Unit, UseCase, StreamUseCase;
+
 export 'src/either.dart';
 export 'src/left.dart';
 export 'src/right.dart';

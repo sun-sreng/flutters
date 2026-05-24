@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'package:gmana_validation/gmana_validation.dart';
 
 void main() {

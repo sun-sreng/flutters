@@ -1,5 +1,5 @@
-import '../regex/identifier_patterns.dart';
-import '../regex/network_patterns.dart';
+import '../src/regex/identifier_patterns.dart';
+import '../src/regex/network_patterns.dart';
 
 /// Returns `true` if [str] is a valid IPv4 address.
 bool isIpv4(String str) {
@@ -15,13 +15,15 @@ bool isIpv4(String str) {
 /// Returns `true` if [str] is a valid IPv6 address.
 bool isIpv6(String str) => ipv6.hasMatch(str);
 
-/// Returns `true` if [str] is a valid postal code for [locale].
+/// Returns `true` if [text] is a valid postal code for [locale].
 ///
+/// Returns `false` if [text] is `null`.
 /// Throws [FormatException] if [locale] is not supported and no [orElse] is provided.
 bool isPostalCode(String? text, String locale, {bool Function()? orElse}) {
+  if (text == null) return false;
   final pattern = postalCodePatterns[locale];
   return pattern != null
-      ? pattern.hasMatch(text!)
+      ? pattern.hasMatch(text)
       : orElse != null
       ? orElse()
       : throw FormatException('No postal code pattern for locale: $locale');

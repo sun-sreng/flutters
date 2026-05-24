@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
+
 import 'either.dart';
 
 /// A singleton instance representing a unit of work with no meaningful value.
@@ -37,6 +39,7 @@ typedef StreamResultUnit = StreamResult<Unit>;
 ///
 /// Contains a human-readable error [message], optional machine-readable [code],
 /// and optional structured [details].
+@immutable
 class Failure {
   /// The error message describing the failure.
   final String message;
@@ -94,6 +97,7 @@ class Failure {
 /// A class that represents a lack of parameters.
 ///
 /// Useful when a [UseCase] requires no input but must still follow a uniform interface.
+@immutable
 class NoParams {
   /// Creates a [NoParams] marker value.
   const NoParams();
@@ -120,6 +124,7 @@ abstract interface class StreamUseCase<SuccessType, Params> {
 /// Represents a void-like value in functional programming.
 ///
 /// Used to indicate success where no meaningful value is returned (similar to `void` in Dart).
+@immutable
 final class Unit {
   static const Unit _unit = Unit._instance();
 

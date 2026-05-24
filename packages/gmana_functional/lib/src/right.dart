@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
+
 import 'either.dart';
 import 'left.dart';
 
@@ -12,6 +14,7 @@ import 'left.dart';
 /// Either<String, int> result = Right(42);
 /// print(result.isRight()); // true
 /// ```
+@immutable
 class Right<L, R> extends Either<L, R> {
   /// The successful value held by this [Right].
   final R value;

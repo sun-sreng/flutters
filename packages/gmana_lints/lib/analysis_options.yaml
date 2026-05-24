@@ -1,0 +1,138 @@
+# gmana_lints — production-ready analysis options for published packages.
+#
+# Calibrated for library authors: strict on what API consumers can see
+# (docs, leaked private types, type annotations, async safety), quiet on
+# stylistic preferences that fight legitimate API design.
+#
+# Override locally by re-declaring rules under your package's own
+# analysis_options.yaml below the include.
+
+include: package:lints/recommended.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+
+  errors:
+    # Latent bugs — never let these slip into a release.
+    missing_required_param: error
+    missing_return: error
+    body_might_complete_normally_nullable: error
+    # API stability — leaking a private type via a public signature
+    # silently breaks consumers on the next refactor.
+    library_private_types_in_public_api: error
+    # Common false-positive sources kept quiet.
+    invalid_annotation_target: ignore
+    deprecated_member_use_from_same_package: ignore
+    # Still surfaced, but never fatal.
+    todo: info
+    fixme: info
+
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.mocks.dart"
+    - "**/*.config.dart"
+    - "**/*.gen.dart"
+    - "**/generated/**"
+    - "**/.dart_tool/**"
+    - "**/build/**"
+
+linter:
+  rules:
+    # ─── Library correctness (matters for published packages) ──────────
+    library_annotations: true
+    library_names: true
+    library_prefixes: true
+    library_private_types_in_public_api: true
+    implementation_imports: true
+    depend_on_referenced_packages: true
+    secure_pubspec_urls: true
+    sort_pub_dependencies: true
+
+    # ─── Documentation (full pub.dev points) ───────────────────────────
+    public_member_api_docs: true
+    comment_references: true
+
+    # ─── Type safety on the API surface ────────────────────────────────
+    always_declare_return_types: true
+    type_annotate_public_apis: true
+    avoid_dynamic_calls: true
+    avoid_type_to_string: true
+    tighten_type_of_initializing_formals: true
+    prefer_void_to_null: true
+
+    # ─── Async correctness ─────────────────────────────────────────────
+    avoid_slow_async_io: true
+    avoid_void_async: true
+    cancel_subscriptions: true
+    close_sinks: true
+    discarded_futures: true
+    unawaited_futures: true
+
+    # ─── Error handling ────────────────────────────────────────────────
+    only_throw_errors: true
+    throw_in_finally: true
+    use_rethrow_when_possible: true
+
+    # ─── Const correctness / performance ───────────────────────────────
+    prefer_const_constructors: true
+    prefer_const_constructors_in_immutables: true
+    prefer_const_declarations: true
+    prefer_const_literals_to_create_immutables: true
+    unnecessary_const: true
+    unnecessary_new: true
+
+    # ─── Modern Dart idioms ────────────────────────────────────────────
+    use_super_parameters: true
+    use_enums: true
+    use_string_in_part_of_directives: true
+
+    # ─── API hygiene (consumer-facing) ─────────────────────────────────
+    avoid_equals_and_hash_code_on_mutable_classes: true
+    avoid_field_initializers_in_const_classes: true
+    avoid_positional_boolean_parameters: true
+    avoid_print: true
+    avoid_setters_without_getters: true
+    avoid_unused_constructor_parameters: true
+    no_runtimeType_toString: true
+    no_self_assignments: true
+    no_adjacent_strings_in_list: true
+    parameter_assignments: true
+    test_types_in_equals: true
+
+    # ─── Style (minimal — only widely-agreed rules) ────────────────────
+    prefer_single_quotes: true
+    prefer_relative_imports: true
+    unnecessary_await_in_return: true
+    unnecessary_lambdas: true
+    unnecessary_parenthesis: true
+    unnecessary_statements: true
+
+    # ─── Flutter-specific (safe no-ops on pure-Dart code) ──────────────
+    avoid_unnecessary_containers: true
+    sized_box_for_whitespace: true
+    use_colored_box: true
+    use_decorated_box: true
+    use_full_hex_values_for_flutter_colors: true
+    use_key_in_widget_constructors: true
+
+    # ─── Intentionally NOT enabled ─────────────────────────────────────
+    # The following are common in strict configs but excluded here.
+    # They generate noise without catching real bugs, or fight valid
+    # design choices. Re-enable per-package if you disagree.
+    #
+    #   require_trailing_commas       # Flutter-style; noisy elsewhere.
+    #   directives_ordering           # Alphabetical fights logical grouping.
+    #   avoid_redundant_argument_values  # Clarity sometimes wins.
+    #   prefer_int_literals           # Niche; rarely a real issue.
+    #   unnecessary_raw_strings       # Niche; rarely a real issue.
+    #   cascade_invocations           # Often hurts readability.
+    #   omit_local_variable_types     # Locals are fine either way.
+    #   prefer_final_locals           # Same — devs already know.
+    #   avoid_returning_this          # Breaks fluent / builder APIs.
+    #   always_put_required_named_parameters_first  # Mechanical.
+    #   prefer_expression_function_bodies  # Subjective.
+    #   sort_constructors_first       # Subjective.

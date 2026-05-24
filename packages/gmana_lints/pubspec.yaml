@@ -1,0 +1,20 @@
+name: gmana_lints
+description: Production-ready, library-correctness focused lint rules for Dart and Flutter packages in the gmana ecosystem.
+version: 0.1.0
+repository: https://github.com/sun-sreng/flutters/tree/main/packages/gmana_lints
+issue_tracker: https://github.com/sun-sreng/flutters/issues
+
+topics:
+  - lints
+  - analyzer
+  - linter
+  - style
+  - workspace
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  lints: ^6.0.0
+
+resolution: workspace

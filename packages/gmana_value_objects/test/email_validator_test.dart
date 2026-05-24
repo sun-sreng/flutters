@@ -1,5 +1,5 @@
-import 'package:test/test.dart';
 import 'package:gmana_value_objects/gmana_value_objects.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('EmailValidator', () {
@@ -9,51 +9,28 @@ void main() {
       expect(validator.validate('user.name+tag@domain.co.uk').isRight(), true);
       validator
           .validate(' USER@Example.COM ')
-          .fold(
-            (l) => fail('should be right'),
-            (email) => expect(email, 'user@example.com'),
-          );
+          .fold((l) => fail('should be right'), (email) => expect(email, 'user@example.com'));
     });
 
     test('returns EmailEmpty for empty string', () {
       const validator = EmailValidator();
-      validator
-          .validate('')
-          .fold(
-            (l) => expect(l, isA<EmailEmpty>()),
-            (r) => fail('should be left'),
-          );
+      validator.validate('').fold((l) => expect(l, isA<EmailEmpty>()), (r) => fail('should be left'));
     });
 
     test('returns EmailInvalidFormat for invalid patterns', () {
       const validator = EmailValidator();
       validator
           .validate('invalid-email')
-          .fold(
-            (l) => expect(l, isA<EmailInvalidFormat>()),
-            (r) => fail('should be left'),
-          );
+          .fold((l) => expect(l, isA<EmailInvalidFormat>()), (r) => fail('should be left'));
       validator
           .validate('@missingusername.com')
-          .fold(
-            (l) => expect(l, isA<EmailInvalidFormat>()),
-            (r) => fail('should be left'),
-          );
-      validator
-          .validate('user@.com')
-          .fold(
-            (l) => expect(l, isA<EmailInvalidFormat>()),
-            (r) => fail('should be left'),
-          );
+          .fold((l) => expect(l, isA<EmailInvalidFormat>()), (r) => fail('should be left'));
+      validator.validate('user@.com').fold((l) => expect(l, isA<EmailInvalidFormat>()), (r) => fail('should be left'));
     });
 
     test('checks max lengths', () {
       const validator = EmailValidator(
-        EmailValidationConfig(
-          maxLength: 20,
-          maxLocalPartLength: 10,
-          maxDomainLength: 10,
-        ),
+        EmailValidationConfig(maxLength: 20, maxLocalPartLength: 10, maxDomainLength: 10),
       );
 
       // Local part too long > 10
@@ -83,34 +60,21 @@ void main() {
 
     test('blocks disposable domains if not allowed', () {
       const strictValidator = EmailValidator(
-        EmailValidationConfig(
-          allowDisposable: false,
-          disposableDomains: {' TempMail.com '},
-        ),
+        EmailValidationConfig(allowDisposable: false, disposableDomains: {' TempMail.com '}),
       );
       strictValidator
           .validate('test@tempmail.com')
-          .fold(
-            (l) => expect(l, isA<EmailDisposableDomain>()),
-            (r) => fail('should be left'),
-          );
+          .fold((l) => expect(l, isA<EmailDisposableDomain>()), (r) => fail('should be left'));
 
-      const lenientValidator = EmailValidator(
-        EmailValidationConfig(allowDisposable: true),
-      );
+      const lenientValidator = EmailValidator(EmailValidationConfig(allowDisposable: true));
       expect(lenientValidator.validate('test@tempmail.com').isRight(), true);
     });
 
     test('blocks custom blocklisted domains', () {
-      const validator = EmailValidator(
-        EmailValidationConfig(blockedDomains: {' BANNED.com '}),
-      );
+      const validator = EmailValidator(EmailValidationConfig(blockedDomains: {' BANNED.com '}));
       validator
           .validate('test@banned.com')
-          .fold(
-            (l) => expect(l, isA<EmailBlockedDomain>()),
-            (r) => fail('should be left'),
-          );
+          .fold((l) => expect(l, isA<EmailBlockedDomain>()), (r) => fail('should be left'));
     });
   });
 
@@ -132,7 +96,7 @@ void main() {
     });
 
     test('creates Email from validated result', () {
-      final validated = EmailValidator().validate('test@example.com');
+      final validated = const EmailValidator().validate('test@example.com');
       final email = Email.validated(validated);
 
       expect(email.isValid, true);

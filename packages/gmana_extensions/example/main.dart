@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'package:gmana_extensions/gmana_extensions.dart';
 
 Future<void> main() async {

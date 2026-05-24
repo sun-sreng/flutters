@@ -126,7 +126,7 @@ void main() {
     });
 
     test('creates Password from validated result', () {
-      final validated = PasswordValidator().validate('StrongP@ssw0rd!');
+      final validated = const PasswordValidator().validate('StrongP@ssw0rd!');
       final pass = Password.validated(validated);
 
       expect(pass.isValid, true);

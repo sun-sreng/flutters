@@ -67,7 +67,7 @@ void main() {
 
   group('icon serialization', () {
     test('round trips icon data', () {
-      final source = Icons.home;
+      const source = Icons.home;
       final restored = IconDataExt.parse(source.toJsonString());
 
       expect(restored.codePoint, source.codePoint);

@@ -8,6 +8,7 @@ class GScaleY extends AnimatedWidget {
   /// Transform alignment.
   final Alignment alignment;
 
+  /// Creates a widget that vertically scales [child] by [scaleY].
   const GScaleY({
     super.key,
     required Animation<double> scaleY,
@@ -15,6 +16,7 @@ class GScaleY extends AnimatedWidget {
     this.alignment = Alignment.center,
   }) : super(listenable: scaleY);
 
+  /// The underlying scale animation driving the vertical transform.
   Animation<double> get scale => listenable as Animation<double>;
 
   @override

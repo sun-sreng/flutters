@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'package:gmana_value_objects/gmana_value_objects.dart';
 
 void main() {

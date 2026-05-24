@@ -1,3 +1,6 @@
+// Passthrough widget mirroring TextFormField props.
+// ignore_for_file: public_member_api_docs
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gmana_validation/gmana_validation.dart';

@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('Either', () {
     test('map and flatMap transform Right values', () {
-      final Either<String, int> result = Right<String, int>(
+      final Either<String, int> result = const Right<String, int>(
         21,
       ).map((value) => value * 2).flatMap((value) => Right<String, int>(value + 1));
 

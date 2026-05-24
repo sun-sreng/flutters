@@ -295,8 +295,8 @@ void main() {
                 controller: controller,
                 child: Column(
                   children: [
-                    GTextField(
-                      config: const GTextFieldConfig(
+                    const GTextField(
+                      config: GTextFieldConfig(
                         name: 'username',
                         label: 'Username',
                       ),
@@ -352,8 +352,8 @@ void main() {
               controller: controller,
               child: Column(
                 children: [
-                  GTextField(
-                    config: const GTextFieldConfig(
+                  const GTextField(
+                    config: GTextFieldConfig(
                       name: 'username',
                       label: 'Username',
                     ),

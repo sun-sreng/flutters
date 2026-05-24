@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs
+
 import 'package:flutter/material.dart';
 import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
 
@@ -9,47 +11,19 @@ void main() {
   runApp(const ExtensionsExampleApp());
 }
 
-class ExtensionsExampleApp extends StatefulWidget {
-  const ExtensionsExampleApp({super.key});
-
-  @override
-  State<ExtensionsExampleApp> createState() => _ExtensionsExampleAppState();
-}
-
-class _ExtensionsExampleAppState extends State<ExtensionsExampleApp> {
-  ThemeMode _themeMode = ThemeMode.system;
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      themeMode: _themeMode,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: '#3B82F6'.toColor()),
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: '#3B82F6'.toColor(),
-          brightness: Brightness.dark,
-        ),
-      ),
-      home: ExampleHome(
-        themeMode: _themeMode,
-        onThemeModeChanged: (mode) => setState(() => _themeMode = mode),
-      ),
-    );
-  }
+ThemeMode _nextThemeMode(ThemeMode current) {
+  return switch (current) {
+    ThemeMode.system => ThemeMode.light,
+    ThemeMode.light => ThemeMode.dark,
+    ThemeMode.dark => ThemeMode.system,
+  };
 }
 
 class ExampleHome extends StatelessWidget {
-  const ExampleHome({
-    super.key,
-    required this.themeMode,
-    required this.onThemeModeChanged,
-  });
-
   final ThemeMode themeMode;
+
   final ValueChanged<ThemeMode> onThemeModeChanged;
+  const ExampleHome({super.key, required this.themeMode, required this.onThemeModeChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -75,43 +49,24 @@ class ExampleHome extends StatelessWidget {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final columns = constraints.resolve(
-            mobile: 1,
-            tablet: 2,
-            desktop: 3,
-            widescreen: 4,
-          );
+          final columns = constraints.resolve(mobile: 1, tablet: 2, desktop: 3, widescreen: 4);
 
           return ListView(
-            padding: EdgeInsets.all(
-              context.responsive(mobile: 16, tablet: 24),
-            ),
+            padding: EdgeInsets.all(context.responsive(mobile: 16, tablet: 24)),
             children: [
               Wrap(
                 spacing: 12,
                 runSpacing: 12,
                 children: [
-                  InfoChip(
-                    icon: Icons.devices,
-                    label: constraints.breakpoint.name,
-                  ),
+                  InfoChip(icon: Icons.devices, label: constraints.breakpoint.name),
                   InfoChip(
                     icon: Icons.aspect_ratio,
                     label:
                         '${context.screenWidth.round()} x '
                         '${context.screenHeight.round()}',
                   ),
-                  InfoChip(
-                    icon: Icons.schedule,
-                    label: const TimeOfDay(
-                      hour: 13,
-                      minute: 5,
-                    ).toCustomString(),
-                  ),
-                  InfoChip(
-                    icon: themeMode.toIcon(),
-                    label: themeMode.toLabel(),
-                  ),
+                  InfoChip(icon: Icons.schedule, label: const TimeOfDay(hour: 13, minute: 5).toCustomString()),
+                  InfoChip(icon: themeMode.toIcon(), label: themeMode.toLabel()),
                 ],
               ),
               const SizedBox(height: 24),
@@ -131,10 +86,7 @@ class ExampleHome extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 24),
-              DetailsPanel(
-                baseColor: color,
-                restoredIcon: IconDataExt.parse(Icons.home.toJsonString()),
-              ),
+              DetailsPanel(baseColor: color, restoredIcon: IconDataExt.parse(Icons.home.toJsonString())),
               const SizedBox(height: 24),
               Wrap(
                 spacing: 12,
@@ -142,19 +94,14 @@ class ExampleHome extends StatelessWidget {
                 children: [
                   FilledButton.icon(
                     onPressed: () {
-                      context.showSuccessSnackBar(
-                        message:
-                            'Shown with BuildContext.showSuccessSnackBar',
-                      );
+                      context.showSuccessSnackBar(message: 'Shown with BuildContext.showSuccessSnackBar');
                     },
                     icon: const Icon(Icons.check),
                     label: const Text('Success'),
                   ),
                   OutlinedButton.icon(
                     onPressed: () {
-                      context.showWarningSnackBar(
-                        message: 'This uses the warning snackbar helper',
-                      );
+                      context.showWarningSnackBar(message: 'This uses the warning snackbar helper');
                     },
                     icon: const Icon(Icons.warning_amber),
                     label: const Text('Warning'),
@@ -169,10 +116,26 @@ class ExampleHome extends StatelessWidget {
   }
 }
 
-ThemeMode _nextThemeMode(ThemeMode current) {
-  return switch (current) {
-    ThemeMode.system => ThemeMode.light,
-    ThemeMode.light => ThemeMode.dark,
-    ThemeMode.dark => ThemeMode.system,
-  };
+class ExtensionsExampleApp extends StatefulWidget {
+  const ExtensionsExampleApp({super.key});
+
+  @override
+  State<ExtensionsExampleApp> createState() => _ExtensionsExampleAppState();
+}
+
+class _ExtensionsExampleAppState extends State<ExtensionsExampleApp> {
+  ThemeMode _themeMode = ThemeMode.system;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      themeMode: _themeMode,
+      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: '#3B82F6'.toColor())),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: '#3B82F6'.toColor(), brightness: Brightness.dark),
+      ),
+      home: ExampleHome(themeMode: _themeMode, onThemeModeChanged: (mode) => setState(() => _themeMode = mode)),
+    );
+  }
 }

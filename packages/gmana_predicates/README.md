@@ -124,6 +124,8 @@ isDate('2024-06-15')                 // true
 isDate('32nd of March')              // false
 ```
 
+`tryParseDate` is also exported for cases where you need the parsed `DateTime` rather than a boolean — it trims whitespace and normalizes to UTC.
+
 ### Relative to now
 
 ```dart

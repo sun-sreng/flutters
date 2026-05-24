@@ -13,6 +13,7 @@ class GLinearSpinner extends StatelessWidget {
   /// Minimum indicator height.
   final double minHeight;
 
+  /// Creates a linear spinner with package defaults.
   const GLinearSpinner({
     super.key,
     this.color = Colors.purple,

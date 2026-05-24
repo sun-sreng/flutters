@@ -6,10 +6,10 @@ void main() {
   group('spinner widgets', () {
     testWidgets('canonical spinner widgets render', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: Column(
-              children: const [
+              children: [
                 GCircularSpinner(),
                 GLinearSpinner(),
                 GDotSpinner(color: Colors.red),

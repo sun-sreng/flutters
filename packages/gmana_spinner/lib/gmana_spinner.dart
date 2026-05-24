@@ -1,14 +1,15 @@
+/// Flutter loading spinner widgets for the Gmana ecosystem.
 library;
 
-export "delayed_animation_tween.dart";
-export "dot_animation_config.dart";
-export "g_bar_wave_spinner.dart";
-export "g_circular_spinner.dart";
-export "g_dot_spinner.dart";
-export 'g_linear_spinner.dart';
-export 'g_scale_y.dart';
-export 'g_wave_dot_spinner.dart';
-export 'g_wave_dot_spinner_dot.dart';
-export 'g_wave_spinner.dart';
-export 'wave_spinner_painter.dart';
-export 'wave_vertical_offset.dart';
+// Animation helpers (public — exposed for advanced extension).
+export 'src/animation/delayed_animation_tween.dart';
+export 'src/animation/dot_animation_config.dart';
+
+// Widgets.
+export 'src/widgets/g_bar_wave_spinner.dart';
+export 'src/widgets/g_circular_spinner.dart';
+export 'src/widgets/g_dot_spinner.dart';
+export 'src/widgets/g_linear_spinner.dart';
+export 'src/widgets/g_scale_y.dart';
+export 'src/widgets/g_wave_dot_spinner.dart';
+export 'src/widgets/g_wave_spinner.dart';

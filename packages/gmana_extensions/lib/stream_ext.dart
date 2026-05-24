@@ -9,8 +9,7 @@ extension StreamListX<T> on Stream<List<T>> {
   Stream<List<T>> get whereNotEmpty => where((items) => items.isNotEmpty);
 
   /// Filters each emitted list by [predicate].
-  Stream<List<T>> filter(bool Function(T) predicate) =>
-      map((items) => items.where(predicate).toList());
+  Stream<List<T>> filter(bool Function(T) predicate) => map((items) => items.where(predicate).toList());
 
   /// Flat-maps each emitted list.
   Stream<List<R>> flatMapItems<R>(Iterable<R> Function(T) transform) =>
@@ -20,12 +19,10 @@ extension StreamListX<T> on Stream<List<T>> {
   Stream<T> flatten() => expand((items) => items);
 
   /// Maps each element within emitted lists.
-  Stream<List<R>> mapItems<R>(R Function(T) transform) =>
-      map((items) => items.map(transform).toList());
+  Stream<List<R>> mapItems<R>(R Function(T) transform) => map((items) => items.map(transform).toList());
 
   /// Sorts each emitted list by [compare].
-  Stream<List<T>> sortedBy(Comparator<T> compare) =>
-      map((items) => [...items]..sort(compare));
+  Stream<List<T>> sortedBy(Comparator<T> compare) => map((items) => [...items]..sort(compare));
 }
 
 /// General-purpose utility extension on [Stream] providing enhanced filtering,
@@ -64,7 +61,7 @@ extension StreamX<T> on Stream<T> {
         hasLatest = false;
       }
       if (sourceDone) {
-        controller.close();
+        unawaited(controller.close());
       }
     }
 
@@ -94,16 +91,13 @@ extension StreamX<T> on Stream<T> {
 
     controller =
         isBroadcast
-            ? StreamController<T>.broadcast(
-              onListen: listenToSource,
-              onCancel: cancel,
-            )
+            ? StreamController<T>.broadcast(onListen: listenToSource, onCancel: cancel)
             : StreamController<T>(onListen: listenToSource, onCancel: cancel);
     return controller.stream;
   }
 
   /// Emits only values that differ from the previous emission.
-  /// Optionally compare by a derived [key] instead of the value itself.
+  /// Optionally compare via the provided [equals] callback instead of `==`.
   ///
   /// ```dart
   /// stream.distinct((a, b) => a.id == b.id)
@@ -120,8 +114,7 @@ extension StreamX<T> on Stream<T> {
     }
   }
 
-  /// Emits the stream's last value as a [Future], or [orElse] if the stream
-  /// closes empty.
+  /// Emits the stream's last value, or `null` if the stream closes empty.
   Future<T?> lastOrNull() async {
     T? last;
     await for (final value in this) {
@@ -131,18 +124,12 @@ extension StreamX<T> on Stream<T> {
   }
 
   /// Recovers from errors by emitting [fallback].
-  Stream<T> onErrorReturn(T fallback) => transform(
-    StreamTransformer.fromHandlers(
-      handleError: (_, _, sink) => sink.add(fallback),
-    ),
-  );
+  Stream<T> onErrorReturn(T fallback) =>
+      transform(StreamTransformer.fromHandlers(handleError: (_, _, sink) => sink.add(fallback)));
 
   /// Recovers from errors by emitting the result of [recover].
-  Stream<T> onErrorReturnWith(T Function(Object error) recover) => transform(
-    StreamTransformer.fromHandlers(
-      handleError: (error, _, sink) => sink.add(recover(error)),
-    ),
-  );
+  Stream<T> onErrorReturnWith(T Function(Object error) recover) =>
+      transform(StreamTransformer.fromHandlers(handleError: (error, _, sink) => sink.add(recover(error))));
 
   /// Accumulates state across events using [seed] and [accumulate].
   ///
@@ -177,11 +164,7 @@ extension StreamX<T> on Stream<T> {
   /// Emits the first event of each [duration] window and suppresses the rest (throttle).
   Stream<T> throttle(Duration duration) {
     if (duration <= Duration.zero) {
-      throw ArgumentError.value(
-        duration,
-        'duration',
-        'must be greater than zero',
-      );
+      throw ArgumentError.value(duration, 'duration', 'must be greater than zero');
     }
 
     late StreamController<T> controller;
@@ -201,7 +184,7 @@ extension StreamX<T> on Stream<T> {
         onError: controller.addError,
         onDone: () {
           timer?.cancel();
-          controller.close();
+          unawaited(controller.close());
         },
       );
     }
@@ -213,15 +196,11 @@ extension StreamX<T> on Stream<T> {
 
     controller =
         isBroadcast
-            ? StreamController<T>.broadcast(
-              onListen: listenToSource,
-              onCancel: cancel,
-            )
+            ? StreamController<T>.broadcast(onListen: listenToSource, onCancel: cancel)
             : StreamController<T>(onListen: listenToSource, onCancel: cancel);
     return controller.stream;
   }
 
   /// Emits only non-null values, narrowing the type to [R].
-  Stream<R> whereNotNull<R extends Object>() =>
-      where((e) => e != null).cast<R>();
+  Stream<R> whereNotNull<R extends Object>() => where((e) => e != null).cast<R>();
 }

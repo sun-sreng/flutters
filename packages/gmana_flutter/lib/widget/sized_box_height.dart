@@ -3,7 +3,7 @@ import '../design_system/spacing.dart';
 
 /// A widget that adds vertical spacing using a SizedBox with a specified height.
 class SizedBoxHeight extends StatelessWidget {
-  /// The height of the SizedBox, defined by [AppSpacing].
+  /// The height of the SizedBox, defined by [GSpacing].
   final double spacing;
 
   /// Creates a SizedBox with the specified [spacing] height.

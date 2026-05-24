@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'wave_vertical_offset.dart';
+import '../animation/wave_vertical_offset.dart';
 
-/// Paints the animated arc and optional wave fill for [GWaveSpinner].
+/// Paints the animated arc and optional wave fill for `GWaveSpinner`.
 class WaveSpinnerPainter extends CustomPainter {
   /// Active arc color.
   final Color color;
@@ -19,6 +19,7 @@ class WaveSpinnerPainter extends CustomPainter {
   late final Animation<double> _spinnerAnimation;
   late final Animation<double> _waveVerticalShiftAnimation;
   late final Animation<double>? _waveAmplitudeAnimation;
+  /// Creates a painter bound to [controller] for the given [size].
   WaveSpinnerPainter({
     required this.color,
     required this.trackColor,
@@ -66,7 +67,11 @@ class WaveSpinnerPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant WaveSpinnerPainter oldDelegate) {
+    return color != oldDelegate.color ||
+        trackColor != oldDelegate.trackColor ||
+        waveColor != oldDelegate.waveColor;
+  }
 
   void _drawArc(
     Size size,

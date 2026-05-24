@@ -10,6 +10,7 @@ class DelayedAnimationTween extends Tween<double> {
   /// Curve applied after the delayed sine wave transform.
   final Curve curve;
 
+  /// Creates a tween that phase-shifts the parent animation by [delay].
   DelayedAnimationTween({
     super.begin = 0.0,
     super.end = 1.0,

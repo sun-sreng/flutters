@@ -23,6 +23,7 @@ sealed class ConfirmPasswordValidationIssue extends ValidationIssue {
 
 /// Confirmation input is empty.
 final class ConfirmPasswordEmptyIssue extends ConfirmPasswordValidationIssue {
+  /// Creates the issue.
   const ConfirmPasswordEmptyIssue();
 
   @override
@@ -32,6 +33,7 @@ final class ConfirmPasswordEmptyIssue extends ConfirmPasswordValidationIssue {
 /// Confirmation input does not match the original password.
 final class ConfirmPasswordMismatchIssue
     extends ConfirmPasswordValidationIssue {
+  /// Creates the issue.
   const ConfirmPasswordMismatchIssue();
 
   @override

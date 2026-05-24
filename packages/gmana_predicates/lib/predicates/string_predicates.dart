@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import '../regex/string_patterns.dart';
+import '../annotations.dart';
+import '../src/regex/string_patterns.dart';
 
 /// Returns `true` if [str] contains only ASCII alphabetic characters (a–z, A–Z).
 bool isAlpha(String str) => alphaReg.hasMatch(str);
@@ -103,12 +104,3 @@ bool equals(String? str, String comparison) => str == comparison;
 
 /// Returns `true` if [str] matches the regex [pattern].
 bool matches(String str, String pattern) => RegExp(pattern).hasMatch(str);
-
-/// Marks a predicate as experimental — subject to change or removal.
-const Experimental experimental = Experimental();
-
-/// Annotation for predicates not yet stable enough for production use.
-final class Experimental {
-  /// Creates an [Experimental] annotation.
-  const Experimental();
-}

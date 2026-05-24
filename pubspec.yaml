@@ -10,6 +10,7 @@ workspace:
   - packages/gmana_form
   - packages/gmana_flutter
   - packages/gmana_functional
+  - packages/gmana_lints
   - packages/gmana_predicates
   - packages/gmana_spinner
   - packages/gmana_spinner/example

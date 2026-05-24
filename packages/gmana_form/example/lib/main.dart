@@ -1,3 +1,6 @@
+// Example code.
+// ignore_for_file: public_member_api_docs
+
 import 'package:flutter/material.dart';
 import 'package:gmana_form/gmana_form.dart';
 
@@ -71,7 +74,7 @@ class _ExampleFormPageState extends State<ExampleFormPage> {
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
-                  GTextField(
+                  const GTextField(
                     config: GTextFieldConfig(
                       name: 'name',
                       label: 'Name',

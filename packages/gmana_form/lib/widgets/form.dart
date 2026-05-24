@@ -3,14 +3,29 @@ import 'package:flutter/material.dart';
 import '../controllers/form_controller.dart';
 
 /// Thin wrapper around Flutter's [Form] that uses a [GFormController].
+///
+/// Provides the controller to descendants via [controllerOf] / [maybeControllerOf]
+/// so named gmana_form fields can resolve their text controllers automatically.
 class GForm extends StatelessWidget {
+  /// Controller that owns the form key and named text controllers.
   final GFormController controller;
+
+  /// The child widget — usually a column of gmana_form fields.
   final Widget child;
+
+  /// See [Form.autovalidateMode].
   final AutovalidateMode? autovalidateMode;
+
+  /// See [Form.canPop].
   final bool canPop;
+
+  /// See [Form.onPopInvokedWithResult].
   final PopInvokedWithResultCallback<Object?>? onPopInvokedWithResult;
+
+  /// See [Form.onChanged].
   final void Function()? onChanged;
 
+  /// Creates a [GForm] bound to [controller].
   const GForm({
     super.key,
     required this.controller,
@@ -36,12 +51,15 @@ class GForm extends StatelessWidget {
     );
   }
 
+  /// Looks up the nearest enclosing [GFormController], or `null` if none.
   static GFormController? maybeControllerOf(BuildContext context) {
     return context
         .dependOnInheritedWidgetOfExactType<_GFormScope>()
         ?.controller;
   }
 
+  /// Like [maybeControllerOf] but throws a [FlutterError] when no [GForm]
+  /// is found above [context]. Use this from widgets that require a form.
   static GFormController controllerOf(BuildContext context) {
     final controller = maybeControllerOf(context);
     if (controller == null) {

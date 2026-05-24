@@ -1,8 +1,9 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'wave_spinner_painter.dart';
+import '../painters/wave_spinner_painter.dart';
 
 /// A circular spinner with an optional animated wave fill.
 class GWaveSpinner extends StatefulWidget {
@@ -29,9 +30,11 @@ class GWaveSpinner extends StatefulWidget {
 
   /// Optional external controller.
   ///
-  /// When provided, the caller owns disposal.
+  /// When provided, the caller owns disposal **and** playback. The widget will
+  /// use it as-is and will not call `repeat()`, `stop()`, or `dispose()` on it.
   final AnimationController? controller;
 
+  /// Creates a circular wave spinner.
   const GWaveSpinner({
     super.key,
     required this.color,
@@ -50,7 +53,53 @@ class GWaveSpinner extends StatefulWidget {
 
 class _GWaveSpinnerState extends State<GWaveSpinner>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
+  late AnimationController _controller;
+  bool _ownsController = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initController();
+  }
+
+  void _initController() {
+    if (widget.controller != null) {
+      _controller = widget.controller!;
+      _ownsController = false;
+    } else {
+      _controller = AnimationController(vsync: this, duration: widget.duration);
+      _ownsController = true;
+      unawaited(_controller.repeat());
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant GWaveSpinner oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.controller != oldWidget.controller) {
+      if (_ownsController) _controller.dispose();
+      _initController();
+    } else if (_ownsController && widget.duration != oldWidget.duration) {
+      _controller.duration = widget.duration;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_ownsController) return;
+    if (!TickerMode.valuesOf(context).enabled) {
+      _controller.stop();
+    } else if (!_controller.isAnimating) {
+      unawaited(_controller.repeat());
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_ownsController) _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,23 +138,5 @@ class _GWaveSpinnerState extends State<GWaveSpinner>
         );
       },
     );
-  }
-
-  @override
-  void dispose() {
-    if (widget.controller == null) {
-      _controller.dispose();
-    }
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller =
-        (widget.controller ??
-              AnimationController(duration: widget.duration, vsync: this))
-          ..repeat();
   }
 }

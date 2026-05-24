@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/// A read-only star-rating display.
+///
+/// Renders [maxStars] icons that visually represent a numeric [ratingValue].
+/// Supports half-star precision when [enableHalfStar] is `true`.
 class GStarRatingBar extends StatelessWidget {
   /// The current rating value.
   final double ratingValue;
@@ -34,6 +38,7 @@ class GStarRatingBar extends StatelessWidget {
   /// Optional semantics label for assistive technologies.
   final String? semanticsLabel;
 
+  /// Creates a star rating bar showing [ratingValue] out of [maxStars] stars.
   const GStarRatingBar({
     super.key,
     required this.ratingValue,
@@ -94,7 +99,9 @@ class GStarRatingBar extends StatelessWidget {
 @Deprecated(
   'Use GStarRatingBar instead. This alias will be removed before 1.0.',
 )
+/// Deprecated alias for [GStarRatingBar].
 class StarRatingBar extends GStarRatingBar {
+  /// Creates a deprecated star rating bar. Prefer [GStarRatingBar].
   const StarRatingBar({
     super.key,
     required super.ratingValue,

@@ -1,13 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
-import 'delayed_animation_tween.dart';
+import '../animation/delayed_animation_tween.dart';
 import 'g_scale_y.dart';
 
 /// A bar-style wave spinner.
 ///
-/// Prefer the `G*` spinner widgets for new code.
+/// When [itemBuilder] is provided, [color] is ignored.
 class GBarWaveSpinner extends StatefulWidget {
   /// Bar color. Defaults to the active theme primary color.
+  ///
+  /// Ignored when [itemBuilder] is provided.
   final Color? color;
 
   /// Wave origin.
@@ -27,9 +31,11 @@ class GBarWaveSpinner extends StatefulWidget {
 
   /// Optional external controller.
   ///
-  /// When provided, the caller owns disposal.
+  /// When provided, the caller owns disposal **and** playback. The widget will
+  /// use it as-is and will not call `repeat()`, `stop()`, or `dispose()` on it.
   final AnimationController? controller;
 
+  /// Creates a bar-wave spinner.
   const GBarWaveSpinner({
     super.key,
     this.color,
@@ -39,8 +45,7 @@ class GBarWaveSpinner extends StatefulWidget {
     this.itemCount = 5,
     this.duration = const Duration(milliseconds: 1200),
     this.controller,
-  }) : assert(itemBuilder == null || color == null, 'Provide either itemBuilder or color, but not both.'),
-       assert(itemCount >= 2, 'itemCount cannot be less than 2.'),
+  }) : assert(itemCount >= 2, 'itemCount cannot be less than 2.'),
        assert(size > 0, 'size must be greater than zero.');
 
   @override
@@ -61,6 +66,52 @@ enum GBarWaveSpinnerType {
 
 class _GBarWaveSpinnerState extends State<GBarWaveSpinner> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  bool _ownsController = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initController();
+  }
+
+  void _initController() {
+    if (widget.controller != null) {
+      _controller = widget.controller!;
+      _ownsController = false;
+    } else {
+      _controller = AnimationController(vsync: this, duration: widget.duration);
+      _ownsController = true;
+      unawaited(_controller.repeat());
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant GBarWaveSpinner oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.controller != oldWidget.controller) {
+      if (_ownsController) _controller.dispose();
+      _initController();
+    } else if (_ownsController && widget.duration != oldWidget.duration) {
+      _controller.duration = widget.duration;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_ownsController) return;
+    if (!TickerMode.valuesOf(context).enabled) {
+      _controller.stop();
+    } else if (!_controller.isAnimating) {
+      unawaited(_controller.repeat());
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_ownsController) _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,14 +132,6 @@ class _GBarWaveSpinnerState extends State<GBarWaveSpinner> with SingleTickerProv
     );
   }
 
-  @override
-  void dispose() {
-    if (widget.controller == null) {
-      _controller.dispose();
-    }
-    super.dispose();
-  }
-
   List<double> getAnimationDelay(int itemCount) {
     switch (widget.type) {
       case GBarWaveSpinnerType.start:
@@ -98,12 +141,6 @@ class _GBarWaveSpinnerState extends State<GBarWaveSpinner> with SingleTickerProv
       case GBarWaveSpinnerType.center:
         return _centerAnimationDelay(itemCount);
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = (widget.controller ?? AnimationController(vsync: this, duration: widget.duration))..repeat();
   }
 
   List<double> _centerAnimationDelay(int count) {

@@ -26,6 +26,9 @@ String fromLocale(Locale locale) {
   }
 }
 
+/// Parses an underscore-separated locale string (e.g. `en_US`, `zh_Hans_CN`)
+/// into a [Locale]. Returns `en_US` when [locale] is null, empty, or
+/// fails to parse.
 Locale toLocale(String? locale) {
   const defaultLocale = Locale('en', 'US');
 

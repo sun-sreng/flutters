@@ -1,5 +1,5 @@
-import 'package:test/test.dart';
 import 'package:gmana_value_objects/gmana_value_objects.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('NumberValue', () {
@@ -27,7 +27,7 @@ void main() {
     });
 
     test('creates from validated result', () {
-      final validated = NumberValidator().validate('42');
+      final validated = const NumberValidator().validate('42');
       final value = NumberValue.validated(validated);
 
       expect(value.isValid, true);

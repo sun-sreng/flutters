@@ -42,47 +42,47 @@ void main() {
     });
 
     test('normalizes configured disposable domains before matching', () {
-      final result = EmailValidator(
-        const EmailValidationConfig(disposableDomains: {' Mailinator.COM '}, rejectDisposable: true),
+      final result = const EmailValidator(
+        EmailValidationConfig(disposableDomains: {' Mailinator.COM '}, rejectDisposable: true),
       ).validate('user@mailinator.com');
 
       expect(result.leftOrNull(), isA<EmailDisposableDomainIssue>());
     });
 
     test('rejects blocked domains', () {
-      final result = EmailValidator(
-        const EmailValidationConfig(blockedDomains: {'blocked.com'}),
+      final result = const EmailValidator(
+        EmailValidationConfig(blockedDomains: {'blocked.com'}),
       ).validate('user@blocked.com');
 
       expect(result.leftOrNull(), isA<EmailBlockedDomainIssue>());
     });
 
     test('normalizes configured blocked domains before matching', () {
-      final result = EmailValidator(
-        const EmailValidationConfig(blockedDomains: {' Blocked.COM '}),
+      final result = const EmailValidator(
+        EmailValidationConfig(blockedDomains: {' Blocked.COM '}),
       ).validate('user@blocked.com');
 
       expect(result.leftOrNull(), isA<EmailBlockedDomainIssue>());
     });
 
     test('rejects matching subdomains by default', () {
-      final result = EmailValidator(
-        const EmailValidationConfig(blockedDomains: {'blocked.com'}),
+      final result = const EmailValidator(
+        EmailValidationConfig(blockedDomains: {'blocked.com'}),
       ).validate('user@mail.blocked.com');
 
       expect(result.leftOrNull(), isA<EmailBlockedDomainIssue>());
     });
 
     test('can limit domain policies to exact matches', () {
-      final result = EmailValidator(
-        const EmailValidationConfig(blockedDomains: {'blocked.com'}, matchSubdomains: false),
+      final result = const EmailValidator(
+        EmailValidationConfig(blockedDomains: {'blocked.com'}, matchSubdomains: false),
       ).validate('user@mail.blocked.com');
 
       expect(result.rightOrNull(), 'user@mail.blocked.com');
     });
 
     test('rejects values longer than the configured maximum', () {
-      final result = EmailValidator(const EmailValidationConfig(maxLength: 10)).validate('user@example.com');
+      final result = const EmailValidator(EmailValidationConfig(maxLength: 10)).validate('user@example.com');
 
       expect(result.leftOrNull(), isA<EmailTooLongIssue>());
     });

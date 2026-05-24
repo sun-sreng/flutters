@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'package:gmana_predicates/gmana_predicates.dart';
 
 void main() {

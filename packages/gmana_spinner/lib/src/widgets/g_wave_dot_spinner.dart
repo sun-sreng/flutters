@@ -1,6 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
-import 'dot_animation_config.dart';
+import '../animation/dot_animation_config.dart';
 import 'g_wave_dot_spinner_dot.dart';
 
 /// A customizable loading spinner with a wave-like animation of scaling dots.
@@ -28,9 +30,11 @@ class GWaveDotSpinner extends StatefulWidget {
 
   /// Optional external controller.
   ///
-  /// When provided, the caller owns disposal.
+  /// When provided, the caller owns disposal **and** playback. The widget will
+  /// use it as-is and will not call `repeat()`, `stop()`, or `dispose()` on it.
   final AnimationController? controller;
 
+  /// Creates a wave-ripple dot spinner.
   const GWaveDotSpinner({
     super.key,
     required this.size,
@@ -48,6 +52,52 @@ class GWaveDotSpinner extends StatefulWidget {
 class _GWaveDotSpinnerState extends State<GWaveDotSpinner>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  bool _ownsController = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initController();
+  }
+
+  void _initController() {
+    if (widget.controller != null) {
+      _controller = widget.controller!;
+      _ownsController = false;
+    } else {
+      _controller = AnimationController(vsync: this, duration: widget.duration);
+      _ownsController = true;
+      unawaited(_controller.repeat());
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant GWaveDotSpinner oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.controller != oldWidget.controller) {
+      if (_ownsController) _controller.dispose();
+      _initController();
+    } else if (_ownsController && widget.duration != oldWidget.duration) {
+      _controller.duration = widget.duration;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_ownsController) return;
+    if (!TickerMode.valuesOf(context).enabled) {
+      _controller.stop();
+    } else if (!_controller.isAnimating) {
+      unawaited(_controller.repeat());
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_ownsController) _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,32 +121,5 @@ class _GWaveDotSpinnerState extends State<GWaveDotSpinner>
         }),
       ),
     );
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!TickerMode.valuesOf(context).enabled) {
-      _controller.stop();
-    } else {
-      _controller.repeat();
-    }
-  }
-
-  @override
-  void dispose() {
-    if (widget.controller == null) {
-      _controller.dispose();
-    }
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _controller =
-        (widget.controller ??
-              AnimationController(vsync: this, duration: widget.duration))
-          ..repeat();
   }
 }

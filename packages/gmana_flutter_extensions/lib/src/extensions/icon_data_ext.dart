@@ -1,3 +1,9 @@
+// Extension on IconData.
+// ignore_for_file: public_member_api_docs
+
+// IconData parses runtime values from JSON; tree-shaking does not apply here.
+// ignore_for_file: non_const_argument_for_const_parameter
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';

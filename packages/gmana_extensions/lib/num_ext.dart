@@ -1,5 +1,11 @@
 import 'dart:math';
 
+void _checkNonZeroMultiple(num multiple) {
+  if (multiple == 0) {
+    throw ArgumentError.value(multiple, 'multiple', 'must not be zero');
+  }
+}
+
 /// Extensions for nullable [bool] values providing safe defaults.
 extension BoolNullableX on bool? {
   /// Checks if the value is null or false.
@@ -46,8 +52,7 @@ extension IntX on int {
   /// ```dart
   /// 1234.digits; // [1, 2, 3, 4]
   /// ```
-  List<int> get digits =>
-      toString().replaceAll('-', '').split('').map(int.parse).toList();
+  List<int> get digits => toString().replaceAll('-', '').split('').map(int.parse).toList();
 
   // Digits
   /// Returns true if the number is even.
@@ -60,7 +65,7 @@ extension IntX on int {
   /// Checks if the integer is between [min] and [max] inclusively.
   bool isBetween(int min, int max) => this >= min && this <= max;
 
-  /// Executes [action] [this] times. Equivalent to a `for` loop.
+  /// Executes [action] times. Equivalent to a `for` loop.
   /// ```dart
   /// 3.times(() => print('hi')); // hi hi hi
   /// ```
@@ -141,40 +146,24 @@ extension NumX on num {
   /// Checks if the number is between [min] and [max] inclusively.
   bool isBetween(num min, num max) => this >= min && this <= max;
 
-  /// Linear interpolation between [a] and [b] where [this] is `t in [0, 1]`.
+  /// Linear interpolation between [a] and [b] where is `t in [0, 1]`.
   /// ```dart
   /// 0.25.lerp(0, 100); // 25.0
   /// ```
   double lerp(num a, num b) => (a + (b - a) * this).toDouble();
 
   /// Normalizes this value from `[fromMin, fromMax]` into `[toMin, toMax]`.
-  double normalized(
-    num fromMin,
-    num fromMax, [
-    num toMin = 0.0,
-    num toMax = 1.0,
-  ]) {
+  double normalized(num fromMin, num fromMax, [num toMin = 0.0, num toMax = 1.0]) {
     final range = fromMax - fromMin;
     if (range == 0) {
-      throw ArgumentError(
-        'Source range cannot be zero (fromMin == fromMax == $fromMin)',
-      );
+      throw ArgumentError('Source range cannot be zero (fromMin == fromMax == $fromMin)');
     }
     return ((toMax - toMin) * ((this - fromMin) / range) + toMin).toDouble();
   }
 
   /// Same as [normalized] but clamps the result to `[toMin, toMax]`.
-  double normalizedClamped(
-    num fromMin,
-    num fromMax, [
-    num toMin = 0.0,
-    num toMax = 1.0,
-  ]) => normalized(
-    fromMin,
-    fromMax,
-    toMin,
-    toMax,
-  ).clamp(toMin.toDouble(), toMax.toDouble());
+  double normalizedClamped(num fromMin, num fromMax, [num toMin = 0.0, num toMax = 1.0]) =>
+      normalized(fromMin, fromMax, toMin, toMax).clamp(toMin.toDouble(), toMax.toDouble());
 
   /// Rounds to [places] decimal places.
   /// ```dart
@@ -202,21 +191,9 @@ extension NumX on num {
   /// Like [normalized] but returns [fallback] instead of throwing when
   /// source range is zero. Useful in reactive/UI code where division by
   /// zero is a transient state rather than a programmer error.
-  double safeNormalized(
-    num fromMin,
-    num fromMax, {
-    num toMin = 0.0,
-    num toMax = 1.0,
-    double fallback = 0.0,
-  }) {
+  double safeNormalized(num fromMin, num fromMax, {num toMin = 0.0, num toMax = 1.0, double fallback = 0.0}) {
     final range = fromMax - fromMin;
     if (range == 0) return fallback;
     return ((toMax - toMin) * ((this - fromMin) / range) + toMin).toDouble();
-  }
-}
-
-void _checkNonZeroMultiple(num multiple) {
-  if (multiple == 0) {
-    throw ArgumentError.value(multiple, 'multiple', 'must not be zero');
   }
 }

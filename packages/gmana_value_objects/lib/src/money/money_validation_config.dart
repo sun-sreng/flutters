@@ -1,5 +1,8 @@
 import 'package:meta/meta.dart';
 
+import '../../gmana_value_objects.dart' show Currency;
+import 'currency.dart' show Currency;
+
 /// Configuration rules for valid money values.
 ///
 /// Amount limits are expressed in minor units so they stay exact.
@@ -30,46 +33,25 @@ final class MoneyValidationConfig {
     this.allowThousandsSeparators = true,
   });
 
-  /// Non-negative USD money with two decimal places.
-  factory MoneyValidationConfig.usd() {
-    return const MoneyValidationConfig(
-      defaultCurrency: 'USD',
-      allowedCurrencies: {'USD'},
-    );
-  }
-
-  /// Non-negative KHR money with no decimal places.
-  factory MoneyValidationConfig.khr() {
-    return const MoneyValidationConfig(
-      defaultCurrency: 'KHR',
-      allowedCurrencies: {'KHR'},
-    );
-  }
-
   /// Non-negative USD, EUR, and KHR money.
   factory MoneyValidationConfig.commonCurrencies() {
-    return const MoneyValidationConfig(
-      allowedCurrencies: {'USD', 'EUR', 'KHR'},
-    );
+    return const MoneyValidationConfig(allowedCurrencies: {'USD', 'EUR', 'KHR'});
   }
 
   /// Common ecommerce currencies, including zero-decimal Asian currencies.
   factory MoneyValidationConfig.ecommerce() {
     return const MoneyValidationConfig(
-      allowedCurrencies: {
-        'USD',
-        'EUR',
-        'GBP',
-        'AUD',
-        'CAD',
-        'CNY',
-        'SGD',
-        'THB',
-        'KHR',
-        'JPY',
-        'KRW',
-        'VND',
-      },
+      allowedCurrencies: {'USD', 'EUR', 'GBP', 'AUD', 'CAD', 'CNY', 'SGD', 'THB', 'KHR', 'JPY', 'KRW', 'VND'},
     );
+  }
+
+  /// Non-negative KHR money with no decimal places.
+  factory MoneyValidationConfig.khr() {
+    return const MoneyValidationConfig(defaultCurrency: 'KHR', allowedCurrencies: {'KHR'});
+  }
+
+  /// Non-negative USD money with two decimal places.
+  factory MoneyValidationConfig.usd() {
+    return const MoneyValidationConfig(defaultCurrency: 'USD', allowedCurrencies: {'USD'});
   }
 }

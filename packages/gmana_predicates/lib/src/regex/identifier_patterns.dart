@@ -5,7 +5,9 @@ final creditCardReg = RegExp(
 );
 final isbn10MaybeReg = RegExp(r'^(?:[0-9]{9}X|[0-9]{10})$');
 final isbn13MaybeReg = RegExp(r'^(?:[0-9]{13})$');
-final phoneReg = RegExp(r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$');
+
+final fqdnTldReg = RegExp(r'^[a-z]{2,}$');
+final fqdnLabelReg = RegExp(r'^[a-z¡-￿0-9-]+$', caseSensitive: false);
 
 final Map<String, RegExp> uuidReg = {
   '3': RegExp(

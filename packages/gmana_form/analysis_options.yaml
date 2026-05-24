@@ -1,1 +1,1 @@
-include: package:flutter_lints/flutter.yaml
+include: package:gmana_lints/analysis_options.yaml

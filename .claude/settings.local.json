@@ -24,7 +24,19 @@
       "Bash(Select-Object Name)",
       "Bash(Get-Content \"D:\\\\SSH\\\\flutters\\\\packages\\\\gmana_flutter\\\\example\\\\pubspec.yaml\")",
       "Bash(Select-String \"name:\")",
-      "Bash(Get-ChildItem -Path \"D:\\\\SSH\\\\flutters\\\\packages\\\\gmana_form\\\\lib\\\\\" -Recurse -Filter \"*.dart\" | Select-Object -ExpandProperty FullName)"
+      "Bash(Get-ChildItem -Path \"D:\\\\SSH\\\\flutters\\\\packages\\\\gmana_form\\\\lib\\\\\" -Recurse -Filter \"*.dart\" | Select-Object -ExpandProperty FullName)",
+      "Bash(dart run *)",
+      "Bash(echo \"---exit: $?\")",
+      "Bash(dart fix *)",
+      "Bash(grep -oE \"- [a-z_]+$\")",
+      "Bash(awk '{print $NF}')",
+      "Bash(awk '{print $3}')",
+      "Bash(flutter test *)",
+      "Read(//private/tmp/gmana_spinner_baseline/packages/gmana_spinner/**)",
+      "Bash(rm -rf lib/src)",
+      "Bash(cd /Users/rocky/workspace/ssh/flutters/packages/gmana_predicates && dart analyze && dart test 2>&1 | tail -5; rm -rf /tmp/gmana_spinner_baseline)",
+      "Bash(awk -F/ '{print $1}')",
+      "Bash(just test *)"
     ]
   }
 }

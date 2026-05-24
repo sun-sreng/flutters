@@ -163,7 +163,7 @@ void main() {
     });
 
     test('creates TextValue from validated result', () {
-      final validated = TextValidator().validate('hello');
+      final validated = const TextValidator().validate('hello');
       final text = TextValue.validated(validated);
 
       expect(text.isValid, true);

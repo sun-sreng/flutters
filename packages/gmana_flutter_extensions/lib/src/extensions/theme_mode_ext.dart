@@ -1,3 +1,6 @@
+// ThemeMode extension getters — method names ARE the doc.
+// ignore_for_file: public_member_api_docs
+
 import 'package:flutter/material.dart';
 
 import '../services/theme_mode_service.dart';

@@ -20,6 +20,7 @@ class DotAnimationConfig {
   /// Maximum vertical dot offset.
   final double maxOffset;
 
+  /// Creates a config with explicit intervals and dot bounds.
   const DotAnimationConfig({
     required this.heightInterval,
     required this.offsetInterval,

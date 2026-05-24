@@ -1,4 +1,10 @@
+// Design-system color tokens — file-level dartdoc above describes the palette.
+// ignore_for_file: public_member_api_docs
+
 import 'package:flutter/material.dart';
+import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart' show ColorService, ColorExt;
+
+import '../gmana_flutter.dart' show ColorService, ColorExt;
 
 /// Brand color palette and theme factory.
 ///
@@ -107,7 +113,7 @@ abstract final class GColors {
 
     final colorScheme =
         isDark
-            ? ColorScheme.dark(
+            ? const ColorScheme.dark(
               primary: primary,
               onPrimary: Colors.white,
               primaryContainer: primaryDark,
@@ -123,7 +129,7 @@ abstract final class GColors {
               outline: outlineDark,
               outlineVariant: outlineVariantDark,
             )
-            : ColorScheme.light(
+            : const ColorScheme.light(
               primary: primary,
               onPrimary: Colors.white,
               primaryContainer: primaryLight,

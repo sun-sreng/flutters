@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'dot_animation_config.dart';
+import '../animation/dot_animation_config.dart';
 
 /// A single animated dot for the GWaveDotSpinner widget.
+///
+/// Internal sub-widget; consumers should use `GWaveDotSpinner` instead.
 class GWaveDotSpinnerDot extends StatelessWidget {
   /// Animation intervals and size limits for this dot.
   final DotAnimationConfig config;
@@ -16,6 +18,7 @@ class GWaveDotSpinnerDot extends StatelessWidget {
   /// Shared spinner animation controller.
   final AnimationController controller;
 
+  /// Creates a wave-dot driven by the shared [controller].
   const GWaveDotSpinnerDot({
     super.key,
     required this.config,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+/// Returns a darker shade of [color] by lowering HSL lightness by [amount]
+/// (clamped to `[0, 1]`).
 Color darken(Color color, [double amount = .1]) {
   assert(amount >= 0 && amount <= 1);
 

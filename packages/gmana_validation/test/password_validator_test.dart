@@ -10,7 +10,7 @@ void main() {
     });
 
     test('uses the strong preset by default', () {
-      final validator = const PasswordValidator();
+      const validator = PasswordValidator();
 
       expect(validator.validate('weak').leftOrNull(), isA<PasswordTooShortIssue>());
       expect(validator.validate('alllowercase1!').leftOrNull(), isA<PasswordMissingUppercaseIssue>());
@@ -24,8 +24,8 @@ void main() {
     });
 
     test('rejects repeated-character passwords', () {
-      final result = PasswordValidator(
-        const PasswordValidationConfig(
+      final result = const PasswordValidator(
+        PasswordValidationConfig(
           requireUppercase: false,
           requireLowercase: false,
           requireDigit: false,
@@ -37,8 +37,8 @@ void main() {
     });
 
     test('rejects sequential passwords', () {
-      final result = PasswordValidator(
-        const PasswordValidationConfig(
+      final result = const PasswordValidator(
+        PasswordValidationConfig(
           requireUppercase: false,
           requireLowercase: false,
           requireDigit: false,

@@ -1,3 +1,6 @@
+// Passthrough widget mirroring Flutter AppBar props.
+// ignore_for_file: public_member_api_docs
+
 import 'package:flutter/material.dart';
 
 class GAppBar extends StatelessWidget implements PreferredSizeWidget {

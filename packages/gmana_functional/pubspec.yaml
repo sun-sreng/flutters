@@ -12,7 +12,11 @@ topics:
 environment:
   sdk: ^3.7.2
 
+dependencies:
+  meta: ^1.17.0
+
 dev_dependencies:
+  gmana_lints: ^0.1.0
   lints: ^6.0.0
   test: ^1.30.0
 

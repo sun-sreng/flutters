@@ -4,8 +4,10 @@
 /// inputs, each returning sealed issue types for exhaustive error handling.
 ///
 /// Also exports [PasswordStrength] for real-time UI feedback and
-/// [ValidationMessageResolver] / [asFormValidator] utilities.
+/// the [ValidationMessageResolver] utility.
 library;
+
+import 'gmana_validation.dart' show PasswordStrength, ValidationMessageResolver;
 
 // Core types
 export 'src/core/validation_issue.dart';

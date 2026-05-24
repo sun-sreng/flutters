@@ -1,3 +1,6 @@
+import 'duration_ext.dart' show HumanizedDuration;
+import 'gmana_extensions.dart' show HumanizedDuration;
+
 /// Alternative duration formatting for human-readable UI copy.
 ///
 /// Complements [HumanizedDuration] with two additional formats:
@@ -18,13 +21,31 @@ extension DurationNaturalLanguageX on Duration {
     final m = d.inMinutes % 60;
     final s = d.inSeconds % 60;
 
-    final parts = <String>[
-      if (h > 0) '${h}h',
-      if (m > 0) '${m}m',
-      if (s > 0 || (h == 0 && m == 0)) '${s}s',
-    ];
+    final parts = <String>[if (h > 0) '${h}h', if (m > 0) '${m}m', if (s > 0 || (h == 0 && m == 0)) '${s}s'];
 
     final body = parts.take(2).join(' ');
+    return inMicroseconds < 0 ? '-$body' : body;
+  }
+
+  /// Abbreviated breakdown including milliseconds.
+  ///
+  /// Unlike [HumanizedDuration.toVerboseString], always includes milliseconds
+  /// when non-zero and always shows seconds.
+  ///
+  /// ```dart
+  /// const Duration(minutes: 1, milliseconds: 500).toDetailedString(); // '1m 0s 500ms'
+  /// const Duration(hours: 1, minutes: 2).toDetailedString();          // '1h 2m 0s'
+  /// ```
+  String toDetailedString() {
+    final d = Duration(microseconds: inMicroseconds.abs());
+    final h = d.inHours;
+    final m = d.inMinutes % 60;
+    final s = d.inSeconds % 60;
+    final ms = d.inMilliseconds % 1000;
+
+    final parts = <String>[if (h > 0) '${h}h', if (h > 0 || m > 0) '${m}m', '${s}s', if (ms > 0) '${ms}ms'];
+
+    final body = parts.join(' ');
     return inMicroseconds < 0 ? '-$body' : body;
   }
 
@@ -44,8 +65,7 @@ extension DurationNaturalLanguageX on Duration {
     final m = d.inMinutes % 60;
     final s = d.inSeconds % 60;
 
-    String unit(int n, String singular) =>
-        '$n ${n == 1 ? singular : '${singular}s'}';
+    String unit(int n, String singular) => '$n ${n == 1 ? singular : '${singular}s'}';
 
     final parts = <String>[
       if (h > 0) unit(h, 'hour'),
@@ -54,32 +74,5 @@ extension DurationNaturalLanguageX on Duration {
     ];
 
     return parts.take(2).join(' ');
-  }
-
-  /// Abbreviated breakdown including milliseconds.
-  ///
-  /// Unlike [HumanizedDuration.toVerboseString], always includes milliseconds
-  /// when non-zero and always shows seconds.
-  ///
-  /// ```dart
-  /// const Duration(minutes: 1, milliseconds: 500).toDetailedString(); // '1m 0s 500ms'
-  /// const Duration(hours: 1, minutes: 2).toDetailedString();          // '1h 2m 0s'
-  /// ```
-  String toDetailedString() {
-    final d = Duration(microseconds: inMicroseconds.abs());
-    final h = d.inHours;
-    final m = d.inMinutes % 60;
-    final s = d.inSeconds % 60;
-    final ms = d.inMilliseconds % 1000;
-
-    final parts = <String>[
-      if (h > 0) '${h}h',
-      if (h > 0 || m > 0) '${m}m',
-      '${s}s',
-      if (ms > 0) '${ms}ms',
-    ];
-
-    final body = parts.join(' ');
-    return inMicroseconds < 0 ? '-$body' : body;
   }
 }
