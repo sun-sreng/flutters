@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gmana_validation/gmana_validation.dart';
 
+import '../controllers/form_controller.dart';
 import '../models/field_config.dart';
 import '../validators/confirm_password_validator.dart';
 import 'text_field.dart';
@@ -22,6 +23,7 @@ class GConfirmPasswordField extends StatelessWidget {
     String hint = 'Re-enter your password',
     TextInputAction textInputAction = TextInputAction.done,
     List<TextInputFormatter>? inputFormatters,
+    GFormValueParser? valueParser,
     ConfirmPasswordValidationConfig validationConfig =
         const ConfirmPasswordValidationConfig(),
     ValidationMessageResolver<ConfirmPasswordValidationIssue>?
@@ -51,6 +53,7 @@ class GConfirmPasswordField extends StatelessWidget {
          hint: hint,
          textInputAction: textInputAction,
          inputFormatters: inputFormatters,
+         valueParser: valueParser,
          validationConfig: validationConfig,
          validationMessageResolver:
              validationMessageResolver ?? resolveConfirmPasswordValidationIssue,

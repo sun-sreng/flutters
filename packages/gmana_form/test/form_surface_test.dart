@@ -377,5 +377,85 @@ void main() {
 
       expect(submittedValues, {'username': 'sreng'});
     });
+
+    testWidgets('named number fields expose parsed typed values', (
+      tester,
+    ) async {
+      final controller = GFormController();
+      addTearDown(controller.dispose);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: GForm(
+              controller: controller,
+              child: GNumberField(name: 'age'),
+            ),
+          ),
+        ),
+      );
+
+      await tester.enterText(find.byType(TextFormField), '42');
+
+      expect(controller.textValues(), {'age': '42'});
+      expect(controller.value<int>('age'), 42);
+      expect(controller.values().value<int>('age'), 42);
+    });
+
+    testWidgets('submitValues submits typed value snapshots', (tester) async {
+      final controller = GFormController();
+      addTearDown(controller.dispose);
+
+      GFormValues? submittedValues;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: GForm(
+              controller: controller,
+              child: GNumberField(name: 'age'),
+            ),
+          ),
+        ),
+      );
+
+      await tester.enterText(find.byType(TextFormField), '36');
+
+      final submitted = await controller.submitValues((values) {
+        submittedValues = values;
+      });
+
+      expect(submitted, isTrue);
+      expect(submittedValues?.value<int>('age'), 36);
+      expect(submittedValues?.toMap(), {'age': 36});
+    });
+
+    testWidgets('named caller-owned controllers appear in snapshots', (
+      tester,
+    ) async {
+      final form = GFormController();
+      final text = TextEditingController(text: 'draft');
+      addTearDown(form.dispose);
+      addTearDown(text.dispose);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: GForm(
+              controller: form,
+              child: GTextField.text(name: 'title', controller: text),
+            ),
+          ),
+        ),
+      );
+
+      expect(form.textValues(), {'title': 'draft'});
+      expect(form.value<String>('title'), 'draft');
+
+      text.text = 'published';
+
+      expect(form.textValues(), {'title': 'published'});
+      expect(form.value<String>('title'), 'published');
+    });
   });
 }

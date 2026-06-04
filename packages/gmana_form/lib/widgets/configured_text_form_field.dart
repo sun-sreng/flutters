@@ -18,13 +18,24 @@ class GConfiguredTextFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formController =
+        config.name == null ? null : GForm.controllerOf(context);
     final controller =
         config.controller ??
         (config.name == null
             ? null
-            : GForm.controllerOf(
-              context,
-            ).textController(config.name!, text: config.initialValue));
+            : formController!.textController(
+              config.name!,
+              text: config.initialValue,
+            ));
+
+    if (config.name != null && controller != null) {
+      formController!.bindTextController(
+        config.name!,
+        controller,
+        parser: config.valueParser,
+      );
+    }
 
     return TextFormField(
       controller: controller,

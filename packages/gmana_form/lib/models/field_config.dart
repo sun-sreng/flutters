@@ -4,6 +4,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../controllers/form_controller.dart';
+
 /// Flutter `FormField.validator` compatible validator.
 typedef GFormValidator = String? Function(String? value);
 
@@ -21,6 +23,7 @@ final class GTextFieldConfig {
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final List<TextInputFormatter>? inputFormatters;
+  final GFormValueParser? valueParser;
   final GFormValidator? validator;
   final void Function(String)? onChanged;
   final void Function(String)? onFieldSubmitted;
@@ -55,6 +58,7 @@ final class GTextFieldConfig {
     this.keyboardType = TextInputType.text,
     this.textInputAction = TextInputAction.next,
     this.inputFormatters,
+    this.valueParser,
     this.validator,
     this.onChanged,
     this.onFieldSubmitted,
@@ -93,6 +97,7 @@ final class GTextFieldConfig {
     TextInputType? keyboardType,
     TextInputAction? textInputAction,
     List<TextInputFormatter>? inputFormatters,
+    GFormValueParser? valueParser,
     GFormValidator? validator,
     void Function(String)? onChanged,
     void Function(String)? onFieldSubmitted,
@@ -127,6 +132,7 @@ final class GTextFieldConfig {
       keyboardType: keyboardType ?? this.keyboardType,
       textInputAction: textInputAction ?? this.textInputAction,
       inputFormatters: inputFormatters ?? this.inputFormatters,
+      valueParser: valueParser ?? this.valueParser,
       validator: validator ?? this.validator,
       onChanged: onChanged ?? this.onChanged,
       onFieldSubmitted: onFieldSubmitted ?? this.onFieldSubmitted,

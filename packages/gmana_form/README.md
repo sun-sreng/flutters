@@ -10,6 +10,7 @@ import 'package:gmana_form/gmana_form.dart';
 
 - One generic text-field surface: `GTextField` + `GTextFieldConfig`.
 - Friendly presets for common inputs: text, email, number, password, and confirm password.
+- Named fields expose both text values and typed values.
 - Typed validation powered by `gmana_validation`.
 - A loading submit button that accepts either plain text or any custom child.
 
@@ -85,6 +86,8 @@ if (form.validateAndSave()) {
   await repository.save(form.textValues());
 }
 
+final email = form.values().string('email');
+
 form.reset();
 form.dispose();
 ```
@@ -95,6 +98,27 @@ You can still request a controller directly when another widget needs it:
 final password = form.textController('password');
 
 GTextField.password(controller: password)
+```
+
+`textValues()` keeps the original `Map<String, String>` behavior. Use
+`values()` when you want parsed values:
+
+```dart
+final values = form.values();
+
+final email = values.string('email');
+final age = values.value<int>('age');
+```
+
+For typed submissions, call `submitValues`:
+
+```dart
+await form.submitValues((values) async {
+  await repository.saveProfile(
+    email: values.string('email')!,
+    age: values.value<int>('age'),
+  );
+});
 ```
 
 ## Fields
@@ -135,6 +159,14 @@ GTextField.number(
   name: 'age',
   label: 'Age',
   validationConfig: NumberValidationConfig.positiveInteger(min: 13, max: 120),
+)
+
+// Integer number fields expose `int?`; decimal configs expose `double?`.
+final age = form.value<int>('age');
+
+GTextField.number(
+  name: 'price',
+  valueParser: (text) => num.tryParse(text),
 )
 
 GTextField.password(

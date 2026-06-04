@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gmana_validation/gmana_validation.dart';
 
+import '../controllers/form_controller.dart';
 import '../models/field_config.dart';
 import 'text_field.dart';
 
@@ -19,6 +20,7 @@ class GNumberField extends StatelessWidget {
     String? hint,
     TextInputAction textInputAction = TextInputAction.next,
     List<TextInputFormatter>? inputFormatters,
+    GFormValueParser? valueParser,
     NumberValidationConfig validationConfig = const NumberValidationConfig(
       allowNegative: false,
       integerOnly: true,
@@ -47,6 +49,7 @@ class GNumberField extends StatelessWidget {
          hint: hint,
          textInputAction: textInputAction,
          inputFormatters: inputFormatters,
+         valueParser: valueParser,
          validationConfig: validationConfig,
          validationMessageResolver:
              validationMessageResolver ?? resolveNumberValidationIssue,

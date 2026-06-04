@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gmana_validation/gmana_validation.dart';
 
+import '../controllers/form_controller.dart';
 import '../models/field_config.dart';
 import 'text_field.dart';
 
@@ -19,6 +20,7 @@ class GEmailField extends StatelessWidget {
     String hint = 'Enter your email',
     TextInputAction textInputAction = TextInputAction.next,
     List<TextInputFormatter>? inputFormatters,
+    GFormValueParser? valueParser,
     EmailValidationConfig validationConfig = const EmailValidationConfig(),
     ValidationMessageResolver<EmailValidationIssue>? validationMessageResolver,
     GFormValidator? validator,
@@ -44,6 +46,7 @@ class GEmailField extends StatelessWidget {
          hint: hint,
          textInputAction: textInputAction,
          inputFormatters: inputFormatters,
+         valueParser: valueParser,
          validationConfig: validationConfig,
          validationMessageResolver:
              validationMessageResolver ?? resolveEmailValidationIssue,

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gmana_validation/gmana_validation.dart';
 
+import '../controllers/form_controller.dart';
 import '../models/field_config.dart';
 import '../validators/confirm_password_validator.dart';
 import '../validators/form_validator_adapter.dart';
@@ -31,6 +32,7 @@ class GTextField extends StatelessWidget {
     TextInputType keyboardType = TextInputType.text,
     TextInputAction textInputAction = TextInputAction.next,
     List<TextInputFormatter>? inputFormatters,
+    GFormValueParser? valueParser,
     TextValidationConfig validationConfig = const TextValidationConfig(),
     ValidationMessageResolver<TextValidationIssue> validationMessageResolver =
         resolveTextValidationIssue,
@@ -62,6 +64,7 @@ class GTextField extends StatelessWidget {
       keyboardType: keyboardType,
       textInputAction: textInputAction,
       inputFormatters: inputFormatters,
+      valueParser: valueParser,
       validator: asFormValidator(
         validate: TextValidator(validationConfig).validate,
         resolve: validationMessageResolver,
@@ -97,6 +100,7 @@ class GTextField extends StatelessWidget {
     String hint = 'Enter your email',
     TextInputAction textInputAction = TextInputAction.next,
     List<TextInputFormatter>? inputFormatters,
+    GFormValueParser? valueParser,
     EmailValidationConfig validationConfig = const EmailValidationConfig(),
     ValidationMessageResolver<EmailValidationIssue> validationMessageResolver =
         resolveEmailValidationIssue,
@@ -125,6 +129,7 @@ class GTextField extends StatelessWidget {
       keyboardType: TextInputType.emailAddress,
       textInputAction: textInputAction,
       inputFormatters: inputFormatters,
+      valueParser: valueParser,
       validator: asFormValidator(
         validate: EmailValidator(validationConfig).validate,
         resolve: validationMessageResolver,
@@ -157,6 +162,7 @@ class GTextField extends StatelessWidget {
     String? hint,
     TextInputAction textInputAction = TextInputAction.next,
     List<TextInputFormatter>? inputFormatters,
+    GFormValueParser? valueParser,
     NumberValidationConfig validationConfig = const NumberValidationConfig(
       allowNegative: false,
       integerOnly: true,
@@ -194,6 +200,7 @@ class GTextField extends StatelessWidget {
         _numberFormatter(validationConfig),
         if (inputFormatters != null) ...inputFormatters,
       ],
+      valueParser: valueParser ?? _numberParser(validationConfig),
       validator: asFormValidator(
         validate: NumberValidator(validationConfig).validate,
         resolve: validationMessageResolver,
@@ -226,6 +233,7 @@ class GTextField extends StatelessWidget {
     String hint = 'Enter your password',
     TextInputAction textInputAction = TextInputAction.done,
     List<TextInputFormatter>? inputFormatters,
+    GFormValueParser? valueParser,
     PasswordValidationConfig validationConfig =
         const PasswordValidationConfig(),
     ValidationMessageResolver<PasswordValidationIssue>
@@ -256,6 +264,7 @@ class GTextField extends StatelessWidget {
       keyboardType: TextInputType.visiblePassword,
       textInputAction: textInputAction,
       inputFormatters: inputFormatters,
+      valueParser: valueParser,
       validator: asFormValidator(
         validate: PasswordValidator(validationConfig).validate,
         resolve: validationMessageResolver,
@@ -297,6 +306,7 @@ class GTextField extends StatelessWidget {
     String hint = 'Re-enter your password',
     TextInputAction textInputAction = TextInputAction.done,
     List<TextInputFormatter>? inputFormatters,
+    GFormValueParser? valueParser,
     ConfirmPasswordValidationConfig validationConfig =
         const ConfirmPasswordValidationConfig(),
     ValidationMessageResolver<ConfirmPasswordValidationIssue>
@@ -344,6 +354,7 @@ class GTextField extends StatelessWidget {
       keyboardType: TextInputType.visiblePassword,
       textInputAction: textInputAction,
       inputFormatters: inputFormatters,
+      valueParser: valueParser,
       validator:
           passwordController == null
               ? null
@@ -410,5 +421,9 @@ class GTextField extends StatelessWidget {
         RegExp(r'^-?\d*\.?\d*$'),
       ),
     };
+  }
+
+  static GFormValueParser _numberParser(NumberValidationConfig config) {
+    return config.integerOnly ? int.tryParse : double.tryParse;
   }
 }
