@@ -1,5 +1,4 @@
-import 'package:gmana_predicates/predicates/identifier_predicates.dart'
-    as id_preds;
+import 'package:gmana_predicates/predicates/identifier_predicates.dart' as id_preds;
 import 'package:gmana_predicates/predicates/string_predicates.dart' as preds;
 import 'package:gmana_validation/gmana_validation.dart';
 
@@ -40,10 +39,7 @@ extension StringValidation on String {
     final month = int.parse(substring(5, 7));
     final day = int.parse(substring(8, 10));
     final parsed = DateTime.tryParse(this);
-    return parsed != null &&
-        parsed.year == year &&
-        parsed.month == month &&
-        parsed.day == day;
+    return parsed != null && parsed.year == year && parsed.month == month && parsed.day == day;
   }
 
   /// Accepts Unicode letters, spaces, hyphens, apostrophes, periods.
@@ -75,19 +71,15 @@ extension StringValidation on String {
   /// for structural checks; this validates the common displayed format.
   bool get isValidUrl {
     final uri = Uri.tryParse(trim());
-    return uri != null &&
-        (uri.scheme == 'http' || uri.scheme == 'https') &&
-        uri.host.isNotEmpty;
+    return uri != null && (uri.scheme == 'http' || uri.scheme == 'https') && uri.host.isNotEmpty;
   }
 
   /// Checks if the string is a valid UUID (v4).
   bool get isValidUuid => id_preds.isUuid(this, '4');
 
   /// Returns which password requirements are unmet — useful for live UI feedback.
-  PasswordStrength get passwordStrength =>
-      PasswordStrength.fromConfig(this, const PasswordValidationConfig());
+  PasswordStrength get passwordStrength => PasswordStrength.fromConfig(this, const PasswordValidationConfig());
 
   /// Length bounded — prevents silent acceptance of huge inputs.
-  bool isWithinLength({required int min, required int max}) =>
-      length >= min && length <= max;
+  bool isWithinLength({required int min, required int max}) => length >= min && length <= max;
 }

@@ -10,8 +10,7 @@ extension NumDurationExtension on num {
   Duration get microseconds => Duration(microseconds: round());
 
   /// Returns a duration in milliseconds.
-  Duration get milliseconds =>
-      (this * Duration.microsecondsPerMillisecond).microseconds;
+  Duration get milliseconds => (this * Duration.microsecondsPerMillisecond).microseconds;
 
   /// Returns a duration in minutes.
   Duration get minutes => (this * Duration.microsecondsPerMinute).microseconds;

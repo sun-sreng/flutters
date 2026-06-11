@@ -21,8 +21,7 @@ extension IterableNullableX<T extends Object> on Iterable<T?> {
   /// [1, 2, null, 3].compactMap((e) => e?.isEven == true ? 'even' : null);
   /// // ('even')
   /// ```
-  Iterable<R> compactMap<R extends Object>(R? Function(T?) transform) =>
-      map(transform).whereType<R>();
+  Iterable<R> compactMap<R extends Object>(R? Function(T?) transform) => map(transform).whereType<R>();
 }
 
 /// Extension on [Iterable] of [Iterable]s providing methods to flatten nested collections.
@@ -82,8 +81,7 @@ extension IterableX<T> on Iterable<T> {
   /// ```dart
   /// [1, 2, 3].flatMap((e) => [e, e * 10]); // (1, 10, 2, 20, 3, 30)
   /// ```
-  Iterable<R> flatMap<R>(Iterable<R> Function(T) transform) =>
-      expand(transform);
+  Iterable<R> flatMap<R>(Iterable<R> Function(T) transform) => expand(transform);
 
   /// [flatMap] that discards nulls from the produced iterables.
   ///
@@ -92,9 +90,7 @@ extension IterableX<T> on Iterable<T> {
   ///     .flatMapNotNull((s) => [s.startsWith('h') ? s.toUpperCase() : null]);
   /// // ('HELLO', 'HI')
   /// ```
-  Iterable<R> flatMapNotNull<R extends Object>(
-    Iterable<R?> Function(T) transform,
-  ) => expand(transform).whereType<R>();
+  Iterable<R> flatMapNotNull<R extends Object>(Iterable<R?> Function(T) transform) => expand(transform).whereType<R>();
 
   /// Groups elements by a key derived from [keyOf].
   ///

@@ -25,8 +25,7 @@ extension HumanizedDuration on Duration {
   double get inHoursDouble => inMicroseconds / Duration.microsecondsPerHour;
 
   /// Total duration in fractional milliseconds.
-  double get inMillisecondsDouble =>
-      inMicroseconds / Duration.microsecondsPerMillisecond;
+  double get inMillisecondsDouble => inMicroseconds / Duration.microsecondsPerMillisecond;
 
   /// Total duration in fractional minutes.
   double get inMinutesDouble => inMicroseconds / Duration.microsecondsPerMinute;
@@ -35,8 +34,7 @@ extension HumanizedDuration on Duration {
   double get inSecondsDouble => inMicroseconds / Duration.microsecondsPerSecond;
 
   /// Total duration in fractional weeks.
-  double get inWeeksDouble =>
-      inMicroseconds / (Duration.microsecondsPerDay * 7);
+  double get inWeeksDouble => inMicroseconds / (Duration.microsecondsPerDay * 7);
 
   /// Returns `true` if this duration is less than zero.
   bool get isNegative => inMicroseconds < 0;
@@ -57,16 +55,13 @@ extension HumanizedDuration on Duration {
   double get totalMinutes => inMinutesDouble;
 
   /// Multiplies this duration by [factor].
-  Duration operator *(num factor) =>
-      Duration(microseconds: (inMicroseconds * factor).round());
+  Duration operator *(num factor) => Duration(microseconds: (inMicroseconds * factor).round());
 
   /// Divides this duration by [divisor].
-  Duration operator /(num divisor) =>
-      Duration(microseconds: (inMicroseconds / divisor).round());
+  Duration operator /(num divisor) => Duration(microseconds: (inMicroseconds / divisor).round());
 
   /// Rounds this duration up to the nearest minute.
-  Duration ceilToMinutes() =>
-      Duration(minutes: inSeconds % 60 == 0 ? inMinutes : inMinutes + 1);
+  Duration ceilToMinutes() => Duration(minutes: inSeconds % 60 == 0 ? inMinutes : inMinutes + 1);
 
   /// Clamps this duration between [min] and [max].
   Duration clamp(Duration min, Duration max) {
@@ -94,8 +89,7 @@ extension HumanizedDuration on Duration {
   bool isShorterThan(Duration other) => this < other;
 
   /// Returns `true` if this duration is within [range] of [other].
-  bool isWithin(Duration range, Duration other) =>
-      (this - other).abs() <= range;
+  bool isWithin(Duration range, Duration other) => (this - other).abs() <= range;
 
   /// Returns a 0.0-1.0 progress value relative to [total].
   ///
@@ -113,8 +107,7 @@ extension HumanizedDuration on Duration {
   Duration roundToMinutes() => Duration(minutes: (inSeconds / 60).round());
 
   /// Rounds this duration to the nearest second.
-  Duration roundToSeconds() =>
-      Duration(seconds: (inMilliseconds / 1000).round());
+  Duration roundToSeconds() => Duration(seconds: (inMilliseconds / 1000).round());
 
   /// Converts this duration to a frame count at [fps].
   int toFrames(double fps) => (inMilliseconds * fps / 1000).round();
@@ -188,8 +181,7 @@ extension HumanizedDuration on Duration {
     } else if (absolute.inHours >= 1) {
       body = '${absolute.inHours} ${absolute.inHours == 1 ? 'hour' : 'hours'}';
     } else if (absolute.inMinutes >= 1) {
-      body =
-          '${absolute.inMinutes} ${absolute.inMinutes == 1 ? 'minute' : 'minutes'}';
+      body = '${absolute.inMinutes} ${absolute.inMinutes == 1 ? 'minute' : 'minutes'}';
     } else {
       body = '${absolute.inSeconds} seconds';
     }
@@ -207,11 +199,7 @@ extension HumanizedDuration on Duration {
     final m = absolute.inMinutes % 60;
     final s = absolute.inSeconds % 60;
 
-    final parts = <String>[
-      if (h > 0) '${h}h',
-      if (m > 0) '${m}m',
-      if (s > 0 && includeSeconds) '${s}s',
-    ];
+    final parts = <String>[if (h > 0) '${h}h', if (m > 0) '${m}m', if (s > 0 && includeSeconds) '${s}s'];
 
     if (parts.isEmpty) return includeSeconds ? '0s' : '0m';
     final body = parts.join(' ');
@@ -237,6 +225,5 @@ extension HumanizedDuration on Duration {
   }
 
   /// Reconstructs a duration from [frames] at [fps].
-  static Duration fromFrames(int frames, double fps) =>
-      Duration(milliseconds: (frames / fps * 1000).round());
+  static Duration fromFrames(int frames, double fps) => Duration(milliseconds: (frames / fps * 1000).round());
 }
