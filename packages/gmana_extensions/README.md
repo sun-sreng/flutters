@@ -24,13 +24,21 @@ import 'package:gmana_extensions/gmana_extensions.dart';
 
 ```dart
 5.seconds           // Duration(seconds: 5)
+5.second            // singular alias
+5.sec               // short alias
 30.minutes          // Duration(minutes: 30)
+30.minute           // singular alias
 2.hours             // Duration(hours: 2)
 1.days              // Duration(days: 1)
 3.weeks             // Duration(days: 21)
+1.fortnight         // Duration(days: 14)
 500.milliseconds    // Duration(milliseconds: 500)
 500.ms              // same, shorter alias
+500.millis          // same
 100.microseconds
+100.us              // same
+1500.nanoseconds    // Duration(microseconds: 2), rounded
+120.framesAt(24)    // Duration(seconds: 5)
 
 // Arithmetic still works
 final eta = 1.hours + 30.minutes + 45.seconds;
@@ -52,10 +60,12 @@ d.abs                       // always non-negative
 d.isNegative                // false
 d.isPositive                // true
 d.isZero                    // false
+d.sign                      // 1
 
 d.isLongerThan(1.hours)     // true
 d.isShorterThan(2.hours)    // true
 d.isWithin(15.minutes, 1.hours + 10.minutes) // within 15m of 1h10m?
+d.isBetween(1.hours, 2.hours) // true
 ```
 
 ### Rounding
@@ -67,6 +77,10 @@ d.roundToSeconds()    // Duration(minutes: 7, seconds: 40) — already whole sec
 d.roundToMinutes()    // Duration(minutes: 8)
 d.ceilToMinutes()     // Duration(minutes: 8)
 d.floorToMinutes()    // Duration(minutes: 7)
+
+d.roundTo(5.minutes)  // Duration(minutes: 10)
+d.floorTo(5.minutes)  // Duration(minutes: 5)
+d.ceilTo(5.minutes)   // Duration(minutes: 10)
 ```
 
 ### Parts & fractions
@@ -74,10 +88,12 @@ d.floorToMinutes()    // Duration(minutes: 7)
 ```dart
 final d = Duration(hours: 1, minutes: 23, seconds: 45, milliseconds: 600);
 
+d.daysPart          // 0
 d.hoursPart         // 1
 d.minutesPart       // 23
 d.secondsPart       // 45
 d.millisecondsPart  // 600
+d.microsecondsPart  // 0
 
 d.inHoursDouble     // 1.395...
 d.inMinutesDouble   // 83.76
@@ -97,6 +113,7 @@ final total = 10.minutes;
 
 elapsed.progressOf(total)              // 0.3
 elapsed.progressOf(total, clampResult: false) // can exceed 1.0
+elapsed.percentOf(total)               // 30.0
 elapsed.remainingIn(total)             // Duration(minutes: 7)
 ```
 
@@ -127,14 +144,19 @@ d.toVerboseString()    // '1h 2m 34s'
 d.toVerboseString(includeSeconds: false) // '1h 2m'
 d.toWordString()       // '1 hour 2 minutes 34 seconds'
 d.toHHMMSS()           // '01:02:34' or 'MM:SS' for durations under 1h
+d.toIso8601String()    // 'PT1H2M34S'
 d.toHumanizedString()  // '1:02:34'
 d.toPaddedString()     // '01:02:34'
 d.toRelativeString()   // 'in 1h 2m' / '1h 2m ago'
 
 // Natural language (DurationNaturalLanguageX)
-d.toNaturalString()    // '1 hour and 2 minutes'
+d.toNaturalString()    // '1 hour 2 minutes'
+d.toNaturalString(maxUnits: 3) // '1 hour 2 minutes 34 seconds'
 d.toCompactString()    // '1h 2m'
-d.toDetailedString()   // '1h 2m 34s 0ms'
+d.toCompactString(maxUnits: 3) // '1h 2m 34s'
+d.toDetailedString()   // '1h 2m 34s'
+d.toNaturalSentence()  // '1 hour and 2 minutes'
+d.toApproximateString() // 'about 1 hour'
 ```
 
 ---
@@ -309,11 +331,19 @@ s.mapNotBlank((v) => v.toUpperCase())  // null if blank, else transformed
 'https://example.com'.isValidUrl      // true
 '#FF5500'.isValidHexColor             // true
 '192.168.0.1'.isValidIpv4            // true
+'2001:db8::1'.isValidIpv6            // true
+'192.168.0.1'.isValidIpAddress       // true
 '2024-01-31'.isValidIsoDate          // true
 '550e8400-e29b-41d4-a716-446655440000'.isValidUuid // true
+'550e8400-e29b-11d4-a716-446655440000'.isValidUuidAny // true
 '4111111111111111'.isValidCreditCard // true  (Luhn check)
+'AA:BB:CC:DD:EE:FF'.isValidMacAddress // true
+'hello-world'.isValidSlug            // true
+'aGVsbG8='.isValidBase64             // true
+'header.payload.signature'.isValidJwt // structure only, no signature verification
 'John O\'Brien'.isValidName          // true
 'Abc123!xyz'.isValidPassword         // true
+'sreng.sun'.isValidUsername()        // true
 
 // Password strength — returns set of unmet requirements
 'weak'.passwordStrength   // {PasswordStrength.minLength, PasswordStrength.uppercase, ...}
@@ -336,6 +366,15 @@ s.mapNotBlank((v) => v.toUpperCase())  // null if blank, else transformed
 '2024-06-01'.isAfter('2024-01-01')    // true
 '2024-01-01'.isBefore('2025-01-01')   // true
 '2024-06-15'.isBetween('2024-01-01', '2024-12-31') // true
+'2024-01-01'.isBetweenInclusive('2024-01-01', '2024-12-31') // true
+'2024-03-15'.isSameDayAs('2024-03-15T12:00:00') // true
+'2024-03-15'.daysUntil('2024-03-20') // 5
+'2024-03-16'.differenceFrom('2024-03-15') // Duration(days: 1)
+'2024-02-28'.addDays(1)              // '2024-02-29'
+'2024-03-01'.subtractDays(1)         // '2024-02-29'
+'2024-03-15'.toDateTimeOrNull        // DateTime(...)
+'2024-03-15'.toIsoDateString         // '2024-03-15'
+'2024-03-15'.year                    // 2024
 ```
 
 ---
@@ -353,21 +392,33 @@ nums.average        // 3.875
 nums.median         // 3.5
 nums.minOrNull      // 1
 nums.maxOrNull      // 9
+nums.modes          // [1]  (most frequent values)
+nums.frequencyMap() // {3: 1, 1: 2, 4: 1, ...}
 nums.range          // 8  (max - min)
 nums.variance       // population variance
 nums.stdDev         // population standard deviation
+nums.sampleVariance // sample variance
+nums.sampleStdDev   // sample standard deviation
+nums.percentile(90) // interpolated percentile
 
 nums.top(3)         // [9, 6, 5]  — descending
 nums.bottom(3)      // [1, 1, 2]  — ascending
 
 nums.clampAll(2, 7)            // [3, 2, 4, 2, 5, 7, 2, 6]
 nums.normalize()               // [0.25, 0.0, 0.375, 0.0, 0.5, 1.0, 0.125, 0.625]
+nums.normalizeTo(0, 100)       // [25.0, 0.0, 37.5, ...]
+nums.deltas().toList()         // [-2, 3, -3, 4, 4, -7, 4]
 nums.runningSum().toList()     // [3, 4, 8, 9, 14, 23, 25, 31]
 nums.runningProduct().toList() // [3, 3, 12, 12, 60, 540, 1080, 6480]
+nums.runningAverage().toList() // [3.0, 2.0, 2.66..., ...]
 
 nums.allPositive    // true
 nums.allNonNegative // true
 nums.allNegative    // false
+nums.anyPositive    // true
+nums.anyNegative    // false
+nums.anyZero        // false
+nums.allZero        // false
 
 // With empty-list safety
 <int>[].sum()           // 0 (identity default)

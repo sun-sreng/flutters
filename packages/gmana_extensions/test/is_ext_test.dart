@@ -107,6 +107,14 @@ void main() {
     });
 
     group('General Purpose Validations', () {
+      test('isValidBase64 returns true for Base64 and Base64URL strings', () {
+        expect('aGVsbG8='.isValidBase64, isTrue);
+        expect('aGVsbG8'.isValidBase64, isTrue);
+        expect('eyJhbGciOiJIUzI1NiJ9'.isValidBase64, isTrue);
+        expect('not base64!'.isValidBase64, isFalse);
+        expect(''.isValidBase64, isFalse);
+      });
+
       test('isBlank returns true for empty or whitespace strings', () {
         expect(''.isBlank, isTrue);
         expect('   '.isBlank, isTrue);
@@ -160,10 +168,36 @@ void main() {
       test('isValidIpv4 returns true for valid IPv4 addresses', () {
         expect('192.168.1.1'.isValidIpv4, isTrue);
         expect('255.255.255.255'.isValidIpv4, isTrue);
+        expect(' 192.168.1.1 '.isValidIpv4, isTrue);
         expect('256.1.1.1'.isValidIpv4, isFalse); // Out of range
         expect('192.168.1'.isValidIpv4, isFalse); // Missing part
         expect('192.168.001.1'.isValidIpv4, isFalse); // Leading zero
         expect('192..1.1'.isValidIpv4, isFalse); // Empty part
+      });
+
+      test('isValidIpv6 and isValidIpAddress validate IP addresses', () {
+        expect('2001:db8::1'.isValidIpv6, isTrue);
+        expect('::1'.isValidIpv6, isTrue);
+        expect('2001:db8:::1'.isValidIpv6, isFalse);
+        expect('192.168.1.1'.isValidIpAddress, isTrue);
+        expect('2001:db8::1'.isValidIpAddress, isTrue);
+        expect('not-an-ip'.isValidIpAddress, isFalse);
+      });
+
+      test('isValidJwt validates JWT shape', () {
+        const jwt = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMifQ.signature';
+        expect(jwt.isValidJwt, isTrue);
+        expect('header.payload'.isValidJwt, isFalse);
+        expect('bad!.payload.signature'.isValidJwt, isFalse);
+        expect('eyJhbGciOiJIUzI1NiJ9..signature'.isValidJwt, isFalse);
+      });
+
+      test('isValidMacAddress validates common MAC address formats', () {
+        expect('AA:BB:CC:DD:EE:FF'.isValidMacAddress, isTrue);
+        expect('aa-bb-cc-dd-ee-ff'.isValidMacAddress, isTrue);
+        expect('aabb.ccdd.eeff'.isValidMacAddress, isTrue);
+        expect('AA:BB:CC:DD:EE'.isValidMacAddress, isFalse);
+        expect('GG:BB:CC:DD:EE:FF'.isValidMacAddress, isFalse);
       });
 
       test('isValidHexColor returns true for valid hex colors', () {
@@ -183,10 +217,45 @@ void main() {
         expect('not-a-card'.isValidCreditCard, isFalse);
       });
 
+      test('isValidSlug validates URL-safe slugs', () {
+        expect('hello-world-2026'.isValidSlug, isTrue);
+        expect('hello'.isValidSlug, isTrue);
+        expect('Hello-World'.isValidSlug, isFalse);
+        expect('-hello'.isValidSlug, isFalse);
+        expect('hello--world'.isValidSlug, isFalse);
+      });
+
+      test('isValidUuidAny accepts UUID versions 1 through 5', () {
+        expect('550e8400-e29b-41d4-a716-446655440000'.isValidUuidAny, isTrue);
+        expect('f47ac10b-58cc-4372-a567-0e02b2c3d479'.isValidUuidAny, isTrue);
+        expect('550e8400-e29b-61d4-a716-446655440000'.isValidUuidAny, isFalse);
+        expect('invalid-uuid'.isValidUuidAny, isFalse);
+      });
+
       test('isWithinLength works correctly', () {
         expect('abc'.isWithinLength(min: 2, max: 4), isTrue);
         expect('a'.isWithinLength(min: 2, max: 4), isFalse);
         expect('abcde'.isWithinLength(min: 2, max: 4), isFalse);
+        expect(
+          () => 'abc'.isWithinLength(min: -1, max: 4),
+          throwsArgumentError,
+        );
+        expect(() => 'abc'.isWithinLength(min: 4, max: 2), throwsArgumentError);
+      });
+
+      test('isValidUsername validates conventional usernames', () {
+        expect('sreng.sun'.isValidUsername(), isTrue);
+        expect('user_123'.isValidUsername(), isTrue);
+        expect('ab'.isValidUsername(), isFalse);
+        expect('_user'.isValidUsername(), isFalse);
+        expect('user_'.isValidUsername(), isFalse);
+        expect('user-name'.isValidUsername(), isFalse);
+        expect('ab'.isValidUsername(min: 2), isTrue);
+        expect(() => 'abc'.isValidUsername(min: 0), throwsArgumentError);
+        expect(
+          () => 'abc'.isValidUsername(min: 4, max: 3),
+          throwsArgumentError,
+        );
       });
     });
   });

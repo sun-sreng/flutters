@@ -8,32 +8,68 @@ void main() {
       expect(5.5.microseconds, equals(const Duration(microseconds: 6)));
     });
 
+    test('microsecond aliases', () {
+      expect(5.microsecond, equals(const Duration(microseconds: 5)));
+      expect(5.micros, equals(const Duration(microseconds: 5)));
+      expect(5.us, equals(const Duration(microseconds: 5)));
+    });
+
+    test('nanoseconds round to nearest microsecond', () {
+      expect(500.nanoseconds, equals(const Duration(microseconds: 1)));
+      expect(1499.nanoseconds, equals(const Duration(microseconds: 1)));
+      expect(1500.nanoseconds, equals(const Duration(microseconds: 2)));
+      expect(1.nanosecond, equals(Duration.zero));
+    });
+
     test('milliseconds', () {
       expect(5.milliseconds, equals(const Duration(milliseconds: 5)));
     });
 
     test('ms alias', () {
       expect(5.ms, equals(const Duration(milliseconds: 5)));
+      expect(5.millisecond, equals(const Duration(milliseconds: 5)));
+      expect(5.millis, equals(const Duration(milliseconds: 5)));
     });
 
     test('seconds', () {
       expect(5.seconds, equals(const Duration(seconds: 5)));
+      expect(5.second, equals(const Duration(seconds: 5)));
+      expect(5.sec, equals(const Duration(seconds: 5)));
+      expect(5.secs, equals(const Duration(seconds: 5)));
+      expect(1.5.seconds, equals(const Duration(milliseconds: 1500)));
     });
 
     test('minutes', () {
       expect(5.minutes, equals(const Duration(minutes: 5)));
+      expect(5.minute, equals(const Duration(minutes: 5)));
     });
 
     test('hours', () {
       expect(5.hours, equals(const Duration(hours: 5)));
+      expect(5.hour, equals(const Duration(hours: 5)));
     });
 
     test('days', () {
       expect(5.days, equals(const Duration(days: 5)));
+      expect(5.day, equals(const Duration(days: 5)));
     });
 
     test('weeks', () {
       expect(2.weeks, equals(const Duration(days: 14)));
+      expect(2.week, equals(const Duration(days: 14)));
+    });
+
+    test('fortnights', () {
+      expect(1.fortnight, equals(const Duration(days: 14)));
+      expect(2.fortnights, equals(const Duration(days: 28)));
+    });
+
+    test('framesAt converts frames to duration', () {
+      expect(120.framesAt(24), equals(const Duration(seconds: 5)));
+      expect(30.framesAt(60), equals(const Duration(milliseconds: 500)));
+      expect(1.framesAt(2), equals(const Duration(milliseconds: 500)));
+      expect(() => 1.framesAt(0), throwsArgumentError);
+      expect(() => 1.framesAt(-24), throwsArgumentError);
     });
   });
 

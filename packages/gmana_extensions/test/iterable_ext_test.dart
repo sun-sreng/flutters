@@ -71,11 +71,41 @@ void main() {
         expect(<int>[].stdDev, isNull);
       });
 
+      test('sampleVariance and sampleStdDev use sample denominator', () {
+        expect(
+          [2, 4, 4, 4, 5, 5, 7, 9].sampleVariance,
+          closeTo(4.571428571, 0.000001),
+        );
+        expect(
+          [2, 4, 4, 4, 5, 5, 7, 9].sampleStdDev,
+          closeTo(2.138089935, 0.000001),
+        );
+        expect([1].sampleVariance, isNull);
+        expect(<int>[].sampleStdDev, isNull);
+      });
+
       test('median calculates median value', () {
         expect([1, 3, 2].median, 2.0); // odd length
         expect([1, 2, 3, 4].median, 2.5); // even length
         expect([4, 1, 3, 2].median, 2.5); // unsorted even
         expect(<int>[].median, isNull);
+      });
+
+      test('percentile calculates interpolated percentile', () {
+        expect([15, 20, 35, 40, 50].percentile(40), 29.0);
+        expect([1, 2, 3, 4].percentile(50), 2.5);
+        expect([1, 2, 3].percentile(0), 1.0);
+        expect([1, 2, 3].percentile(100), 3.0);
+        expect(<int>[].percentile(50), isNull);
+        expect(() => [1, 2, 3].percentile(-1), throwsArgumentError);
+        expect(() => [1, 2, 3].percentile(101), throwsArgumentError);
+      });
+
+      test('modes and frequencyMap count repeated values', () {
+        expect([1, 2, 2, 3, 3].modes, [2, 3]);
+        expect([3, 1, 3, 2, 1, 3].modes, [3]);
+        expect(<int>[].modes, isEmpty);
+        expect([1, 2, 2, 3].frequencyMap(), {1: 1, 2: 2, 3: 1});
       });
     });
 
@@ -98,6 +128,15 @@ void main() {
         expect([0, 1, 2].allNonNegative, isTrue);
         expect([-1, 0, 1].allNonNegative, isFalse);
       });
+
+      test('zero and sign predicates', () {
+        expect([0, 0].allZero, isTrue);
+        expect([0, 1].allZero, isFalse);
+        expect([0, 1].anyZero, isTrue);
+        expect([0, 1].anyPositive, isTrue);
+        expect([0, -1].anyNegative, isTrue);
+        expect(<int>[].anyZero, isFalse);
+      });
     });
 
     group('Transforms', () {
@@ -106,6 +145,18 @@ void main() {
         // When min == max, returns empty list
         expect([5, 5, 5].normalize(), isEmpty);
         expect(<int>[].normalize(), isEmpty);
+      });
+
+      test('normalizeTo scales values between custom bounds', () {
+        expect([0, 5, 10].normalizeTo(10, 20), [10.0, 15.0, 20.0]);
+        expect([0, 5, 10].normalizeTo(1, -1), [1.0, 0.0, -1.0]);
+        expect([5, 5, 5].normalizeTo(10, 20), isEmpty);
+      });
+
+      test('deltas returns differences between adjacent values', () {
+        expect([3, 5, 10, 9].deltas().toList(), [2, 5, -1]);
+        expect([1].deltas().toList(), isEmpty);
+        expect(<int>[].deltas().toList(), isEmpty);
       });
 
       test('runningSum calculates prefix sums', () {
@@ -118,6 +169,12 @@ void main() {
         expect([1, 2, 3, 4].runningProduct().toList(), [1, 2, 6, 24]);
         expect([1.5, 2.0].runningProduct().toList(), [1.5, 3.0]);
         expect(<int>[].runningProduct().toList(), isEmpty);
+      });
+
+      test('runningAverage calculates prefix averages', () {
+        expect([2, 4, 6, 8].runningAverage().toList(), [2.0, 3.0, 4.0, 5.0]);
+        expect([1.5, 2.5].runningAverage().toList(), [1.5, 2.0]);
+        expect(<int>[].runningAverage().toList(), isEmpty);
       });
 
       test('top returns largest elements', () {

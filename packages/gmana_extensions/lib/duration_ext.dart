@@ -9,8 +9,14 @@ extension HumanizedDuration on Duration {
   /// Returns the absolute hours component of the duration.
   int get hoursPart => inHours.abs();
 
+  /// Returns the absolute days component of the duration.
+  int get daysPart => inDays.abs();
+
   /// Returns the absolute milliseconds component of the duration, from 0 to 999.
   int get millisecondsPart => (inMilliseconds % 1000).abs();
+
+  /// Returns the absolute microseconds component of the duration, from 0 to 999.
+  int get microsecondsPart => (inMicroseconds % 1000).abs();
 
   /// Returns the absolute minutes component of the duration, from 0 to 59.
   int get minutesPart => (inMinutes % 60).abs();
@@ -25,7 +31,8 @@ extension HumanizedDuration on Duration {
   double get inHoursDouble => inMicroseconds / Duration.microsecondsPerHour;
 
   /// Total duration in fractional milliseconds.
-  double get inMillisecondsDouble => inMicroseconds / Duration.microsecondsPerMillisecond;
+  double get inMillisecondsDouble =>
+      inMicroseconds / Duration.microsecondsPerMillisecond;
 
   /// Total duration in fractional minutes.
   double get inMinutesDouble => inMicroseconds / Duration.microsecondsPerMinute;
@@ -34,7 +41,8 @@ extension HumanizedDuration on Duration {
   double get inSecondsDouble => inMicroseconds / Duration.microsecondsPerSecond;
 
   /// Total duration in fractional weeks.
-  double get inWeeksDouble => inMicroseconds / (Duration.microsecondsPerDay * 7);
+  double get inWeeksDouble =>
+      inMicroseconds / (Duration.microsecondsPerDay * 7);
 
   /// Returns `true` if this duration is less than zero.
   bool get isNegative => inMicroseconds < 0;
@@ -44,6 +52,9 @@ extension HumanizedDuration on Duration {
 
   /// Returns `true` if this duration is exactly zero.
   bool get isZero => inMicroseconds == 0;
+
+  /// Returns -1 for negative, 0 for zero, and 1 for positive durations.
+  int get sign => inMicroseconds.compareTo(0);
 
   /// Returns the total duration in floating-point days.
   double get totalDays => inDaysDouble;
@@ -55,13 +66,25 @@ extension HumanizedDuration on Duration {
   double get totalMinutes => inMinutesDouble;
 
   /// Multiplies this duration by [factor].
-  Duration operator *(num factor) => Duration(microseconds: (inMicroseconds * factor).round());
+  Duration operator *(num factor) =>
+      Duration(microseconds: (inMicroseconds * factor).round());
 
   /// Divides this duration by [divisor].
-  Duration operator /(num divisor) => Duration(microseconds: (inMicroseconds / divisor).round());
+  Duration operator /(num divisor) =>
+      Duration(microseconds: (inMicroseconds / divisor).round());
 
   /// Rounds this duration up to the nearest minute.
-  Duration ceilToMinutes() => Duration(minutes: inSeconds % 60 == 0 ? inMinutes : inMinutes + 1);
+  Duration ceilToMinutes() =>
+      Duration(minutes: inSeconds % 60 == 0 ? inMinutes : inMinutes + 1);
+
+  /// Rounds this duration up to the nearest positive [interval].
+  ///
+  /// Throws [ArgumentError] when [interval] is zero.
+  Duration ceilTo(Duration interval) {
+    final step = _positiveIntervalMicroseconds(interval);
+    final units = _ceilDiv(inMicroseconds, step);
+    return Duration(microseconds: units * step);
+  }
 
   /// Clamps this duration between [min] and [max].
   Duration clamp(Duration min, Duration max) {
@@ -82,6 +105,37 @@ extension HumanizedDuration on Duration {
   /// Truncates this duration down to the nearest minute.
   Duration floorToMinutes() => Duration(minutes: inMinutes);
 
+  /// Rounds this duration down to the nearest positive [interval].
+  ///
+  /// Throws [ArgumentError] when [interval] is zero.
+  Duration floorTo(Duration interval) {
+    final step = _positiveIntervalMicroseconds(interval);
+    final units = _floorDiv(inMicroseconds, step);
+    return Duration(microseconds: units * step);
+  }
+
+  /// Returns the greater of this duration and [other].
+  Duration max(Duration other) => this >= other ? this : other;
+
+  /// Returns the lesser of this duration and [other].
+  Duration min(Duration other) => this <= other ? this : other;
+
+  /// Returns `true` when this duration is between [min] and [max].
+  ///
+  /// Boundaries are included by default. Pass [inclusive] as false to make the
+  /// check strict.
+  bool isBetween(Duration min, Duration max, {bool inclusive = true}) {
+    if (min > max) {
+      throw ArgumentError.value(
+        max,
+        'max',
+        'must be greater than or equal to min',
+      );
+    }
+
+    return inclusive ? this >= min && this <= max : this > min && this < max;
+  }
+
   /// Returns `true` if this duration is strictly longer than [other].
   bool isLongerThan(Duration other) => this > other;
 
@@ -89,7 +143,8 @@ extension HumanizedDuration on Duration {
   bool isShorterThan(Duration other) => this < other;
 
   /// Returns `true` if this duration is within [range] of [other].
-  bool isWithin(Duration range, Duration other) => (this - other).abs() <= range;
+  bool isWithin(Duration range, Duration other) =>
+      (this - other).abs() <= range;
 
   /// Returns a 0.0-1.0 progress value relative to [total].
   ///
@@ -100,17 +155,76 @@ extension HumanizedDuration on Duration {
     return clampResult ? ratio.clamp(0.0, 1.0) : ratio;
   }
 
+  /// Returns a 0.0-100.0 percent value relative to [total].
+  ///
+  /// Pass [clampResult] as false to allow values outside the 0-100 range.
+  double percentOf(Duration total, {bool clampResult = true}) =>
+      progressOf(total, clampResult: clampResult) * 100;
+
   /// Remaining duration when this duration is elapsed within [total].
   Duration remainingIn(Duration total) => total - this;
+
+  /// Rounds this duration to the nearest positive [interval].
+  ///
+  /// Throws [ArgumentError] when [interval] is zero.
+  Duration roundTo(Duration interval) {
+    final step = _positiveIntervalMicroseconds(interval);
+    final units = (inMicroseconds / step).round();
+    return Duration(microseconds: units * step);
+  }
 
   /// Rounds this duration to the nearest minute.
   Duration roundToMinutes() => Duration(minutes: (inSeconds / 60).round());
 
   /// Rounds this duration to the nearest second.
-  Duration roundToSeconds() => Duration(seconds: (inMilliseconds / 1000).round());
+  Duration roundToSeconds() =>
+      Duration(seconds: (inMilliseconds / 1000).round());
 
   /// Converts this duration to a frame count at [fps].
   int toFrames(double fps) => (inMilliseconds * fps / 1000).round();
+
+  /// Formats this duration as ISO-8601 duration text, such as `PT1H2M3S`.
+  ///
+  /// Negative durations are prefixed with `-`, for example `-PT30S`.
+  String toIso8601String() {
+    final absolute = Duration(microseconds: inMicroseconds.abs());
+    if (absolute == Duration.zero) return 'PT0S';
+
+    final days = absolute.inDays;
+    final hours = absolute.inHours % 24;
+    final minutes = absolute.inMinutes % 60;
+    final seconds = absolute.inSeconds % 60;
+    final microseconds =
+        absolute.inMicroseconds % Duration.microsecondsPerSecond;
+
+    final buffer = StringBuffer();
+    if (isNegative) buffer.write('-');
+    buffer.write('P');
+    if (days > 0) buffer.write('${days}D');
+
+    if (hours > 0 ||
+        minutes > 0 ||
+        seconds > 0 ||
+        microseconds > 0 ||
+        days == 0) {
+      buffer.write('T');
+      if (hours > 0) buffer.write('${hours}H');
+      if (minutes > 0) buffer.write('${minutes}M');
+      if (seconds > 0 || microseconds > 0) {
+        if (microseconds == 0) {
+          buffer.write('${seconds}S');
+        } else {
+          final fraction = microseconds
+              .toString()
+              .padLeft(6, '0')
+              .replaceFirst(RegExp(r'0+$'), '');
+          buffer.write('$seconds.${fraction}S');
+        }
+      }
+    }
+
+    return buffer.toString();
+  }
 
   /// Formats this duration as `HH:MM:SS` or `MM:SS`.
   String toHHMMSS() {
@@ -181,7 +295,8 @@ extension HumanizedDuration on Duration {
     } else if (absolute.inHours >= 1) {
       body = '${absolute.inHours} ${absolute.inHours == 1 ? 'hour' : 'hours'}';
     } else if (absolute.inMinutes >= 1) {
-      body = '${absolute.inMinutes} ${absolute.inMinutes == 1 ? 'minute' : 'minutes'}';
+      body =
+          '${absolute.inMinutes} ${absolute.inMinutes == 1 ? 'minute' : 'minutes'}';
     } else {
       body = '${absolute.inSeconds} seconds';
     }
@@ -199,7 +314,11 @@ extension HumanizedDuration on Duration {
     final m = absolute.inMinutes % 60;
     final s = absolute.inSeconds % 60;
 
-    final parts = <String>[if (h > 0) '${h}h', if (m > 0) '${m}m', if (s > 0 && includeSeconds) '${s}s'];
+    final parts = <String>[
+      if (h > 0) '${h}h',
+      if (m > 0) '${m}m',
+      if (s > 0 && includeSeconds) '${s}s',
+    ];
 
     if (parts.isEmpty) return includeSeconds ? '0s' : '0m';
     final body = parts.join(' ');
@@ -225,5 +344,21 @@ extension HumanizedDuration on Duration {
   }
 
   /// Reconstructs a duration from [frames] at [fps].
-  static Duration fromFrames(int frames, double fps) => Duration(milliseconds: (frames / fps * 1000).round());
+  static Duration fromFrames(int frames, double fps) =>
+      Duration(milliseconds: (frames / fps * 1000).round());
 }
+
+int _positiveIntervalMicroseconds(Duration interval) {
+  final step = interval.inMicroseconds.abs();
+  if (step == 0) {
+    throw ArgumentError.value(interval, 'interval', 'must not be zero');
+  }
+  return step;
+}
+
+int _floorDiv(int value, int divisor) {
+  final truncated = value ~/ divisor;
+  return value >= 0 || value % divisor == 0 ? truncated : truncated - 1;
+}
+
+int _ceilDiv(int value, int divisor) => -_floorDiv(-value, divisor);

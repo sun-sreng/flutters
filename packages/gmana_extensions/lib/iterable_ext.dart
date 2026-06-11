@@ -21,6 +21,18 @@ extension IterableNumX<T extends num> on Iterable<T> {
   /// Whether all elements are positive (> 0).
   bool get allPositive => every((e) => e > 0);
 
+  /// Whether all elements are zero.
+  bool get allZero => every((e) => e == 0);
+
+  /// Whether any element is negative (< 0).
+  bool get anyNegative => any((e) => e < 0);
+
+  /// Whether any element is positive (> 0).
+  bool get anyPositive => any((e) => e > 0);
+
+  /// Whether any element is zero.
+  bool get anyZero => any((e) => e == 0);
+
   /// Arithmetic mean. Returns `null` if empty.
   double? get average => isEmpty ? null : sum() / length;
 
@@ -42,7 +54,9 @@ extension IterableNumX<T extends num> on Iterable<T> {
     if (isEmpty) return null;
     final sorted = toList()..sort();
     final mid = sorted.length ~/ 2;
-    return sorted.length.isOdd ? sorted[mid].toDouble() : (sorted[mid - 1] + sorted[mid]) / 2;
+    return sorted.length.isOdd
+        ? sorted[mid].toDouble()
+        : (sorted[mid - 1] + sorted[mid]) / 2;
   }
 
   /// Smallest element, or `null` if empty.
@@ -50,6 +64,20 @@ extension IterableNumX<T extends num> on Iterable<T> {
 
   /// Smallest element. Throws [StateError] if empty.
   T get minOrThrow => minOrNull ?? (throw StateError('Empty iterable.'));
+
+  /// Most frequent value or values, preserving first-seen order.
+  ///
+  /// Returns an empty list for an empty iterable.
+  List<T> get modes {
+    if (isEmpty) return [];
+
+    final counts = frequencyMap();
+    final maxCount = counts.values.reduce(math.max);
+    return counts.entries
+        .where((entry) => entry.value == maxCount)
+        .map((entry) => entry.key)
+        .toList();
+  }
 
   /// Range (max - min), or `null` if empty.
   num? get range {
@@ -62,6 +90,19 @@ extension IterableNumX<T extends num> on Iterable<T> {
   double? get stdDev {
     final v = variance;
     return v != null ? math.sqrt(v) : null;
+  }
+
+  /// Sample standard deviation, or `null` when fewer than two values exist.
+  double? get sampleStdDev {
+    final v = sampleVariance;
+    return v != null ? math.sqrt(v) : null;
+  }
+
+  /// Sample variance, or `null` when fewer than two values exist.
+  double? get sampleVariance {
+    if (length < 2) return null;
+    final avg = averageOrThrow;
+    return map((e) => (e - avg) * (e - avg)).sum() / (length - 1);
   }
 
   /// Population variance, or `null` if empty.
@@ -80,6 +121,28 @@ extension IterableNumX<T extends num> on Iterable<T> {
   /// Clamps every element to [[lo], [hi]].
   Iterable<T> clampAll(T lo, T hi) => map((e) => e.clamp(lo, hi) as T);
 
+  /// Difference between each adjacent pair as a lazy iterable.
+  Iterable<num> deltas() sync* {
+    final iterator = this.iterator;
+    if (!iterator.moveNext()) return;
+
+    var previous = iterator.current;
+    while (iterator.moveNext()) {
+      final current = iterator.current;
+      yield current - previous;
+      previous = current;
+    }
+  }
+
+  /// Counts occurrences of each value, preserving first-seen key order.
+  Map<T, int> frequencyMap() {
+    final map = <T, int>{};
+    for (final e in this) {
+      map[e] = (map[e] ?? 0) + 1;
+    }
+    return map;
+  }
+
   /// Normalizes elements to [0, 1] based on min/max scaling.
   /// Returns an empty list if empty or if min == max.
   List<double> normalize() {
@@ -87,6 +150,37 @@ extension IterableNumX<T extends num> on Iterable<T> {
     final mx = maxOrNull;
     if (mn == null || mx == null || mx == mn) return [];
     return map((e) => (e - mn) / (mx - mn)).toList();
+  }
+
+  /// Normalizes elements into the range [[toMin], [toMax]].
+  ///
+  /// Returns an empty list if empty or if all values are equal.
+  List<double> normalizeTo(num toMin, num toMax) {
+    final normalized = normalize();
+    if (normalized.isEmpty) return [];
+    final span = toMax - toMin;
+    return normalized.map((e) => toMin + e * span).toList();
+  }
+
+  /// Percentile using linear interpolation.
+  ///
+  /// [p] must be between 0 and 100. Returns `null` for an empty iterable.
+  double? percentile(num p) {
+    if (p < 0 || p > 100) {
+      throw ArgumentError.value(p, 'p', 'must be between 0 and 100');
+    }
+    if (isEmpty) return null;
+
+    final sorted = toList()..sort();
+    if (sorted.length == 1) return sorted.first.toDouble();
+
+    final rank = (p / 100) * (sorted.length - 1);
+    final lower = rank.floor();
+    final upper = rank.ceil();
+    if (lower == upper) return sorted[lower].toDouble();
+
+    final weight = rank - lower;
+    return sorted[lower] + (sorted[upper] - sorted[lower]) * weight;
   }
 
   /// Product of all elements. Returns [identity] (default 1) if empty.
@@ -110,6 +204,17 @@ extension IterableNumX<T extends num> on Iterable<T> {
     for (final e in this) {
       acc = (acc + e) as T;
       yield acc;
+    }
+  }
+
+  /// Running arithmetic mean as a lazy iterable.
+  Iterable<double> runningAverage() sync* {
+    var count = 0;
+    num total = 0;
+    for (final e in this) {
+      count++;
+      total += e;
+      yield total / count;
     }
   }
 
