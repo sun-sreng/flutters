@@ -54,6 +54,36 @@ final class MoneyValidationConfig {
     return const MoneyValidationConfig(defaultCurrency: 'USD', allowedCurrencies: {'USD'});
   }
 
+  /// Returns a copy of this config with the given fields replaced.
+  ///
+  /// Nullable fields ([allowedCurrencies], [minMinorUnits], [maxMinorUnits]) can
+  /// be cleared by passing `null` explicitly; omitting a parameter keeps the
+  /// current value.
+  MoneyValidationConfig copyWith({
+    String? defaultCurrency,
+    Object? allowedCurrencies = _unset,
+    Object? minMinorUnits = _unset,
+    Object? maxMinorUnits = _unset,
+    bool? allowThousandsSeparators,
+  }) {
+    return MoneyValidationConfig(
+      defaultCurrency: defaultCurrency ?? this.defaultCurrency,
+      allowedCurrencies: identical(allowedCurrencies, _unset)
+          ? this.allowedCurrencies
+          : allowedCurrencies as Set<String>?,
+      minMinorUnits: identical(minMinorUnits, _unset)
+          ? this.minMinorUnits
+          : minMinorUnits as int?,
+      maxMinorUnits: identical(maxMinorUnits, _unset)
+          ? this.maxMinorUnits
+          : maxMinorUnits as int?,
+      allowThousandsSeparators:
+          allowThousandsSeparators ?? this.allowThousandsSeparators,
+    );
+  }
+
+  static const Object _unset = Object();
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

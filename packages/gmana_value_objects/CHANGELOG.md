@@ -30,6 +30,14 @@ contains **breaking changes**.
   underlying `ValidationError`.
 - Structural `==` / `hashCode` for all value objects (via the `ValueObject`
   base) and for all validation config classes.
+- `copyWith` on every validation config. Nullable fields (e.g. `min`, `max`,
+  `pattern`, `allowedCurrencies`) can be cleared by passing `null` explicitly.
+
+### Fixed
+
+- Email validation now rejects a local part that starts or ends with a dot, or
+  contains consecutive dots (for example `.a@x.com`, `a.@x.com`, `a..b@x.com`),
+  which the format regex previously accepted.
 
 ### Changed
 
@@ -38,6 +46,8 @@ contains **breaking changes**.
   work.
 - `Money.fromNum` now computes minor units directly with half-up rounding
   instead of routing through a throwaway `MoneyAmount`.
+- `Currency.subunitFactor` is now resolved without recomputing a power-of-ten on
+  every access.
 - Removed dead/duplicate imports in `MoneyValidationConfig`.
 - `ValidationError.code` documents that derivation from `runtimeType` is not
   stable under code obfuscation; override `code` for persisted/transport codes.

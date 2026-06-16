@@ -20,35 +20,35 @@ final lineTotal = price * 3;
 final discounted = lineTotal.applyDiscountPercent(15);
 ```
 
-| API                                               | Use it for                                                              |
-| ------------------------------------------------- | ----------------------------------------------------------------------- |
-| `Money(minorUnits: ..., currency: ...)`           | Create money from exact minor units, such as cents.                     |
-| `Money.zero(currency)`                            | Create a zero amount for accumulators.                                  |
-| `Money.ofMajor(major, minor, currency)`           | Create money from major and minor parts.                                |
-| `Money.fromDecimalString(value, currency)`        | Parse customer/admin decimal text.                                      |
-| `Money.fromNum(value, currency)`                  | Create from a numeric decimal value using half-up rounding.             |
-| `Currency.fromCode(code)`                         | Resolve a supported ISO currency code.                                  |
-| `money.amount` / `minorUnits` / `currency` / `decimalDigits` | Read the exact validated amount and its currency metadata.    |
-| `MoneyValidationConfig()`                         | Configure default currency, allowed currencies, limits, and separators. |
-| `MoneyValidationConfig.usd()`                     | USD-only, non-negative money with two decimal places.                   |
-| `MoneyValidationConfig.khr()`                     | KHR-only, non-negative money with zero decimal places.                  |
-| `MoneyValidationConfig.commonCurrencies()`        | USD, EUR, and KHR non-negative money.                                   |
-| `MoneyValidationConfig.ecommerce()`               | Common ecommerce currencies with currency-aware decimal digits.         |
-| `MoneyValidator(config).validate(input)`          | Validate money text without constructing `Money` directly.              |
-| `MoneyValidator.validateMinorUnits(value)`        | Validate an exact minor-unit value without decimal parsing.             |
-| `Money` operators `+`, `-`, `*`, comparisons      | Same-currency arithmetic and comparison using exact minor units.        |
-| `Money.applyPercent(percent)`                     | Calculate tax, discount, or rate amounts.                               |
-| `Money.applyDiscountPercent(percent)`             | Apply percentage discounts rounded to the nearest minor unit.           |
-| `Money.allocate(ratios)`                          | Split payments/refunds/tax while preserving the original total exactly. |
-| `Iterable<Money>.sum(emptyCurrency: ...)`         | Sum cart line totals.                                                   |
-| `formatted`, `formattedWithCode`, `decimalString` | Deterministic display/API strings.                                      |
-| `MoneyEmpty`                                      | Required money input is empty.                                          |
-| `MoneyInvalidFormat`                              | Input is not a plain decimal amount.                                    |
-| `MoneyNegativeNotAllowed`                         | Negative money is disallowed.                                           |
-| `MoneyDecimalPlacesExceeded`                      | Decimal places exceed config.                                           |
-| `MoneyInvalidCurrency`                            | Currency is not a three-letter code.                                    |
-| `MoneyUnsupportedCurrency`                        | Currency is outside the configured allowed set.                         |
-| `MoneyTooSmall`, `MoneyTooLarge`                  | Minor-unit amount is outside configured limits.                         |
+| API                                                          | Use it for                                                              |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| `Money(minorUnits: ..., currency: ...)`                      | Create money from exact minor units, such as cents.                     |
+| `Money.zero(currency)`                                       | Create a zero amount for accumulators.                                  |
+| `Money.ofMajor(major, minor, currency)`                      | Create money from major and minor parts.                                |
+| `Money.fromDecimalString(value, currency)`                   | Parse customer/admin decimal text.                                      |
+| `Money.fromNum(value, currency)`                             | Create from a numeric decimal value using half-up rounding.             |
+| `Currency.fromCode(code)`                                    | Resolve a supported ISO currency code.                                  |
+| `money.amount` / `minorUnits` / `currency` / `decimalDigits` | Read the exact validated amount and its currency metadata.              |
+| `MoneyValidationConfig()`                                    | Configure default currency, allowed currencies, limits, and separators. |
+| `MoneyValidationConfig.usd()`                                | USD-only, non-negative money with two decimal places.                   |
+| `MoneyValidationConfig.khr()`                                | KHR-only, non-negative money with zero decimal places.                  |
+| `MoneyValidationConfig.commonCurrencies()`                   | USD, EUR, and KHR non-negative money.                                   |
+| `MoneyValidationConfig.ecommerce()`                          | Common ecommerce currencies with currency-aware decimal digits.         |
+| `MoneyValidator(config).validate(input)`                     | Validate money text without constructing `Money` directly.              |
+| `MoneyValidator.validateMinorUnits(value)`                   | Validate an exact minor-unit value without decimal parsing.             |
+| `Money` operators `+`, `-`, `*`, comparisons                 | Same-currency arithmetic and comparison using exact minor units.        |
+| `Money.applyPercent(percent)`                                | Calculate tax, discount, or rate amounts.                               |
+| `Money.applyDiscountPercent(percent)`                        | Apply percentage discounts rounded to the nearest minor unit.           |
+| `Money.allocate(ratios)`                                     | Split payments/refunds/tax while preserving the original total exactly. |
+| `Iterable<Money>.sum(emptyCurrency: ...)`                    | Sum cart line totals.                                                   |
+| `formatted`, `formattedWithCode`, `decimalString`            | Deterministic display/API strings.                                      |
+| `MoneyEmpty`                                                 | Required money input is empty.                                          |
+| `MoneyInvalidFormat`                                         | Input is not a plain decimal amount.                                    |
+| `MoneyNegativeNotAllowed`                                    | Negative money is disallowed.                                           |
+| `MoneyDecimalPlacesExceeded`                                 | Decimal places exceed config.                                           |
+| `MoneyInvalidCurrency`                                       | Currency is not a three-letter code.                                    |
+| `MoneyUnsupportedCurrency`                                   | Currency is outside the configured allowed set.                         |
+| `MoneyTooSmall`, `MoneyTooLarge`                             | Minor-unit amount is outside configured limits.                         |
 
 ## Why Minor Units
 

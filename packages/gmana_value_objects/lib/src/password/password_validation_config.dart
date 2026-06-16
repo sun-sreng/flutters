@@ -53,6 +53,29 @@ final class PasswordValidationConfig {
     return const PasswordValidationConfig(minLength: 12, minComplexityScore: 4);
   }
 
+  /// Returns a copy of this config with the given fields replaced.
+  PasswordValidationConfig copyWith({
+    int? minLength,
+    int? maxLength,
+    int? minComplexityScore,
+    int? minAsciiCode,
+    int? maxAsciiCode,
+    double? sequentialRunFactor,
+    Set<String>? commonPasswords,
+    List<String>? commonPrefixes,
+  }) {
+    return PasswordValidationConfig(
+      minLength: minLength ?? this.minLength,
+      maxLength: maxLength ?? this.maxLength,
+      minComplexityScore: minComplexityScore ?? this.minComplexityScore,
+      minAsciiCode: minAsciiCode ?? this.minAsciiCode,
+      maxAsciiCode: maxAsciiCode ?? this.maxAsciiCode,
+      sequentialRunFactor: sequentialRunFactor ?? this.sequentialRunFactor,
+      commonPasswords: commonPasswords ?? this.commonPasswords,
+      commonPrefixes: commonPrefixes ?? this.commonPrefixes,
+    );
+  }
+
   static const Set<String> _defaultCommonPasswords = {
     '12345678',
     '123456789',

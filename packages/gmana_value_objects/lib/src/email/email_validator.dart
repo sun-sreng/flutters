@@ -50,6 +50,15 @@ final class EmailValidator {
     final localPart = parts[0];
     final domain = parts[1];
 
+    // RFC 5321: the local part may not start or end with a dot, nor contain
+    // consecutive dots. The format regex allows dots anywhere, so reject these
+    // explicitly. (Domain dot placement is already enforced by the regex.)
+    if (localPart.startsWith('.') ||
+        localPart.endsWith('.') ||
+        localPart.contains('..')) {
+      return const Left(EmailInvalidFormat());
+    }
+
     if (localPart.length > config.maxLocalPartLength) {
       return Left(
         EmailLocalPartTooLong(

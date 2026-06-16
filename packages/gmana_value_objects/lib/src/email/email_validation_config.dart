@@ -40,6 +40,25 @@ final class EmailValidationConfig {
     return const EmailValidationConfig(allowDisposable: false);
   }
 
+  /// Returns a copy of this config with the given fields replaced.
+  EmailValidationConfig copyWith({
+    int? maxLength,
+    int? maxLocalPartLength,
+    int? maxDomainLength,
+    Set<String>? disposableDomains,
+    Set<String>? blockedDomains,
+    bool? allowDisposable,
+  }) {
+    return EmailValidationConfig(
+      maxLength: maxLength ?? this.maxLength,
+      maxLocalPartLength: maxLocalPartLength ?? this.maxLocalPartLength,
+      maxDomainLength: maxDomainLength ?? this.maxDomainLength,
+      disposableDomains: disposableDomains ?? this.disposableDomains,
+      blockedDomains: blockedDomains ?? this.blockedDomains,
+      allowDisposable: allowDisposable ?? this.allowDisposable,
+    );
+  }
+
   static const Set<String> _defaultDisposableDomains = {
     'tempmail.com',
     'guerrillamail.com',

@@ -61,9 +61,19 @@ enum Currency {
   final String symbol;
 
   /// Minor-unit scale, such as 100 for USD or 1 for JPY.
-  int get subunitFactor {
+  ///
+  /// Equal to `10 ^ decimalPlaces`.
+  int get subunitFactor => switch (decimalPlaces) {
+    0 => 1,
+    1 => 10,
+    2 => 100,
+    3 => 1000,
+    _ => _pow10(decimalPlaces),
+  };
+
+  static int _pow10(int exponent) {
     var factor = 1;
-    for (var i = 0; i < decimalPlaces; i++) {
+    for (var i = 0; i < exponent; i++) {
       factor *= 10;
     }
     return factor;

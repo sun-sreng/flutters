@@ -28,6 +28,18 @@ void main() {
       validator.validate('user@.com').fold((l) => expect(l, isA<EmailInvalidFormat>()), (r) => fail('should be left'));
     });
 
+    test('rejects leading, trailing, and consecutive dots in local part', () {
+      const validator = EmailValidator();
+      for (final input in ['.user@example.com', 'user.@example.com', 'us..er@example.com']) {
+        validator.validate(input).fold(
+          (l) => expect(l, isA<EmailInvalidFormat>(), reason: input),
+          (r) => fail('should be left: $input'),
+        );
+      }
+      // Dots elsewhere in the local part remain valid.
+      expect(validator.validate('first.last@example.com').isRight(), true);
+    });
+
     test('checks max lengths', () {
       const validator = EmailValidator(
         EmailValidationConfig(maxLength: 20, maxLocalPartLength: 10, maxDomainLength: 10),

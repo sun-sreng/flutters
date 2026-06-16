@@ -81,6 +81,30 @@ final class NumberValidationConfig {
     );
   }
 
+  /// Returns a copy of this config with the given fields replaced.
+  ///
+  /// Nullable fields ([min], [max], [maxDecimalPlaces]) can be cleared by
+  /// passing `null` explicitly; omitting a parameter keeps the current value.
+  NumberValidationConfig copyWith({
+    Object? min = _unset,
+    Object? max = _unset,
+    bool? allowNegative,
+    bool? integerOnly,
+    Object? maxDecimalPlaces = _unset,
+  }) {
+    return NumberValidationConfig(
+      min: identical(min, _unset) ? this.min : min as num?,
+      max: identical(max, _unset) ? this.max : max as num?,
+      allowNegative: allowNegative ?? this.allowNegative,
+      integerOnly: integerOnly ?? this.integerOnly,
+      maxDecimalPlaces: identical(maxDecimalPlaces, _unset)
+          ? this.maxDecimalPlaces
+          : maxDecimalPlaces as int?,
+    );
+  }
+
+  static const Object _unset = Object();
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
