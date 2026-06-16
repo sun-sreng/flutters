@@ -9,6 +9,7 @@ export 'package:gmana_functional/gmana_functional.dart' show Either, Left, Right
 // Core
 export 'src/core/validation_error.dart';
 export 'src/core/value_object.dart';
+export 'src/core/value_object_exception.dart';
 
 // Email
 export 'src/email/email.dart';
@@ -37,7 +38,6 @@ export 'src/number/number_validator.dart';
 // Money
 export 'src/money/currency.dart';
 export 'src/money/money.dart';
-export 'src/money/money_amount.dart';
 export 'src/money/money_errors.dart';
 export 'src/money/money_validation_config.dart';
 export 'src/money/money_validator.dart';

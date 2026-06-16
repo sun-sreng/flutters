@@ -70,15 +70,21 @@ final class EmailValidator {
 
     final lowerDomain = domain.toLowerCase();
 
-    final blockedDomains = config.blockedDomains.map(_normalizeDomain).toSet();
-    if (blockedDomains.contains(lowerDomain)) {
-      return Left(EmailBlockedDomain(lowerDomain));
+    if (config.blockedDomains.isNotEmpty) {
+      final blockedDomains = config.blockedDomains.map(_normalizeDomain).toSet();
+      if (blockedDomains.contains(lowerDomain)) {
+        return Left(EmailBlockedDomain(lowerDomain));
+      }
     }
 
-    final disposableDomains =
-        config.disposableDomains.map(_normalizeDomain).toSet();
-    if (!config.allowDisposable && disposableDomains.contains(lowerDomain)) {
-      return Left(EmailDisposableDomain(lowerDomain));
+    // Disposable domains are only normalized and scanned when they are actually
+    // enforced, so the default (allowDisposable: true) path does no extra work.
+    if (!config.allowDisposable) {
+      final disposableDomains =
+          config.disposableDomains.map(_normalizeDomain).toSet();
+      if (disposableDomains.contains(lowerDomain)) {
+        return Left(EmailDisposableDomain(lowerDomain));
+      }
     }
 
     return Right(trimmed.toLowerCase());

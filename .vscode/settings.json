@@ -2,6 +2,7 @@
   "dart.lineLength": 120,
   "markdownlint.config": {
     "MD024": false,
+    "MD036": false,
     "MD041": false
   },
   "cSpell.ignorePaths": [
@@ -71,6 +72,7 @@
     "tempmail",
     "unawaited",
     "unfocus",
+    "unrepresentable",
     "VARCHAR",
     "Vfgcti",
     "vsync",

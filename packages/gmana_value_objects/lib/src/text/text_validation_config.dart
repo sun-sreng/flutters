@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 
+import '../core/collection_equality.dart';
+
 /// Configuration rules for valid text strings.
 ///
 /// Provides constraints such as length limit, regular expression patterns,
@@ -98,4 +100,29 @@ final class TextValidationConfig {
       trimWhitespace: true,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TextValidationConfig &&
+          other.minLength == minLength &&
+          other.maxLength == maxLength &&
+          other.allowEmpty == allowEmpty &&
+          other.allowOnlyWhitespace == allowOnlyWhitespace &&
+          other.trimWhitespace == trimWhitespace &&
+          other.pattern == pattern &&
+          other.allowedCharacters == allowedCharacters &&
+          setEquals(other.blacklistedWords, blacklistedWords);
+
+  @override
+  int get hashCode => Object.hash(
+    minLength,
+    maxLength,
+    allowEmpty,
+    allowOnlyWhitespace,
+    trimWhitespace,
+    pattern,
+    allowedCharacters,
+    Object.hashAllUnordered(blacklistedWords),
+  );
 }

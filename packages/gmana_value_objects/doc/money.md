@@ -28,7 +28,7 @@ final discounted = lineTotal.applyDiscountPercent(15);
 | `Money.fromDecimalString(value, currency)`        | Parse customer/admin decimal text.                                      |
 | `Money.fromNum(value, currency)`                  | Create from a numeric decimal value using half-up rounding.             |
 | `Currency.fromCode(code)`                         | Resolve a supported ISO currency code.                                  |
-| `MoneyAmount`                                     | Read validated `amount`, `currency`, `minorUnits`, and `decimalDigits`. |
+| `money.amount` / `minorUnits` / `currency` / `decimalDigits` | Read the exact validated amount and its currency metadata.    |
 | `MoneyValidationConfig()`                         | Configure default currency, allowed currencies, limits, and separators. |
 | `MoneyValidationConfig.usd()`                     | USD-only, non-negative money with two decimal places.                   |
 | `MoneyValidationConfig.khr()`                     | KHR-only, non-negative money with zero decimal places.                  |

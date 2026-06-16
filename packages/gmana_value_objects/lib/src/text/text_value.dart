@@ -1,37 +1,41 @@
 import 'package:gmana_functional/gmana_functional.dart';
 import '../core/value_object.dart';
+import '../core/value_object_exception.dart';
 import 'text_errors.dart';
 import 'text_validation_config.dart';
 import 'text_validator.dart';
 
 /// A value object representing a validated text string.
 ///
-/// Holds either a [TextError] if validation fails, or the raw [String] if it succeeds.
+/// A [TextValue] is always valid: its [value] has passed the configured
+/// [TextValidationConfig] (and is trimmed when the config requests it). Use
+/// [TextValue.tryParse] for untrusted input and the [TextValue] constructor for
+/// trusted literals.
 final class TextValue extends ValueObject<String> {
-  /// The underlying value, which is either a [TextError] or a valid [String].
+  /// The validated text.
   @override
-  final Either<TextError, String> value;
+  final String value;
 
-  /// Creates a new [TextValue] instance by validating the given [input].
+  const TextValue._(this.value);
+
+  /// Validates [input], throwing [ValueObjectException] when it is invalid.
   ///
-  /// An optional [config] can be provided to customize the validation constraints.
+  /// Prefer [tryParse] for user input.
   factory TextValue(
     String input, {
     TextValidationConfig config = const TextValidationConfig(),
   }) {
-    final validator = TextValidator(config);
-    return TextValue._(validator.validate(input));
+    return tryParse(
+      input,
+      config: config,
+    ).getOrElse((error) => throw ValueObjectException(error));
   }
 
-  /// Creates a new [TextValue] instance directly from a validated [Either].
-  factory TextValue.validated(Either<TextError, String> validated) {
-    return TextValue._(validated);
+  /// Validates [input] and returns the [TextValue] or a [TextError].
+  static Either<TextError, TextValue> tryParse(
+    String input, {
+    TextValidationConfig config = const TextValidationConfig(),
+  }) {
+    return TextValidator(config).validate(input).map(TextValue._);
   }
-
-  /// Internal constructor for [TextValue].
-  const TextValue._(this.value);
-
-  /// Returns a string representation of the [TextValue].
-  @override
-  String toString() => 'TextValue(${valueOrNull ?? 'invalid'})';
 }

@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 
+import '../core/collection_equality.dart';
+
 /// Configuration options for email validation.
 ///
 /// This class holds various limits and rules used by `EmailValidator`.
@@ -46,4 +48,25 @@ final class EmailValidationConfig {
     'throwaway.email',
     'temp-mail.org',
   };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EmailValidationConfig &&
+          other.maxLength == maxLength &&
+          other.maxLocalPartLength == maxLocalPartLength &&
+          other.maxDomainLength == maxDomainLength &&
+          other.allowDisposable == allowDisposable &&
+          setEquals(other.disposableDomains, disposableDomains) &&
+          setEquals(other.blockedDomains, blockedDomains);
+
+  @override
+  int get hashCode => Object.hash(
+    maxLength,
+    maxLocalPartLength,
+    maxDomainLength,
+    allowDisposable,
+    Object.hashAllUnordered(disposableDomains),
+    Object.hashAllUnordered(blockedDomains),
+  );
 }

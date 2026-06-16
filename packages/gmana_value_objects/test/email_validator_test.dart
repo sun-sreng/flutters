@@ -78,29 +78,37 @@ void main() {
     });
   });
 
-  group('Email Value Object', () {
-    test('creates valid Email', () {
-      final email = Email('test@example.com');
-      expect(email.isValid, true);
-      expect(email.valueOrNull, 'test@example.com');
-      expect(email.errorOrNull, null);
-      expect(email.toString(), 'Email(test@example.com)');
+  group('Email value object', () {
+    test('tryParse returns a normalized Email for valid input', () {
+      Email.tryParse(' Test@Example.COM ').fold(
+        (l) => fail('should be right'),
+        (email) {
+          expect(email.value, 'test@example.com');
+          expect(email.toString(), 'Email(test@example.com)');
+        },
+      );
     });
 
-    test('creates invalid Email', () {
-      final email = Email('invalid');
-      expect(email.isInvalid, true);
-      expect(email.errorOrNull, isA<EmailInvalidFormat>());
-      expect(email.errorOrNull?.code, 'email_invalid_format');
-      expect(email.toString(), 'Email(invalid)');
+    test('tryParse returns the error for invalid input', () {
+      Email.tryParse('invalid').fold((error) {
+        expect(error, isA<EmailInvalidFormat>());
+        expect(error.code, 'email_invalid_format');
+      }, (r) => fail('should be left'));
     });
 
-    test('creates Email from validated result', () {
-      final validated = const EmailValidator().validate('test@example.com');
-      final email = Email.validated(validated);
+    test('constructor builds trusted values and throws otherwise', () {
+      expect(Email('test@example.com').value, 'test@example.com');
+      expect(() => Email('invalid'), throwsA(isA<ValueObjectException>()));
+    });
 
-      expect(email.isValid, true);
-      expect(email.valueOrNull, 'test@example.com');
+    test('honors a custom config', () {
+      Email.tryParse(
+        'user@tempmail.com',
+        config: EmailValidationConfig.strict(),
+      ).fold(
+        (error) => expect(error, isA<EmailDisposableDomain>()),
+        (r) => fail('should be left'),
+      );
     });
   });
 }

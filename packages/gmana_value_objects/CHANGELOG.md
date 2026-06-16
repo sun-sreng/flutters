@@ -1,5 +1,49 @@
 # Changelog
 
+## 0.1.0 - 2026-06-16
+
+Major redesign around an "always valid" value-object model. This release
+contains **breaking changes**.
+
+### Breaking
+
+- Value objects are now always valid. `Email`, `Password`, `TextValue`, and
+  `NumberValue` no longer wrap an `Either<ValidationError, T>`; their `value`
+  getter now returns the validated primitive directly.
+  - Use `T.tryParse(input)` (returns `Either<Error, T>`) for untrusted input.
+  - Use the `T(input)` constructor for trusted literals; it throws
+    `ValueObjectException` when the input is invalid.
+  - Removed `value` (as `Either`), `isValid`, `isInvalid`, `valueOrNull`,
+    `errorOrNull`, and the `T.validated(...)` constructors.
+- Removed `MoneyAmount`. Its behavior is merged into `Money`, which is now a
+  standalone composite value object (no longer extends `ValueObject`). Removed
+  `Money.fromAmount` and `Money.amountValue`; `MoneyValidator` now returns
+  `Either<MoneyError, Money>`.
+- `Password.toString()` now returns `Password(***)` (value masked) instead of
+  `Password(valid)` / `Password(invalid)`.
+- `NumberValue.asInt` / `asDouble` are now non-nullable; added
+  `NumberValue.tryParse` and `NumberValue.tryParseNum`.
+
+### Added
+
+- `ValueObjectException`, thrown by throwing constructors and wrapping the
+  underlying `ValidationError`.
+- Structural `==` / `hashCode` for all value objects (via the `ValueObject`
+  base) and for all validation config classes.
+
+### Changed
+
+- `EmailValidator` no longer normalizes disposable/blocked domain sets on every
+  call; the default (disposable allowed, no blocked domains) path does no extra
+  work.
+- `Money.fromNum` now computes minor units directly with half-up rounding
+  instead of routing through a throwaway `MoneyAmount`.
+- Removed dead/duplicate imports in `MoneyValidationConfig`.
+- `ValidationError.code` documents that derivation from `runtimeType` is not
+  stable under code obfuscation; override `code` for persisted/transport codes.
+- Rewrote `QUICK_START.md` and `PACKAGE_STRUCTURE.md`, which referenced an
+  outdated package name, dependency, and API.
+
 ## 0.0.6 - 2026-05-24
 
 ### Changed

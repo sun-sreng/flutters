@@ -80,4 +80,18 @@ final class NumberValidationConfig {
       integerOnly: true,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NumberValidationConfig &&
+          other.min == min &&
+          other.max == max &&
+          other.allowNegative == allowNegative &&
+          other.integerOnly == integerOnly &&
+          other.maxDecimalPlaces == maxDecimalPlaces;
+
+  @override
+  int get hashCode =>
+      Object.hash(min, max, allowNegative, integerOnly, maxDecimalPlaces);
 }

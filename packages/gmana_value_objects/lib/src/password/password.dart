@@ -1,41 +1,45 @@
 import 'package:gmana_functional/gmana_functional.dart';
 import '../core/value_object.dart';
+import '../core/value_object_exception.dart';
 import 'password_errors.dart';
 import 'password_validation_config.dart';
 import 'password_validator.dart';
 
 /// A value object representing a validated password.
 ///
-/// Holds either a [PasswordError] if validation fails, or the successful [String] value.
+/// A [Password] is always valid: its [value] has passed the configured
+/// [PasswordValidationConfig]. The value is [isSensitive], so it is masked in
+/// [toString] output. Use [Password.tryParse] for untrusted input and the
+/// [Password] constructor for trusted literals.
 final class Password extends ValueObject<String> {
-  /// The underlying value, which is either a [PasswordError] or a valid [String].
+  /// The validated password.
   @override
-  final Either<PasswordError, String> value;
+  final String value;
 
-  /// Creates a new [Password] instance by validating the given [input].
+  const Password._(this.value);
+
+  /// Validates [input], throwing [ValueObjectException] when it is invalid.
   ///
-  /// The [config] allows customizable validation rules.
+  /// Prefer [tryParse] for user input.
   factory Password(
     String input, {
     PasswordValidationConfig config = const PasswordValidationConfig(),
   }) {
-    final validator = PasswordValidator(config);
-    return Password._(validator.validate(input));
+    return tryParse(
+      input,
+      config: config,
+    ).getOrElse((error) => throw ValueObjectException(error));
   }
 
-  /// Creates a new [Password] instance directly from a validated [Either].
-  factory Password.validated(Either<PasswordError, String> validated) {
-    return Password._(validated);
+  /// Validates [input] and returns the [Password] or a [PasswordError].
+  static Either<PasswordError, Password> tryParse(
+    String input, {
+    PasswordValidationConfig config = const PasswordValidationConfig(),
+  }) {
+    return PasswordValidator(config).validate(input).map(Password._);
   }
 
-  /// Internal constructor for [Password].
-  const Password._(this.value);
-
-  /// Indicates that [Password] data is sensitive and should be handled with care.
+  /// Passwords are sensitive, so [value] is masked in [toString].
   @override
   bool get isSensitive => true;
-
-  /// A string representation of this password object, masking the actual value.
-  @override
-  String toString() => 'Password(${isValid ? 'valid' : 'invalid'})';
 }

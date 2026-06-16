@@ -1,7 +1,8 @@
 # Password
 
 ```dart
-final password = Password(
+// Untrusted input → Either<PasswordError, Password>.
+final result = Password.tryParse(
   'Str0ng-passphrase!',
   config: PasswordValidationConfig.strict(),
 );
@@ -15,7 +16,8 @@ final custom = PasswordValidationConfig(
 
 | API                                         | Use it for                                                              |
 | ------------------------------------------- | ----------------------------------------------------------------------- |
-| `Password(input, config: ...)`              | Create a typed password value object.                                   |
+| `Password.tryParse(input, config: ...)`     | Validate untrusted input, returning `Either<PasswordError, Password>`.  |
+| `Password(input, config: ...)`              | Create a typed password from a trusted literal; throws if invalid.      |
 | `PasswordValidationConfig()`                | Configure length, ASCII handling, complexity, and predictability rules. |
 | `PasswordValidationConfig.lenient()`        | Use relaxed password rules.                                             |
 | `PasswordValidationConfig.strict()`         | Use stricter password rules.                                            |

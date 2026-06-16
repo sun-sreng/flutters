@@ -143,31 +143,33 @@ void main() {
     });
   });
 
-  group('TextValue', () {
-    test('creates valid TextValue', () {
-      final text = TextValue('hello');
-      expect(text.isValid, true);
-      expect(text.valueOrNull, 'hello');
-      expect(text.errorOrNull, null);
-      expect(text.toString(), 'TextValue(hello)');
+  group('TextValue value object', () {
+    test('tryParse returns the trimmed value for valid input', () {
+      TextValue.tryParse('  hello  ').fold(
+        (l) => fail('should be right'),
+        (text) {
+          expect(text.value, 'hello');
+          expect(text.toString(), 'TextValue(hello)');
+        },
+      );
     });
 
-    test('creates invalid TextValue', () {
-      final text = TextValue(
+    test('tryParse returns the error for invalid input', () {
+      TextValue.tryParse(
         '',
         config: const TextValidationConfig(allowEmpty: false),
+      ).fold(
+        (error) => expect(error, isA<TextEmpty>()),
+        (r) => fail('should be left'),
       );
-      expect(text.isInvalid, true);
-      expect(text.errorOrNull, isA<TextEmpty>());
-      expect(text.toString(), 'TextValue(invalid)');
     });
 
-    test('creates TextValue from validated result', () {
-      final validated = const TextValidator().validate('hello');
-      final text = TextValue.validated(validated);
-
-      expect(text.isValid, true);
-      expect(text.valueOrNull, 'hello');
+    test('constructor builds trusted values and throws otherwise', () {
+      expect(TextValue('hello').value, 'hello');
+      expect(
+        () => TextValue('', config: const TextValidationConfig()),
+        throwsA(isA<ValueObjectException>()),
+      );
     });
   });
 }

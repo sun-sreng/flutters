@@ -9,8 +9,12 @@ abstract class ValidationError {
 
   /// Stable machine-readable code for this error.
   ///
-  /// Built-in errors derive this from the class name, for example
-  /// `EmailInvalidFormat` becomes `email_invalid_format`.
+  /// By default this is derived from the class name, for example
+  /// `EmailInvalidFormat` becomes `email_invalid_format`. The derivation reads
+  /// [runtimeType], which is **not stable under code obfuscation** (for example
+  /// a Flutter release build with `--obfuscate`). If you persist these codes or
+  /// expose them over an API and ship obfuscated builds, override [code] with an
+  /// explicit literal in each error subclass.
   String get code => _toSnakeCase(runtimeType.toString());
 
   static String _toSnakeCase(String input) {

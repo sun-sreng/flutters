@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 
+import '../core/collection_equality.dart';
+
 /// Configuration rules for valid passwords.
 ///
 /// Contains constraints such as length limit, complexity requirements, etc.
@@ -69,4 +71,29 @@ final class PasswordValidationConfig {
     'admin',
     'letmein',
   ];
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PasswordValidationConfig &&
+          other.minLength == minLength &&
+          other.maxLength == maxLength &&
+          other.minComplexityScore == minComplexityScore &&
+          other.minAsciiCode == minAsciiCode &&
+          other.maxAsciiCode == maxAsciiCode &&
+          other.sequentialRunFactor == sequentialRunFactor &&
+          setEquals(other.commonPasswords, commonPasswords) &&
+          listEquals(other.commonPrefixes, commonPrefixes);
+
+  @override
+  int get hashCode => Object.hash(
+    minLength,
+    maxLength,
+    minComplexityScore,
+    minAsciiCode,
+    maxAsciiCode,
+    sequentialRunFactor,
+    Object.hashAllUnordered(commonPasswords),
+    Object.hashAll(commonPrefixes),
+  );
 }

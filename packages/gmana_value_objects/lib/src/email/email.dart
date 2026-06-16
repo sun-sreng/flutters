@@ -1,37 +1,43 @@
 import 'package:gmana_functional/gmana_functional.dart';
 import '../core/value_object.dart';
+import '../core/value_object_exception.dart';
 import 'email_errors.dart';
 import 'email_validation_config.dart';
 import 'email_validator.dart';
 
 /// A value object representing a validated email address.
 ///
-/// Holds either an [EmailError] if validation fails, or the raw [String] if it succeeds.
+/// An [Email] is always valid: its [value] is trimmed and lowercased and has
+/// passed the configured [EmailValidationConfig]. Use [Email.tryParse] for
+/// untrusted input and the [Email] constructor for trusted literals.
 final class Email extends ValueObject<String> {
-  /// The underlying value, which is either an [EmailError] or a valid [String].
+  /// The validated, normalized email address.
   @override
-  final Either<EmailError, String> value;
+  final String value;
 
-  /// Creates a new [Email] instance by validating the given [input].
+  const Email._(this.value);
+
+  /// Validates [input], throwing [ValueObjectException] when it is invalid.
   ///
-  /// An optional [config] can be provided to customize the validation rules.
+  /// Prefer [tryParse] for user input; use this constructor for trusted
+  /// literals where an invalid value is a programming error.
   factory Email(
     String input, {
     EmailValidationConfig config = const EmailValidationConfig(),
   }) {
-    final validator = EmailValidator(config);
-    return Email._(validator.validate(input));
+    return tryParse(
+      input,
+      config: config,
+    ).getOrElse((error) => throw ValueObjectException(error));
   }
 
-  /// Creates a new [Email] instance directly from a validated [Either].
-  factory Email.validated(Either<EmailError, String> validated) {
-    return Email._(validated);
+  /// Validates [input] and returns the [Email] or an [EmailError].
+  ///
+  /// An optional [config] customizes the validation rules.
+  static Either<EmailError, Email> tryParse(
+    String input, {
+    EmailValidationConfig config = const EmailValidationConfig(),
+  }) {
+    return EmailValidator(config).validate(input).map(Email._);
   }
-
-  /// Internal constructor for [Email].
-  const Email._(this.value);
-
-  /// Returns a string representation of the [Email].
-  @override
-  String toString() => 'Email(${valueOrNull ?? 'invalid'})';
 }

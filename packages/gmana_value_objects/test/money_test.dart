@@ -20,9 +20,8 @@ void main() {
       expect(price.decimalString, '19.99');
       expect(yen.decimalString, '500');
       expect(kwd.decimalString, '3.500');
-      expect(price.valueOrNull?.minorUnits, 1999);
-      expect(price.errorOrNull, null);
-      expect(price.isValid, true);
+      expect(price.minorUnits, 1999);
+      expect(price.currency, Currency.usd);
       expect(() => Money(minorUnits: -1, currency: Currency.usd), throwsRangeError);
     });
 
@@ -71,14 +70,17 @@ void main() {
       expect(() => Money.fromNum(-1, Currency.usd), throwsArgumentError);
     });
 
-    test('constructs from MoneyAmount', () {
-      final amount = MoneyAmount(minorUnits: 1234, currency: Currency.usd);
-      final money = Money.fromAmount(amount);
+    test('has value equality across currency and minor units', () {
+      final a = Money(minorUnits: 1234, currency: Currency.usd);
+      final b = Money(minorUnits: 1234, currency: Currency.usd);
+      final differentAmount = Money(minorUnits: 1235, currency: Currency.usd);
+      final differentCurrency = Money(minorUnits: 1234, currency: Currency.eur);
 
-      expect(money.minorUnits, amount.minorUnits);
-      expect(money.currency, amount.currency);
-      expect(money.amountValue, amount);
-      expect(() => MoneyAmount(minorUnits: -1, currency: Currency.usd), throwsRangeError);
+      expect(a, b);
+      expect(a.hashCode, b.hashCode);
+      expect({a, b}, hasLength(1));
+      expect(a, isNot(differentAmount));
+      expect(a, isNot(differentCurrency));
     });
 
     test('adds and subtracts same-currency amounts', () {
@@ -162,8 +164,8 @@ void main() {
       expect(yen.formatted, '¥500');
       expect(yen.decimalString, '500');
       expect(kwd.formatted, 'KD 3.500');
-      expect(kwd.amountValue.format(), 'KD 3.500');
-      expect(kwd.amountValue.format(withCode: true), 'KWD 3.500');
+      expect(kwd.format(), 'KD 3.500');
+      expect(kwd.format(withCode: true), 'KWD 3.500');
     });
 
     test('sums iterable money values', () {

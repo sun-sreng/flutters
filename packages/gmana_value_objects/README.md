@@ -18,7 +18,7 @@ modeling, see [doc/money.md](doc/money.md).
 
 ```yaml
 dependencies:
-  gmana_value_objects: ^0.0.5
+  gmana_value_objects: ^0.1.0
 ```
 
 Or install it from the command line:
@@ -39,49 +39,63 @@ dart pub add gmana_value_objects
 - Default English validation messages with a small interface for i18n.
 - Currency-aware money stored as exact integer minor units.
 
-## Quick Start
+## Always valid by construction
+
+Value objects in this package are **always valid**: if you are holding an
+`Email`, it has already passed validation. This makes illegal states
+unrepresentable — a function that takes an `Email` can never receive an invalid
+one. There is no "invalid value object" to guard against.
+
+Construct values one of two ways:
+
+- `T.tryParse(input)` — validates untrusted input and returns
+  `Either<Error, T>`. Use this for user input, API payloads, and forms.
+- `T(input)` — builds from a trusted literal and **throws**
+  `ValueObjectException` if the input is invalid. Use this for hard-coded,
+  known-good values.
 
 ```dart
 import 'package:gmana_value_objects/gmana_value_objects.dart';
 
-final email = Email('user@example.com');
+// Untrusted input → Either<EmailError, Email>.
+Email.tryParse('user@example.com').fold(
+  (error) => print('Invalid: ${error.code}'),
+  (email) => print(email.value), // user@example.com
+);
 
-if (email.isValid) {
-  print(email.valueOrNull); // user@example.com
-} else {
-  print(email.errorOrNull?.code);
-}
+// Trusted literal → throws if invalid.
+final email = Email('user@example.com');
+print(email.value); // user@example.com
 ```
 
 Every value object exposes:
 
-| API                     | Meaning                                              |
-| ----------------------- | ---------------------------------------------------- |
-| `value`                 | Full `Either<ValidationError, T>` validation result. |
-| `isValid` / `isInvalid` | Boolean validation state.                            |
-| `valueOrNull`           | Valid typed value, or `null`.                        |
-| `errorOrNull`           | Validation error, or `null`.                         |
-| `isSensitive`           | `true` for sensitive objects such as `Password`.     |
+| API               | Meaning                                                      |
+| ----------------- | ------------------------------------------------------------ |
+| `T.tryParse(...)` | Validate untrusted input, returning `Either<Error, T>`.      |
+| `T(input)`        | Build from a trusted literal; throws `ValueObjectException`. |
+| `value`           | The validated underlying value (always present).             |
+| `isSensitive`     | `true` for sensitive objects such as `Password`.             |
+| `==` / `hashCode` | Structural equality by concrete type and `value`.            |
 
 ## Email
 
 ```dart
-final email = Email('USER@Example.COM');
-print(email.valueOrNull); // user@example.com
-
-final strictEmail = Email(
-  'user@tempmail.com',
-  config: EmailValidationConfig.strict(),
+Email.tryParse('USER@Example.COM').fold(
+  (error) => print(error.code),
+  (email) => print(email.value), // user@example.com
 );
 
-switch (strictEmail.errorOrNull) {
-  case EmailDisposableDomain(:final domain):
-    print('Disposable domain: $domain');
-  case null:
-    print('Valid email');
-  default:
-    print('Invalid email');
-}
+Email.tryParse(
+  'user@tempmail.com',
+  config: EmailValidationConfig.strict(),
+).fold(
+  (error) => switch (error) {
+    EmailDisposableDomain(:final domain) => print('Disposable domain: $domain'),
+    _ => print('Invalid email: ${error.code}'),
+  },
+  (email) => print('Valid email: ${email.value}'),
+);
 ```
 
 Email validation supports format checks, max lengths, disposable domains, and
@@ -96,7 +110,8 @@ final password = Password(
 );
 
 print(password.isSensitive); // true
-print(password.toString()); // Password(valid)
+print(password.toString()); // Password(***) — value is masked
+print(password.value); // MyP@ssw0rd!2026
 ```
 
 Password validation supports min/max length, ASCII-only rules, common password
@@ -157,7 +172,7 @@ print(discounted.formatted); // $40.48
 Money supports:
 
 - exact minor-unit storage, such as cents for USD
-- zero, major/minor, decimal string, numeric, and `MoneyAmount` constructors
+- zero, exact minor-unit, major/minor, decimal-string, and numeric constructors
 - same-currency arithmetic and comparison
 - half-up rounding for multiplication and percentages
 - proportional allocation without losing remainders
@@ -178,11 +193,11 @@ result.fold(
 
 ```dart
 final messages = DefaultValidationErrorMessages();
-final email = Email('invalid');
 
-if (email.errorOrNull case final error?) {
-  print(messages.getMessage(error)); // Invalid email format
-}
+Email.tryParse('invalid').fold(
+  (error) => print(messages.getMessage(error)), // Invalid email format
+  (email) => print(email.value),
+);
 ```
 
 For app-specific localization, switch on `ValidationError` subclasses directly:
@@ -216,15 +231,14 @@ final class ValidationFailure extends Failure {
 }
 
 final class AppEmail {
-  const AppEmail._(this.value);
+  const AppEmail._(this.email);
 
-  factory AppEmail(String input) {
-    return AppEmail._(
-      vo.Email(input).value.mapLeft(ValidationFailure.new),
-    );
+  final vo.Email email;
+
+  /// Maps the value-object error into your own domain failure type.
+  static vo.Either<Failure, AppEmail> tryParse(String input) {
+    return vo.Email.tryParse(input).bimap(ValidationFailure.new, AppEmail._);
   }
-
-  final vo.Either<Failure, String> value;
 }
 ```
 

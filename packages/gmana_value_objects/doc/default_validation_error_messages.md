@@ -2,11 +2,11 @@
 
 ```dart
 final messages = DefaultValidationErrorMessages();
-final email = Email('bad');
 
-final errorText = email.errorOrNull == null
-    ? null
-    : messages.getMessage(email.errorOrNull!);
+final errorText = Email.tryParse('bad').fold(
+  (error) => messages.getMessage(error),
+  (email) => null,
+);
 ```
 
 For localization, switch on the sealed error hierarchy:

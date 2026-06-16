@@ -1,6 +1,6 @@
 import 'package:gmana_functional/gmana_functional.dart';
 import 'currency.dart';
-import 'money_amount.dart';
+import 'money.dart';
 import 'money_errors.dart';
 import 'money_validation_config.dart';
 
@@ -14,9 +14,9 @@ final class MoneyValidator {
 
   /// Validates the given [input] string as a money amount.
   ///
-  /// Returns a `Right` containing the parsed [MoneyAmount] if valid.
+  /// Returns a `Right` containing the parsed [Money] if valid.
   /// Otherwise, returns a `Left` containing the specific [MoneyError].
-  Either<MoneyError, MoneyAmount> validate(String input, {String? currency}) {
+  Either<MoneyError, Money> validate(String input, {String? currency}) {
     final trimmed = input.trim();
 
     if (trimmed.isEmpty) {
@@ -72,16 +72,16 @@ final class MoneyValidator {
       );
     }
 
-    return Right(MoneyAmount(minorUnits: minorUnits, currency: parsedCurrency));
+    return Right(Money(minorUnits: minorUnits, currency: parsedCurrency));
   }
 
   /// Validates an already numeric amount as money.
-  Either<MoneyError, MoneyAmount> validateNum(num input, {String? currency}) {
+  Either<MoneyError, Money> validateNum(num input, {String? currency}) {
     return validate(input.toString(), currency: currency);
   }
 
   /// Validates an exact minor-unit amount as money.
-  Either<MoneyError, MoneyAmount> validateMinorUnits(
+  Either<MoneyError, Money> validateMinorUnits(
     int minorUnits, {
     String? currency,
   }) {
@@ -116,7 +116,7 @@ final class MoneyValidator {
       );
     }
 
-    return Right(MoneyAmount(minorUnits: minorUnits, currency: parsedCurrency));
+    return Right(Money(minorUnits: minorUnits, currency: parsedCurrency));
   }
 
   bool _isDecimal(String input) {

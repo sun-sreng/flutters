@@ -108,29 +108,28 @@ void main() {
     });
   });
 
-  group('Password Value Object', () {
-    test('creates valid Password', () {
-      final pass = Password('StrongP@ssw0rd!');
-      expect(pass.isValid, true);
-      expect(pass.isSensitive, true);
-      expect(pass.valueOrNull, 'StrongP@ssw0rd!');
-      expect(pass.toString(), 'Password(valid)');
+  group('Password value object', () {
+    test('tryParse returns a sensitive, masked Password for valid input', () {
+      Password.tryParse('StrongP@ssw0rd!').fold(
+        (l) => fail('should be right'),
+        (pass) {
+          expect(pass.value, 'StrongP@ssw0rd!');
+          expect(pass.isSensitive, true);
+          expect(pass.toString(), 'Password(***)');
+        },
+      );
     });
 
-    test('creates invalid Password', () {
-      final pass = Password('short');
-      expect(pass.isInvalid, true);
-      expect(pass.valueOrNull, null);
-      expect(pass.errorOrNull, isA<PasswordTooShort>());
-      expect(pass.toString(), 'Password(invalid)');
+    test('tryParse returns the error for invalid input', () {
+      Password.tryParse('short').fold(
+        (error) => expect(error, isA<PasswordTooShort>()),
+        (r) => fail('should be left'),
+      );
     });
 
-    test('creates Password from validated result', () {
-      final validated = const PasswordValidator().validate('StrongP@ssw0rd!');
-      final pass = Password.validated(validated);
-
-      expect(pass.isValid, true);
-      expect(pass.valueOrNull, 'StrongP@ssw0rd!');
+    test('constructor builds trusted values and throws otherwise', () {
+      expect(Password('StrongP@ssw0rd!').value, 'StrongP@ssw0rd!');
+      expect(() => Password('short'), throwsA(isA<ValueObjectException>()));
     });
   });
 }

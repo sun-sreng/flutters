@@ -1,23 +1,29 @@
-import 'package:gmana_functional/gmana_functional.dart';
 import 'package:meta/meta.dart';
 
-import '../core/value_object.dart';
 import 'currency.dart';
-import 'money_amount.dart';
-import 'money_errors.dart';
 
 /// A value object representing a non-negative monetary amount.
 ///
-/// Money is stored as exact integer minor units paired with [Currency] metadata.
+/// [Money] is always valid: it stores an exact, non-negative integer count of
+/// minor units (for example cents) paired with [Currency] metadata, so
+/// arithmetic never depends on floating-point decimal storage. For USD, a
+/// [minorUnits] of `1234` represents `$12.34`; for JPY, `1234` represents
+/// `¥1234`.
+///
+/// Construct trusted amounts with the [Money] constructors. To validate
+/// untrusted text or numeric input, use `MoneyValidator`, which returns an
+/// `Either<MoneyError, Money>`.
 @immutable
-final class Money extends ValueObject<MoneyAmount> implements Comparable<Money> {
-  /// The exact minor-unit amount.
+final class Money implements Comparable<Money> {
+  /// The exact, non-negative minor-unit amount.
   final int minorUnits;
 
   /// The ISO currency metadata.
   final Currency currency;
 
   /// Creates a [Money] from exact minor units.
+  ///
+  /// Throws a [RangeError] when [minorUnits] is negative.
   factory Money({required int minorUnits, required Currency currency}) {
     if (minorUnits < 0) {
       throw RangeError.range(minorUnits, 0, null, 'minorUnits');
@@ -26,15 +32,10 @@ final class Money extends ValueObject<MoneyAmount> implements Comparable<Money> 
     return Money._(minorUnits: minorUnits, currency: currency);
   }
 
-  /// Creates a [Money] from a [MoneyAmount].
-  factory Money.fromAmount(MoneyAmount amount) {
-    return Money(minorUnits: amount.minorUnits, currency: amount.currency);
-  }
-
   /// Parses a decimal string into [Money].
   ///
   /// Pads minor digits to match [currency]'s decimal places and rejects input
-  /// that has too many fractional digits.
+  /// with too many fractional digits, a negative sign, or non-numeric content.
   factory Money.fromDecimalString(String value, Currency currency) {
     final trimmed = value.trim().replaceAll(',', '');
     if (!RegExp(r'^\d+(\.\d+)?$').hasMatch(trimmed)) {
@@ -49,22 +50,25 @@ final class Money extends ValueObject<MoneyAmount> implements Comparable<Money> 
     }
 
     final paddedMinor = rawMinor.padRight(currency.decimalPlaces, '0');
-    final normalizedMinor = currency.decimalPlaces == 0 ? '' : paddedMinor.substring(0, currency.decimalPlaces);
+    final normalizedMinor =
+        currency.decimalPlaces == 0 ? '' : paddedMinor.substring(0, currency.decimalPlaces);
     final minor = normalizedMinor.isEmpty ? 0 : int.parse(normalizedMinor);
 
     return Money.ofMajor(major, minor, currency);
   }
 
-  /// Creates a [Money] from a numeric decimal value.
+  /// Creates a [Money] from a numeric decimal value using half-up rounding.
+  ///
+  /// Throws an [ArgumentError] when [value] is negative.
   factory Money.fromNum(num value, Currency currency) {
     if (value < 0) {
       throw ArgumentError.value(value, 'value', 'Value cannot be negative');
     }
 
-    final minorUnits =
-        MoneyAmount(minorUnits: 1, currency: currency).multiply(value * currency.subunitFactor).minorUnits;
-
-    return Money(minorUnits: minorUnits, currency: currency);
+    return Money._(
+      minorUnits: _roundHalfUp(value * currency.subunitFactor),
+      currency: currency,
+    );
   }
 
   /// Creates a [Money] from separate major and minor parts.
@@ -76,7 +80,10 @@ final class Money extends ValueObject<MoneyAmount> implements Comparable<Money> 
       throw RangeError.range(minor, 0, currency.subunitFactor - 1, 'minor');
     }
 
-    return Money(minorUnits: major * currency.subunitFactor + minor, currency: currency);
+    return Money._(
+      minorUnits: major * currency.subunitFactor + minor,
+      currency: currency,
+    );
   }
 
   /// Creates a zero amount for [currency].
@@ -85,46 +92,159 @@ final class Money extends ValueObject<MoneyAmount> implements Comparable<Money> 
   const Money._({required this.minorUnits, required this.currency});
 
   /// The decimal amount for display and simple non-authoritative reads.
-  num get amount => amountValue.amount;
-
-  /// The internal exact amount.
-  MoneyAmount get amountValue {
-    return MoneyAmount(minorUnits: minorUnits, currency: currency);
-  }
+  ///
+  /// Prefer [decimalString] or [minorUnits] for exact, authoritative values.
+  num get amount => minorUnits / currency.subunitFactor;
 
   /// The number of fractional digits used by [minorUnits].
   int get decimalDigits => currency.decimalPlaces;
 
-  /// Decimal string suitable for API payloads and form prefill.
-  String get decimalString => amountValue.decimalString;
+  /// Whole major units, truncated toward zero.
+  int get major => minorUnits ~/ currency.subunitFactor;
 
-  /// Currency-aware formatted value for UI display.
-  String get formatted => amountValue.formatted;
-
-  /// Currency-code formatted value for admin, receipts, logs, and debugging.
-  String get formattedWithCode => amountValue.formattedWithCode;
-
-  @override
-  int get hashCode => Object.hash(currency, minorUnits);
-
-  /// Returns `true` when this amount is greater than zero.
-  bool get isPositive => minorUnits > 0;
+  /// Minor-unit remainder after stripping [major].
+  int get minor => minorUnits.remainder(currency.subunitFactor);
 
   /// Returns `true` when this amount is zero.
   bool get isZero => minorUnits == 0;
 
-  /// Whole major units, truncated toward zero.
-  int get major => amountValue.major;
+  /// Returns `true` when this amount is greater than zero.
+  bool get isPositive => minorUnits > 0;
 
-  /// Minor-unit remainder after stripping [major].
-  int get minor => amountValue.minor;
+  /// Decimal string suitable for API payloads and form prefill.
+  String get decimalString {
+    if (currency.decimalPlaces == 0) {
+      return minorUnits.toString();
+    }
 
-  /// The underlying validated [MoneyAmount].
-  @override
-  Either<MoneyError, MoneyAmount> get value => Right(amountValue);
+    final whole = major.toString();
+    final fractional = minor.toString().padLeft(currency.decimalPlaces, '0');
+    return '$whole.$fractional';
+  }
 
-  @override
-  MoneyAmount? get valueOrNull => amountValue;
+  /// Currency-aware formatted value for UI display.
+  String get formatted {
+    final separator = _symbolNeedsSeparator(currency.symbol) ? ' ' : '';
+    return '${currency.symbol}$separator$decimalString';
+  }
+
+  /// Currency-code formatted value for admin, receipts, logs, and debugging.
+  String get formattedWithCode => '${currency.code} $decimalString';
+
+  /// Formats the amount, optionally with the currency code instead of symbol.
+  String format({bool withCode = false}) {
+    return withCode ? formattedWithCode : formatted;
+  }
+
+  /// Adds another same-currency [Money].
+  Money add(Money other) {
+    _assertSameCurrency(other);
+    return Money._(
+      minorUnits: minorUnits + other.minorUnits,
+      currency: currency,
+    );
+  }
+
+  /// Subtracts another same-currency [Money].
+  ///
+  /// Throws an [ArgumentError] when the result would be negative.
+  Money subtract(Money other) {
+    _assertSameCurrency(other);
+    if (other.minorUnits > minorUnits) {
+      throw ArgumentError.value(
+        other,
+        'other',
+        'Subtraction would produce a negative money amount',
+      );
+    }
+
+    return Money._(
+      minorUnits: minorUnits - other.minorUnits,
+      currency: currency,
+    );
+  }
+
+  /// Returns whether this amount can subtract [other] without going negative.
+  bool canSubtract(Money other) {
+    _assertSameCurrency(other);
+    return minorUnits >= other.minorUnits;
+  }
+
+  /// Multiplies this amount by [factor] using half-up rounding.
+  Money multiply(num factor) {
+    if (factor < 0) {
+      throw ArgumentError.value(factor, 'factor', 'Factor cannot be negative');
+    }
+
+    return Money._(
+      minorUnits: _roundHalfUp(minorUnits * factor),
+      currency: currency,
+    );
+  }
+
+  /// Returns [percent] percent of this amount using half-up rounding.
+  Money applyPercent(num percent) {
+    if (percent < 0 || percent > 100) {
+      throw RangeError.range(percent, 0, 100, 'percent');
+    }
+
+    return multiply(percent / 100);
+  }
+
+  /// Applies a percentage discount and rounds to the nearest minor unit.
+  Money applyDiscountPercent(num percent) {
+    return subtract(applyPercent(percent));
+  }
+
+  /// Splits this amount across [ratios] without losing any minor units.
+  ///
+  /// Any rounding remainder is distributed one minor unit at a time across the
+  /// leading allocations, so the parts always sum back to this amount.
+  List<Money> allocate(List<int> ratios) {
+    if (ratios.isEmpty) {
+      throw ArgumentError.value(ratios, 'ratios', 'Ratios cannot be empty');
+    }
+    if (ratios.any((ratio) => ratio < 0)) {
+      throw ArgumentError.value(
+        ratios,
+        'ratios',
+        'Ratios cannot contain negative values',
+      );
+    }
+
+    final total = ratios.fold<int>(0, (sum, ratio) => sum + ratio);
+    if (total <= 0) {
+      throw ArgumentError.value(
+        ratios,
+        'ratios',
+        'At least one ratio must be greater than zero',
+      );
+    }
+
+    var remainder = minorUnits;
+    final allocations = <Money>[];
+
+    for (final ratio in ratios) {
+      final share = minorUnits * ratio ~/ total;
+      allocations.add(Money._(minorUnits: share, currency: currency));
+      remainder -= share;
+    }
+
+    for (var i = 0; remainder > 0; i++, remainder--) {
+      allocations[i] = Money._(
+        minorUnits: allocations[i].minorUnits + 1,
+        currency: currency,
+      );
+    }
+
+    return allocations;
+  }
+
+  /// Returns the smaller same-currency amount.
+  Money min(Money other) => compareTo(other) <= 0 ? this : other;
+
+  /// Returns the larger same-currency amount.
+  Money max(Money other) => compareTo(other) >= 0 ? this : other;
 
   /// Multiplies this amount by a numeric factor.
   Money operator *(num factor) => multiply(factor);
@@ -141,62 +261,57 @@ final class Money extends ValueObject<MoneyAmount> implements Comparable<Money> 
   /// Returns whether this amount is less than or equal to [other].
   bool operator <=(Money other) => compareTo(other) <= 0;
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) || other is Money && other.currency == currency && other.minorUnits == minorUnits;
-  }
-
   /// Returns whether this amount is greater than [other].
   bool operator >(Money other) => compareTo(other) > 0;
 
   /// Returns whether this amount is greater than or equal to [other].
   bool operator >=(Money other) => compareTo(other) >= 0;
 
-  /// Adds another same-currency [Money].
-  Money add(Money other) => Money.fromAmount(amountValue + other.amountValue);
-
-  /// Splits this amount across [ratios] without losing any remainder.
-  List<Money> allocate(List<int> ratios) {
-    return amountValue.allocate(ratios).map(Money.fromAmount).toList();
+  @override
+  int compareTo(Money other) {
+    _assertSameCurrency(other);
+    return minorUnits.compareTo(other.minorUnits);
   }
-
-  /// Applies a percentage discount.
-  Money applyDiscountPercent(num percent) {
-    return Money.fromAmount(amountValue.applyDiscountPercent(percent));
-  }
-
-  /// Returns [percent] percent of this amount using half-up rounding.
-  Money applyPercent(num percent) {
-    return Money.fromAmount(amountValue.applyPercent(percent));
-  }
-
-  /// Returns whether this amount can subtract [other] without going negative.
-  bool canSubtract(Money other) => amountValue.canSubtract(other.amountValue);
 
   @override
-  int compareTo(Money other) => amountValue.compareTo(other.amountValue);
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Money &&
+          other.currency == currency &&
+          other.minorUnits == minorUnits;
 
-  /// Returns the larger same-currency amount.
-  Money max(Money other) => compareTo(other) >= 0 ? this : other;
-
-  /// Returns the smaller same-currency amount.
-  Money min(Money other) => compareTo(other) <= 0 ? this : other;
-
-  /// Multiplies this amount by [factor] using half-up rounding.
-  Money multiply(num factor) => Money.fromAmount(amountValue * factor);
-
-  /// Subtracts another same-currency [Money].
-  Money subtract(Money other) {
-    return Money.fromAmount(amountValue - other.amountValue);
-  }
+  @override
+  int get hashCode => Object.hash(currency, minorUnits);
 
   @override
   String toString() => formattedWithCode;
+
+  void _assertSameCurrency(Money other) {
+    if (currency != other.currency) {
+      throw ArgumentError.value(
+        other,
+        'other',
+        'Money amounts must use the same currency',
+      );
+    }
+  }
+
+  static bool _symbolNeedsSeparator(String symbol) {
+    return symbol.length > 1 && RegExp(r'^[A-Z]').hasMatch(symbol);
+  }
+
+  // Half-up rounding. Money is always non-negative, so the simple
+  // `(value + 0.5).floor()` form is correct here.
+  static int _roundHalfUp(num value) {
+    return (value + 0.5).floor();
+  }
 }
 
-/// Helpers for summing ecommerce money collections.
+/// Helpers for summing collections of [Money].
 extension MoneyIterableExtension on Iterable<Money> {
   /// Sums the collection, returning zero in [emptyCurrency] for empty lists.
+  ///
+  /// Throws an [ArgumentError] when the collection mixes currencies.
   Money sum({required Currency emptyCurrency}) {
     final iterator = this.iterator;
     if (!iterator.moveNext()) {

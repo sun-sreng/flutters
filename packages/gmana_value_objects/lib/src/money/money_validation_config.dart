@@ -1,12 +1,11 @@
 import 'package:meta/meta.dart';
 
-import '../../gmana_value_objects.dart' show Currency;
-import 'currency.dart' show Currency;
+import '../core/collection_equality.dart';
 
 /// Configuration rules for valid money values.
 ///
 /// Amount limits are expressed in minor units so they stay exact.
-/// Currency precision is defined by [Currency] metadata.
+/// Currency precision is defined by `Currency` metadata.
 @immutable
 final class MoneyValidationConfig {
   /// The currency to use when no currency is passed to the validator.
@@ -54,4 +53,23 @@ final class MoneyValidationConfig {
   factory MoneyValidationConfig.usd() {
     return const MoneyValidationConfig(defaultCurrency: 'USD', allowedCurrencies: {'USD'});
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MoneyValidationConfig &&
+          other.defaultCurrency == defaultCurrency &&
+          other.minMinorUnits == minMinorUnits &&
+          other.maxMinorUnits == maxMinorUnits &&
+          other.allowThousandsSeparators == allowThousandsSeparators &&
+          setEquals(other.allowedCurrencies, allowedCurrencies);
+
+  @override
+  int get hashCode => Object.hash(
+    defaultCurrency,
+    minMinorUnits,
+    maxMinorUnits,
+    allowThousandsSeparators,
+    allowedCurrencies == null ? null : Object.hashAllUnordered(allowedCurrencies!),
+  );
 }

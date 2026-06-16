@@ -1,20 +1,20 @@
 # Text
 
 ```dart
-final username = TextValue(
+// Untrusted input → Either<TextError, TextValue>.
+final username = TextValue.tryParse(
   'john_doe',
   config: TextValidationConfig.username(),
 );
 
-final displayName = TextValue(
-  'John',
-  config: TextValidationConfig.name(),
-);
+// Trusted literal → throws ValueObjectException if invalid.
+final displayName = TextValue('John', config: TextValidationConfig.name());
 ```
 
 | API                                                              | Use it for                                                                                 |
 | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `TextValue(input, config: ...)`                                  | Create a typed text value object.                                                          |
+| `TextValue.tryParse(input, config: ...)`                         | Validate untrusted input, returning `Either<TextError, TextValue>`.                        |
+| `TextValue(input, config: ...)`                                  | Create a typed text value from a trusted literal; throws if invalid.                       |
 | `TextValidationConfig()`                                         | Configure required flag, trimming, length, pattern, allowed characters, and blocked words. |
 | `TextValidationConfig.username()`                                | Username-oriented preset.                                                                  |
 | `TextValidationConfig.name()`                                    | Human-name preset.                                                                         |

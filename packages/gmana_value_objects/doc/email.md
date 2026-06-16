@@ -1,19 +1,20 @@
 # Email
 
 ```dart
-final email = Email(
+// Untrusted input → Either<EmailError, Email>.
+final result = Email.tryParse(
   'user@example.com',
   config: EmailValidationConfig.strict(),
 );
 
-final result = EmailValidator(
-  EmailValidationConfig(blockedDomains: {'example.org'}),
-).validate('user@example.com');
+// Trusted literal → throws ValueObjectException if invalid.
+final email = Email('user@example.com');
 ```
 
 | API                                      | Use it for                                                                                               |
 | ---------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `Email(input, config: ...)`              | Create a typed email value object.                                                                       |
+| `Email.tryParse(input, config: ...)`     | Validate untrusted input, returning `Either<EmailError, Email>`.                                         |
+| `Email(input, config: ...)`              | Create a typed email from a trusted literal; throws `ValueObjectException` if invalid.                   |
 | `EmailValidationConfig()`                | Configure required flag, max length, local/domain limits, disposable-domain checks, and blocked domains. |
 | `EmailValidationConfig.strict()`         | Use stricter defaults, including disposable-domain rejection.                                            |
 | `EmailValidator(config).validate(input)` | Validate an email without constructing `Email` directly.                                                 |
