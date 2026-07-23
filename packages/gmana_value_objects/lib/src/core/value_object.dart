@@ -40,5 +40,6 @@ abstract class ValueObject<T> {
   int get hashCode => Object.hash(runtimeType, value);
 
   @override
-  String toString() => isSensitive ? '$runtimeType(***)' : '$runtimeType($value)';
+  String toString() =>
+      isSensitive ? '$runtimeType(***)' : '$runtimeType($value)';
 }

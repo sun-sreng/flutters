@@ -145,13 +145,12 @@ void main() {
 
   group('TextValue value object', () {
     test('tryParse returns the trimmed value for valid input', () {
-      TextValue.tryParse('  hello  ').fold(
-        (l) => fail('should be right'),
-        (text) {
-          expect(text.value, 'hello');
-          expect(text.toString(), 'TextValue(hello)');
-        },
-      );
+      TextValue.tryParse('  hello  ').fold((l) => fail('should be right'), (
+        text,
+      ) {
+        expect(text.value, 'hello');
+        expect(text.toString(), 'TextValue(hello)');
+      });
     });
 
     test('tryParse returns the error for invalid input', () {

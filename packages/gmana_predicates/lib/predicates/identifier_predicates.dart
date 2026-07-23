@@ -77,7 +77,11 @@ bool isMongoId(String str) => isHexadecimal(str) && str.length == 24;
 
 /// Returns `true` if [str] is a valid fully-qualified domain name.
 @experimental
-bool isFQDN(String str, {bool requireTld = true, bool allowUnderscores = false}) {
+bool isFQDN(
+  String str, {
+  bool requireTld = true,
+  bool allowUnderscores = false,
+}) {
   final parts = str.split('.');
 
   if (requireTld) {

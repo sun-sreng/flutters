@@ -57,15 +57,16 @@ class ShowcaseTopBar extends StatelessWidget {
           ),
           child: Wrap(
             spacing: 6,
-            children: ThemeMode.values.map((mode) {
-              final isSelected = mode == currentThemeMode;
-              return ChoiceChip(
-                label: Text(mode.toLabel()),
-                avatar: Icon(mode.toIcon(), size: 18),
-                selected: isSelected,
-                onSelected: (_) => onThemeChanged(mode),
-              );
-            }).toList(),
+            children:
+                ThemeMode.values.map((mode) {
+                  final isSelected = mode == currentThemeMode;
+                  return ChoiceChip(
+                    label: Text(mode.toLabel()),
+                    avatar: Icon(mode.toIcon(), size: 18),
+                    selected: isSelected,
+                    onSelected: (_) => onThemeChanged(mode),
+                  );
+                }).toList(),
           ),
         ),
       ],

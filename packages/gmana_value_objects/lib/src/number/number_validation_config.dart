@@ -97,9 +97,10 @@ final class NumberValidationConfig {
       max: identical(max, _unset) ? this.max : max as num?,
       allowNegative: allowNegative ?? this.allowNegative,
       integerOnly: integerOnly ?? this.integerOnly,
-      maxDecimalPlaces: identical(maxDecimalPlaces, _unset)
-          ? this.maxDecimalPlaces
-          : maxDecimalPlaces as int?,
+      maxDecimalPlaces:
+          identical(maxDecimalPlaces, _unset)
+              ? this.maxDecimalPlaces
+              : maxDecimalPlaces as int?,
     );
   }
 

@@ -2,8 +2,6 @@ import 'dart:async';
 
 import '../gmana_functional.dart' show Left, Right;
 
-
-
 /// A generic type that represents a value of one of two possible types (a disjoint union).
 ///
 /// Instances of `Either` are either an instance of [Left] or [Right].

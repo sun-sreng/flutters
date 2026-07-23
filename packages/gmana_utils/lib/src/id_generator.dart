@@ -112,8 +112,9 @@ class IdGenerator {
 /// **Constant-time comparison**: always compare tokens with [safeEqual] rather
 /// than `==` to prevent timing-based side-channel attacks.
 class SecureIdGenerator {
-  static final _IdGeneratorService _service =
-      _IdGeneratorService(random: Random.secure());
+  static final _IdGeneratorService _service = _IdGeneratorService(
+    random: Random.secure(),
+  );
 
   /// Generates a cryptographically random nanoid-style ID.
   ///
@@ -192,7 +193,9 @@ final class _IdGeneratorService {
     final payload = utf8.decode(payloadBytes);
     final decoded = json.decode(payload);
     if (decoded is! List) {
-      throw FormatException('Expected a JSON array, got ${decoded.runtimeType}');
+      throw FormatException(
+        'Expected a JSON array, got ${decoded.runtimeType}',
+      );
     }
     return List<Object?>.from(decoded);
   }
@@ -309,8 +312,7 @@ final class _IdGeneratorService {
 // ---------------------------------------------------------------------------
 
 final class _IdGeneratorUtils {
-  static const alpha =
-      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  static const alpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   static const numbers = '0123456789';
   static const symbols = '!@#\$%^&*_-+=';
 

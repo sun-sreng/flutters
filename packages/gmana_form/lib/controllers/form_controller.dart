@@ -24,8 +24,7 @@ final class GFormValues {
 }
 
 /// Validator that can inspect both the field value and the whole form.
-typedef GTypedFormValidator<T> =
-    String? Function(T? value, GFormValues values);
+typedef GTypedFormValidator<T> = String? Function(T? value, GFormValues values);
 
 /// Parses text input into a typed form value.
 typedef GFormValueParser = Object? Function(String text);
@@ -42,11 +41,8 @@ final class GFormFieldController<T> extends ChangeNotifier {
   String? _errorText;
 
   /// Creates a typed field controller.
-  GFormFieldController({
-    required this.name,
-    T? initialValue,
-    this.validator,
-  }) : _value = initialValue;
+  GFormFieldController({required this.name, T? initialValue, this.validator})
+    : _value = initialValue;
 
   /// Current typed value.
   T? get value => _value;
@@ -196,7 +192,9 @@ final class GFormController extends ChangeNotifier {
       initialValue: parser?.call(controller.text) ?? controller.text,
     );
     void listener() {
-      fieldController.setValue(parser?.call(controller.text) ?? controller.text);
+      fieldController.setValue(
+        parser?.call(controller.text) ?? controller.text,
+      );
     }
 
     _boundTextControllers[name] = controller;

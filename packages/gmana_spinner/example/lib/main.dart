@@ -15,7 +15,9 @@ class SpinnerExampleApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'gmana_spinner',
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2563EB))),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2563EB)),
+      ),
       home: const SpinnerGalleryPage(),
     );
   }
@@ -36,13 +38,28 @@ class SpinnerGalleryPage extends StatelessWidget {
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
         children: [
-          _SpinnerTile(label: 'Circular', child: GCircularSpinner(color: colorScheme.primary)),
-          _SpinnerTile(label: 'Linear', child: GLinearSpinner(color: colorScheme.primary, minHeight: 6)),
-          _SpinnerTile(label: 'Dots', child: GDotSpinner(color: colorScheme.primary, size: 42)),
-          _SpinnerTile(label: 'Wave Dots', child: GWaveDotSpinner(size: 64, color: colorScheme.primary)),
+          _SpinnerTile(
+            label: 'Circular',
+            child: GCircularSpinner(color: colorScheme.primary),
+          ),
+          _SpinnerTile(
+            label: 'Linear',
+            child: GLinearSpinner(color: colorScheme.primary, minHeight: 6),
+          ),
+          _SpinnerTile(
+            label: 'Dots',
+            child: GDotSpinner(color: colorScheme.primary, size: 42),
+          ),
+          _SpinnerTile(
+            label: 'Wave Dots',
+            child: GWaveDotSpinner(size: 64, color: colorScheme.primary),
+          ),
           _SpinnerTile(
             label: 'Bars',
-            child: GBarWaveSpinner(color: colorScheme.primary, type: GBarWaveSpinnerType.center),
+            child: GBarWaveSpinner(
+              color: colorScheme.primary,
+              type: GBarWaveSpinnerType.center,
+            ),
           ),
           _SpinnerTile(
             label: 'Wave',

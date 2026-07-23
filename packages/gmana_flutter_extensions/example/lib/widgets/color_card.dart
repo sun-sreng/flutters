@@ -12,11 +12,17 @@ class ColorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(8)),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: DefaultTextStyle(
-          style: context.textTheme.titleMedium!.copyWith(color: color.contrastText, fontWeight: FontWeight.w700),
+          style: context.textTheme.titleMedium!.copyWith(
+            color: color.contrastText,
+            fontWeight: FontWeight.w700,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -24,7 +30,9 @@ class ColorCard extends StatelessWidget {
               Text(label),
               Text(
                 color.toHexRGB(),
-                style: context.textTheme.bodyMedium!.copyWith(color: color.contrastText.withAlphaOpacity(0.84)),
+                style: context.textTheme.bodyMedium!.copyWith(
+                  color: color.contrastText.withAlphaOpacity(0.84),
+                ),
               ),
             ],
           ),

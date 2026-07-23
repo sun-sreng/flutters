@@ -22,7 +22,10 @@ void main() {
       expect(kwd.decimalString, '3.500');
       expect(price.minorUnits, 1999);
       expect(price.currency, Currency.usd);
-      expect(() => Money(minorUnits: -1, currency: Currency.usd), throwsRangeError);
+      expect(
+        () => Money(minorUnits: -1, currency: Currency.usd),
+        throwsRangeError,
+      );
     });
 
     test('constructs zero money', () {
@@ -51,12 +54,24 @@ void main() {
       expect(Money.fromDecimalString('19.99', Currency.usd).minorUnits, 1999);
       expect(Money.fromDecimalString('19.9', Currency.usd).minorUnits, 1990);
       expect(Money.fromDecimalString('19', Currency.usd).minorUnits, 1900);
-      expect(Money.fromDecimalString('1,234.56', Currency.usd).minorUnits, 123456);
+      expect(
+        Money.fromDecimalString('1,234.56', Currency.usd).minorUnits,
+        123456,
+      );
       expect(Money.fromDecimalString('500', Currency.jpy).minorUnits, 500);
       expect(Money.fromDecimalString('3.500', Currency.kwd).minorUnits, 3500);
-      expect(() => Money.fromDecimalString('19.999', Currency.usd), throwsFormatException);
-      expect(() => Money.fromDecimalString('not-money', Currency.usd), throwsFormatException);
-      expect(() => Money.fromDecimalString('-1.00', Currency.usd), throwsFormatException);
+      expect(
+        () => Money.fromDecimalString('19.999', Currency.usd),
+        throwsFormatException,
+      );
+      expect(
+        () => Money.fromDecimalString('not-money', Currency.usd),
+        throwsFormatException,
+      );
+      expect(
+        () => Money.fromDecimalString('-1.00', Currency.usd),
+        throwsFormatException,
+      );
     });
 
     test('constructs from numeric decimal values', () {
@@ -175,7 +190,10 @@ void main() {
       ].sum(emptyCurrency: Currency.usd);
 
       expect(subtotal.minorUnits, 2498);
-      expect(<Money>[].sum(emptyCurrency: Currency.usd), const Money.zero(Currency.usd));
+      expect(
+        <Money>[].sum(emptyCurrency: Currency.usd),
+        const Money.zero(Currency.usd),
+      );
       expect(
         () => [
           Money(minorUnits: 100, currency: Currency.usd),

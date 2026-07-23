@@ -14,7 +14,8 @@ extension ContextExt on BuildContext {
 
   bool get hasFocus => FocusScope.of(this).hasFocus;
 
-  bool get isLandscape => MediaQuery.orientationOf(this) == Orientation.landscape;
+  bool get isLandscape =>
+      MediaQuery.orientationOf(this) == Orientation.landscape;
 
   bool get isPortrait => !isLandscape;
 
@@ -57,11 +58,17 @@ extension ContextExt on BuildContext {
   /// Pops until [predicate] returns true.
   void popUntil(RoutePredicate predicate) => navigator.popUntil(predicate);
 
-  Future<T?> push<T>(Widget widget) => navigator.push<T>(MaterialPageRoute<T>(builder: (_) => widget));
+  Future<T?> push<T>(Widget widget) =>
+      navigator.push<T>(MaterialPageRoute<T>(builder: (_) => widget));
 
   /// Clears the entire stack and pushes [widget] as the new root.
-  Future<T?> pushAndRemoveUntil<T>(Widget widget, {RoutePredicate? predicate}) =>
-      navigator.pushAndRemoveUntil<T>(MaterialPageRoute<T>(builder: (_) => widget), predicate ?? (_) => false);
+  Future<T?> pushAndRemoveUntil<T>(
+    Widget widget, {
+    RoutePredicate? predicate,
+  }) => navigator.pushAndRemoveUntil<T>(
+    MaterialPageRoute<T>(builder: (_) => widget),
+    predicate ?? (_) => false,
+  );
 
   Future<T?> pushReplacement<T>(Widget widget) =>
       navigator.pushReplacement(MaterialPageRoute<T>(builder: (_) => widget));
@@ -74,7 +81,9 @@ extension ContextExt on BuildContext {
     bool isDismissible = true,
     bool enableDrag = true,
     Color? backgroundColor,
-    BorderRadiusGeometry borderRadius = const BorderRadius.vertical(top: Radius.circular(16)),
+    BorderRadiusGeometry borderRadius = const BorderRadius.vertical(
+      top: Radius.circular(16),
+    ),
   }) => showModalBottomSheet<T>(
     context: this,
     isScrollControlled: isScrollControlled,
@@ -85,7 +94,8 @@ extension ContextExt on BuildContext {
     builder: (_) => child,
   );
 
-  Future<T?> showAppDialog<T>({required Widget dialog}) => showDialog<T>(context: this, builder: (_) => dialog);
+  Future<T?> showAppDialog<T>({required Widget dialog}) =>
+      showDialog<T>(context: this, builder: (_) => dialog);
 
   Future<bool> showConfirmDialog({
     required String title,
@@ -102,7 +112,10 @@ extension ContextExt on BuildContext {
           TextButton(onPressed: () => pop(false), child: Text(cancelLabel)),
           TextButton(
             onPressed: () => pop(true),
-            style: destructive ? TextButton.styleFrom(foregroundColor: colorScheme.error) : null,
+            style:
+                destructive
+                    ? TextButton.styleFrom(foregroundColor: colorScheme.error)
+                    : null,
             child: Text(confirmLabel),
           ),
         ],
@@ -137,7 +150,10 @@ extension ContextExt on BuildContext {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text(message, style: TextStyle(color: textColor ?? cs.onInverseSurface)),
+          content: Text(
+            message,
+            style: TextStyle(color: textColor ?? cs.onInverseSurface),
+          ),
           backgroundColor: backgroundColor ?? cs.inverseSurface,
           duration: duration,
           action: action,

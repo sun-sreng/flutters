@@ -5,9 +5,21 @@ import 'package:flutter/material.dart';
 
 abstract final class ThemeModeService {
   static const Map<ThemeMode, _ThemeModeConfig> _configs = {
-    ThemeMode.system: _ThemeModeConfig(key: 'system', label: 'System Mode', icon: Icons.brightness_6),
-    ThemeMode.light: _ThemeModeConfig(key: 'light', label: 'Light Mode', icon: Icons.light_mode),
-    ThemeMode.dark: _ThemeModeConfig(key: 'dark', label: 'Dark Mode', icon: Icons.dark_mode),
+    ThemeMode.system: _ThemeModeConfig(
+      key: 'system',
+      label: 'System Mode',
+      icon: Icons.brightness_6,
+    ),
+    ThemeMode.light: _ThemeModeConfig(
+      key: 'light',
+      label: 'Light Mode',
+      icon: Icons.light_mode,
+    ),
+    ThemeMode.dark: _ThemeModeConfig(
+      key: 'dark',
+      label: 'Dark Mode',
+      icon: Icons.dark_mode,
+    ),
   };
 
   static const Map<String, ThemeMode> _keyMap = {
@@ -36,5 +48,9 @@ class _ThemeModeConfig {
   final String label;
   final IconData icon;
 
-  const _ThemeModeConfig({required this.key, required this.label, required this.icon});
+  const _ThemeModeConfig({
+    required this.key,
+    required this.label,
+    required this.icon,
+  });
 }

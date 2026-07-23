@@ -136,7 +136,10 @@ void main() {
 
     test('containsIgnoreCase checks substring presence ignoring case', () {
       expect(predicates.containsIgnoreCase('gmana predicates', 'MANA'), isTrue);
-      expect(predicates.containsIgnoreCase('gmana predicates', 'form'), isFalse);
+      expect(
+        predicates.containsIgnoreCase('gmana predicates', 'form'),
+        isFalse,
+      );
     });
 
     test('equals compares nullable string values', () {

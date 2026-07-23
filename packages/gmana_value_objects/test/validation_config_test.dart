@@ -50,7 +50,11 @@ void main() {
     });
 
     test('omitting a nullable field keeps the current value', () {
-      const base = NumberValidationConfig(min: 0, max: 100, maxDecimalPlaces: 2);
+      const base = NumberValidationConfig(
+        min: 0,
+        max: 100,
+        maxDecimalPlaces: 2,
+      );
       final updated = base.copyWith(max: 50);
 
       expect(updated.min, 0);
@@ -71,7 +75,10 @@ void main() {
       expect(text.copyWith(pattern: null).pattern, isNull);
       expect(text.copyWith(pattern: null).minLength, 3);
 
-      const money = MoneyValidationConfig(allowedCurrencies: {'USD'}, minMinorUnits: 100);
+      const money = MoneyValidationConfig(
+        allowedCurrencies: {'USD'},
+        minMinorUnits: 100,
+      );
       expect(money.copyWith(allowedCurrencies: null).allowedCurrencies, isNull);
       expect(money.copyWith(allowedCurrencies: null).minMinorUnits, 100);
     });

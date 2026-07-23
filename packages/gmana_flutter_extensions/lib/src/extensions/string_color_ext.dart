@@ -11,12 +11,16 @@ extension StringColorExtension on String {
   Color toColor() {
     final color = ColorService.tryParseHex(this);
     if (color == null) {
-      throw FormatException('Expected #RGB, #RRGGBB, or #AARRGGBB color text.', this);
+      throw FormatException(
+        'Expected #RGB, #RRGGBB, or #AARRGGBB color text.',
+        this,
+      );
     }
 
     return color;
   }
 
   /// Converts a hex string to a [Color] with the specified opacity.
-  Color toColorWithOpacity(double opacity) => toColor().withAlphaOpacity(opacity);
+  Color toColorWithOpacity(double opacity) =>
+      toColor().withAlphaOpacity(opacity);
 }

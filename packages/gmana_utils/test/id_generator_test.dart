@@ -175,10 +175,7 @@ void main() {
       });
 
       test('rejects non-positive length', () {
-        expect(
-          () => IdGenerator.prefixed('x', length: 0),
-          throwsArgumentError,
-        );
+        expect(() => IdGenerator.prefixed('x', length: 0), throwsArgumentError);
       });
     });
 
@@ -234,17 +231,19 @@ void main() {
     // -----------------------------------------------------------------------
 
     group('uuidV4Like', () {
-      test('matches UUID v4 shape with version nibble 4 and variant bits 8–b',
-          () {
-        expect(
-          IdGenerator.uuidV4Like(),
-          matches(
-            RegExp(
-              r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$',
+      test(
+        'matches UUID v4 shape with version nibble 4 and variant bits 8–b',
+        () {
+          expect(
+            IdGenerator.uuidV4Like(),
+            matches(
+              RegExp(
+                r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$',
+              ),
             ),
-          ),
-        );
-      });
+          );
+        },
+      );
     });
 
     // -----------------------------------------------------------------------
@@ -320,10 +319,7 @@ void main() {
       });
 
       test('rejects non-positive length', () {
-        expect(
-          () => SecureIdGenerator.shortId(length: 0),
-          throwsArgumentError,
-        );
+        expect(() => SecureIdGenerator.shortId(length: 0), throwsArgumentError);
       });
     });
 

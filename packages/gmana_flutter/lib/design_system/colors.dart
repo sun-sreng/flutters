@@ -2,7 +2,8 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
-import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart' show ColorService, ColorExt;
+import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart'
+    show ColorService, ColorExt;
 
 import '../gmana_flutter.dart' show ColorService, ColorExt;
 

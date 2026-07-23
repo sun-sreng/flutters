@@ -12,9 +12,18 @@ void main() {
     test('uses the strong preset by default', () {
       const validator = PasswordValidator();
 
-      expect(validator.validate('weak').leftOrNull(), isA<PasswordTooShortIssue>());
-      expect(validator.validate('alllowercase1!').leftOrNull(), isA<PasswordMissingUppercaseIssue>());
-      expect(validator.validate('StrongP@ssw0rd').rightOrNull(), 'StrongP@ssw0rd');
+      expect(
+        validator.validate('weak').leftOrNull(),
+        isA<PasswordTooShortIssue>(),
+      );
+      expect(
+        validator.validate('alllowercase1!').leftOrNull(),
+        isA<PasswordMissingUppercaseIssue>(),
+      );
+      expect(
+        validator.validate('StrongP@ssw0rd').rightOrNull(),
+        'StrongP@ssw0rd',
+      );
     });
 
     test('rejects common passwords', () {
@@ -50,7 +59,9 @@ void main() {
     });
 
     test('supports lenient configs', () {
-      final result = PasswordValidator(PasswordValidationConfig.lenient()).validate('abcd');
+      final result = PasswordValidator(
+        PasswordValidationConfig.lenient(),
+      ).validate('abcd');
 
       expect(result.rightOrNull(), 'abcd');
     });

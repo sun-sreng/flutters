@@ -110,8 +110,7 @@ class ThemeModeHomePage extends StatelessWidget {
                       const SizedBox(height: 28),
                       SectionLabel(
                         eyebrow: 'Examples',
-                        title:
-                            'A cleaner way to present the package surface.',
+                        title: 'A cleaner way to present the package surface.',
                         subtitle:
                             'The demo now reads like a product showcase instead of a widget sandbox.',
                       ),

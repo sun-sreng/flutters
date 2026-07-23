@@ -22,7 +22,10 @@ void main() {
     });
 
     test('toHHMMSS formats correctly', () {
-      expect(const Duration(hours: 1, minutes: 2, seconds: 3).toHHMMSS(), equals('01:02:03'));
+      expect(
+        const Duration(hours: 1, minutes: 2, seconds: 3).toHHMMSS(),
+        equals('01:02:03'),
+      );
     });
   });
 
@@ -87,7 +90,14 @@ void main() {
 
   group('IterableX', () {
     test('chunked splits correctly', () {
-      expect([1, 2, 3, 4, 5].chunked(2).toList(), equals([[1, 2], [3, 4], [5]]));
+      expect(
+        [1, 2, 3, 4, 5].chunked(2).toList(),
+        equals([
+          [1, 2],
+          [3, 4],
+          [5],
+        ]),
+      );
     });
 
     test('groupBy groups correctly', () {

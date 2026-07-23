@@ -57,7 +57,8 @@ class GDotSpinner extends StatefulWidget {
   State<GDotSpinner> createState() => _GDotSpinnerState();
 }
 
-class _GDotSpinnerState extends State<GDotSpinner> with SingleTickerProviderStateMixin {
+class _GDotSpinnerState extends State<GDotSpinner>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   bool _ownsController = false;
 
@@ -116,8 +117,14 @@ class _GDotSpinnerState extends State<GDotSpinner> with SingleTickerProviderStat
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: List.generate(widget.dotCount, (index) {
             return ScaleTransition(
-              scale: DelayedAnimationTween(delay: index / widget.dotCount).animate(_controller),
-              child: SizedBox(width: widget.size * 0.5, height: widget.size * 0.5, child: _buildDot(index)),
+              scale: DelayedAnimationTween(
+                delay: index / widget.dotCount,
+              ).animate(_controller),
+              child: SizedBox(
+                width: widget.size * 0.5,
+                height: widget.size * 0.5,
+                child: _buildDot(index),
+              ),
             );
           }),
         ),

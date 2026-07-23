@@ -80,7 +80,8 @@ final class EmailValidator {
     final lowerDomain = domain.toLowerCase();
 
     if (config.blockedDomains.isNotEmpty) {
-      final blockedDomains = config.blockedDomains.map(_normalizeDomain).toSet();
+      final blockedDomains =
+          config.blockedDomains.map(_normalizeDomain).toSet();
       if (blockedDomains.contains(lowerDomain)) {
         return Left(EmailBlockedDomain(lowerDomain));
       }

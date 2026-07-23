@@ -22,22 +22,31 @@ void main() {
     });
 
     test('enforces integer-only validation', () {
-      final result = const NumberValidator(NumberValidationConfig(integerOnly: true)).validate('12.5');
+      final result = const NumberValidator(
+        NumberValidationConfig(integerOnly: true),
+      ).validate('12.5');
 
       expect(result.leftOrNull(), isA<NumberNotIntegerIssue>());
     });
 
     test('enforces negativity and bounds', () {
-      const validator = NumberValidator(NumberValidationConfig(allowNegative: false, min: 10, max: 20));
+      const validator = NumberValidator(
+        NumberValidationConfig(allowNegative: false, min: 10, max: 20),
+      );
 
-      expect(validator.validate('-1').leftOrNull(), isA<NumberNegativeNotAllowedIssue>());
+      expect(
+        validator.validate('-1').leftOrNull(),
+        isA<NumberNegativeNotAllowedIssue>(),
+      );
       expect(validator.validate('9').leftOrNull(), isA<NumberTooSmallIssue>());
       expect(validator.validate('21').leftOrNull(), isA<NumberTooLargeIssue>());
       expect(validator.validate('15').rightOrNull(), 15);
     });
 
     test('enforces decimal-place limits', () {
-      final result = const NumberValidator(NumberValidationConfig(maxDecimalPlaces: 2)).validate('1.234');
+      final result = const NumberValidator(
+        NumberValidationConfig(maxDecimalPlaces: 2),
+      ).validate('1.234');
 
       expect(result.leftOrNull(), isA<NumberDecimalPlacesExceededIssue>());
     });

@@ -113,14 +113,13 @@ class _ColorExtensionLabPageState extends State<ColorExtensionLabPage> {
                           lightnessAmount: _lightnessAmount,
                           opacity: _opacity,
                           toneMode: _toneMode,
-                          onColorChanged: (v) =>
-                              setState(() => _selectedColorKey = v),
-                          onLightnessChanged: (v) =>
-                              setState(() => _lightnessAmount = v),
-                          onOpacityChanged: (v) =>
-                              setState(() => _opacity = v),
-                          onToneModeChanged: (v) =>
-                              setState(() => _toneMode = v),
+                          onColorChanged:
+                              (v) => setState(() => _selectedColorKey = v),
+                          onLightnessChanged:
+                              (v) => setState(() => _lightnessAmount = v),
+                          onOpacityChanged: (v) => setState(() => _opacity = v),
+                          onToneModeChanged:
+                              (v) => setState(() => _toneMode = v),
                         ),
                       ),
                       const SizedBox(height: 18),
@@ -167,11 +166,7 @@ class _ContentLayout extends StatelessWidget {
     }
 
     return Column(
-      children: [
-        previewPanel,
-        const SizedBox(height: 16),
-        controlsPanel,
-      ],
+      children: [previewPanel, const SizedBox(height: 16), controlsPanel],
     );
   }
 }

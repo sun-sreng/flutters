@@ -14,10 +14,7 @@ void main() {
     });
 
     test('returns language and script code', () {
-      const locale = Locale.fromSubtags(
-        languageCode: 'zh',
-        scriptCode: 'Hans',
-      );
+      const locale = Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans');
 
       expect(fromLocale(locale), 'zh_Hans');
     });

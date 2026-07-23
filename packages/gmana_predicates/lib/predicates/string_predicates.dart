@@ -97,7 +97,8 @@ bool isLength(String str, int min, [int? max]) {
 bool contains(String str, String seed) => str.contains(seed);
 
 /// Returns `true` if [str] contains [seed], ignoring case.
-bool containsIgnoreCase(String str, String seed) => str.toLowerCase().contains(seed.toLowerCase());
+bool containsIgnoreCase(String str, String seed) =>
+    str.toLowerCase().contains(seed.toLowerCase());
 
 /// Returns `true` if [str] equals [comparison].
 bool equals(String? str, String comparison) => str == comparison;

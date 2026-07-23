@@ -10,29 +10,48 @@ void main() {
     });
 
     test('rejects empty values for required config', () {
-      final result = TextValidator(TextValidationConfig.required()).validate('');
+      final result = TextValidator(
+        TextValidationConfig.required(),
+      ).validate('');
 
       expect(result.leftOrNull(), isA<TextEmptyIssue>());
     });
 
     test('rejects whitespace-only values when configured', () {
       final result = TextValidator(
-        const TextValidationConfig(allowEmpty: false, allowOnlyWhitespace: false),
+        const TextValidationConfig(
+          allowEmpty: false,
+          allowOnlyWhitespace: false,
+        ),
       ).validate('   ');
 
       expect(result.leftOrNull(), isA<TextOnlyWhitespaceIssue>());
     });
 
     test('applies trim, min, and max length rules', () {
-      final validator = TextValidator(TextValidationConfig.required(trimWhitespace: true, minLength: 3, maxLength: 5));
+      final validator = TextValidator(
+        TextValidationConfig.required(
+          trimWhitespace: true,
+          minLength: 3,
+          maxLength: 5,
+        ),
+      );
 
-      expect(validator.validate('  ab ').leftOrNull(), isA<TextTooShortIssue>());
-      expect(validator.validate('  abcdef ').leftOrNull(), isA<TextTooLongIssue>());
+      expect(
+        validator.validate('  ab ').leftOrNull(),
+        isA<TextTooShortIssue>(),
+      );
+      expect(
+        validator.validate('  abcdef ').leftOrNull(),
+        isA<TextTooLongIssue>(),
+      );
       expect(validator.validate('  abcd ').rightOrNull(), 'abcd');
     });
 
     test('applies pattern, allowed-characters, and blacklist rules', () {
-      final patternResult = TextValidator(TextValidationConfig(pattern: RegExp(r'^[A-Z]+$'))).validate('abc');
+      final patternResult = TextValidator(
+        TextValidationConfig(pattern: RegExp(r'^[A-Z]+$')),
+      ).validate('abc');
       final allowedCharactersResult = TextValidator(
         const TextValidationConfig(allowedCharacters: 'abc123'),
       ).validate('abc!');
@@ -41,7 +60,10 @@ void main() {
       ).validate('site-admin');
 
       expect(patternResult.leftOrNull(), isA<TextInvalidPatternIssue>());
-      expect(allowedCharactersResult.leftOrNull(), isA<TextInvalidCharactersIssue>());
+      expect(
+        allowedCharactersResult.leftOrNull(),
+        isA<TextInvalidCharactersIssue>(),
+      );
       expect(blacklistResult.leftOrNull(), isA<TextContainsBlacklistedIssue>());
     });
   });

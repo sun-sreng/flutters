@@ -58,25 +58,26 @@ class ControlsPanel extends StatelessWidget {
                   vertical: 16,
                 ),
               ),
-              items: colors.entries.map((entry) {
-                return DropdownMenuItem<String>(
-                  value: entry.key,
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 16,
-                        height: 16,
-                        decoration: BoxDecoration(
-                          color: entry.value,
-                          borderRadius: BorderRadius.circular(999),
-                        ),
+              items:
+                  colors.entries.map((entry) {
+                    return DropdownMenuItem<String>(
+                      value: entry.key,
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 16,
+                            height: 16,
+                            decoration: BoxDecoration(
+                              color: entry.value,
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(entry.key),
+                        ],
                       ),
-                      const SizedBox(width: 10),
-                      Text(entry.key),
-                    ],
-                  ),
-                );
-              }).toList(),
+                    );
+                  }).toList(),
               onChanged: (value) {
                 if (value != null) onColorChanged(value);
               },
@@ -86,13 +87,14 @@ class ControlsPanel extends StatelessWidget {
             const SizedBox(height: 10),
             Wrap(
               spacing: 10,
-              children: ToneMode.values.map((mode) {
-                return ChoiceChip(
-                  label: Text(mode.label),
-                  selected: mode == toneMode,
-                  onSelected: (_) => onToneModeChanged(mode),
-                );
-              }).toList(),
+              children:
+                  ToneMode.values.map((mode) {
+                    return ChoiceChip(
+                      label: Text(mode.label),
+                      selected: mode == toneMode,
+                      onSelected: (_) => onToneModeChanged(mode),
+                    );
+                  }).toList(),
             ),
             const SizedBox(height: 20),
             SliderField(

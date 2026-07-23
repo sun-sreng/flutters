@@ -46,12 +46,17 @@ final class Money implements Comparable<Money> {
     final major = int.parse(parts.first);
     final rawMinor = parts.length == 1 ? '' : parts.last;
     if (rawMinor.length > currency.decimalPlaces) {
-      throw FormatException('Too many decimal places for ${currency.code}', value);
+      throw FormatException(
+        'Too many decimal places for ${currency.code}',
+        value,
+      );
     }
 
     final paddedMinor = rawMinor.padRight(currency.decimalPlaces, '0');
     final normalizedMinor =
-        currency.decimalPlaces == 0 ? '' : paddedMinor.substring(0, currency.decimalPlaces);
+        currency.decimalPlaces == 0
+            ? ''
+            : paddedMinor.substring(0, currency.decimalPlaces);
     final minor = normalizedMinor.isEmpty ? 0 : int.parse(normalizedMinor);
 
     return Money.ofMajor(major, minor, currency);

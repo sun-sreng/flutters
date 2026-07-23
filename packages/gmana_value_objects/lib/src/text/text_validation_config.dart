@@ -117,16 +117,19 @@ final class TextValidationConfig {
     Object? allowedCharacters = _unset,
   }) {
     return TextValidationConfig(
-      minLength: identical(minLength, _unset) ? this.minLength : minLength as int?,
-      maxLength: identical(maxLength, _unset) ? this.maxLength : maxLength as int?,
+      minLength:
+          identical(minLength, _unset) ? this.minLength : minLength as int?,
+      maxLength:
+          identical(maxLength, _unset) ? this.maxLength : maxLength as int?,
       allowEmpty: allowEmpty ?? this.allowEmpty,
       allowOnlyWhitespace: allowOnlyWhitespace ?? this.allowOnlyWhitespace,
       trimWhitespace: trimWhitespace ?? this.trimWhitespace,
       pattern: identical(pattern, _unset) ? this.pattern : pattern as String?,
       blacklistedWords: blacklistedWords ?? this.blacklistedWords,
-      allowedCharacters: identical(allowedCharacters, _unset)
-          ? this.allowedCharacters
-          : allowedCharacters as String?,
+      allowedCharacters:
+          identical(allowedCharacters, _unset)
+              ? this.allowedCharacters
+              : allowedCharacters as String?,
     );
   }
 

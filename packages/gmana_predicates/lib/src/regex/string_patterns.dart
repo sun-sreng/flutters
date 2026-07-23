@@ -17,12 +17,8 @@ final emailReg = RegExp(
 final floatReg = RegExp(
   r'^-?(?:(?:[0-9]+(?:\.[0-9]*)?)|(?:\.[0-9]+))(?:[eE][+-]?[0-9]+)?$',
 );
-final fullWidthReg = RegExp(
-  r'[^ -~｡-ﾟﾠ-ￜ￨-￮0-9a-zA-Z]',
-);
-final halfWidthReg = RegExp(
-  r'[ -~｡-ﾟﾠ-ￜ￨-￮0-9a-zA-Z]',
-);
+final fullWidthReg = RegExp(r'[^ -~｡-ﾟﾠ-ￜ￨-￮0-9a-zA-Z]');
+final halfWidthReg = RegExp(r'[ -~｡-ﾟﾠ-ￜ￨-￮0-9a-zA-Z]');
 final hexadecimalReg = RegExp(r'^[0-9a-fA-F]+$');
 final hexColorReg = RegExp(r'^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$');
 final intReg = RegExp(r'^(?:-?(?:0|[1-9][0-9]*))$');

@@ -55,21 +55,22 @@ class ShowcaseCard extends StatelessWidget {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: metrics
-                    .map(
-                      (metric) => Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.onSurface.withAlpha(12),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(metric),
-                      ),
-                    )
-                    .toList(),
+                children:
+                    metrics
+                        .map(
+                          (metric) => Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorScheme.onSurface.withAlpha(12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(metric),
+                          ),
+                        )
+                        .toList(),
               ),
               const SizedBox(height: 18),
               TextButton.icon(

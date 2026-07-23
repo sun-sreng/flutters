@@ -4,7 +4,8 @@
 /// concrete implementations for common use cases.
 library;
 
-export 'package:gmana_functional/gmana_functional.dart' show Either, Left, Right;
+export 'package:gmana_functional/gmana_functional.dart'
+    show Either, Left, Right;
 
 // Core
 export 'src/core/validation_error.dart';

@@ -3,7 +3,9 @@ import 'dart:convert';
 final RegExp _alphaRegExp = RegExp(r'^[a-zA-Z]+$');
 final RegExp _alphanumericRegExp = RegExp(r'^[a-zA-Z0-9]+$');
 final RegExp _camelBoundaryRegExp = RegExp(r'([a-z])([A-Z])');
-final RegExp _emailRegExp = RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
+final RegExp _emailRegExp = RegExp(
+  r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$',
+);
 final RegExp _slugHyphenRegExp = RegExp(r'-+');
 final RegExp _slugUnsafeRegExp = RegExp(r'[^a-z0-9\-]');
 final RegExp _whitespaceRegExp = RegExp(r'\s+');
@@ -59,7 +61,9 @@ extension StringX on String {
   /// Returns true if the string is a valid URL.
   bool get isUrl {
     final uri = Uri.tryParse(trim());
-    return uri != null && (uri.scheme == 'http' || uri.scheme == 'https') && uri.host.isNotEmpty;
+    return uri != null &&
+        (uri.scheme == 'http' || uri.scheme == 'https') &&
+        uri.host.isNotEmpty;
   }
 
   /// Decodes JSON, returns `null` on failure instead of throwing.
@@ -91,7 +95,8 @@ extension StringX on String {
   String get toCamelCase {
     final words = _words;
     if (words.isEmpty) return this;
-    return words.first.toLowerCase() + words.skip(1).map((w) => w.toSentenceCase).join();
+    return words.first.toLowerCase() +
+        words.skip(1).map((w) => w.toSentenceCase).join();
   }
 
   /// Parses to [double], returns `null` on failure.
@@ -140,8 +145,11 @@ extension StringX on String {
   String get toSnakeCase => _words.map((w) => w.toLowerCase()).join('_');
 
   /// Capitalizes the first letter of each whitespace-delimited word.
-  String get toTitleCase =>
-      trim().split(_whitespaceRegExp).where((w) => w.isNotEmpty).map((w) => w.toSentenceCase).join(' ');
+  String get toTitleCase => trim()
+      .split(_whitespaceRegExp)
+      .where((w) => w.isNotEmpty)
+      .map((w) => w.toSentenceCase)
+      .join(' ');
 
   /// Parses string to [Uri], returns `null` on failure.
   Uri? get toUriOrNull => Uri.tryParse(this);
@@ -174,7 +182,11 @@ extension StringX on String {
       throw ArgumentError.value(min, 'min', 'must not be negative');
     }
     if (max < min) {
-      throw ArgumentError.value(max, 'max', 'must be greater than or equal to min');
+      throw ArgumentError.value(
+        max,
+        'max',
+        'must be greater than or equal to min',
+      );
     }
 
     final l = trim().length;
@@ -208,7 +220,10 @@ extension StringX on String {
 
     return switch (parts.length) {
       1 => Duration(seconds: parse(parts[0], 'seconds')),
-      2 => Duration(minutes: parse(parts[0], 'minutes'), seconds: parse(parts[1], 'seconds')),
+      2 => Duration(
+        minutes: parse(parts[0], 'minutes'),
+        seconds: parse(parts[1], 'seconds'),
+      ),
       3 => Duration(
         hours: parse(parts[0], 'hours', max: 23),
         minutes: parse(parts[1], 'minutes'),
@@ -264,6 +279,10 @@ extension StringX on String {
 
 void _checkTruncationLength(int maxLength, String ellipsis) {
   if (maxLength <= ellipsis.length) {
-    throw ArgumentError.value(maxLength, 'maxLength', 'must be greater than ellipsis length (${ellipsis.length})');
+    throw ArgumentError.value(
+      maxLength,
+      'maxLength',
+      'must be greater than ellipsis length (${ellipsis.length})',
+    );
   }
 }

@@ -70,7 +70,8 @@ void main() {
     });
 
     test('distinctUntilChanged', () async {
-      final stream = Stream.fromIterable([1, 1, 2, 2, 3, 1]).distinctUntilChanged();
+      final stream =
+          Stream.fromIterable([1, 1, 2, 2, 3, 1]).distinctUntilChanged();
       expect(await stream.toList(), equals([1, 2, 3, 1]));
 
       final streamCustom = Stream.fromIterable([
@@ -78,22 +79,39 @@ void main() {
         const MapEntry(1, 'b'),
         const MapEntry(2, 'c'),
       ]).distinctUntilChanged((a, b) => a.key == b.key);
-      expect((await streamCustom.toList()).map((e) => e.value), equals(['a', 'c']));
+      expect(
+        (await streamCustom.toList()).map((e) => e.value),
+        equals(['a', 'c']),
+      );
     });
 
     test('skipUntil', () async {
-      final stream = Stream.fromIterable([1, 2, 3, 4, 5]).skipUntil((e) => e == 3);
+      final stream = Stream.fromIterable([
+        1,
+        2,
+        3,
+        4,
+        5,
+      ]).skipUntil((e) => e == 3);
       expect(await stream.toList(), equals([3, 4, 5]));
     });
 
     test('takeWhileInclusive', () async {
-      final stream = Stream.fromIterable([1, 2, 3, 4, 5]).takeWhileInclusive((e) => e < 3);
+      final stream = Stream.fromIterable([
+        1,
+        2,
+        3,
+        4,
+        5,
+      ]).takeWhileInclusive((e) => e < 3);
       expect(await stream.toList(), equals([1, 2, 3]));
     });
 
     test('debounce', () async {
       final controller = StreamController<int>();
-      final stream = controller.stream.debounce(const Duration(milliseconds: 50));
+      final stream = controller.stream.debounce(
+        const Duration(milliseconds: 50),
+      );
 
       final results = <int>[];
       stream.listen(results.add);
@@ -114,7 +132,9 @@ void main() {
 
     test('debounce emits pending value when source closes', () async {
       final controller = StreamController<int>();
-      final stream = controller.stream.debounce(const Duration(milliseconds: 50));
+      final stream = controller.stream.debounce(
+        const Duration(milliseconds: 50),
+      );
 
       final events = stream.toList();
       controller.add(1);
@@ -123,32 +143,39 @@ void main() {
       expect(await events, equals([1]));
     });
 
-    test('debounce preserves broadcast streams for multiple listeners', () async {
-      final controller = StreamController<int>.broadcast();
-      final stream = controller.stream.debounce(const Duration(milliseconds: 10));
+    test(
+      'debounce preserves broadcast streams for multiple listeners',
+      () async {
+        final controller = StreamController<int>.broadcast();
+        final stream = controller.stream.debounce(
+          const Duration(milliseconds: 10),
+        );
 
-      expect(stream.isBroadcast, isTrue);
+        expect(stream.isBroadcast, isTrue);
 
-      final first = <int>[];
-      final second = <int>[];
-      final firstDone = Completer<void>();
-      final secondDone = Completer<void>();
-      stream.listen(first.add, onDone: firstDone.complete);
-      stream.listen(second.add, onDone: secondDone.complete);
+        final first = <int>[];
+        final second = <int>[];
+        final firstDone = Completer<void>();
+        final secondDone = Completer<void>();
+        stream.listen(first.add, onDone: firstDone.complete);
+        stream.listen(second.add, onDone: secondDone.complete);
 
-      controller.add(1);
-      controller.add(2);
-      await Future.delayed(const Duration(milliseconds: 30));
-      await controller.close();
-      await Future.wait([firstDone.future, secondDone.future]);
+        controller.add(1);
+        controller.add(2);
+        await Future.delayed(const Duration(milliseconds: 30));
+        await controller.close();
+        await Future.wait([firstDone.future, secondDone.future]);
 
-      expect(first, equals([2]));
-      expect(second, equals([2]));
-    });
+        expect(first, equals([2]));
+        expect(second, equals([2]));
+      },
+    );
 
     test('debounce cancels timers and source subscription on cancel', () async {
       final controller = StreamController<int>();
-      final stream = controller.stream.debounce(const Duration(milliseconds: 50));
+      final stream = controller.stream.debounce(
+        const Duration(milliseconds: 50),
+      );
 
       final results = <int>[];
       final subscription = stream.listen(results.add);
@@ -162,7 +189,9 @@ void main() {
 
     test('throttle', () async {
       final controller = StreamController<int>();
-      final stream = controller.stream.throttle(const Duration(milliseconds: 50));
+      final stream = controller.stream.throttle(
+        const Duration(milliseconds: 50),
+      );
 
       final results = <int>[];
       stream.listen(results.add);
@@ -185,7 +214,9 @@ void main() {
 
     test('throttle keeps leading-edge behavior after cooldown', () async {
       final controller = StreamController<int>();
-      final stream = controller.stream.throttle(const Duration(milliseconds: 20));
+      final stream = controller.stream.throttle(
+        const Duration(milliseconds: 20),
+      );
 
       final results = <int>[];
       stream.listen(results.add);
@@ -201,29 +232,42 @@ void main() {
       expect(results, equals([1, 3]));
     });
 
-    test('throttle preserves broadcast streams and cancels cooldown timers', () async {
-      final controller = StreamController<int>.broadcast();
-      final stream = controller.stream.throttle(const Duration(milliseconds: 50));
+    test(
+      'throttle preserves broadcast streams and cancels cooldown timers',
+      () async {
+        final controller = StreamController<int>.broadcast();
+        final stream = controller.stream.throttle(
+          const Duration(milliseconds: 50),
+        );
 
-      expect(stream.isBroadcast, isTrue);
+        expect(stream.isBroadcast, isTrue);
 
-      final results = <int>[];
-      final subscription = stream.listen(results.add);
-      await Future<void>.delayed(Duration.zero);
+        final results = <int>[];
+        final subscription = stream.listen(results.add);
+        await Future<void>.delayed(Duration.zero);
 
-      controller.add(1);
-      controller.add(2);
-      await Future<void>.delayed(Duration.zero);
-      await subscription.cancel();
-      await Future.delayed(const Duration(milliseconds: 80));
-      await controller.close();
+        controller.add(1);
+        controller.add(2);
+        await Future<void>.delayed(Duration.zero);
+        await subscription.cancel();
+        await Future.delayed(const Duration(milliseconds: 80));
+        await controller.close();
 
-      expect(results, equals([1]));
-    });
+        expect(results, equals([1]));
+      },
+    );
 
     test('throttle validates duration', () {
-      expect(() => const Stream<int>.empty().throttle(Duration.zero), throwsArgumentError);
-      expect(() => const Stream<int>.empty().throttle(const Duration(milliseconds: -1)), throwsArgumentError);
+      expect(
+        () => const Stream<int>.empty().throttle(Duration.zero),
+        throwsArgumentError,
+      );
+      expect(
+        () => const Stream<int>.empty().throttle(
+          const Duration(milliseconds: -1),
+        ),
+        throwsArgumentError,
+      );
     });
 
     test('onErrorReturn', () async {
@@ -232,7 +276,9 @@ void main() {
     });
 
     test('onErrorReturnWith', () async {
-      final stream = Stream<int>.error(Exception('error')).onErrorReturnWith((e) => 42);
+      final stream = Stream<int>.error(
+        Exception('error'),
+      ).onErrorReturnWith((e) => 42);
       expect(await stream.first, equals(42));
     });
 
@@ -247,7 +293,11 @@ void main() {
     });
 
     test('scan', () async {
-      final stream = Stream.fromIterable([1, 2, 3]).scan(0, (acc, n) => acc + n);
+      final stream = Stream.fromIterable([
+        1,
+        2,
+        3,
+      ]).scan(0, (acc, n) => acc + n);
       expect(await stream.toList(), equals([1, 3, 6]));
     });
 

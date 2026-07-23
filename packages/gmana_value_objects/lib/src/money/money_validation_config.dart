@@ -34,24 +34,45 @@ final class MoneyValidationConfig {
 
   /// Non-negative USD, EUR, and KHR money.
   factory MoneyValidationConfig.commonCurrencies() {
-    return const MoneyValidationConfig(allowedCurrencies: {'USD', 'EUR', 'KHR'});
+    return const MoneyValidationConfig(
+      allowedCurrencies: {'USD', 'EUR', 'KHR'},
+    );
   }
 
   /// Common ecommerce currencies, including zero-decimal Asian currencies.
   factory MoneyValidationConfig.ecommerce() {
     return const MoneyValidationConfig(
-      allowedCurrencies: {'USD', 'EUR', 'GBP', 'AUD', 'CAD', 'CNY', 'SGD', 'THB', 'KHR', 'JPY', 'KRW', 'VND'},
+      allowedCurrencies: {
+        'USD',
+        'EUR',
+        'GBP',
+        'AUD',
+        'CAD',
+        'CNY',
+        'SGD',
+        'THB',
+        'KHR',
+        'JPY',
+        'KRW',
+        'VND',
+      },
     );
   }
 
   /// Non-negative KHR money with no decimal places.
   factory MoneyValidationConfig.khr() {
-    return const MoneyValidationConfig(defaultCurrency: 'KHR', allowedCurrencies: {'KHR'});
+    return const MoneyValidationConfig(
+      defaultCurrency: 'KHR',
+      allowedCurrencies: {'KHR'},
+    );
   }
 
   /// Non-negative USD money with two decimal places.
   factory MoneyValidationConfig.usd() {
-    return const MoneyValidationConfig(defaultCurrency: 'USD', allowedCurrencies: {'USD'});
+    return const MoneyValidationConfig(
+      defaultCurrency: 'USD',
+      allowedCurrencies: {'USD'},
+    );
   }
 
   /// Returns a copy of this config with the given fields replaced.
@@ -68,15 +89,18 @@ final class MoneyValidationConfig {
   }) {
     return MoneyValidationConfig(
       defaultCurrency: defaultCurrency ?? this.defaultCurrency,
-      allowedCurrencies: identical(allowedCurrencies, _unset)
-          ? this.allowedCurrencies
-          : allowedCurrencies as Set<String>?,
-      minMinorUnits: identical(minMinorUnits, _unset)
-          ? this.minMinorUnits
-          : minMinorUnits as int?,
-      maxMinorUnits: identical(maxMinorUnits, _unset)
-          ? this.maxMinorUnits
-          : maxMinorUnits as int?,
+      allowedCurrencies:
+          identical(allowedCurrencies, _unset)
+              ? this.allowedCurrencies
+              : allowedCurrencies as Set<String>?,
+      minMinorUnits:
+          identical(minMinorUnits, _unset)
+              ? this.minMinorUnits
+              : minMinorUnits as int?,
+      maxMinorUnits:
+          identical(maxMinorUnits, _unset)
+              ? this.maxMinorUnits
+              : maxMinorUnits as int?,
       allowThousandsSeparators:
           allowThousandsSeparators ?? this.allowThousandsSeparators,
     );
@@ -100,6 +124,8 @@ final class MoneyValidationConfig {
     minMinorUnits,
     maxMinorUnits,
     allowThousandsSeparators,
-    allowedCurrencies == null ? null : Object.hashAllUnordered(allowedCurrencies!),
+    allowedCurrencies == null
+        ? null
+        : Object.hashAllUnordered(allowedCurrencies!),
   );
 }

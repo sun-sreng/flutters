@@ -64,7 +64,8 @@ enum GBarWaveSpinnerType {
   center,
 }
 
-class _GBarWaveSpinnerState extends State<GBarWaveSpinner> with SingleTickerProviderStateMixin {
+class _GBarWaveSpinnerState extends State<GBarWaveSpinner>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   bool _ownsController = false;
 
@@ -123,8 +124,15 @@ class _GBarWaveSpinnerState extends State<GBarWaveSpinner> with SingleTickerProv
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(bars.length, (i) {
             return GScaleY(
-              scaleY: DelayedAnimationTween(begin: .4, end: 1.0, delay: bars[i]).animate(_controller),
-              child: SizedBox.fromSize(size: Size(widget.size / widget.itemCount, widget.size), child: _itemBuilder(i)),
+              scaleY: DelayedAnimationTween(
+                begin: .4,
+                end: 1.0,
+                delay: bars[i],
+              ).animate(_controller),
+              child: SizedBox.fromSize(
+                size: Size(widget.size / widget.itemCount, widget.size),
+                child: _itemBuilder(i),
+              ),
             );
           }),
         ),
@@ -145,30 +153,52 @@ class _GBarWaveSpinnerState extends State<GBarWaveSpinner> with SingleTickerProv
 
   List<double> _centerAnimationDelay(int count) {
     return <double>[
-      ...List<double>.generate(count ~/ 2, (index) => -1.0 + (index * 0.2) + 0.2).reversed,
+      ...List<double>.generate(
+        count ~/ 2,
+        (index) => -1.0 + (index * 0.2) + 0.2,
+      ).reversed,
       if (count.isOdd) -1.0,
-      ...List<double>.generate(count ~/ 2, (index) => -1.0 + (index * 0.2) + 0.2),
+      ...List<double>.generate(
+        count ~/ 2,
+        (index) => -1.0 + (index * 0.2) + 0.2,
+      ),
     ];
   }
 
   List<double> _endAnimationDelay(int count) {
     return <double>[
-      ...List<double>.generate(count ~/ 2, (index) => -1.0 + (index * 0.1) + 0.1).reversed,
+      ...List<double>.generate(
+        count ~/ 2,
+        (index) => -1.0 + (index * 0.1) + 0.1,
+      ).reversed,
       if (count.isOdd) -1.0,
-      ...List<double>.generate(count ~/ 2, (index) => -1.0 - (index * 0.1) - (count.isOdd ? 0.1 : 0.0)),
+      ...List<double>.generate(
+        count ~/ 2,
+        (index) => -1.0 - (index * 0.1) - (count.isOdd ? 0.1 : 0.0),
+      ),
     ];
   }
 
   Widget _itemBuilder(int index) =>
       widget.itemBuilder != null
           ? widget.itemBuilder!(context, index)
-          : DecoratedBox(decoration: BoxDecoration(color: widget.color ?? Theme.of(context).colorScheme.primary));
+          : DecoratedBox(
+            decoration: BoxDecoration(
+              color: widget.color ?? Theme.of(context).colorScheme.primary,
+            ),
+          );
 
   List<double> _startAnimationDelay(int count) {
     return <double>[
-      ...List<double>.generate(count ~/ 2, (index) => -1.0 - (index * 0.1) - 0.1).reversed,
+      ...List<double>.generate(
+        count ~/ 2,
+        (index) => -1.0 - (index * 0.1) - 0.1,
+      ).reversed,
       if (count.isOdd) -1.0,
-      ...List<double>.generate(count ~/ 2, (index) => -1.0 + (index * 0.1) + (count.isOdd ? 0.1 : 0.0)),
+      ...List<double>.generate(
+        count ~/ 2,
+        (index) => -1.0 + (index * 0.1) + (count.isOdd ? 0.1 : 0.0),
+      ),
     ];
   }
 }
