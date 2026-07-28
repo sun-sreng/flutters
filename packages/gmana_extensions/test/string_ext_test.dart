@@ -104,6 +104,41 @@ void main() {
       expect('hello world'.toScreamingSnakeCase, equals('HELLO_WORLD'));
       expect('helloWorld'.toScreamingSnakeCase, equals('HELLO_WORLD'));
     });
+
+    test('toPascalCase', () {
+      expect('hello world'.toPascalCase, equals('HelloWorld'));
+      expect('hello_world'.toPascalCase, equals('HelloWorld'));
+    });
+
+    test('toDotCase', () {
+      expect('hello world'.toDotCase, equals('hello.world'));
+      expect('helloWorld'.toDotCase, equals('hello.world'));
+    });
+
+    test('capitalize', () {
+      expect('hello world'.capitalize, equals('Hello world'));
+      expect(''.capitalize, equals(''));
+    });
+
+    test('toJsonMapOrNull', () {
+      expect('{"a": 1}'.toJsonMapOrNull, equals({'a': 1}));
+      expect('[1, 2, 3]'.toJsonMapOrNull, isNull);
+      expect('invalid'.toJsonMapOrNull, isNull);
+    });
+
+    test('removePrefix and removeSuffix', () {
+      expect('https://example.com'.removePrefix('https://'), equals('example.com'));
+      expect('example.com'.removePrefix('https://'), equals('example.com'));
+
+      expect('image.png'.removeSuffix('.png'), equals('image'));
+      expect('image.png'.removeSuffix('.jpg'), equals('image.png'));
+    });
+
+    test('mask', () {
+      expect('1234567890'.mask(unmaskedStart: 2, unmaskedEnd: 2), equals('12******90'));
+      expect('user@example.com'.mask(unmaskedStart: 1, unmaskedEnd: 4), equals('u***********.com'));
+      expect('123'.mask(unmaskedStart: 2, unmaskedEnd: 2), equals('123'));
+    });
   });
 
   group('StringX Slug', () {

@@ -109,4 +109,129 @@ extension IterableX<T> on Iterable<T> {
     }
     return map;
   }
+
+  /// Returns the first element matching [test], or `null` if none found.
+  T? firstWhereOrNull(bool Function(T element) test) {
+    for (final element in this) {
+      if (test(element)) return element;
+    }
+    return null;
+  }
+
+  /// Returns the last element matching [test], or `null` if none found.
+  T? lastWhereOrNull(bool Function(T element) test) {
+    T? result;
+    var found = false;
+    for (final element in this) {
+      if (test(element)) {
+        result = element;
+        found = true;
+      }
+    }
+    return found ? result : null;
+  }
+
+  /// Returns the single element matching [test], or `null` if zero or more than one match.
+  T? singleWhereOrNull(bool Function(T element) test) {
+    T? result;
+    var matchCount = 0;
+    for (final element in this) {
+      if (test(element)) {
+        matchCount++;
+        if (matchCount > 1) return null;
+        result = element;
+      }
+    }
+    return matchCount == 1 ? result : null;
+  }
+
+  /// Splits elements into a pair of lists: `(matching, nonMatching)`.
+  (List<T> matching, List<T> nonMatching) partition(
+    bool Function(T element) predicate,
+  ) {
+    final matching = <T>[];
+    final nonMatching = <T>[];
+    for (final element in this) {
+      if (predicate(element)) {
+        matching.add(element);
+      } else {
+        nonMatching.add(element);
+      }
+    }
+    return (matching, nonMatching);
+  }
+
+  /// Returns a sliding window of elements of size [size].
+  ///
+  /// [step] defines the window shift (default 1).
+  /// If [partial] is true, smaller windows at the end are included.
+  Iterable<List<T>> windowed(
+    int size, {
+    int step = 1,
+    bool partial = false,
+  }) sync* {
+    if (size <= 0) {
+      throw ArgumentError.value(size, 'size', 'must be greater than zero');
+    }
+    if (step <= 0) {
+      throw ArgumentError.value(step, 'step', 'must be greater than zero');
+    }
+
+    final list = toList();
+    for (var i = 0; i < list.length; i += step) {
+      final end = i + size;
+      if (end <= list.length) {
+        yield list.sublist(i, end);
+      } else if (partial && i < list.length) {
+        yield list.sublist(i);
+      }
+    }
+  }
+
+  /// Associates each element into a [MapEntry] returned by [transform].
+  Map<K, V> associate<K, V>(MapEntry<K, V> Function(T element) transform) {
+    final result = <K, V>{};
+    for (final element in this) {
+      final entry = transform(element);
+      result[entry.key] = entry.value;
+    }
+    return result;
+  }
+
+  /// Associates each element by a key derived from [keyOf].
+  Map<K, T> associateBy<K>(K Function(T element) keyOf) {
+    final result = <K, T>{};
+    for (final element in this) {
+      result[keyOf(element)] = element;
+    }
+    return result;
+  }
+
+  /// Associates each element with a value derived from [valueOf].
+  Map<T, V> associateWith<V>(V Function(T element) valueOf) {
+    final result = <T, V>{};
+    for (final element in this) {
+      result[element] = valueOf(element);
+    }
+    return result;
+  }
+
+  /// Inserts [element] between every element in this iterable.
+  Iterable<T> intersperse(T element) sync* {
+    final iterator = this.iterator;
+    if (!iterator.moveNext()) return;
+    yield iterator.current;
+    while (iterator.moveNext()) {
+      yield element;
+      yield iterator.current;
+    }
+  }
+
+  /// Yields elements while [predicate] holds, plus the first element that fails [predicate].
+  Iterable<T> takeWhileInclusive(bool Function(T element) predicate) sync* {
+    for (final element in this) {
+      yield element;
+      if (!predicate(element)) break;
+    }
+  }
 }

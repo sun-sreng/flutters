@@ -51,8 +51,7 @@ extension NumDurationExtension on num {
   Duration get nanosecond => nanoseconds;
 
   /// Returns a duration in nanoseconds, rounded to the nearest microsecond.
-  Duration get nanoseconds =>
-      (this / Duration.microsecondsPerMillisecond).microseconds;
+  Duration get nanoseconds => (this / 1000).microseconds;
 
   /// Returns a duration in seconds.
   Duration get second => seconds;

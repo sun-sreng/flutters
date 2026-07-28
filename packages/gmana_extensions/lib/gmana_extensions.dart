@@ -1,6 +1,7 @@
 library;
 
 export 'bool_nullable_x.dart';
+export 'date_time_ext.dart';
 export 'double_nullable_x.dart';
 export 'duration_ext.dart';
 export 'duration_natural_language_ext.dart';
@@ -9,6 +10,7 @@ export 'int_x.dart';
 export 'is_ext.dart';
 export 'iterable_ext.dart';
 export 'list_ext.dart';
+export 'map_ext.dart';
 export 'num_duration_extension.dart';
 export 'num_nullable_x.dart';
 export 'num_x.dart';

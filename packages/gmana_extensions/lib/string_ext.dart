@@ -151,6 +151,61 @@ extension StringX on String {
       .map((w) => w.toSentenceCase)
       .join(' ');
 
+  /// `'hello world'` -> `'HelloWorld'`
+  String get toPascalCase =>
+      _words.map((w) => w.toSentenceCase).join();
+
+  /// `'hello world'` -> `'hello.world'`
+  String get toDotCase => _words.map((w) => w.toLowerCase()).join('.');
+
+  /// Capitalizes only the first character.
+  String get capitalize {
+    if (isEmpty) return this;
+    return this[0].toUpperCase() + substring(1);
+  }
+
+  /// Parses JSON and returns `Map<String, dynamic>` or `null` if invalid or not a Map.
+  Map<String, dynamic>? get toJsonMapOrNull {
+    final decoded = jsonDecodeOrNull;
+    return decoded is Map<String, dynamic> ? decoded : null;
+  }
+
+  /// Removes [prefix] if present at the start of this string.
+  String removePrefix(String prefix) =>
+      startsWith(prefix) ? substring(prefix.length) : this;
+
+  /// Removes [suffix] if present at the end of this string.
+  String removeSuffix(String suffix) =>
+      endsWith(suffix) ? substring(0, length - suffix.length) : this;
+
+  /// Masks characters with [maskChar], preserving [unmaskedStart] characters at the beginning
+  /// and [unmaskedEnd] characters at the end.
+  ///
+  /// ```dart
+  /// '1234567890'.mask(unmaskedStart: 2, unmaskedEnd: 2); // '12******90'
+  /// ```
+  String mask({
+    int unmaskedStart = 0,
+    int unmaskedEnd = 0,
+    String maskChar = '*',
+  }) {
+    if (unmaskedStart < 0) {
+      throw ArgumentError.value(unmaskedStart, 'unmaskedStart', 'must not be negative');
+    }
+    if (unmaskedEnd < 0) {
+      throw ArgumentError.value(unmaskedEnd, 'unmaskedEnd', 'must not be negative');
+    }
+
+    if (length <= unmaskedStart + unmaskedEnd) return this;
+
+    final start = substring(0, unmaskedStart);
+    final end = substring(length - unmaskedEnd);
+    final maskedLength = length - unmaskedStart - unmaskedEnd;
+    final masked = maskChar * maskedLength;
+
+    return '$start$masked$end';
+  }
+
   /// Parses string to [Uri], returns `null` on failure.
   Uri? get toUriOrNull => Uri.tryParse(this);
 

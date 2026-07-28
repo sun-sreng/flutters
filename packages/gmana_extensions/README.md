@@ -14,6 +14,8 @@ import 'package:gmana_extensions/gmana_extensions.dart';
 - [num / int / double / bool](#num--int--double--bool)
 - [String](#string)
 - [Iterable](#iterable)
+- [Map](#map)
+- [DateTime](#datetime)
 - [Stream](#stream)
 
 ---
@@ -540,3 +542,69 @@ itemsStream.flatMapItems((n) => [n, -n]).listen(print); // [3,-3,1,-1,4,-4,1,-1,
 itemsStream.sortedBy((a, b) => a.compareTo(b)).listen(print); // [1,1,3,4,5]
 itemsStream.flatten().listen(print);            // 3, 1, 4, 1, 5  (individual ints)
 ```
+
+---
+
+## Map
+
+### Functional filtering, mapping, inverting, and merging (`MapX`)
+
+```dart
+final map = {'a': 1, 'b': 2, 'c': 3};
+
+map.whereKeys((k) => k != 'b');                      // {'a': 1, 'c': 3}
+map.whereValues((v) => v.isEven);                    // {'b': 2}
+map.where((k, v) => k == 'a' || v == 3);             // {'a': 1, 'c': 3}
+
+map.mapKeys((k, v) => k.toUpperCase());              // {'A': 1, 'B': 2, 'C': 3}
+map.mapValues((k, v) => v * 10);                     // {'a': 10, 'b': 20, 'c': 30}
+
+map.invert();                                       // {1: 'a', 2: 'b', 3: 'c'}
+map.merge({'b': 20, 'd': 4}, combine: (a, b) => a + b); // {'a': 1, 'b': 22, 'c': 3, 'd': 4}
+
+// Nullable values
+final mapWithNulls = <String, int?>{'a': 1, 'b': null};
+mapWithNulls.whereNotNullValues;                    // {'a': 1}
+mapWithNulls.compact();                             // same
+```
+
+### Nullable Map helpers (`MapNullableX`)
+
+```dart
+Map<String, int>? nullMap;
+nullMap.isNullOrEmpty;        // true
+nullMap.isNotNullOrEmpty;     // false
+nullMap.orEmpty;              // {}
+```
+
+---
+
+## DateTime
+
+### Calendar boundaries & relative getters (`DateTimeX`)
+
+```dart
+final now = DateTime.now();
+
+now.isToday;              // true
+now.isYesterday;          // false
+now.isTomorrow;           // false
+now.isWeekend;            // true / false
+now.isLeapYear;           // true if leap year
+
+now.startOfDay;           // YYYY-MM-DD 00:00:00.000
+now.endOfDay;             // YYYY-MM-DD 23:59:59.999999
+now.startOfWeek();        // Monday 00:00:00
+now.endOfWeek();          // Sunday 23:59:59.999999
+now.startOfMonth;         // 1st of month 00:00:00
+now.endOfMonth;           // last day of month 23:59:59.999999
+
+now.nextDay;              // tomorrow start of day
+now.previousDay;          // yesterday start of day
+
+final birthday = DateTime(1995, 8, 15);
+birthday.age();           // e.g. 30
+
+final updated = now.copyWith(year: 2025, month: 12);
+```
+

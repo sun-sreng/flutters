@@ -99,6 +99,73 @@ void main() {
         expect(() => list.chunked(0).toList(), throwsArgumentError);
         expect(() => list.chunked(-1).toList(), throwsArgumentError);
       });
+
+      test('firstWhereOrNull, lastWhereOrNull, singleWhereOrNull', () {
+        final list = [1, 2, 3, 2, 4];
+
+        expect(list.firstWhereOrNull((e) => e == 2), 2);
+        expect(list.firstWhereOrNull((e) => e == 99), null);
+
+        expect(list.lastWhereOrNull((e) => e == 2), 2);
+        expect(list.lastWhereOrNull((e) => e == 99), null);
+
+        expect(list.singleWhereOrNull((e) => e == 3), 3);
+        expect(list.singleWhereOrNull((e) => e == 2), null); // multiple matches
+        expect(list.singleWhereOrNull((e) => e == 99), null);
+      });
+
+      test('partition splits into matching and nonMatching', () {
+        final list = [1, 2, 3, 4, 5];
+        final (evens, odds) = list.partition((e) => e.isEven);
+        expect(evens, [2, 4]);
+        expect(odds, [1, 3, 5]);
+      });
+
+      test('windowed produces sliding windows', () {
+        final list = [1, 2, 3, 4, 5];
+        expect(list.windowed(3).toList(), [
+          [1, 2, 3],
+          [2, 3, 4],
+          [3, 4, 5],
+        ]);
+
+        expect(list.windowed(3, step: 2).toList(), [
+          [1, 2, 3],
+          [3, 4, 5],
+        ]);
+
+        expect(list.windowed(3, step: 2, partial: true).toList(), [
+          [1, 2, 3],
+          [3, 4, 5],
+          [5],
+        ]);
+      });
+
+      test('associate, associateBy, associateWith', () {
+        final list = ['apple', 'banana'];
+
+        expect(list.associate((s) => MapEntry(s, s.length)), {
+          'apple': 5,
+          'banana': 6,
+        });
+        expect(list.associateBy((s) => s.length), {5: 'apple', 6: 'banana'});
+        expect(list.associateWith((s) => s.length), {
+          'apple': 5,
+          'banana': 6,
+        });
+      });
+
+      test('intersperse inserts elements between items', () {
+        final list = [1, 2, 3];
+        expect(list.intersperse(0).toList(), [1, 0, 2, 0, 3]);
+        expect(<int>[].intersperse(0).toList(), isEmpty);
+        expect([1].intersperse(0).toList(), [1]);
+      });
+
+      test('takeWhileInclusive yields while true plus first failing', () {
+        final list = [1, 2, 3, 4, 5];
+        expect(list.takeWhileInclusive((e) => e < 3).toList(), [1, 2, 3]);
+      });
     });
   });
 }
