@@ -15,6 +15,8 @@ import 'package:gmana_validation/gmana_validation.dart';
 - [Password](#password)
 - [Text](#text)
 - [Number](#number)
+- [URL](#url)
+- [Phone](#phone)
 - [Custom message resolvers](#custom-message-resolvers)
 - [Using with Flutter forms](#using-with-flutter-forms)
 
@@ -353,6 +355,55 @@ NumberValidationConfig(
 | `NumberTooSmallIssue`              | `number.tooSmall`              | `currentValue`, `minValue`   |
 | `NumberTooLargeIssue`              | `number.tooLarge`              | `currentValue`, `maxValue`   |
 | `NumberDecimalPlacesExceededIssue` | `number.decimalPlacesExceeded` | `currentPlaces`, `maxPlaces` |
+
+---
+
+## URL
+
+### Usage
+
+```dart
+final validator = UrlValidator();
+final result = validator.validate('https://example.com/path');
+
+result.fold(
+  (issue) => print(resolveUrlValidationIssue(issue)),
+  (uri) => print(uri.host), // 'example.com'
+);
+```
+
+### Configuration
+
+```dart
+const config = UrlValidationConfig(
+  allowedSchemes: {'https'}, // only HTTPS
+  requireHost: true,
+);
+const validator = UrlValidator(config);
+```
+
+---
+
+## Phone
+
+### Usage
+
+```dart
+final validator = PhoneValidator();
+final result = validator.validate('+1 (415) 555-2671');
+
+result.fold(
+  (issue) => print(resolvePhoneValidationIssue(issue)),
+  (phone) => print(phone), // '+14155552671'
+);
+```
+
+### Configuration
+
+```dart
+// Enforce E.164 leading + prefix
+final validator = PhoneValidator(PhoneValidationConfig.e164());
+```
 
 ---
 

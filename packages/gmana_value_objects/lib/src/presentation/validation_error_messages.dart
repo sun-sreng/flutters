@@ -4,6 +4,8 @@ import '../password/password_errors.dart';
 import '../text/text_errors.dart';
 import '../number/number_errors.dart';
 import '../money/money_errors.dart';
+import '../url/url_errors.dart';
+import '../phone/phone_errors.dart';
 
 /// Default English messages for all validation errors.
 /// Consumers can create their own implementations for i18n.
@@ -103,6 +105,21 @@ final class DefaultValidationErrorMessages implements ValidationErrorMessages {
         'Money amount is too small (min minor units: $minMinorUnits, current: $currentMinorUnits)',
       MoneyTooLarge(:final currentMinorUnits, :final maxMinorUnits) =>
         'Money amount is too large (max minor units: $maxMinorUnits, current: $currentMinorUnits)',
+
+      // URL errors
+      UrlEmpty() => 'URL cannot be empty',
+      UrlInvalidFormat() => 'Invalid URL format',
+      UrlDisallowedScheme(:final scheme) => 'Scheme "$scheme" is not allowed',
+      UrlMissingHost() => 'URL must include a host address',
+
+      // Phone errors
+      PhoneEmpty() => 'Phone number cannot be empty',
+      PhoneInvalidFormat() => 'Invalid phone number format',
+      PhoneMissingPlus() => 'Phone number must start with +',
+      PhoneTooShort(:final minDigits) =>
+        'Phone number must contain at least $minDigits digits',
+      PhoneTooLong(:final maxDigits) =>
+        'Phone number must contain at most $maxDigits digits',
 
       _ => 'Validation error',
     };

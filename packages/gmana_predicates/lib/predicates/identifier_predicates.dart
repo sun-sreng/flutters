@@ -99,3 +99,21 @@ bool isFQDN(
 
   return true;
 }
+
+/// Returns `true` if [str] is a valid Semantic Versioning string (e.g. `1.0.0`, `2.1.0-alpha.1`, `3.0.0+build.1`).
+bool isSemVer(String str) {
+  final semVerRegExp = RegExp(
+    r'^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$',
+  );
+  return semVerRegExp.hasMatch(str);
+}
+
+/// Returns `true` if [str] is a valid phone number.
+bool isPhoneNumber(String str, {bool requirePlusPrefix = false}) {
+  final trimmed = str.trim();
+  if (trimmed.isEmpty) return false;
+  if (requirePlusPrefix && !trimmed.startsWith('+')) return false;
+
+  final digits = trimmed.replaceAll(RegExp(r'\D'), '');
+  return digits.length >= 7 && digits.length <= 15;
+}

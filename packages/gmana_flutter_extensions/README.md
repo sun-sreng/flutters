@@ -13,6 +13,8 @@ import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
 - [Color](#color)
 - [Responsive layout](#responsive-layout)
 - [Build context](#build-context)
+- [Widget composition](#widget-composition)
+- [EdgeInsets & TextStyle](#edgeinsets--textstyle)
 - [Theme mode](#theme-mode)
 - [Icon serialization](#icon-serialization)
 - [Time of day](#time-of-day)
@@ -284,6 +286,42 @@ context.hasFocus;                  // bool
 context.unfocus();                 // dismiss keyboard / clear focus
 context.requestFocus(myFocusNode);
 ```
+
+---
+
+## Widget composition
+
+Fluent widget modifier extensions (`WidgetX`):
+
+```dart
+Text('Click Me')
+  .paddingAll(16)
+  .centered
+  .onTap(() => print('Tapped!'));
+
+Image.asset('logo.png')
+  .fitted(BoxFit.contain)
+  .clipped(BorderRadius.circular(12))
+  .expanded();
+```
+
+---
+
+## EdgeInsets & TextStyle
+
+Fluent modifier extensions on `EdgeInsets` and `TextStyle`:
+
+```dart
+final padding = const EdgeInsets.all(12).withTop(24);
+print(padding.horizontalInsets); // 24.0
+print(padding.verticalInsets);   // 36.0
+
+final headerStyle = Theme.of(context).textTheme.headlineMedium
+  ?.bold
+  .underline
+  .withColor(Colors.indigo);
+```
+
 
 ---
 

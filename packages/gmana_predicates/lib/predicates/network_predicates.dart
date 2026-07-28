@@ -28,3 +28,39 @@ bool isPostalCode(String? text, String locale, {bool Function()? orElse}) {
       ? orElse()
       : throw FormatException('No postal code pattern for locale: $locale');
 }
+
+/// Returns `true` if [str] is a valid URL.
+bool isUrl(
+  String str, {
+  Set<String>? allowedSchemes,
+  bool requireHost = true,
+}) {
+  final trimmed = str.trim();
+  if (trimmed.isEmpty) return false;
+
+  final uri = Uri.tryParse(trimmed);
+  if (uri == null || !uri.hasScheme) return false;
+
+  final scheme = uri.scheme.toLowerCase();
+  if (allowedSchemes != null && !allowedSchemes.contains(scheme)) {
+    return false;
+  }
+
+  if (requireHost && uri.host.isEmpty) return false;
+
+  return true;
+}
+
+/// Returns `true` if [str] is a valid MAC address (e.g. `00:1A:2B:3C:4D:5E` or `00-1A-2B-3C-4D-5E`).
+bool isMacAddress(String str) {
+  final macRegex = RegExp(
+    r'^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$',
+  );
+  return macRegex.hasMatch(str);
+}
+
+/// Returns `true` if [str] is a valid network port number (1–65535).
+bool isPort(String str) {
+  final port = int.tryParse(str);
+  return port != null && port >= 1 && port <= 65535;
+}

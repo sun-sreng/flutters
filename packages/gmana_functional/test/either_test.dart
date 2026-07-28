@@ -167,5 +167,35 @@ void main() {
       expect(const Left<String, int>('boom').toString(), 'Left(boom)');
       expect(const Right<String, int>(21).toString(), 'Right(21)');
     });
+
+    test('Either.tryCatch handles exceptions safely', () {
+      final success = Either.tryCatch<String, int>(
+        () => 42,
+        (e, _) => e.toString(),
+      );
+      final failure = Either.tryCatch<String, int>(
+        () => throw const FormatException('Invalid number'),
+        (e, _) => 'Error: $e',
+      );
+
+      expect(success, const Right<String, int>(42));
+      expect(failure.isLeft(), isTrue);
+      expect(failure.fold((l) => l, (_) => ''), contains('FormatException'));
+    });
+
+    test('Either.tryCatchAsync handles async exceptions safely', () async {
+      final success = await Either.tryCatchAsync<String, int>(
+        () async => 100,
+        (e, _) => e.toString(),
+      );
+      final failure = await Either.tryCatchAsync<String, int>(
+        () async => throw StateError('Failed async'),
+        (e, _) => 'Error: $e',
+      );
+
+      expect(success, const Right<String, int>(100));
+      expect(failure.isLeft(), isTrue);
+      expect(failure.fold((l) => l, (_) => ''), contains('Bad state'));
+    });
   });
 }

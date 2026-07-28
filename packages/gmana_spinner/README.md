@@ -19,6 +19,8 @@ import 'package:gmana_spinner/gmana_spinner.dart';
 | `GDotSpinner`      | Pulsing scale dots          | no               |
 | `GWaveDotSpinner`  | Wave-ripple dots            | no               |
 | `GBarWaveSpinner`  | Vertical bar wave           | no               |
+| `GPulseSpinner`    | Expanding pulse rings       | no               |
+| `GRingSpinner`     | Spinning dual arc ring      | no               |
 | `GWaveSpinner`     | Circular arc + wave fill    | **yes**          |
 
 ---
@@ -277,6 +279,35 @@ GWaveSpinner(
 | `curve`      | `Curve`                | `Curves.decelerate` |
 | `child`      | `Widget?`              | `null`              |
 | `controller` | `AnimationController?` | `null`              |
+
+---
+
+## GPulseSpinner
+
+Concentric expanding and fading pulse rings loading indicator.
+
+```dart
+const GPulseSpinner(
+  color: Colors.blue,
+  size: 50.0,
+  pulseCount: 3,
+)
+```
+
+---
+
+## GRingSpinner
+
+Dual-ring spinning arc loading indicator.
+
+```dart
+const GRingSpinner(
+  color: Colors.indigo,
+  size: 40.0,
+  strokeWidth: 4.0,
+)
+```
+
 
 ---
 

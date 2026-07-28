@@ -11,6 +11,7 @@ import 'package:gmana_functional/gmana_functional.dart';
 ## Table of contents
 
 - [Either](#either)
+- [Option](#option)
 - [Result & type aliases](#result--type-aliases)
 - [Failure](#failure)
 - [Unit](#unit)
@@ -34,6 +35,30 @@ import 'package:gmana_functional/gmana_functional.dart';
 ```dart
 Either<String, int> ok    = const Right(42);
 Either<String, int> fail  = const Left('Something went wrong');
+
+// Catching exceptions into Either
+final safe = Either.tryCatch<String, int>(
+  () => int.parse(rawInput),
+  (error, stack) => 'Parse failure: $error',
+);
+```
+
+---
+
+## Option
+
+`Option<T>` represents an optional value that is either present (`Some<T>`) or absent (`None<T>`).
+
+```dart
+final some = Option.fromNullable(42);     // Some(42)
+final none = Option<int>.fromNullable(null); // None
+
+final val = some.fold(
+  () => 'empty',
+  (value) => 'Got $value',
+);
+
+final either = some.toEither(() => 'Missing value'); // Right(42)
 ```
 
 ### Pattern matching — `fold`

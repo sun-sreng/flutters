@@ -10,6 +10,8 @@ export 'src/widgets/g_bar_wave_spinner.dart';
 export 'src/widgets/g_circular_spinner.dart';
 export 'src/widgets/g_dot_spinner.dart';
 export 'src/widgets/g_linear_spinner.dart';
+export 'src/widgets/g_pulse_spinner.dart';
+export 'src/widgets/g_ring_spinner.dart';
 export 'src/widgets/g_scale_y.dart';
 export 'src/widgets/g_wave_dot_spinner.dart';
 export 'src/widgets/g_wave_spinner.dart';

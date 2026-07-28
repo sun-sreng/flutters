@@ -393,6 +393,130 @@ class GTextField extends StatelessWidget {
     );
   }
 
+  factory GTextField.url({
+    Key? key,
+    String? name,
+    TextEditingController? controller,
+    String? initialValue,
+    String label = 'URL',
+    String hint = 'Enter a valid URL',
+    TextInputAction textInputAction = TextInputAction.next,
+    List<TextInputFormatter>? inputFormatters,
+    GFormValueParser? valueParser,
+    UrlValidationConfig validationConfig = const UrlValidationConfig(),
+    ValidationMessageResolver<UrlValidationIssue> validationMessageResolver =
+        resolveUrlValidationIssue,
+    GFormValidator? validator,
+    GTextFieldConfig Function(GTextFieldConfig config)? configure,
+    void Function(String)? onChanged,
+    void Function(String)? onFieldSubmitted,
+    void Function(String?)? onSaved,
+    IconData? prefixIcon,
+    FocusNode? focusNode,
+    AutovalidateMode? autovalidateMode,
+    bool? enabled,
+    bool readOnly = false,
+    int? maxLength,
+    TextAlign textAlign = TextAlign.start,
+    TextStyle? style,
+    Iterable<String>? autofillHints = const [AutofillHints.url],
+    InputDecoration? decoration,
+  }) {
+    final config = GTextFieldConfig(
+      controller: controller,
+      name: name,
+      initialValue: initialValue,
+      label: label,
+      hint: hint,
+      keyboardType: TextInputType.url,
+      textInputAction: textInputAction,
+      inputFormatters: inputFormatters,
+      valueParser: valueParser,
+      validator: asFormValidator(
+        validate: UrlValidator(validationConfig).validate,
+        resolve: validationMessageResolver,
+        validatorOverride: validator,
+      ),
+      onChanged: onChanged,
+      onFieldSubmitted: onFieldSubmitted,
+      onSaved: onSaved,
+      prefixIcon: prefixIcon ?? Icons.link,
+      focusNode: focusNode,
+      autovalidateMode: autovalidateMode,
+      enabled: enabled,
+      readOnly: readOnly,
+      maxLength: maxLength,
+      textAlign: textAlign,
+      style: style,
+      autofillHints: autofillHints,
+      decoration: decoration,
+    );
+
+    return GTextField(key: key, config: configure?.call(config) ?? config);
+  }
+
+  factory GTextField.phone({
+    Key? key,
+    String? name,
+    TextEditingController? controller,
+    String? initialValue,
+    String label = 'Phone number',
+    String hint = 'Enter your phone number',
+    TextInputAction textInputAction = TextInputAction.next,
+    List<TextInputFormatter>? inputFormatters,
+    GFormValueParser? valueParser,
+    PhoneValidationConfig validationConfig = const PhoneValidationConfig(),
+    ValidationMessageResolver<PhoneValidationIssue> validationMessageResolver =
+        resolvePhoneValidationIssue,
+    GFormValidator? validator,
+    GTextFieldConfig Function(GTextFieldConfig config)? configure,
+    void Function(String)? onChanged,
+    void Function(String)? onFieldSubmitted,
+    void Function(String?)? onSaved,
+    IconData? prefixIcon,
+    FocusNode? focusNode,
+    AutovalidateMode? autovalidateMode,
+    bool? enabled,
+    bool readOnly = false,
+    int? maxLength,
+    TextAlign textAlign = TextAlign.start,
+    TextStyle? style,
+    Iterable<String>? autofillHints = const [AutofillHints.telephoneNumber],
+    InputDecoration? decoration,
+  }) {
+    final config = GTextFieldConfig(
+      controller: controller,
+      name: name,
+      initialValue: initialValue,
+      label: label,
+      hint: hint,
+      keyboardType: TextInputType.phone,
+      textInputAction: textInputAction,
+      inputFormatters: inputFormatters,
+      valueParser: valueParser,
+      validator: asFormValidator(
+        validate: PhoneValidator(validationConfig).validate,
+        resolve: validationMessageResolver,
+        validatorOverride: validator,
+      ),
+      onChanged: onChanged,
+      onFieldSubmitted: onFieldSubmitted,
+      onSaved: onSaved,
+      prefixIcon: prefixIcon ?? Icons.phone,
+      focusNode: focusNode,
+      autovalidateMode: autovalidateMode,
+      enabled: enabled,
+      readOnly: readOnly,
+      maxLength: maxLength,
+      textAlign: textAlign,
+      style: style,
+      autofillHints: autofillHints,
+      decoration: decoration,
+    );
+
+    return GTextField(key: key, config: configure?.call(config) ?? config);
+  }
+
   final GTextFieldConfig config;
   final bool obscurable;
   final GTextFieldConfig Function(

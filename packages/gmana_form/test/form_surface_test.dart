@@ -34,6 +34,8 @@ void main() {
                     controller: confirmPasswordController,
                     passwordController: passwordController,
                   ),
+                  GUrlField(label: 'Website'),
+                  GPhoneField(label: 'Phone'),
                   GElevatedButton(
                     isLoading: false,
                     onPressed: () {},
@@ -47,10 +49,12 @@ void main() {
       );
 
       expect(find.byType(GEmailField), findsOneWidget);
-      expect(find.byType(GTextField), findsNWidgets(5));
+      expect(find.byType(GTextField), findsNWidgets(7));
       expect(find.byType(GNumberField), findsOneWidget);
       expect(find.byType(GPasswordField), findsOneWidget);
       expect(find.byType(GConfirmPasswordField), findsOneWidget);
+      expect(find.byType(GUrlField), findsOneWidget);
+      expect(find.byType(GPhoneField), findsOneWidget);
       expect(find.byType(GElevatedButton), findsOneWidget);
     });
 

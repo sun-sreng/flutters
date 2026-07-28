@@ -105,3 +105,9 @@ bool equals(String? str, String comparison) => str == comparison;
 
 /// Returns `true` if [str] matches the regex [pattern].
 bool matches(String str, String pattern) => RegExp(pattern).hasMatch(str);
+
+/// Returns `true` if [str] is a valid URL slug (lowercase alphanumeric words separated by hyphens).
+bool isSlug(String str) {
+  return RegExp(r'^[a-z0-9]+(?:-[a-z0-9]+)*$').hasMatch(str);
+}
+

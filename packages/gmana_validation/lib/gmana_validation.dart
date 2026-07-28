@@ -1,13 +1,9 @@
 /// Pure Dart typed validators with Either-based results.
 ///
-/// Provides configurable validators for email, password, text, and number
-/// inputs, each returning sealed issue types for exhaustive error handling.
-///
-/// Also exports [PasswordStrength] for real-time UI feedback and
-/// the [ValidationMessageResolver] utility.
+/// Provides configurable validators for email, password, text, number,
+/// URL, and phone inputs, each returning sealed issue types for exhaustive
+/// error handling.
 library;
-
-import 'gmana_validation.dart' show PasswordStrength, ValidationMessageResolver;
 
 // Core types
 export 'src/core/validation_issue.dart';
@@ -25,7 +21,17 @@ export 'src/number/number_validator.dart';
 export 'src/password/password_strength.dart';
 export 'src/password/password_validator.dart';
 
+// Phone
+export 'src/phone/phone_validation_config.dart';
+export 'src/phone/phone_validation_issue.dart';
+export 'src/phone/phone_validator.dart';
+
 // Text
 export 'src/text/text_validation_config.dart';
 export 'src/text/text_validation_issue.dart';
 export 'src/text/text_validator.dart';
+
+// URL
+export 'src/url/url_validation_config.dart';
+export 'src/url/url_validation_issue.dart';
+export 'src/url/url_validator.dart';

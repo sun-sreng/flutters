@@ -43,6 +43,33 @@ abstract class Either<L, R> {
   /// Creates an [Either] instance.
   const Either();
 
+  /// Executes [fn] and catches any exception, returning [Right] on success
+  /// or [Left(onError(error, stackTrace))] on failure.
+  static Either<L, R> tryCatch<L, R>(
+    R Function() fn,
+    L Function(Object error, StackTrace stackTrace) onError,
+  ) {
+    try {
+      return Right(fn());
+    } catch (error, stackTrace) {
+      return Left(onError(error, stackTrace));
+    }
+  }
+
+  /// Asynchronously executes [fn] and catches any exception, returning [Right] on success
+  /// or [Left(onError(error, stackTrace))] on failure.
+  static Future<Either<L, R>> tryCatchAsync<L, R>(
+    FutureOr<R> Function() fn,
+    L Function(Object error, StackTrace stackTrace) onError,
+  ) async {
+    try {
+      final value = await fn();
+      return Right(value);
+    } catch (error, stackTrace) {
+      return Left(onError(error, stackTrace));
+    }
+  }
+
   /// Maps the [Left] value using [f], if present.
   ///
   /// If this is a [Right], the same successful value is returned unchanged.

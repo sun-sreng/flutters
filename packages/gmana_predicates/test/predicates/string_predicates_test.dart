@@ -149,8 +149,16 @@ void main() {
     });
 
     test('matches checks a regular expression pattern', () {
-      expect(predicates.matches('abc123', r'^[a-z]+[0-9]+$'), isTrue);
-      expect(predicates.matches('123abc', r'^[a-z]+[0-9]+$'), isFalse);
+      expect(predicates.matches('hello123', r'^[a-z]+[0-9]+$'), isTrue);
+      expect(predicates.matches('123hello', r'^[a-z]+[0-9]+$'), isFalse);
+    });
+
+    test('isSlug checks URL slug format', () {
+      expect(predicates.isSlug('my-blog-post'), isTrue);
+      expect(predicates.isSlug('article-123'), isTrue);
+      expect(predicates.isSlug('My-Blog-Post'), isFalse);
+      expect(predicates.isSlug('my_blog_post'), isFalse);
+      expect(predicates.isSlug('-my-blog-'), isFalse);
     });
   });
 }

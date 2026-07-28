@@ -83,4 +83,48 @@ void main() {
       expect(const TimeOfDay(hour: 13, minute: 5).toCustomString(), '01:05 PM');
     });
   });
+
+  group('widget extensions', () {
+    testWidgets('chain widget modifiers', (tester) async {
+      var tapped = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: const Text('Hello')
+                .paddingAll(16)
+                .centered
+                .onTap(() => tapped = true),
+          ),
+        ),
+      );
+
+      expect(find.byType(Padding), findsOneWidget);
+      expect(find.byType(Center), findsOneWidget);
+      expect(find.byType(GestureDetector), findsOneWidget);
+
+      await tester.tap(find.text('Hello'));
+      expect(tapped, isTrue);
+    });
+  });
+
+  group('edge insets and text style extensions', () {
+    test('modify edge insets', () {
+      const padding = EdgeInsets.all(10);
+      final modified = padding.withTop(20);
+
+      expect(modified.top, 20);
+      expect(modified.horizontalInsets, 20);
+      expect(modified.verticalInsets, 30);
+    });
+
+    test('chain text styles', () {
+      const style = TextStyle(fontSize: 14);
+      final styled = style.bold.italic.underline.withColor(Colors.blue);
+
+      expect(styled.fontWeight, FontWeight.bold);
+      expect(styled.fontStyle, FontStyle.italic);
+      expect(styled.decoration, TextDecoration.underline);
+      expect(styled.color, Colors.blue);
+    });
+  });
 }

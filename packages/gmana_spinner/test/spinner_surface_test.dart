@@ -16,6 +16,8 @@ void main() {
                 GDotSpinner(),
                 GWaveDotSpinner(size: 24),
                 GBarWaveSpinner(color: Colors.purple),
+                GPulseSpinner(color: Colors.blue),
+                GRingSpinner(size: 36),
                 SizedBox(
                   width: 48,
                   height: 48,
@@ -32,6 +34,8 @@ void main() {
       expect(find.byType(GDotSpinner), findsNWidgets(2));
       expect(find.byType(GWaveDotSpinner), findsOneWidget);
       expect(find.byType(GBarWaveSpinner), findsOneWidget);
+      expect(find.byType(GPulseSpinner), findsOneWidget);
+      expect(find.byType(GRingSpinner), findsOneWidget);
       expect(find.byType(GWaveSpinner), findsOneWidget);
     });
 

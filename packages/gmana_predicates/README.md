@@ -74,6 +74,7 @@ matches('hello123', r'^\w+$')               // true  — regex match
 ```dart
 isEmail('user@example.com')   // true  — RFC 5322 heuristic
 isEmail('bad@')               // false
+isSlug('my-blog-post')        // true  — lowercase alphanumeric with hyphens
 isJson('{"a":1}')             // true
 isJson('not json')            // false
 ```
@@ -168,6 +169,10 @@ isIpv4('192.168.0')        // false — too few octets
 
 isIpv6('::1')                              // true
 isIpv6('2001:0db8:85a3::8a2e:0370:7334')  // true
+
+isUrl('https://example.com/api')           // true
+isMacAddress('00:1A:2B:3C:4D:5E')          // true
+isPort('8080')                             // true — 1 to 65535
 ```
 
 ### Postal codes
@@ -202,6 +207,9 @@ isUuid('550e8400-e29b-31d4-a716-446655440000', '4')   // false — v3 treated as
 isCreditCard('4111111111111111')    // true  — Visa test number
 isCreditCard('4111 1111 1111 1111') // true  — spaces stripped
 isCreditCard('1234567890123456')    // false — fails Luhn
+
+isSemVer('1.0.0-alpha.1')           // true  — Semantic Versioning 2.0
+isPhoneNumber('+1 (415) 555-2671')  // true  — 7-15 digits
 ```
 
 ### Experimental
