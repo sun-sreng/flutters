@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart'
     show ColorService, ColorExt;
 
-import '../gmana_flutter.dart' show ColorService, ColorExt;
-
 /// Brand color palette and theme factory.
 ///
 /// Utility methods (hex parsing, opacity) are intentionally omitted here —

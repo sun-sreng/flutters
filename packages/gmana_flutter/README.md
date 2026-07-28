@@ -253,6 +253,39 @@ const GDotSpinner(color: Colors.blue);
 const GWaveDotSpinner(size: 24, color: Colors.blue);
 ```
 
+## Widgets
+
+`gmana_flutter` provides core curated widgets:
+
+```dart
+// Buttons
+GButton(
+  label: 'Submit',
+  onPressed: () => print('Submitted'),
+  variant: GButtonVariant.primary,
+  isLoading: false,
+);
+
+// Cards
+GCard(
+  onTap: () => print('Tapped'),
+  child: Text('Card Content'),
+);
+
+// Input Fields
+GTextField(
+  label: 'Password',
+  enablePasswordToggle: true,
+  enableClearButton: true,
+);
+
+// Spacing
+const SizedBoxHeight(spacing: GSpacing.md);
+const SizedBoxWidth(spacing: GSpacing.lg);
+GSpacing.vSpace(GSpacing.sm);
+GSpacing.hSpace(GSpacing.sm);
+```
+
 Use `GWaveSpinner` with explicit bounds:
 
 ```dart
