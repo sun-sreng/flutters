@@ -9,13 +9,29 @@ void main() {
     var count = 0;
 
     throttle.run(() => count += 1);
+    expect(throttle.isActive, isTrue);
     throttle.run(() => count += 10);
 
     await Future<void>.delayed(const Duration(milliseconds: 30));
+    expect(throttle.isActive, isFalse);
     throttle.run(() => count += 100);
 
     expect(count, 101);
     throttle.dispose();
+  });
+
+  test('Throttler cancel resets active cooldown state', () {
+    final throttle = Throttler.duration(const Duration(milliseconds: 100));
+    var count = 0;
+
+    throttle.run(() => count += 1);
+    expect(throttle.isActive, isTrue);
+
+    throttle.cancel();
+    expect(throttle.isActive, isFalse);
+
+    throttle.run(() => count += 1);
+    expect(count, 2);
   });
 
   test('Throttler validates delay', () {

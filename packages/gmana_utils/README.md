@@ -14,6 +14,10 @@ import 'package:gmana_utils/gmana_utils.dart';
 - [Throttler](#throttler)
 - [IdGenerator](#idgenerator)
 - [SecureIdGenerator](#secureidgenerator)
+- [Lazy & ResettableLazy](#lazy--resettablelazy)
+- [RateLimiter](#ratelimiter)
+- [Retry](#retry)
+- [tryOrNull & tryOrDefault](#tryornull--tryodefault)
 
 ---
 
@@ -491,3 +495,67 @@ Returns `true` only if `a` and `b` are identical. Case-sensitive.
 | `SecureIdGenerator.uuidV4Like`   | UUID-format tokens for UUID-expecting systems     |
 | `SecureIdGenerator.ulid`         | Time-ordered tokens with secure random suffix     |
 | `SecureIdGenerator.safeEqual`    | Validating any of the above at verification time  |
+
+---
+
+## Lazy & ResettableLazy
+
+Lazy value evaluation on demand:
+
+```dart
+final heavyConfig = Lazy(() => loadExpensiveConfig());
+
+print(heavyConfig.isInitialized); // false
+print(heavyConfig.value);         // evaluates and caches result
+
+// ResettableLazy can be invalidated
+final cache = ResettableLazy(() => fetchLatestFeed());
+cache.value; // fetched
+cache.reset(); // cleared; next .value call re-fetches
+```
+
+---
+
+## RateLimiter
+
+Sliding window call rate limiting:
+
+```dart
+final limiter = RateLimiter(
+  maxRequests: 5,
+  duration: Duration(minutes: 1),
+);
+
+if (limiter.canRun) {
+  limiter.tryRun(() => sendAnalyticsEvent());
+}
+```
+
+---
+
+## Retry
+
+Asynchronous operation retry with exponential backoff and jitter predicate:
+
+```dart
+final data = await retry(
+  () => fetchApiData(),
+  maxAttempts: 3,
+  delay: Duration(milliseconds: 500),
+  useExponentialBackoff: true,
+  retryIf: (e) => e is SocketException,
+);
+```
+
+---
+
+## tryOrNull & tryOrDefault
+
+Exception-safe wrapper functions:
+
+```dart
+final number = tryOrNull(() => int.parse(rawInput)); // returns null on FormatException
+final value = tryOrDefault(() => int.parse(rawInput), 0); // returns 0 on error
+final asyncResult = await tryOrNullAsync(() => fetchUserData());
+```
+

@@ -5,34 +5,47 @@ const kDefaultThrottleDuration = 300;
 
 /// A small utility to throttle function execution.
 class Throttler {
+  /// Throttle delay duration.
+  final Duration duration;
+
   /// Throttle delay in milliseconds.
-  final int milliseconds;
+  int get milliseconds => duration.inMilliseconds;
 
   Timer? _timer;
 
-  /// Creates a throttler with the provided [milliseconds] window.
-  Throttler({this.milliseconds = kDefaultThrottleDuration}) {
-    if (milliseconds <= 0) {
+  /// Creates a throttler with the provided [milliseconds] or [duration] window.
+  Throttler({int? milliseconds, Duration? duration})
+      : duration = duration ?? Duration(milliseconds: milliseconds ?? kDefaultThrottleDuration) {
+    if (this.duration.inMicroseconds <= 0) {
       throw ArgumentError.value(
-        milliseconds,
-        'milliseconds',
+        this.duration,
+        'duration',
         'must be greater than zero',
       );
     }
   }
 
+  /// Creates a throttler with the provided [duration] window.
+  factory Throttler.duration(Duration duration) =>
+      Throttler(duration: duration);
+
+  /// Whether a throttle cooldown window is currently active.
+  bool get isActive => _timer?.isActive ?? false;
+
   /// Cancels the active throttle window.
   void dispose() {
-    if (_timer?.isActive ?? false) {
-      _timer?.cancel();
-    }
+    _timer?.cancel();
+    _timer = null;
   }
+
+  /// Alias for [dispose].
+  void cancel() => dispose();
 
   /// Runs [action] immediately if not currently throttled.
   void run(void Function() action) {
-    if (_timer?.isActive ?? false) return;
+    if (isActive) return;
 
     action();
-    _timer = Timer(Duration(milliseconds: milliseconds), () {});
+    _timer = Timer(duration, () {});
   }
 }
