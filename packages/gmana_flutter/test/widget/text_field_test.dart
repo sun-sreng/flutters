@@ -23,36 +23,33 @@ void main() {
       expect(changedValue, equals('john'));
     });
 
-    testWidgets('renders clear button when enableClearButton is true and text entered', (tester) async {
+    testWidgets(
+      'renders clear button when enableClearButton is true and text entered',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(body: GTextField(enableClearButton: true)),
+          ),
+        );
+
+        await tester.enterText(find.byType(TextField), 'hello');
+        await tester.pump();
+
+        expect(find.byIcon(Icons.clear), findsOneWidget);
+        await tester.tap(find.byIcon(Icons.clear));
+        await tester.pump();
+
+        final textField = tester.widget<TextField>(find.byType(TextField));
+        expect(textField.controller?.text, equals(''));
+      },
+    );
+
+    testWidgets('toggles visibility icon when enablePasswordToggle is true', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: GTextField(
-              enableClearButton: true,
-            ),
-          ),
-        ),
-      );
-
-      await tester.enterText(find.byType(TextField), 'hello');
-      await tester.pump();
-
-      expect(find.byIcon(Icons.clear), findsOneWidget);
-      await tester.tap(find.byIcon(Icons.clear));
-      await tester.pump();
-
-      final textField = tester.widget<TextField>(find.byType(TextField));
-      expect(textField.controller?.text, equals(''));
-    });
-
-    testWidgets('toggles visibility icon when enablePasswordToggle is true', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: GTextField(
-              enablePasswordToggle: true,
-            ),
-          ),
+          home: Scaffold(body: GTextField(enablePasswordToggle: true)),
         ),
       );
 

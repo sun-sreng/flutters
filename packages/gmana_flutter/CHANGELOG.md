@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.0.10 - 2026-08-07
+
+### Added — design tokens
+
+- `GRadius`: corner-radius scale (`xs`…`xl`, `pill`) plus `all`, `top`,
+  `bottom`, `start`, `end`, `shape`, and `outlinedShape` builders. Widgets no
+  longer need to hard-code literal radii.
+- `GMotion`: duration tokens (`xfast`…`xslow`) and curve tokens (`standard`,
+  `enter`, `exit`, `emphasized`).
+- `GTone` / `GToneScheme`: a semantic intent vocabulary (`neutral`, `primary`,
+  `info`, `success`, `warning`, `error`) that resolves to accent/container
+  colors. This is what finally puts the existing `GColors` semantic tokens to
+  work. Light mode uses the hand-tuned `*Container` tokens; dark mode derives
+  a tint instead, because the light containers are unreadable on a dark
+  surface.
+- `GSpacing.paddingOnly` and `GSpacing.paddingDirectional` (RTL-aware).
+
+### Added — widgets
+
+- `GTag`: compact status pill. Distinct from Material's `Badge` (which
+  overlays a child) and `Chip` (which carries selection affordances).
+- `GAvatar`: image → initials → icon fallback chain, with a stable
+  per-name tint via `GAvatar.tintFor`, optional badge slot, and square mode.
+- `GBanner`: inline alert. Lighter than `MaterialBanner`, which is
+  scaffold-owned and full-bleed. Supports title, actions, and dismissal.
+- `GEmptyState`: icon/illustration + title + message + action placeholder.
+
+### Changed — existing widgets (additive parameters)
+
+- `GButton`: `GButtonSize` presets (`small`/`medium`/`large`), `trailingIcon`,
+  and `tooltip`.
+- `GCard`: `showBorder` (draw the theme outline without naming a color),
+  `onLongPress`, and `semanticsLabel`.
+- `GAppBar`: `showBackButton`, `titleWidget`, `bottom` (counted in
+  `preferredSize`), `elevation`, and `toolbarHeight`.
+- `GListTile`: `subtitle`, `trailing`, `showChevron`, `enabled`, `selected`,
+  `iconColor`, and `contentPadding`.
+- `GTextField`: `minLines`, `helperText`, `maxLength`, `focusNode`,
+  `autofocus`, `readOnly`, `inputFormatters`, `textCapitalization`, `onTap`,
+  and `autofillHints`.
+- `GStarRatingBar`: `onRatingChanged` makes the bar interactive, with
+  half-star precision when `enableHalfStar` is on. It stays read-only when
+  the callback is null.
+
+### Behaviour notes
+
+- `GButtonVariant` gained a `danger` value. Additive for callers that only
+  construct buttons, but an exhaustive `switch` over the enum in your own
+  code will now need a `danger` arm.
+- `GAppBar`'s synthesized back button now calls `Navigator.maybePop()` instead
+  of `pop()`, so it no longer throws on a root route. It also gained the
+  standard back-button tooltip.
+- `GListTile` no longer renders an empty `Text` widget when `label` is blank.
+
 ## 0.0.9 - 2026-04-24
 
 - compatibility: re-export spinner widgets from the new `gmana_spinner` package.

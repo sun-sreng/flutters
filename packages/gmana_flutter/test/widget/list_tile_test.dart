@@ -4,7 +4,9 @@ import 'package:gmana_flutter/gmana_flutter.dart';
 
 void main() {
   group('GListTile Widget', () {
-    testWidgets('renders icon, title, label and triggers onTap', (tester) async {
+    testWidgets('renders icon, title, label and triggers onTap', (
+      tester,
+    ) async {
       var tapped = false;
 
       await tester.pumpWidget(

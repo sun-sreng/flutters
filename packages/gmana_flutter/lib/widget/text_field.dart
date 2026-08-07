@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// A theme-aware text field widget supporting clear button, obscure password toggle, and prefix/suffix icons.
 class GTextField extends StatefulWidget {
@@ -47,6 +48,36 @@ class GTextField extends StatefulWidget {
   /// Maximum visible lines (defaults to 1).
   final int? maxLines;
 
+  /// Minimum visible lines for multi-line fields.
+  final int? minLines;
+
+  /// Helper text shown beneath the field when there is no [errorText].
+  final String? helperText;
+
+  /// Maximum number of characters accepted.
+  final int? maxLength;
+
+  /// External focus control.
+  final FocusNode? focusNode;
+
+  /// Whether the field grabs focus when first shown.
+  final bool autofocus;
+
+  /// Whether the field shows its value but rejects edits.
+  final bool readOnly;
+
+  /// Input formatters applied as the user types.
+  final List<TextInputFormatter>? inputFormatters;
+
+  /// Automatic capitalization behaviour.
+  final TextCapitalization textCapitalization;
+
+  /// Called when the field is tapped, useful with [readOnly] pickers.
+  final VoidCallback? onTap;
+
+  /// Autofill hints passed through to the platform.
+  final Iterable<String>? autofillHints;
+
   /// Creates a styled [GTextField].
   const GTextField({
     super.key,
@@ -65,6 +96,16 @@ class GTextField extends StatefulWidget {
     this.textInputAction,
     this.enabled = true,
     this.maxLines = 1,
+    this.minLines,
+    this.helperText,
+    this.maxLength,
+    this.focusNode,
+    this.autofocus = false,
+    this.readOnly = false,
+    this.inputFormatters,
+    this.textCapitalization = TextCapitalization.none,
+    this.onTap,
+    this.autofillHints,
   });
 
   @override
@@ -125,18 +166,30 @@ class _GTextFieldState extends State<GTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final isSingleLine = widget.obscureText || widget.enablePasswordToggle;
+
     return TextField(
       controller: _effectiveController,
+      focusNode: widget.focusNode,
+      autofocus: widget.autofocus,
+      readOnly: widget.readOnly,
       obscureText: widget.enablePasswordToggle ? _obscured : widget.obscureText,
       enabled: widget.enabled,
-      maxLines: (widget.obscureText || widget.enablePasswordToggle) ? 1 : widget.maxLines,
+      maxLines: isSingleLine ? 1 : widget.maxLines,
+      minLines: isSingleLine ? null : widget.minLines,
+      maxLength: widget.maxLength,
       keyboardType: widget.keyboardType,
       textInputAction: widget.textInputAction,
+      textCapitalization: widget.textCapitalization,
+      inputFormatters: widget.inputFormatters,
+      autofillHints: widget.autofillHints,
       onChanged: widget.onChanged,
       onSubmitted: widget.onSubmitted,
+      onTap: widget.onTap,
       decoration: InputDecoration(
         labelText: widget.label,
         hintText: widget.hint,
+        helperText: widget.helperText,
         errorText: widget.errorText,
         prefixIcon: widget.prefixIcon,
         suffixIcon: _buildSuffixIcon(),

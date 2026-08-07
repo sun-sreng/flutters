@@ -15,6 +15,51 @@ enum GButtonVariant {
 
   /// Text-only button without background or border.
   text,
+
+  /// Filled destructive button for delete/remove actions.
+  danger,
+}
+
+/// Size presets for [GButton].
+enum GButtonSize {
+  /// Compact button for dense rows and toolbars.
+  small,
+
+  /// The default size.
+  medium,
+
+  /// Prominent button for primary page actions.
+  large,
+}
+
+/// Resolved metrics for a [GButtonSize].
+extension on GButtonSize {
+  double get fontSize => switch (this) {
+    GButtonSize.small => 13,
+    GButtonSize.medium => 15,
+    GButtonSize.large => 16,
+  };
+
+  double get indicatorSize => switch (this) {
+    GButtonSize.small => 14,
+    GButtonSize.medium => 18,
+    GButtonSize.large => 20,
+  };
+
+  EdgeInsets get padding => switch (this) {
+    GButtonSize.small => GSpacing.paddingSymmetric(
+      horizontal: GSpacing.md,
+      vertical: GSpacing.xs,
+    ),
+    GButtonSize.medium => GSpacing.paddingSymmetric(
+      horizontal: GSpacing.lg,
+      vertical: GSpacing.md,
+    ),
+    GButtonSize.large => GSpacing.paddingSymmetric(
+      horizontal: GSpacing.xlg,
+      vertical: GSpacing.lg,
+    ),
+  };
 }
 
 /// A flexible, theme-aware button widget supporting variants, icons, and loading states.
@@ -33,6 +78,15 @@ class GButton extends StatelessWidget {
 
   /// Optional leading icon widget.
   final Widget? icon;
+
+  /// Optional trailing icon widget, rendered after the label.
+  final Widget? trailingIcon;
+
+  /// Size preset (defaults to [GButtonSize.medium]).
+  final GButtonSize size;
+
+  /// Optional tooltip shown on long-press or hover.
+  final String? tooltip;
 
   /// Whether the button expands to fill available horizontal width.
   final bool fullWidth;
@@ -57,6 +111,9 @@ class GButton extends StatelessWidget {
     this.variant = GButtonVariant.primary,
     this.isLoading = false,
     this.icon,
+    this.trailingIcon,
+    this.size = GButtonSize.medium,
+    this.tooltip,
     this.fullWidth = false,
     this.backgroundColor,
     this.foregroundColor,
@@ -75,8 +132,8 @@ class GButton extends StatelessWidget {
       children: [
         if (isLoading) ...[
           SizedBox(
-            width: 18,
-            height: 18,
+            width: size.indicatorSize,
+            height: size.indicatorSize,
             child: CircularProgressIndicator(
               strokeWidth: 2.0,
               valueColor: AlwaysStoppedAnimation<Color>(
@@ -91,17 +148,19 @@ class GButton extends StatelessWidget {
         ],
         Text(
           label,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: size.fontSize,
+          ),
         ),
+        if (trailingIcon != null && !isLoading) ...[
+          GSpacing.hSpace(GSpacing.sm),
+          trailingIcon!,
+        ],
       ],
     );
 
-    final effectivePadding =
-        padding ??
-        GSpacing.paddingSymmetric(
-          horizontal: GSpacing.lg,
-          vertical: GSpacing.md,
-        );
+    final effectivePadding = padding ?? size.padding;
 
     final shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(borderRadius),
@@ -126,7 +185,8 @@ class GButton extends StatelessWidget {
         result = ElevatedButton(
           onPressed: isEnabled ? onPressed : null,
           style: ElevatedButton.styleFrom(
-            backgroundColor: backgroundColor ?? theme.colorScheme.surfaceContainerHighest,
+            backgroundColor:
+                backgroundColor ?? theme.colorScheme.surfaceContainerHighest,
             foregroundColor: foregroundColor ?? theme.colorScheme.onSurface,
             padding: effectivePadding,
             shape: shape,
@@ -161,6 +221,23 @@ class GButton extends StatelessWidget {
           ),
           child: buttonContent,
         );
+
+      case GButtonVariant.danger:
+        result = ElevatedButton(
+          onPressed: isEnabled ? onPressed : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: backgroundColor ?? GColors.error,
+            foregroundColor: foregroundColor ?? GColors.onError,
+            padding: effectivePadding,
+            shape: shape,
+            elevation: 0,
+          ),
+          child: buttonContent,
+        );
+    }
+
+    if (tooltip != null) {
+      result = Tooltip(message: tooltip!, child: result);
     }
 
     if (fullWidth) {
@@ -176,6 +253,8 @@ class GButton extends StatelessWidget {
     switch (variant) {
       case GButtonVariant.primary:
         return Colors.white;
+      case GButtonVariant.danger:
+        return GColors.onError;
       case GButtonVariant.secondary:
         return theme.colorScheme.onSurface;
       case GButtonVariant.outline:

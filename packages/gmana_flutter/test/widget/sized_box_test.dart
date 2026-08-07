@@ -7,11 +7,7 @@ void main() {
     testWidgets('SizedBoxHeight builds with specified height', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Column(
-            children: [
-              SizedBoxHeight(spacing: 24.0),
-            ],
-          ),
+          home: Column(children: [SizedBoxHeight(spacing: 24.0)]),
         ),
       );
 
@@ -21,13 +17,7 @@ void main() {
 
     testWidgets('SizedBoxWidth builds with specified width', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Row(
-            children: [
-              SizedBoxWidth(spacing: 16.0),
-            ],
-          ),
-        ),
+        const MaterialApp(home: Row(children: [SizedBoxWidth(spacing: 16.0)])),
       );
 
       final box = tester.widget<SizedBox>(find.byType(SizedBox));

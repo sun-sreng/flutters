@@ -44,6 +44,25 @@ MaterialApp(
 | `GColors.background`, `surface`, `outline` and dark variants      | Neutral surfaces and borders.                       |
 | `GColors.lightTheme`, `GColors.darkTheme`                         | Ready-to-use Material 3 themes.                     |
 | `GFontWeight.thin` through `black`                                | Named `FontWeight` constants from `w100` to `w900`. |
+| `GSpacing.xxxs` through `xxxlg`, `padding*`, `vSpace`, `hSpace`   | Spacing scale and `EdgeInsets` builders.            |
+| `GRadius.xs` through `xl`, `pill`, `all`, `top`, `shape`          | Corner-radius scale and `BorderRadius` builders.    |
+| `GMotion.xfast` through `xslow`, `standard`, `enter`, `exit`      | Animation duration and curve tokens.                |
+| `GTone` + `GToneScheme`                                           | Semantic intent resolved to accent/container colors.|
+
+`GTone` is the shared status vocabulary used by `GTag` and `GBanner`. It
+resolves the semantic `GColors` tokens for the ambient theme:
+
+```dart
+final colors = GTone.warning.resolve(context);
+colors.accent;      // solid, high emphasis
+colors.onAccent;    // readable on accent
+colors.container;   // low-emphasis tint
+colors.onContainer; // readable on container
+```
+
+Light mode uses the hand-tuned `GColors.*Container` tokens. Dark mode derives
+a tint from the accent instead, because those light containers are unreadable
+on a dark surface.
 
 ## Color Utilities
 
@@ -197,12 +216,49 @@ Scaffold(
 );
 ```
 
-| API              | Use it for                                                        |
-| ---------------- | ----------------------------------------------------------------- |
-| `GAppBar`        | App bar with title, optional leading widget, actions, and colors. |
-| `GListTile`      | List tile with leading icon, title, trailing label, and arrow.    |
-| `SizedBoxHeight` | Vertical spacing using `GSpacing.md` by default.                  |
-| `GStarRatingBar` | Read-only star rating display with optional half stars.           |
+| API              | Use it for                                                                       |
+| ---------------- | -------------------------------------------------------------------------------- |
+| `GAppBar`        | App bar with title, actions, colors, optional `bottom`, and `showBackButton`.    |
+| `GButton`        | Variants (`primary`/`secondary`/`outline`/`text`/`danger`), sizes, loading state. |
+| `GCard`          | Surface container with optional border, tap, and long-press.                     |
+| `GListTile`      | List tile with leading icon, title, subtitle, trailing label/widget, and arrow.   |
+| `GTextField`     | Text input with clear button, password toggle, formatters, and helper text.      |
+| `SizedBoxHeight` | Vertical spacing using `GSpacing.md` by default.                                 |
+| `GStarRatingBar` | Star rating display; interactive when `onRatingChanged` is supplied.             |
+
+## Status And Placeholder Widgets
+
+```dart
+Column(
+  children: [
+    const GBanner(
+      tone: GTone.warning,
+      title: 'Payment overdue',
+      message: 'Update your card to keep the subscription active.',
+    ),
+    const SizedBoxHeight(),
+    Row(
+      children: [
+        GAvatar(name: 'Ada Lovelace'),
+        const SizedBoxWidth(),
+        const GTag(label: 'Active', tone: GTone.success),
+      ],
+    ),
+  ],
+);
+```
+
+| API                | Use it for                                                          |
+| ------------------ | --------------------------------------------------------------------- |
+| `GTag`             | Compact status pill. Tone-aware, optionally filled, icon, or tappable. |
+| `GBanner`          | Inline alert with title, actions, and dismissal.                       |
+| `GAvatar`          | Image → initials → icon fallback, with a stable per-name tint.        |
+| `GAvatar.tintFor`  | The deterministic tint for a name, for matching surrounding chrome.    |
+| `GEmptyState`      | Icon/illustration + title + message + action placeholder.              |
+
+`GTag` is not Material's `Badge` (which overlays a child) nor `Chip` (which
+carries selection affordances) — it is the standalone status pill. `GBanner`
+is the lightweight inline counterpart to the scaffold-owned `MaterialBanner`.
 
 ## Loading Indicators
 

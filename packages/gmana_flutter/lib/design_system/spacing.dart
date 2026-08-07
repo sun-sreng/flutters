@@ -49,6 +49,29 @@ abstract class GSpacing {
   static EdgeInsets paddingVertical([double value = md]) =>
       EdgeInsets.symmetric(vertical: value);
 
+  /// Creates [EdgeInsets] padding for individual sides.
+  static EdgeInsets paddingOnly({
+    double left = 0.0,
+    double top = 0.0,
+    double right = 0.0,
+    double bottom = 0.0,
+  }) => EdgeInsets.only(left: left, top: top, right: right, bottom: bottom);
+
+  /// Creates direction-aware [EdgeInsetsDirectional] padding.
+  ///
+  /// Prefer this over [paddingOnly] when the layout must mirror in RTL.
+  static EdgeInsetsDirectional paddingDirectional({
+    double start = 0.0,
+    double top = 0.0,
+    double end = 0.0,
+    double bottom = 0.0,
+  }) => EdgeInsetsDirectional.only(
+    start: start,
+    top: top,
+    end: end,
+    bottom: bottom,
+  );
+
   /// Returns a vertical [SizedBox] with height equal to [height] (defaults to [GSpacing.md]).
   static SizedBox vSpace([double height = md]) => SizedBox(height: height);
 

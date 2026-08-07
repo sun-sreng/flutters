@@ -13,7 +13,10 @@ void main() {
     });
 
     test('paddingAll produces uniform EdgeInsets', () {
-      expect(GSpacing.paddingAll(GSpacing.lg), equals(const EdgeInsets.all(16.0)));
+      expect(
+        GSpacing.paddingAll(GSpacing.lg),
+        equals(const EdgeInsets.all(16.0)),
+      );
     });
 
     test('paddingSymmetric produces symmetric EdgeInsets', () {

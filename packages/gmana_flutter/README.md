@@ -110,10 +110,12 @@ class HomePage extends StatelessWidget {
 
 | Area       | APIs                                                                                                       |
 | ---------- | ---------------------------------------------------------------------------------------------------------- |
-| Widgets    | `GAppBar`, `GListTile`, `SizedBoxHeight`, `GStarRatingBar`                                                 |
+| Widgets    | `GAppBar`, `GButton`, `GCard`, `GListTile`, `SizedBoxHeight`, `GStarRatingBar`, `GTextField`                |
+| Status UI  | `GTag`, `GBanner`, `GAvatar`, `GEmptyState`                                                                |
 | Forms      | `GEmailField`, `GPasswordField`, `GNumberField`, `GTextField`, `GConfirmPasswordField`, `GElevatedButton`  |
 | Loading    | `GCircularSpinner`, `GLinearSpinner`, `GDotSpinner`, `GWaveSpinner`, `GWaveDotSpinner`                     |
-| Theme      | `GColors`, `GFontWeight`, plus re-exported `ThemeModeExt`, `ThemeModeService`                              |
+| Tokens     | `GColors`, `GFontWeight`, `GSpacing`, `GRadius`, `GMotion`, `GTone`                                        |
+| Theme      | Re-exported `ThemeModeExt`, `ThemeModeService`                                                             |
 | Extensions | Re-exported `ColorExt`, `StringColorExtension`, `BreakpointUtils`, `ResponsiveContext`, `ContextExt`       |
 | Utilities  | Re-exported `IconDataExt`, `IconDataSerialization`, plus `fromLocale`, `toLocale`, `registerErrorHandlers` |
 
@@ -284,6 +286,145 @@ const SizedBoxHeight(spacing: GSpacing.md);
 const SizedBoxWidth(spacing: GSpacing.lg);
 GSpacing.vSpace(GSpacing.sm);
 GSpacing.hSpace(GSpacing.sm);
+```
+
+`GButton` has size presets, a destructive variant, and a trailing icon slot:
+
+```dart
+GButton(
+  label: 'Delete account',
+  variant: GButtonVariant.danger,
+  size: GButtonSize.large,
+  tooltip: 'This cannot be undone',
+  onPressed: confirmDelete,
+);
+
+GButton(
+  label: 'Next',
+  size: GButtonSize.small,
+  trailingIcon: const Icon(Icons.arrow_forward, size: 16),
+  onPressed: goNext,
+);
+```
+
+`GStarRatingBar` is read-only until you give it a callback:
+
+```dart
+GStarRatingBar(
+  ratingValue: rating,
+  starSize: 32,
+  onRatingChanged: (value) => setState(() => rating = value),
+);
+```
+
+## Design Tokens
+
+Radius and motion tokens keep components visually consistent:
+
+```dart
+GRadius.xs;     // 4  — chips, tags
+GRadius.sm;     // 8  — buttons, inputs
+GRadius.md;     // 12 — cards
+GRadius.pill;   // fully rounded
+
+GRadius.all(GRadius.md);      // BorderRadius
+GRadius.top(GRadius.lg);      // top corners only
+GRadius.start(GRadius.sm);    // direction-aware
+GRadius.shape(GRadius.md);    // RoundedRectangleBorder
+
+GMotion.fast;       // 150ms
+GMotion.normal;     // 250ms
+GMotion.standard;   // Curves.easeInOut
+
+AnimatedContainer(
+  duration: GMotion.normal,
+  curve: GMotion.standard,
+  decoration: BoxDecoration(borderRadius: GRadius.all()),
+  child: child,
+);
+```
+
+`GSpacing` also covers single sides and RTL-aware insets:
+
+```dart
+GSpacing.paddingOnly(left: GSpacing.md, bottom: GSpacing.sm);
+GSpacing.paddingDirectional(start: GSpacing.lg, end: GSpacing.xs);
+```
+
+## Semantic Tones
+
+`GTone` is the shared vocabulary behind the status widgets. It resolves the
+`GColors` semantic tokens for the current theme — light mode uses the
+hand-tuned containers, dark mode derives a readable tint instead.
+
+```dart
+final colors = GTone.warning.resolve(context);
+
+Container(
+  color: colors.container,
+  child: Text('Careful', style: TextStyle(color: colors.onContainer)),
+);
+
+GTone.error.icon;   // Icons.error_outline
+GTone.success.icon; // Icons.check_circle_outline
+```
+
+## Status And Placeholder Widgets
+
+### Tags
+
+```dart
+const GTag(label: 'Active', tone: GTone.success);
+const GTag(label: 'Overdue', tone: GTone.error, filled: true);
+const GTag(label: 'Beta', icon: Icons.science, compact: true);
+GTag(label: 'Filter', onTap: applyFilter);
+```
+
+### Banners
+
+```dart
+const GBanner(
+  tone: GTone.warning,
+  title: 'Payment overdue',
+  message: 'Update your card to keep the subscription active.',
+);
+
+GBanner(
+  tone: GTone.error,
+  message: 'Could not reach the server.',
+  onDismiss: hideBanner,
+  actions: [
+    GButton(label: 'Retry', size: GButtonSize.small, onPressed: retry),
+  ],
+);
+```
+
+### Avatars
+
+```dart
+GAvatar(name: 'Ada Lovelace');                  // 'AL' on a stable tint
+GAvatar(image: NetworkImage(url), name: 'Ada'); // falls back if it fails
+GAvatar(name: 'Ada', size: 56, square: true);
+GAvatar(
+  name: 'Ada',
+  badge: const Icon(Icons.circle, size: 10, color: Colors.green),
+);
+
+// The same tint the avatar picks, for matching chrome
+final tint = GAvatar.tintFor('Ada Lovelace');
+```
+
+### Empty states
+
+```dart
+GEmptyState(
+  icon: Icons.inbox_outlined,
+  title: 'No messages',
+  message: 'When someone writes to you it will show up here.',
+  action: GButton(label: 'Refresh', onPressed: reload),
+);
+
+const GEmptyState(title: 'Nothing matched', compact: true);
 ```
 
 Use `GWaveSpinner` with explicit bounds:

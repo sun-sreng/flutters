@@ -7,12 +7,7 @@ void main() {
     testWidgets('renders full, half, and empty star icons', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: GStarRatingBar(
-              ratingValue: 3.5,
-              maxStars: 5,
-            ),
-          ),
+          home: Scaffold(body: GStarRatingBar(ratingValue: 3.5, maxStars: 5)),
         ),
       );
 

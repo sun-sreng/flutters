@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 
-/// A read-only star-rating display.
+/// A star-rating display that can also collect input.
 ///
 /// Renders [maxStars] icons that visually represent a numeric [ratingValue].
 /// Supports half-star precision when [enableHalfStar] is `true`.
+///
+/// Read-only by default. Supply [onRatingChanged] to make it interactive:
+///
+/// ```dart
+/// GStarRatingBar(
+///   ratingValue: rating,
+///   starSize: 32,
+///   onRatingChanged: (value) => setState(() => rating = value),
+/// );
+/// ```
 class GStarRatingBar extends StatelessWidget {
   /// The current rating value.
   final double ratingValue;
@@ -38,6 +48,12 @@ class GStarRatingBar extends StatelessWidget {
   /// Optional semantics label for assistive technologies.
   final String? semanticsLabel;
 
+  /// Called with the new rating when a star is tapped.
+  ///
+  /// When null the bar stays read-only. When [enableHalfStar] is true,
+  /// tapping the leading half of a star reports the half value.
+  final ValueChanged<double>? onRatingChanged;
+
   /// Creates a star rating bar showing [ratingValue] out of [maxStars] stars.
   const GStarRatingBar({
     super.key,
@@ -52,6 +68,7 @@ class GStarRatingBar extends StatelessWidget {
     this.halfStarIcon = Icons.star_half,
     this.inactiveStarIcon = Icons.star_border,
     this.semanticsLabel,
+    this.onRatingChanged,
   }) : assert(
          ratingValue >= 0 && ratingValue <= maxStars,
          'Rating value must be between 0 and $maxStars',
@@ -59,22 +76,42 @@ class GStarRatingBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isInteractive = onRatingChanged != null;
+
     return Semantics(
       label: semanticsLabel ?? 'Rating $ratingValue out of $maxStars',
-      readOnly: true,
+      readOnly: !isInteractive,
+      slider: isInteractive,
+      value: '$ratingValue',
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: List.generate(
-          maxStars,
-          (starIndex) => Padding(
+        children: List.generate(maxStars, (starIndex) {
+          final star = ExcludeSemantics(child: _buildStarIcon(starIndex + 1));
+
+          return Padding(
             padding: EdgeInsets.only(
               right: starIndex < maxStars - 1 ? starSpacing : 0,
             ),
-            child: ExcludeSemantics(child: _buildStarIcon(starIndex + 1)),
-          ),
-        ),
+            child:
+                isInteractive
+                    ? GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTapUp:
+                          (details) =>
+                              _handleTap(starIndex, details.localPosition.dx),
+                      child: star,
+                    )
+                    : star,
+          );
+        }),
       ),
     );
+  }
+
+  void _handleTap(int starIndex, double localX) {
+    final isLeadingHalf = enableHalfStar && localX < starSize / 2;
+    final value = starIndex + (isLeadingHalf ? 0.5 : 1.0);
+    onRatingChanged?.call(value.clamp(0.0, maxStars.toDouble()));
   }
 
   Widget _buildStarIcon(int starPosition) {

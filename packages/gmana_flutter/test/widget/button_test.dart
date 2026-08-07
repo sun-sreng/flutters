@@ -4,16 +4,15 @@ import 'package:gmana_flutter/gmana_flutter.dart';
 
 void main() {
   group('GButton Widget', () {
-    testWidgets('renders label and triggers onPressed when enabled', (tester) async {
+    testWidgets('renders label and triggers onPressed when enabled', (
+      tester,
+    ) async {
       var pressed = false;
 
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: GButton(
-              label: 'Click Me',
-              onPressed: () => pressed = true,
-            ),
+            body: GButton(label: 'Click Me', onPressed: () => pressed = true),
           ),
         ),
       );
@@ -23,7 +22,9 @@ void main() {
       expect(pressed, isTrue);
     });
 
-    testWidgets('renders CircularProgressIndicator when isLoading is true', (tester) async {
+    testWidgets('renders CircularProgressIndicator when isLoading is true', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(

@@ -27,6 +27,18 @@ class GCard extends StatelessWidget {
   /// Shadow elevation (defaults to 0.0).
   final double elevation;
 
+  /// Forces the outline on even when [borderColor] is not supplied.
+  ///
+  /// Without this, a card only draws a border when you name the color — which
+  /// makes "outlined card in the theme's own color" awkward to express.
+  final bool showBorder;
+
+  /// Long-press callback, mirroring [onTap].
+  final VoidCallback? onLongPress;
+
+  /// Semantics label describing the card as a whole.
+  final String? semanticsLabel;
+
   /// Creates a styled [GCard].
   const GCard({
     super.key,
@@ -38,6 +50,9 @@ class GCard extends StatelessWidget {
     this.borderColor,
     this.borderRadius = 12.0,
     this.elevation = 0.0,
+    this.showBorder = false,
+    this.onLongPress,
+    this.semanticsLabel,
   });
 
   @override
@@ -45,28 +60,47 @@ class GCard extends StatelessWidget {
     final theme = Theme.of(context);
     final effectivePadding = padding ?? GSpacing.paddingAll(GSpacing.lg);
     final effectiveBg = backgroundColor ?? theme.colorScheme.surface;
-    final effectiveBorderColor = borderColor ?? theme.colorScheme.outlineVariant;
+    final effectiveBorderColor =
+        borderColor ?? theme.colorScheme.outlineVariant;
 
     final shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(borderRadius),
-      side: borderColor != null
-          ? BorderSide(color: effectiveBorderColor)
-          : BorderSide.none,
+      side:
+          (borderColor != null || showBorder)
+              ? BorderSide(color: effectiveBorderColor)
+              : BorderSide.none,
     );
 
-    final Widget cardBody = Material(
+    final isInteractive = onTap != null || onLongPress != null;
+
+    Widget cardBody = Material(
       color: effectiveBg,
       elevation: elevation,
       shape: shape,
       clipBehavior: Clip.antiAlias,
-      child: onTap != null
-          ? InkWell(
-              onTap: onTap,
-              borderRadius: BorderRadius.circular(borderRadius),
-              child: Padding(padding: effectivePadding, child: child),
-            )
-          : Padding(padding: effectivePadding, child: child),
+      child:
+          isInteractive
+              ? InkWell(
+                onTap: onTap,
+                onLongPress: onLongPress,
+                borderRadius: BorderRadius.circular(borderRadius),
+                child: Padding(padding: effectivePadding, child: child),
+              )
+              : Padding(padding: effectivePadding, child: child),
     );
+
+    if (semanticsLabel != null) {
+      // `explicitChildNodes` keeps the card's own label separate from its
+      // content. Without it the child text is merged in and the label reads
+      // as a prefix rather than a description of the container.
+      cardBody = Semantics(
+        container: true,
+        explicitChildNodes: true,
+        label: semanticsLabel,
+        button: isInteractive,
+        child: cardBody,
+      );
+    }
 
     if (margin != null) {
       return Padding(padding: margin!, child: cardBody);

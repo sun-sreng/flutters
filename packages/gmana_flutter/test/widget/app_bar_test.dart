@@ -6,11 +6,7 @@ void main() {
   group('GAppBar Widget', () {
     testWidgets('renders title and default back button', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            appBar: GAppBar(title: 'Test Title'),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(appBar: GAppBar(title: 'Test Title'))),
       );
 
       expect(find.text('Test Title'), findsOneWidget);
