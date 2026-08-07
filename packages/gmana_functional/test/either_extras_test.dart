@@ -15,13 +15,17 @@ void main() {
       var trueCalls = 0;
       var falseCalls = 0;
 
-      Either.cond(true, () {
-        falseCalls++;
-        return 'no';
-      }, () {
-        trueCalls++;
-        return 1;
-      });
+      Either.cond(
+        true,
+        () {
+          falseCalls++;
+          return 'no';
+        },
+        () {
+          trueCalls++;
+          return 1;
+        },
+      );
 
       expect(trueCalls, 1);
       expect(falseCalls, 0);
@@ -34,31 +38,21 @@ void main() {
     });
 
     test('turns null into Left', () {
-      expect(Either.fromNullable<String, int>(null, () => 'missing'),
-          left('missing'));
+      expect(Either.fromNullable<String, int>(null, () => 'missing'), left('missing'));
     });
   });
 
   group('Either.sequence', () {
     test('collects every Right value', () {
-      expect(
-        Either.sequence([right(1), right(2), right(3)]),
-        Right<String, List<int>>([1, 2, 3]),
-      );
+      expect(Either.sequence([right(1), right(2), right(3)]), const Right<String, List<int>>([1, 2, 3]));
     });
 
     test('short-circuits on the first Left', () {
-      expect(
-        Either.sequence([right(1), left('first'), left('second')]),
-        Left<String, List<int>>('first'),
-      );
+      expect(Either.sequence([right(1), left('first'), left('second')]), const Left<String, List<int>>('first'));
     });
 
     test('an empty collection is a Right of nothing', () {
-      expect(
-        Either.sequence(<Either<String, int>>[]),
-        Right<String, List<int>>([]),
-      );
+      expect(Either.sequence(<Either<String, int>>[]), const Right<String, List<int>>([]));
     });
 
     test('stops evaluating after the first Left', () {
@@ -77,21 +71,22 @@ void main() {
 
   group('Either.traverse', () {
     test('maps then sequences', () {
-      final result = Either.traverse<String, String, int>(
-        ['1', '2'],
-        (text) => Either.fromNullable(int.tryParse(text), () => 'bad: $text'),
-      );
+      final result = Either.traverse<String, String, int>([
+        '1',
+        '2',
+      ], (text) => Either.fromNullable(int.tryParse(text), () => 'bad: $text'));
 
-      expect(result, Right<String, List<int>>([1, 2]));
+      expect(result, const Right<String, List<int>>([1, 2]));
     });
 
     test('reports the first failure', () {
-      final result = Either.traverse<String, String, int>(
-        ['1', 'x', 'y'],
-        (text) => Either.fromNullable(int.tryParse(text), () => 'bad: $text'),
-      );
+      final result = Either.traverse<String, String, int>([
+        '1',
+        'x',
+        'y',
+      ], (text) => Either.fromNullable(int.tryParse(text), () => 'bad: $text'));
 
-      expect(result, Left<String, List<int>>('bad: x'));
+      expect(result, const Left<String, List<int>>('bad: x'));
     });
   });
 
@@ -107,11 +102,10 @@ void main() {
     });
 
     test('orElseWith can change the left type', () {
-      final Either<int, int> recovered =
-          left('boom').orElseWith((l) => Left<int, int>(l.length));
+      final Either<int, int> recovered = left('boom').orElseWith((l) => Left<int, int>(l.length));
 
-      expect(recovered, Left<int, int>(4));
-      expect(right(7).orElseWith((l) => Left<int, int>(0)), Right<int, int>(7));
+      expect(recovered, const Left<int, int>(4));
+      expect(right(7).orElseWith((l) => const Left<int, int>(0)), const Right<int, int>(7));
     });
 
     test('recover always produces a Right', () {
@@ -120,23 +114,16 @@ void main() {
     });
 
     test('flatMapLeft chains on the failure side', () {
-      final Either<int, int> chained =
-          left('boom').flatMapLeft((l) => Left<int, int>(l.length));
+      final Either<int, int> chained = left('boom').flatMapLeft((l) => Left<int, int>(l.length));
 
-      expect(chained, Left<int, int>(4));
-      expect(
-        right(3).flatMapLeft((l) => Left<int, int>(0)),
-        Right<int, int>(3),
-      );
+      expect(chained, const Left<int, int>(4));
+      expect(right(3).flatMapLeft((l) => const Left<int, int>(0)), const Right<int, int>(3));
     });
   });
 
   group('Either.filterOrElse', () {
     test('demotes a Right that fails the test', () {
-      expect(
-        right(-1).filterOrElse((n) => n > 0, (n) => 'not positive: $n'),
-        left('not positive: -1'),
-      );
+      expect(right(-1).filterOrElse((n) => n > 0, (n) => 'not positive: $n'), left('not positive: -1'));
     });
 
     test('keeps a Right that passes', () {
@@ -144,33 +131,23 @@ void main() {
     });
 
     test('leaves a Left alone', () {
-      expect(left('boom').filterOrElse((n) => n > 0, (_) => 'nope'),
-          left('boom'));
+      expect(left('boom').filterOrElse((n) => n > 0, (_) => 'nope'), left('boom'));
     });
   });
 
   group('Either combining', () {
     test('zip pairs two Rights', () {
-      final result = right(1).zip(Right<String, String>('a'));
-      expect(result, Right<String, (int, String)>((1, 'a')));
+      final result = right(1).zip(const Right<String, String>('a'));
+      expect(result, const Right<String, (int, String)>((1, 'a')));
     });
 
     test('zip reports the first Left, this side winning', () {
-      expect(
-        left('mine').zip(Left<String, String>('theirs')),
-        Left<String, (int, String)>('mine'),
-      );
-      expect(
-        right(1).zip(Left<String, String>('theirs')),
-        Left<String, (int, String)>('theirs'),
-      );
+      expect(left('mine').zip(const Left<String, String>('theirs')), const Left<String, (int, String)>('mine'));
+      expect(right(1).zip(const Left<String, String>('theirs')), const Left<String, (int, String)>('theirs'));
     });
 
     test('zipWith combines through a function', () {
-      final result = right(2).zipWith(
-        Right<String, int>(3),
-        (a, b) => a * b,
-      );
+      final result = right(2).zipWith(const Right<String, int>(3), (a, b) => a * b);
 
       expect(result, right(6));
     });
@@ -183,8 +160,8 @@ void main() {
     });
 
     test('toOption discards the left value', () {
-      expect(right(1).toOption(), Some(1));
-      expect(left('boom').toOption(), None<int>());
+      expect(right(1).toOption(), const Some(1));
+      expect(left('boom').toOption(), const None<int>());
     });
 
     test('toList', () {
@@ -195,14 +172,8 @@ void main() {
 
   group('IterableEitherX', () {
     test('sequence mirrors Either.sequence', () {
-      expect(
-        [right(1), right(2)].sequence(),
-        Right<String, List<int>>([1, 2]),
-      );
-      expect(
-        [right(1), left('bad')].sequence(),
-        Left<String, List<int>>('bad'),
-      );
+      expect([right(1), right(2)].sequence(), const Right<String, List<int>>([1, 2]));
+      expect([right(1), left('bad')].sequence(), const Left<String, List<int>>('bad'));
     });
 
     test('lefts and rights split the collection', () {
@@ -247,47 +218,23 @@ void main() {
     });
 
     test('map accepts an async transform', () async {
-      expect(
-        await futureRight(2).map((n) async => n * 3),
-        right(6),
-      );
+      expect(await futureRight(2).map((n) async => n * 3), right(6));
     });
 
     test('mapLeft transforms the left value', () async {
-      expect(
-        await futureLeft('boom').mapLeft((l) => l.length),
-        Left<int, int>(4),
-      );
-      expect(
-        await futureRight(1).mapLeft((l) => l.length),
-        Right<int, int>(1),
-      );
+      expect(await futureLeft('boom').mapLeft((l) => l.length), const Left<int, int>(4));
+      expect(await futureRight(1).mapLeft((l) => l.length), const Right<int, int>(1));
     });
 
     test('flatMap chains another fallible step', () async {
-      expect(
-        await futureRight(2).flatMap((n) async => right(n + 1)),
-        right(3),
-      );
-      expect(
-        await futureRight(2).flatMap((n) async => left('rejected')),
-        left('rejected'),
-      );
-      expect(
-        await futureLeft('boom').flatMap((n) async => right(n)),
-        left('boom'),
-      );
+      expect(await futureRight(2).flatMap((n) async => right(n + 1)), right(3));
+      expect(await futureRight(2).flatMap((n) async => left('rejected')), left('rejected'));
+      expect(await futureLeft('boom').flatMap((n) async => right(n)), left('boom'));
     });
 
     test('fold collapses both sides', () async {
-      expect(
-        await futureRight(2).fold((l) => 'L:$l', (r) => 'R:$r'),
-        'R:2',
-      );
-      expect(
-        await futureLeft('boom').fold((l) => 'L:$l', (r) => 'R:$r'),
-        'L:boom',
-      );
+      expect(await futureRight(2).fold((l) => 'L:$l', (r) => 'R:$r'), 'R:2');
+      expect(await futureLeft('boom').fold((l) => 'L:$l', (r) => 'R:$r'), 'L:boom');
     });
 
     test('getOrElse, getOrDefault, and getOrNull', () async {
@@ -301,29 +248,19 @@ void main() {
     test('tap and tapLeft observe without changing the value', () async {
       final seen = <String>[];
 
-      final result = await futureRight(2)
-          .tap((r) => seen.add('right:$r'))
-          .tapLeft((l) => seen.add('left:$l'));
+      final result = await futureRight(2).tap((r) => seen.add('right:$r')).tapLeft((l) => seen.add('left:$l'));
 
       expect(result, right(2));
       expect(seen, ['right:2']);
 
       seen.clear();
-      await futureLeft('boom')
-          .tap((r) => seen.add('right:$r'))
-          .tapLeft((l) => seen.add('left:$l'));
+      await futureLeft('boom').tap((r) => seen.add('right:$r')).tapLeft((l) => seen.add('left:$l'));
       expect(seen, ['left:boom']);
     });
 
     test('orElseWith recovers asynchronously', () async {
-      expect(
-        await futureLeft('boom').orElseWith((_) async => right(0)),
-        right(0),
-      );
-      expect(
-        await futureRight(1).orElseWith((_) async => right(0)),
-        right(1),
-      );
+      expect(await futureLeft('boom').orElseWith((_) async => right(0)), right(0));
+      expect(await futureRight(1).orElseWith((_) async => right(0)), right(1));
     });
 
     test('isRight and isLeft', () async {
