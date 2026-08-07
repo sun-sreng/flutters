@@ -1,6 +1,6 @@
 name: gmana_flutter_extensions
 description: Flutter extension methods and small services for colors, layout, context, icons, time, and theme mode.
-version: 0.0.1
+version: 0.0.2
 repository: https://github.com/sun-sreng/flutters/tree/main/packages/gmana_flutter_extensions
 homepage: https://github.com/sun-sreng/flutters/tree/main/packages/gmana_flutter_extensions
 issue_tracker: https://github.com/sun-sreng/flutters/issues

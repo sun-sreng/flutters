@@ -6,6 +6,52 @@ import 'package:flutter/material.dart';
 extension ContextExt on BuildContext {
   double get bottomSafeArea => safeAreaPadding.bottom;
 
+  Brightness get brightness => theme.brightness;
+
+  /// True when the ambient theme is dark.
+  bool get isDarkMode => theme.brightness == Brightness.dark;
+
+  /// True when the ambient theme is light.
+  bool get isLightMode => !isDarkMode;
+
+  /// Height the on-screen keyboard is currently covering.
+  double get keyboardHeight => viewInsets.bottom;
+
+  /// True while the on-screen keyboard is showing.
+  bool get isKeyboardVisible => keyboardHeight > 0;
+
+  Orientation get orientation => MediaQuery.orientationOf(this);
+
+  /// Shorter of the two screen dimensions — the usual basis for "is this a
+  /// tablet" style checks that should survive rotation.
+  double get shortestSide => screenSize.shortestSide;
+
+  double get longestSide => screenSize.longestSide;
+
+  TargetPlatform get platform => theme.platform;
+
+  bool get isAndroid => platform == TargetPlatform.android;
+
+  bool get isIOS => platform == TargetPlatform.iOS;
+
+  /// True on iOS and macOS, where Cupertino conventions usually apply.
+  bool get isApplePlatform =>
+      platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
+
+  /// True for the desktop target platforms.
+  bool get isDesktopPlatform =>
+      platform == TargetPlatform.linux ||
+      platform == TargetPlatform.macOS ||
+      platform == TargetPlatform.windows;
+
+  /// Returns [dark] under a dark theme, otherwise [light].
+  ///
+  /// ```dart
+  /// final divider = context.byBrightness(light: Colors.black12, dark: Colors.white24);
+  /// ```
+  T byBrightness<T>({required T light, required T dark}) =>
+      isDarkMode ? dark : light;
+
   bool get canPop => navigator.canPop();
 
   ColorScheme get colorScheme => theme.colorScheme;
@@ -161,6 +207,19 @@ extension ContextExt on BuildContext {
         ),
       );
   }
+
+  /// Neutral informational snack bar using the theme's secondary container.
+  void showInfoSnackBar({
+    required String message,
+    Duration duration = const Duration(seconds: 3),
+    SnackBarAction? action,
+  }) => showSnackBar(
+    message: message,
+    textColor: colorScheme.onSecondaryContainer,
+    backgroundColor: colorScheme.secondaryContainer,
+    duration: duration,
+    action: action,
+  );
 
   void showSuccessSnackBar({
     required String message,

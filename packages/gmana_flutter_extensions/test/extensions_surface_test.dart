@@ -90,10 +90,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: const Text('Hello')
-                .paddingAll(16)
-                .centered
-                .onTap(() => tapped = true),
+            body: const Text(
+              'Hello',
+            ).paddingAll(16).centered.onTap(() => tapped = true),
           ),
         ),
       );

@@ -174,6 +174,52 @@ abstract final class ColorService {
     return withHashSign ? '#$hex' : hex;
   }
 
+  /// Four colors evenly spaced around the hue wheel, starting at [color].
+  static (Color, Color, Color) tetradic(Color color) {
+    final hsl = HSLColor.fromColor(color);
+
+    return (
+      hsl.withHue((hsl.hue + 90) % 360).toColor(),
+      hsl.withHue((hsl.hue + 180) % 360).toColor(),
+      hsl.withHue((hsl.hue + 270) % 360).toColor(),
+    );
+  }
+
+  /// A same-hue ramp of [count] colors from near-black to near-white.
+  ///
+  /// Unlike [createMaterialColor] the steps are evenly spaced in lightness
+  /// rather than anchored to the input, so the ramp is uniform.
+  static List<Color> monochromatic(Color color, {int count = 5}) {
+    if (count < 2) {
+      throw ArgumentError.value(count, 'count', 'must be at least 2');
+    }
+
+    final hsl = HSLColor.fromColor(color);
+    final step = 1.0 / (count + 1);
+
+    return [
+      for (var i = 1; i <= count; i++)
+        hsl.withLightness((step * i).clamp(0.0, 1.0)).toColor(),
+    ];
+  }
+
+  /// CSS `rgba(255, 85, 0, 1.00)` notation.
+  static String toCssRgba(Color color, {int alphaPrecision = 2}) {
+    if (alphaPrecision < 0) {
+      throw ArgumentError.value(
+        alphaPrecision,
+        'alphaPrecision',
+        'must not be negative',
+      );
+    }
+
+    final r = (color.r * 255).round();
+    final g = (color.g * 255).round();
+    final b = (color.b * 255).round();
+
+    return 'rgba($r, $g, $b, ${color.a.toStringAsFixed(alphaPrecision)})';
+  }
+
   static (Color, Color) triadic(Color color) {
     final hsl = HSLColor.fromColor(color);
 

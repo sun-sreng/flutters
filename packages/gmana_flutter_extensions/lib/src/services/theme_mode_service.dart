@@ -41,6 +41,37 @@ abstract final class ThemeModeService {
   static String getLabelFromKey(String key) => _configs[fromKey(key)]!.label;
 
   static List<String> getThemeKeys() => _keyMap.keys.toList();
+
+  /// All modes in presentation order: system, light, dark.
+  static List<ThemeMode> get all => _configs.keys.toList();
+
+  /// The next mode in the cycle, wrapping back to the first.
+  ///
+  /// This is what a single "toggle theme" button needs — Flutter's
+  /// [ThemeMode] has three values, so a boolean flip cannot express it.
+  static ThemeMode next(ThemeMode mode) {
+    final modes = all;
+    final index = modes.indexOf(mode);
+
+    return modes[(index + 1) % modes.length];
+  }
+
+  /// The next mode's key, wrapping back to the first.
+  static String nextKey(String key) => getKey(next(fromKey(key)));
+
+  /// Whether [key] maps to a known mode rather than falling back to system.
+  static bool isKnownKey(String key) => _keyMap.containsKey(key);
+
+  /// Resolves [mode] to a concrete [Brightness], consulting [platformBrightness]
+  /// only for [ThemeMode.system].
+  static Brightness resolveBrightness(
+    ThemeMode mode, {
+    required Brightness platformBrightness,
+  }) => switch (mode) {
+    ThemeMode.system => platformBrightness,
+    ThemeMode.light => Brightness.light,
+    ThemeMode.dark => Brightness.dark,
+  };
 }
 
 class _ThemeModeConfig {

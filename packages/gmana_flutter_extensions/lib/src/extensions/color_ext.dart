@@ -26,6 +26,50 @@ extension ColorExt on Color {
 
   (Color, Color) get triadic => ColorService.triadic(this);
 
+  (Color, Color, Color) get tetradic => ColorService.tetradic(this);
+
+  /// A same-hue lightness ramp. See [ColorService.monochromatic].
+  List<Color> monochromatic({int count = 5}) =>
+      ColorService.monochromatic(this, count: count);
+
+  // --- HSL accessors ---
+
+  /// Hue in degrees, `0` to `360`.
+  double get hue => HSLColor.fromColor(this).hue;
+
+  /// Saturation in `[0, 1]`.
+  double get saturation => HSLColor.fromColor(this).saturation;
+
+  /// Lightness in `[0, 1]`.
+  double get lightness => HSLColor.fromColor(this).lightness;
+
+  /// Returns this color with its hue replaced. Wraps values outside 0–360.
+  Color withHue(double value) =>
+      HSLColor.fromColor(this).withHue(value % 360).toColor();
+
+  /// Returns this color with its saturation replaced, clamped to `[0, 1]`.
+  Color withSaturation(double value) =>
+      HSLColor.fromColor(this).withSaturation(value.clamp(0.0, 1.0)).toColor();
+
+  /// Returns this color with its lightness replaced, clamped to `[0, 1]`.
+  Color withLightness(double value) =>
+      HSLColor.fromColor(this).withLightness(value.clamp(0.0, 1.0)).toColor();
+
+  // --- Alpha ---
+
+  /// Whether this color is fully transparent.
+  bool get isTransparent => a == 0;
+
+  /// Whether this color is fully opaque.
+  bool get isOpaque => a == 1;
+
+  /// This color at full opacity.
+  Color get opaque => withValues(alpha: 1);
+
+  /// CSS `rgba(...)` notation.
+  String toCssRgba({int alphaPrecision = 2}) =>
+      ColorService.toCssRgba(this, alphaPrecision: alphaPrecision);
+
   /// Returns `2 * count` analogous colors: [count] steps to the left and [count] to the right
   /// of this color on the hue wheel, interleaved as [left1, right1, left2, right2, …].
   List<Color> analogous({int count = 2, double spreadDegrees = 30}) =>

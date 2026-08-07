@@ -44,7 +44,13 @@
       "Bash(tail -30 /tmp/publish-dry.log)",
       "Bash(cat)",
       "Bash(chmod +x /tmp/dryrun.sh)",
-      "Bash(/tmp/dryrun.sh)"
+      "Bash(/tmp/dryrun.sh)",
+      "Bash(xargs wc -l)",
+      "Bash(dart format *)",
+      "Bash(python -)",
+      "Bash(sed -i 's/^version: 0\\\\.0\\\\.1$/version: 0.0.2/' pubspec.yaml)",
+      "Bash(flutter pub *)",
+      "Read(//d/SSH/**)"
     ]
   }
 }
