@@ -18,6 +18,11 @@ import 'package:gmana_utils/gmana_utils.dart';
 - [RateLimiter](#ratelimiter)
 - [Retry](#retry)
 - [tryOrNull & tryOrDefault](#tryornull--tryodefault)
+- [Result](#result)
+- [CircuitBreaker](#circuitbreaker)
+- [AsyncCache & AsyncMemoizer](#asynccache--asyncmemoizer)
+- [Batcher](#batcher)
+
 
 ---
 
@@ -558,4 +563,82 @@ final number = tryOrNull(() => int.parse(rawInput)); // returns null on FormatEx
 final value = tryOrDefault(() => int.parse(rawInput), 0); // returns 0 on error
 final asyncResult = await tryOrNullAsync(() => fetchUserData());
 ```
+
+---
+
+## Result
+
+Type-safe success or failure monad:
+
+```dart
+final result = Result.capture(() => parseData());
+
+switch (result) {
+  case Success(:final value):
+    print('Value: $value');
+  case Failure(:final error):
+    print('Error: $error');
+}
+
+final value = result.getOrElse(0);
+final mapped = result.map((v) => v * 2);
+```
+
+---
+
+## CircuitBreaker
+
+Fault-tolerance circuit breaker for external services:
+
+```dart
+final breaker = CircuitBreaker(
+  failureThreshold: 3,
+  resetTimeout: Duration(seconds: 15),
+);
+
+try {
+  final res = await breaker.run(() => fetchRemoteApi());
+} on CircuitBreakerOpenException catch (e) {
+  print('Circuit is OPEN! $e');
+}
+```
+
+---
+
+## AsyncCache & AsyncMemoizer
+
+Key-value cache with TTL expiration and request deduplication:
+
+```dart
+final cache = AsyncCache<String, UserData>(
+  defaultTtl: Duration(minutes: 10),
+);
+
+final user = await cache.get(
+  'user_123',
+  ifAbsent: () => fetchUserFromNetwork('user_123'),
+);
+
+// Single-run async memoizer
+final memoizer = AsyncMemoizer<Config>();
+final config = await memoizer.runOnce(() => loadConfigFromFile());
+```
+
+---
+
+## Batcher
+
+Aggregates individual calls into bulk requests based on size or delay:
+
+```dart
+final batcher = Batcher<int, String>(
+  maxBatchSize: 50,
+  maxDelay: Duration(milliseconds: 100),
+  handler: (items) async => bulkFetchItems(items),
+);
+
+// Individual calls receive matching results when the batch processes
+final itemFuture = batcher.add(42);
+```
+
 
