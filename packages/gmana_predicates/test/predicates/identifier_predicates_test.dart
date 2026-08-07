@@ -20,10 +20,7 @@ void main() {
     test('isPhoneNumber validates phone digits', () {
       expect(isPhoneNumber('+1 (415) 555-2671'), isTrue);
       expect(isPhoneNumber('14155552671'), isTrue);
-      expect(
-        isPhoneNumber('14155552671', requirePlusPrefix: true),
-        isFalse,
-      );
+      expect(isPhoneNumber('14155552671', requirePlusPrefix: true), isFalse);
       expect(isPhoneNumber('123'), isFalse);
     });
 
@@ -60,4 +57,3 @@ void main() {
     });
   });
 }
-

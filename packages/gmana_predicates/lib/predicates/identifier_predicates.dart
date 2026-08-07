@@ -4,7 +4,8 @@ import 'string_predicates.dart';
 
 /// Returns `true` if [str] is a valid UUID (any version by default).
 ///
-/// Pass [version] as `'3'`, `'4'`, or `'5'` to match a specific version.
+/// Pass [version] as `'1'`, `'3'`, `'4'`, `'5'`, `'6'`, or `'7'` to match a
+/// specific version. An unrecognised [version] returns `false`.
 /// Returns `false` if [str] is `null`.
 bool isUuid(String? str, [String? version]) {
   if (str == null) return false;
@@ -183,3 +184,36 @@ bool isNanoId(String str, [int expectedLength = 21]) {
   return RegExp(r'^[A-Za-z0-9_-]+$').hasMatch(str);
 }
 
+/// Returns `true` if [str] is a valid IBAN, by ISO 13616 mod-97 checksum.
+///
+/// Spaces are ignored, so both the grouped print form and the compact
+/// electronic form are accepted. The country code is not checked against the
+/// per-country length registry — only the structure and the checksum are.
+///
+/// ```dart
+/// isIban('GB82 WEST 1234 5698 7654 32');  // true
+/// ```
+bool isIban(String str) {
+  final sanitized = str.replaceAll(RegExp(r'\s+'), '').toUpperCase();
+  if (!ibanMaybeReg.hasMatch(sanitized)) return false;
+
+  // Move the four leading characters to the end, then read letters as
+  // A = 10 … Z = 35 and take the remainder modulo 97 digit by digit, so the
+  // number never has to be held in an int.
+  final rearranged = sanitized.substring(4) + sanitized.substring(0, 4);
+  var remainder = 0;
+  for (final unit in rearranged.codeUnits) {
+    final value = unit >= 65 ? unit - 55 : unit - 48;
+    remainder =
+        value < 10
+            ? (remainder * 10 + value) % 97
+            : (remainder * 100 + value) % 97;
+  }
+  return remainder == 1;
+}
+
+/// Returns `true` if [str] is a valid BIC/SWIFT code (ISO 9362).
+///
+/// Accepts the 8-character institution form and the 11-character branch form.
+bool isBic(String str) =>
+    bicReg.hasMatch(str.replaceAll(RegExp(r'\s+'), '').toUpperCase());

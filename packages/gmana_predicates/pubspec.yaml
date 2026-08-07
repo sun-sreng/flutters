@@ -1,6 +1,6 @@
 name: gmana_predicates
 description: Pure Dart boolean predicate functions for string classification — email, alpha, date, UUID, credit card, and more.
-version: 0.0.1
+version: 0.0.2
 repository: https://github.com/sun-sreng/flutters/tree/main/packages/gmana_predicates
 issue_tracker: https://github.com/sun-sreng/flutters/issues
 

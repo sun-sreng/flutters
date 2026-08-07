@@ -64,4 +64,3 @@ bool isPrimeString(String str) {
   final val = int.tryParse(str);
   return val != null && isPrime(val);
 }
-

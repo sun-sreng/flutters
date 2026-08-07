@@ -18,4 +18,18 @@ void main() {
   print('  leap year: ${isLeapYear('2024-02-29')}');
   print('  weekday: ${isWeekday('2026-05-18T12:00:00Z')}');
   print('  divisible: ${isDivisibleBy('42', '7')}');
+  print('  iban: ${isIban('GB82 WEST 1234 5698 7654 32')}');
+
+  print('\nComposing predicates');
+  final username = Predicates.all<String>([
+    isNotBlank,
+    (value) => value.isLength(3, 16),
+    isAlphaNumeric.or(isSnakeCase),
+  ]);
+  for (final candidate in ['sun_sreng', 'ab', 'has spaces']) {
+    print('  $candidate: ${username(candidate)}');
+  }
+
+  final contact = isEmail.or(isUrl);
+  print('  either email or url: ${contact('https://gmana.dev')}');
 }

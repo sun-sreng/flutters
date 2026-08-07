@@ -41,14 +41,28 @@ void main() {
 
     test('isSameDay, isSameMonth, and isSameYear compare dates', () {
       expect(isSameDay('2026-08-07T10:00:00Z', '2026-08-07T18:00:00Z'), isTrue);
-      expect(isSameDay('2026-08-07T10:00:00Z', '2026-08-08T10:00:00Z'), isFalse);
+      expect(
+        isSameDay('2026-08-07T10:00:00Z', '2026-08-08T10:00:00Z'),
+        isFalse,
+      );
 
-      expect(isSameMonth('2026-08-01T00:00:00Z', '2026-08-31T00:00:00Z'), isTrue);
-      expect(isSameMonth('2026-08-01T00:00:00Z', '2026-09-01T00:00:00Z'), isFalse);
+      expect(
+        isSameMonth('2026-08-01T00:00:00Z', '2026-08-31T00:00:00Z'),
+        isTrue,
+      );
+      expect(
+        isSameMonth('2026-08-01T00:00:00Z', '2026-09-01T00:00:00Z'),
+        isFalse,
+      );
 
-      expect(isSameYear('2026-01-01T00:00:00Z', '2026-12-31T00:00:00Z'), isTrue);
-      expect(isSameYear('2026-01-01T00:00:00Z', '2027-01-01T00:00:00Z'), isFalse);
+      expect(
+        isSameYear('2026-01-01T00:00:00Z', '2026-12-31T00:00:00Z'),
+        isTrue,
+      );
+      expect(
+        isSameYear('2026-01-01T00:00:00Z', '2027-01-01T00:00:00Z'),
+        isFalse,
+      );
     });
   });
 }
-

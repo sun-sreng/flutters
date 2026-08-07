@@ -52,7 +52,9 @@ void main() {
 
     test('isDataURI validates RFC 2397 Data URIs', () {
       expect(
-        isDataURI('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='),
+        isDataURI(
+          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        ),
         isTrue,
       );
       expect(isDataURI('data:text/plain;charset=utf-8,Hello%20World'), isTrue);
@@ -70,4 +72,3 @@ void main() {
     });
   });
 }
-

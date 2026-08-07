@@ -36,10 +36,31 @@ final mimeTypeReg = RegExp(
   r'^[a-zA-Z0-9][a-zA-Z0-9!#$&^_\-\.\+]*\/[a-zA-Z0-9][a-zA-Z0-9!#$&^_\-\.\+]*$',
 );
 
+final screamingSnakeCaseReg = RegExp(r'^[A-Z0-9]+(?:_[A-Z0-9]+)*$');
+final titleCaseReg = RegExp(r'^[A-Z][a-z0-9]*(?: [A-Z][a-z0-9]*)*$');
+
+final binaryReg = RegExp(r'^[01]+$');
+final octalReg = RegExp(r'^[0-7]+$');
+final base32Reg = RegExp(
+  r'^(?:[A-Z2-7]{8})*(?:[A-Z2-7]{2}={6}|[A-Z2-7]{4}={4}|[A-Z2-7]{5}={3}|[A-Z2-7]{7}=)?$',
+);
+
+final rgbColorReg = RegExp(
+  r'^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*(0|1|0?\.\d+)\s*)?\)$',
+  caseSensitive: false,
+);
+final hslColorReg = RegExp(
+  r'^hsla?\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(\d{1,3}(?:\.\d+)?)%\s*,\s*(\d{1,3}(?:\.\d+)?)%\s*(?:,\s*(0|1|0?\.\d+)\s*)?\)$',
+  caseSensitive: false,
+);
+
+/// Printable ASCII plus tab, newline and carriage return.
+final printableReg = RegExp(r'^[\x20-\x7E\t\n\r]*$');
+final whitespaceReg = RegExp(r'\s');
+
 final Map<String, RegExp> hashReg = {
   'md5': RegExp(r'^[a-fA-F0-9]{32}$'),
   'sha1': RegExp(r'^[a-fA-F0-9]{40}$'),
   'sha256': RegExp(r'^[a-fA-F0-9]{64}$'),
   'sha512': RegExp(r'^[a-fA-F0-9]{128}$'),
 };
-

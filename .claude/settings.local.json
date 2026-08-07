@@ -51,7 +51,12 @@
       "Bash(sed -i 's/^version: 0\\\\.0\\\\.1$/version: 0.0.2/' pubspec.yaml)",
       "Bash(flutter pub *)",
       "Read(//d/SSH/**)",
-      "Bash(git log *)"
+      "Bash(git log *)",
+      "Bash(grep -oE \"[a-zA-Z0-9_]+$\")",
+      "Bash(grep -rhoE \"^ [a-zA-Z<>,\\\\[\\\\] ?]+ \\(get \\)?[a-zA-Z0-9_]+\\\\s*[\\({=]\" packages/gmana_extensions/lib/string_ext.dart packages/gmana_extensions/lib/string_date_ext.dart packages/gmana_extensions/lib/is_ext.dart)",
+      "Bash(grep -oE \"[a-zA-Z0-9_]+\\\\s*[\\({=]$\")",
+      "Bash(cat /tmp/pred_str.txt | tr '\\\\n' ' ')",
+      "Bash(python -c ' *)"
     ]
   }
 }
