@@ -30,7 +30,8 @@ dart pub add gmana_value_objects
 ## Features
 
 - Typed value objects for `Email`, `Password`, `TextValue`, `NumberValue`,
-  `Money`, `UrlValue`, and `PhoneValue`.
+  `Money`, `UrlValue`, `PhoneValue`, `IdentifierValue`, `NetworkAddressValue`, and `DateRangeValue`.
+
 - Pure validators for each type when you want `Either<ValidationError, T>`
   without constructing a value object.
 - Sealed error hierarchies for exhaustive `switch` handling.

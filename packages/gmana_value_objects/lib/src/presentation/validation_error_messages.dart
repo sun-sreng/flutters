@@ -1,11 +1,14 @@
 import '../core/validation_error.dart';
+import '../date/date_range_errors.dart';
 import '../email/email_errors.dart';
-import '../password/password_errors.dart';
-import '../text/text_errors.dart';
-import '../number/number_errors.dart';
+import '../identifier/identifier_errors.dart';
 import '../money/money_errors.dart';
-import '../url/url_errors.dart';
+import '../network/network_errors.dart';
+import '../number/number_errors.dart';
+import '../password/password_errors.dart';
 import '../phone/phone_errors.dart';
+import '../text/text_errors.dart';
+import '../url/url_errors.dart';
 
 /// Default English messages for all validation errors.
 /// Consumers can create their own implementations for i18n.
@@ -121,7 +124,35 @@ final class DefaultValidationErrorMessages implements ValidationErrorMessages {
       PhoneTooLong(:final maxDigits) =>
         'Phone number must contain at most $maxDigits digits',
 
+      // Identifier errors
+      IdentifierEmpty() => 'Identifier cannot be empty',
+      IdentifierInvalidUuid(:final version) =>
+        version != null ? 'Invalid UUID v$version format' : 'Invalid UUID format',
+      IdentifierInvalidUlid() => 'Invalid ULID format',
+      IdentifierInvalidImei() => 'Invalid IMEI number',
+      IdentifierInvalidEan(:final version) =>
+        version != null ? 'Invalid EAN-$version barcode' : 'Invalid EAN barcode',
+      IdentifierInvalidCreditCard() => 'Invalid credit card number',
+      IdentifierInvalidMongoId() => 'Invalid MongoDB ObjectId',
+      IdentifierInvalidSemVer() => 'Invalid Semantic Version format',
+      IdentifierInvalidNanoId(:final expectedLength) =>
+        'Invalid Nano ID format (expected $expectedLength characters)',
+
+      // Network errors
+      NetworkAddressEmpty() => 'Network address cannot be empty',
+      NetworkAddressInvalidIp(:final version) =>
+        version != null ? 'Invalid IPv$version address' : 'Invalid IP address',
+      NetworkAddressInvalidCidr(:final version) =>
+        version != null ? 'Invalid IPv$version CIDR block' : 'Invalid CIDR block',
+      NetworkAddressInvalidMac() => 'Invalid MAC address',
+      NetworkAddressInvalidPort() => 'Invalid port number (must be 1–65535)',
+
+      // Date Range errors
+      DateRangeInvalidOrder(:final start, :final end) =>
+        'Start date ($start) cannot be after end date ($end)',
+
       _ => 'Validation error',
     };
   }
 }
+
