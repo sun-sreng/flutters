@@ -5,9 +5,14 @@ import 'package:flutter/widget_previews.dart';
 
 import '../animation/dot_animation_config.dart';
 import 'g_bar_wave_spinner.dart';
+import 'g_chasing_dots_spinner.dart';
 import 'g_circular_spinner.dart';
 import 'g_dot_spinner.dart';
+import 'g_dual_ring_spinner.dart';
+import 'g_fading_cube_spinner.dart';
 import 'g_linear_spinner.dart';
+import 'g_orbit_spinner.dart';
+import 'g_ripple_spinner.dart';
 import 'g_scale_y.dart';
 import 'g_wave_dot_spinner.dart';
 import 'g_wave_dot_spinner_dot.dart';
@@ -189,6 +194,67 @@ Widget gWaveDotSpinnerDotPreview() {
     },
   );
 }
+
+/// Previews the dual ring spinner.
+@Preview(
+  name: 'Dual Ring',
+  group: 'gmana_spinner/widgets',
+  size: Size(160, 120),
+  theme: buildGSpinnerPreviewTheme,
+  wrapper: wrapGSpinnerPreview,
+)
+Widget gDualRingSpinnerPreview() {
+  return const GDualRingSpinner();
+}
+
+/// Previews the chasing dots spinner.
+@Preview(
+  name: 'Chasing Dots',
+  group: 'gmana_spinner/widgets',
+  size: Size(160, 120),
+  theme: buildGSpinnerPreviewTheme,
+  wrapper: wrapGSpinnerPreview,
+)
+Widget gChasingDotsSpinnerPreview() {
+  return const GChasingDotsSpinner();
+}
+
+/// Previews the fading cube spinner.
+@Preview(
+  name: 'Fading Cube',
+  group: 'gmana_spinner/widgets',
+  size: Size(160, 120),
+  theme: buildGSpinnerPreviewTheme,
+  wrapper: wrapGSpinnerPreview,
+)
+Widget gFadingCubeSpinnerPreview() {
+  return const GFadingCubeSpinner();
+}
+
+/// Previews the ripple spinner.
+@Preview(
+  name: 'Ripple',
+  group: 'gmana_spinner/widgets',
+  size: Size(160, 120),
+  theme: buildGSpinnerPreviewTheme,
+  wrapper: wrapGSpinnerPreview,
+)
+Widget gRippleSpinnerPreview() {
+  return const GRippleSpinner();
+}
+
+/// Previews the orbit spinner.
+@Preview(
+  name: 'Orbit',
+  group: 'gmana_spinner/widgets',
+  size: Size(160, 120),
+  theme: buildGSpinnerPreviewTheme,
+  wrapper: wrapGSpinnerPreview,
+)
+Widget gOrbitSpinnerPreview() {
+  return const GOrbitSpinner();
+}
+
 
 typedef _AnimatedSpinnerBuilder =
     Widget Function(BuildContext context, AnimationController controller);

@@ -12,16 +12,22 @@ import 'package:gmana_spinner/gmana_spinner.dart';
 
 ## Widgets at a glance
 
-| Widget             | Style                       | `color` required |
-| ------------------ | --------------------------- | ---------------- |
-| `GCircularSpinner` | Material circular indicator | no               |
-| `GLinearSpinner`   | Material linear indicator   | no               |
-| `GDotSpinner`      | Pulsing scale dots          | no               |
-| `GWaveDotSpinner`  | Wave-ripple dots            | no               |
-| `GBarWaveSpinner`  | Vertical bar wave           | no               |
-| `GPulseSpinner`    | Expanding pulse rings       | no               |
-| `GRingSpinner`     | Spinning dual arc ring      | no               |
-| `GWaveSpinner`     | Circular arc + wave fill    | **yes**          |
+| Widget                | Style                           | `color` required |
+| --------------------- | ------------------------------- | ---------------- |
+| `GCircularSpinner`    | Material circular indicator     | no               |
+| `GLinearSpinner`      | Material linear indicator       | no               |
+| `GDotSpinner`         | Pulsing scale dots              | no               |
+| `GWaveDotSpinner`     | Wave-ripple dots                | no               |
+| `GBarWaveSpinner`     | Vertical bar wave               | no               |
+| `GPulseSpinner`       | Expanding pulse rings           | no               |
+| `GRingSpinner`        | Spinning dual arc ring          | no               |
+| `GDualRingSpinner`    | Counter-rotating dual ring arcs | no               |
+| `GChasingDotsSpinner` | Orbiting & scaling dual dots    | no               |
+| `GFadingCubeSpinner`  | 2x2 grid of fading cubes        | no               |
+| `GRippleSpinner`      | Expanding concentric ripples    | no               |
+| `GOrbitSpinner`       | Satellite dots around a core    | no               |
+| `GWaveSpinner`        | Circular arc + wave fill        | **yes**          |
+
 
 ---
 
@@ -308,10 +314,80 @@ const GRingSpinner(
 )
 ```
 
+---
+
+## GDualRingSpinner
+
+Dual-ring spinner with counter-rotating arcs.
+
+```dart
+const GDualRingSpinner(
+  color: Colors.blue,
+  secondaryColor: Colors.orange,
+  size: 40.0,
+  strokeWidth: 3.5,
+)
+```
+
+---
+
+## GChasingDotsSpinner
+
+Two orbiting dots scaling sequentially around a center.
+
+```dart
+const GChasingDotsSpinner(
+  color: Colors.purple,
+  size: 40.0,
+)
+```
+
+---
+
+## GFadingCubeSpinner
+
+A 2x2 grid of fading and scaling cubes.
+
+```dart
+const GFadingCubeSpinner(
+  color: Colors.teal,
+  size: 40.0,
+)
+```
+
+---
+
+## GRippleSpinner
+
+Expanding concentric ripple rings fading outward.
+
+```dart
+const GRippleSpinner(
+  color: Colors.indigo,
+  size: 50.0,
+  rippleCount: 2,
+)
+```
+
+---
+
+## GOrbitSpinner
+
+Revolving satellite dots orbiting around a central core.
+
+```dart
+const GOrbitSpinner(
+  color: Colors.blue,
+  secondaryColor: Colors.cyan,
+  size: 44.0,
+  satelliteCount: 3,
+)
+```
 
 ---
 
 ## External AnimationController
+
 
 All animated widgets accept an optional `controller`. When you supply one, **you own its lifecycle** — the widget will not call `dispose()` on it.
 
