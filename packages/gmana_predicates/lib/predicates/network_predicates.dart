@@ -64,3 +64,39 @@ bool isPort(String str) {
   final port = int.tryParse(str);
   return port != null && port >= 1 && port <= 65535;
 }
+
+/// Returns `true` if [str] is a valid IP address.
+///
+/// Pass [version] as `4` or `6` to specify IP version.
+bool isIP(String str, [int? version]) {
+  if (version == 4) return isIpv4(str);
+  if (version == 6) return isIpv6(str);
+  return isIpv4(str) || isIpv6(str);
+}
+
+/// Returns `true` if [str] is a valid CIDR notation.
+///
+/// Pass [version] as `4` or `6` to check a specific IP version block.
+bool isCidr(String str, [int? version]) {
+  if (version == 4) {
+    return _isCidrV4(str);
+  } else if (version == 6) {
+    return cidrV6Maybe.hasMatch(str);
+  } else if (version == null) {
+    return _isCidrV4(str) || cidrV6Maybe.hasMatch(str);
+  }
+  return false;
+}
+
+bool _isCidrV4(String str) {
+  if (!cidrV4Maybe.hasMatch(str)) return false;
+  final parts = str.split('/');
+  return isIpv4(parts[0]);
+}
+
+/// Returns `true` if [str] is a valid Data URI scheme (RFC 2397).
+bool isDataURI(String str) => dataUriReg.hasMatch(str.trim());
+
+/// Returns `true` if [str] is a valid BitTorrent Magnet URI.
+bool isMagnetURI(String str) => magnetUriReg.hasMatch(str.trim());
+

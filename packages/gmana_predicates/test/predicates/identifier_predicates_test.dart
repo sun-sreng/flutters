@@ -26,5 +26,38 @@ void main() {
       );
       expect(isPhoneNumber('123'), isFalse);
     });
+
+    test('isLuhnValid validates Luhn algorithm', () {
+      expect(isLuhnValid('79927398713'), isTrue);
+      expect(isLuhnValid('79927398714'), isFalse);
+    });
+
+    test('isIMEI validates 15-digit IMEI with Luhn', () {
+      expect(isIMEI('490154203237518'), isTrue);
+      expect(isIMEI('490154203237519'), isFalse);
+      expect(isIMEI('12345'), isFalse);
+    });
+
+    test('isEAN validates EAN-8 and EAN-13 barcodes', () {
+      expect(isEAN('90311017', '8'), isTrue);
+      expect(isEAN('90311018', '8'), isFalse);
+
+      expect(isEAN('4006381333931', '13'), isTrue);
+      expect(isEAN('4006381333932', '13'), isFalse);
+      expect(isEAN('4006381333931'), isTrue);
+    });
+
+    test('isULID validates 26-character Crockford Base32 ULID', () {
+      expect(isULID('01ARZ3NDEKTSV4RRFFQ69G5FAV'), isTrue);
+      expect(isULID('01arz3ndektsv4rrffq69g5fav'), isTrue);
+      expect(isULID('INVALIDULIDSTRING'), isFalse);
+    });
+
+    test('isNanoId validates Nano ID format and length', () {
+      expect(isNanoId('V1StGXR8_Z5jdHi6B-myT'), isTrue);
+      expect(isNanoId('short', 5), isTrue);
+      expect(isNanoId('invalid!char!', 12), isFalse);
+    });
   });
 }
+

@@ -12,7 +12,9 @@ library;
 
 export 'annotations.dart';
 export 'predicates/date_predicates.dart';
+export 'predicates/extensions.dart';
 export 'predicates/identifier_predicates.dart';
 export 'predicates/network_predicates.dart';
 export 'predicates/numeric_predicates.dart';
 export 'predicates/string_predicates.dart';
+

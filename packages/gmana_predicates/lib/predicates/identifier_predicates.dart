@@ -117,3 +117,69 @@ bool isPhoneNumber(String str, {bool requirePlusPrefix = false}) {
   final digits = trimmed.replaceAll(RegExp(r'\D'), '');
   return digits.length >= 7 && digits.length <= 15;
 }
+
+/// Returns `true` if [str] passes the Luhn checksum algorithm.
+bool isLuhnValid(String str) {
+  final sanitized = str.replaceAll(RegExp(r'\D'), '');
+  if (sanitized.isEmpty) return false;
+
+  var sum = 0;
+  var shouldDouble = false;
+
+  for (var i = sanitized.length - 1; i >= 0; i--) {
+    var digit = int.parse(sanitized[i]);
+    if (shouldDouble) {
+      digit *= 2;
+      if (digit >= 10) digit -= 9;
+    }
+    sum += digit;
+    shouldDouble = !shouldDouble;
+  }
+  return sum % 10 == 0;
+}
+
+/// Returns `true` if [str] is a valid 15-digit International Mobile Equipment Identity (IMEI) number.
+bool isIMEI(String str) {
+  final sanitized = str.replaceAll(RegExp(r'[\s-]+'), '');
+  if (!imeiMaybeReg.hasMatch(sanitized)) return false;
+  return isLuhnValid(sanitized);
+}
+
+/// Returns `true` if [str] is a valid EAN-8 or EAN-13 barcode number with valid checksum.
+///
+/// Pass [version] as `'8'` or `'13'` to check a specific length standard.
+bool isEAN(String str, [String? version]) {
+  final sanitized = str.replaceAll(RegExp(r'[\s-]+'), '');
+  if (version == '8') {
+    if (!ean8MaybeReg.hasMatch(sanitized)) return false;
+    return _validateEanChecksum(sanitized);
+  } else if (version == '13') {
+    if (!ean13MaybeReg.hasMatch(sanitized)) return false;
+    return _validateEanChecksum(sanitized);
+  } else if (version == null) {
+    return isEAN(str, '8') || isEAN(str, '13');
+  }
+  return false;
+}
+
+bool _validateEanChecksum(String ean) {
+  var sum = 0;
+  final length = ean.length;
+  for (var i = 0; i < length - 1; i++) {
+    final digit = int.parse(ean[i]);
+    final weight = (length - 1 - i) % 2 == 1 ? 3 : 1;
+    sum += digit * weight;
+  }
+  final checkDigit = (10 - (sum % 10)) % 10;
+  return checkDigit == int.parse(ean[length - 1]);
+}
+
+/// Returns `true` if [str] is a valid 26-character Universally Unique Lexicographically Sortable Identifier (ULID).
+bool isULID(String str) => ulidReg.hasMatch(str);
+
+/// Returns `true` if [str] matches a Nano ID format of length [expectedLength] (default: 21).
+bool isNanoId(String str, [int expectedLength = 21]) {
+  if (str.length != expectedLength) return false;
+  return RegExp(r'^[A-Za-z0-9_-]+$').hasMatch(str);
+}
+

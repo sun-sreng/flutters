@@ -40,4 +40,52 @@ abstract class Option<T> {
 
   /// Returns the contained value if present, or `null` if absent.
   T? toNullable();
+
+  /// Keeps the value only when [test] passes, otherwise becomes [None].
+  ///
+  /// ```dart
+  /// Some(4).filter((n) => n.isEven);  // Some(4)
+  /// Some(3).filter((n) => n.isEven);  // None
+  /// ```
+  Option<T> filter(bool Function(T value) test) =>
+      fold(None<T>.new, (value) => test(value) ? this : None<T>());
+
+  /// The inverse of [filter] — keeps the value only when [test] fails.
+  Option<T> filterNot(bool Function(T value) test) =>
+      filter((value) => !test(value));
+
+  /// Returns this option when it is [Some], otherwise the result of [other].
+  ///
+  /// ```dart
+  /// fromCache(id).orElse(() => fromDefaults(id));
+  /// ```
+  Option<T> orElse(Option<T> Function() other) => fold(other, (_) => this);
+
+  /// Runs [f] with the value, if present, and returns this option unchanged.
+  Option<T> tap(void Function(T value) f) {
+    fold(() {}, f);
+    return this;
+  }
+
+  /// Runs [f] when the value is absent, and returns this option unchanged.
+  Option<T> tapNone(void Function() f) {
+    fold(f, (_) {});
+    return this;
+  }
+
+  /// Whether this is [Some] *and* [test] passes for its value.
+  bool isSomeAnd(bool Function(T value) test) => fold(() => false, test);
+
+  /// Pairs this value with the value of [other], if both are present.
+  Option<(T, U)> zip<U>(Option<U> other) => zipWith(other, (a, b) => (a, b));
+
+  /// Combines this value with the value of [other] through [combine],
+  /// if both are present.
+  Option<R> zipWith<U, R>(
+    Option<U> other,
+    R Function(T first, U second) combine,
+  ) => flatMap((first) => other.map((second) => combine(first, second)));
+
+  /// A single-element list for [Some], or an empty list for [None].
+  List<T> toList() => fold(() => <T>[], (value) => <T>[value]);
 }

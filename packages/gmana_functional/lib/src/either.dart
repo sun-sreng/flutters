@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import '../gmana_functional.dart' show Left, Right;
+import '../gmana_functional.dart' show Left, None, Option, Right, Some;
 
 /// A generic type that represents a value of one of two possible types (a disjoint union).
 ///
@@ -69,6 +69,54 @@ abstract class Either<L, R> {
       return Left(onError(error, stackTrace));
     }
   }
+
+  /// Builds a [Right] from [ifTrue] when [test] holds, otherwise a [Left]
+  /// from [ifFalse].
+  ///
+  /// ```dart
+  /// Either.cond(age >= 18, () => 'Too young', () => age);
+  /// ```
+  static Either<L, R> cond<L, R>(
+    // ignore: avoid_positional_boolean_parameters
+    bool test,
+    L Function() ifFalse,
+    R Function() ifTrue,
+  ) => test ? Right<L, R>(ifTrue()) : Left<L, R>(ifFalse());
+
+  /// Lifts a nullable [value] into an [Either], using [onNull] for the
+  /// [Left] side.
+  ///
+  /// ```dart
+  /// Either.fromNullable(map['id'], () => 'Missing id');
+  /// ```
+  static Either<L, R> fromNullable<L, R>(R? value, L Function() onNull) =>
+      value == null ? Left<L, R>(onNull()) : Right<L, R>(value);
+
+  /// Collapses [items] into a single [Either] holding every [Right] value.
+  ///
+  /// Short-circuits on the first [Left], which is what you want when any one
+  /// failure invalidates the whole batch.
+  ///
+  /// ```dart
+  /// Either.sequence([Right(1), Right(2)]);          // Right([1, 2])
+  /// Either.sequence([Right(1), Left('bad'), ...]);  // Left('bad')
+  /// ```
+  static Either<L, List<R>> sequence<L, R>(Iterable<Either<L, R>> items) {
+    final values = <R>[];
+    for (final item in items) {
+      if (item.isLeft()) return Left<L, List<R>>(item.getLeft());
+      values.add(item.getRight());
+    }
+    return Right<L, List<R>>(values);
+  }
+
+  /// Applies [f] to every element of [items] and sequences the results.
+  ///
+  /// Short-circuits on the first [Left].
+  static Either<L, List<R2>> traverse<L, R, R2>(
+    Iterable<R> items,
+    Either<L, R2> Function(R item) f,
+  ) => sequence(items.map(f));
 
   /// Maps the [Left] value using [f], if present.
   ///
@@ -171,4 +219,74 @@ abstract class Either<L, R> {
 
   /// Swaps the sides of this [Either], turning [Left] into [Right] and vice versa.
   Either<R, L> swap();
+
+  // --- Recovery ---
+
+  /// Returns this [Either] when it is a [Right], otherwise the result of [f].
+  ///
+  /// The functional counterpart of a `catch` that can itself fail.
+  ///
+  /// ```dart
+  /// fromCache(id).orElse((_) => fromNetwork(id));
+  /// ```
+  Either<L, R> orElse(Either<L, R> Function(L left) f) => fold(f, (_) => this);
+
+  /// Like [orElse] but the recovery may produce a different [Left] type.
+  Either<L2, R> orElseWith<L2>(Either<L2, R> Function(L left) f) =>
+      fold(f, Right<L2, R>.new);
+
+  /// Turns a [Left] into a [Right] by computing a fallback value.
+  ///
+  /// Unlike [orElse] this always succeeds.
+  Either<L, R> recover(R Function(L left) f) =>
+      fold((left) => Right<L, R>(f(left)), (_) => this);
+
+  /// Chains on the [Left] side — the mirror of [flatMap].
+  Either<L2, R> flatMapLeft<L2>(Either<L2, R> Function(L left) f) =>
+      fold(f, Right<L2, R>.new);
+
+  // --- Refinement ---
+
+  /// Demotes a [Right] to a [Left] when [test] fails.
+  ///
+  /// ```dart
+  /// Right(-1).filterOrElse((n) => n > 0, (n) => 'Must be positive');
+  /// // Left('Must be positive')
+  /// ```
+  Either<L, R> filterOrElse(
+    bool Function(R right) test,
+    L Function(R right) onFalse,
+  ) => fold(
+    (_) => this,
+    (right) => test(right) ? this : Left<L, R>(onFalse(right)),
+  );
+
+  // --- Combining ---
+
+  /// Pairs the [Right] values of this and [other].
+  ///
+  /// Returns the first [Left] encountered, this one taking precedence.
+  Either<L, (R, R2)> zip<R2>(Either<L, R2> other) =>
+      zipWith(other, (a, b) => (a, b));
+
+  /// Combines the [Right] values of this and [other] through [combine].
+  ///
+  /// Returns the first [Left] encountered, this one taking precedence.
+  Either<L, R3> zipWith<R2, R3>(
+    Either<L, R2> other,
+    R3 Function(R first, R2 second) combine,
+  ) => flatMap((first) => other.map((second) => combine(first, second)));
+
+  // --- Conversion ---
+
+  /// Returns the [Right] value, or [defaultValue] when this is a [Left].
+  ///
+  /// The eager counterpart of [getOrElse].
+  R getOrDefault(R defaultValue) => fold((_) => defaultValue, (right) => right);
+
+  /// Discards the [Left] value, keeping only whether a [Right] was present.
+  Option<R> toOption() => fold((_) => None<R>(), Some<R>.new);
+
+  /// A single-element list for a [Right], or an empty list for a [Left].
+  List<R> toList() => fold((_) => <R>[], (right) => <R>[right]);
 }

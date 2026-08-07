@@ -160,5 +160,68 @@ void main() {
       expect(predicates.isSlug('my_blog_post'), isFalse);
       expect(predicates.isSlug('-my-blog-'), isFalse);
     });
+
+    test('isBlank and isNotBlank validate whitespace strings', () {
+      expect(predicates.isBlank(null), isTrue);
+      expect(predicates.isBlank(''), isTrue);
+      expect(predicates.isBlank('   \t\n'), isTrue);
+      expect(predicates.isBlank('hello'), isFalse);
+
+      expect(predicates.isNotBlank('hello'), isTrue);
+      expect(predicates.isNotBlank('   '), isFalse);
+      expect(predicates.isNotBlank(null), isFalse);
+    });
+
+    test('isPalindrome checks forward and reverse equality', () {
+      expect(predicates.isPalindrome('racecar'), isTrue);
+      expect(predicates.isPalindrome('A man, a plan, a canal: Panama'), isTrue);
+      expect(predicates.isPalindrome('hello'), isFalse);
+      expect(predicates.isPalindrome(''), isFalse);
+    });
+
+    test('isCapitalized checks initial uppercase letter', () {
+      expect(predicates.isCapitalized('Hello'), isTrue);
+      expect(predicates.isCapitalized('hello'), isFalse);
+      expect(predicates.isCapitalized('123'), isFalse);
+      expect(predicates.isCapitalized(''), isFalse);
+    });
+
+    test('case format predicates check naming conventions', () {
+      expect(predicates.isCamelCase('camelCaseStr'), isTrue);
+      expect(predicates.isCamelCase('PascalCase'), isFalse);
+
+      expect(predicates.isPascalCase('PascalCaseStr'), isTrue);
+      expect(predicates.isPascalCase('camelCase'), isFalse);
+
+      expect(predicates.isSnakeCase('snake_case_str'), isTrue);
+      expect(predicates.isSnakeCase('snake-case'), isFalse);
+
+      expect(predicates.isKebabCase('kebab-case-str'), isTrue);
+      expect(predicates.isKebabCase('kebab_case'), isFalse);
+    });
+
+    test('isJwt, isMimeType, isHash validate specialized formats', () {
+      expect(
+        predicates.isJwt(
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+        ),
+        isTrue,
+      );
+      expect(predicates.isJwt('invalid.token'), isFalse);
+
+      expect(predicates.isMimeType('application/json'), isTrue);
+      expect(predicates.isMimeType('image/png'), isTrue);
+      expect(predicates.isMimeType('not-a-mime'), isFalse);
+
+      expect(
+        predicates.isHash('5d41402abc4b2a76b9719d911017c592', 'md5'),
+        isTrue,
+      );
+      expect(
+        predicates.isHash('2fd4e1c67a2d28fced849ee1bb76e7391b93eb12', 'sha1'),
+        isTrue,
+      );
+      expect(predicates.isHash('invalidhash', 'md5'), isFalse);
+    });
   });
 }

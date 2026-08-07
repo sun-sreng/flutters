@@ -7,7 +7,16 @@ final isbn10MaybeReg = RegExp(r'^(?:[0-9]{9}X|[0-9]{10})$');
 final isbn13MaybeReg = RegExp(r'^(?:[0-9]{13})$');
 
 final fqdnTldReg = RegExp(r'^[a-z]{2,}$');
-final fqdnLabelReg = RegExp(r'^[a-z¡-￿0-9-]+$', caseSensitive: false);
+final fqdnLabelReg = RegExp(r'^[a-z\u00a1-\u00ff0-9-]+$', caseSensitive: false);
+
+final ulidReg = RegExp(
+  r'^[0-7][0-9A-HJKMNP-TV-Z]{25}$',
+  caseSensitive: false,
+);
+final ean8MaybeReg = RegExp(r'^\d{8}$');
+final ean13MaybeReg = RegExp(r'^\d{13}$');
+final imeiMaybeReg = RegExp(r'^\d{15}$');
+
 
 final Map<String, RegExp> uuidReg = {
   '3': RegExp(

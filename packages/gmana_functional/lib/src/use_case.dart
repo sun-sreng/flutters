@@ -57,6 +57,50 @@ class Failure {
     this.details = const {},
   ]);
 
+  /// Wraps a caught [error] as a [Failure].
+  ///
+  /// Pairs with [Either.tryCatch], where the `onError` callback needs to turn
+  /// an arbitrary thrown object into a domain failure.
+  ///
+  /// ```dart
+  /// Either.tryCatch(() => jsonDecode(raw), Failure.fromError);
+  /// ```
+  factory Failure.fromError(Object error, [StackTrace? stackTrace]) => Failure(
+    '$error',
+    null,
+    {'error': error, if (stackTrace != null) 'stackTrace': stackTrace},
+  );
+
+  /// Returns a copy with the given fields replaced.
+  ///
+  /// Note that passing `null` keeps the existing value rather than clearing
+  /// it — build a new [Failure] when you need to drop a [code].
+  Failure copyWith({
+    String? message,
+    String? code,
+    Map<String, dynamic>? details,
+  }) => Failure(
+    message ?? this.message,
+    code ?? this.code,
+    details ?? this.details,
+  );
+
+  /// Returns a copy with one extra entry in [details].
+  Failure withDetail(String key, Object? value) =>
+      copyWith(details: {...details, key: value});
+
+  /// Returns a copy with [extra] merged into [details].
+  ///
+  /// Keys in [extra] win over existing ones.
+  Failure withDetails(Map<String, dynamic> extra) =>
+      copyWith(details: {...details, ...extra});
+
+  /// Reads a [details] entry as [T], or `null` when absent or mistyped.
+  T? detail<T>(String key) {
+    final value = details[key];
+    return value is T ? value : null;
+  }
+
   @override
   int get hashCode => Object.hash(
     runtimeType,
@@ -150,6 +194,15 @@ final class Unit {
 abstract interface class UseCase<SuccessType, Params> {
   /// Executes the use case with the given [params] and returns a [FutureResult] result.
   FutureResult<SuccessType> call(Params params);
+}
+
+/// A contract for use cases that complete synchronously.
+///
+/// Use this for pure business rules — validation, derivation, policy checks —
+/// where wrapping the answer in a [Future] would only add ceremony.
+abstract interface class SyncUseCase<SuccessType, Params> {
+  /// Executes the use case with the given [params] and returns a [Result].
+  Result<SuccessType> call(Params params);
 }
 
 bool _mapEquals(Map<String, dynamic> left, Map<String, dynamic> right) {

@@ -111,3 +111,59 @@ bool isSlug(String str) {
   return RegExp(r'^[a-z0-9]+(?:-[a-z0-9]+)*$').hasMatch(str);
 }
 
+/// Returns `true` if [str] is `null`, empty, or consists only of whitespace.
+bool isBlank(String? str) => str == null || str.trim().isEmpty;
+
+/// Returns `true` if [str] is not `null` and contains non-whitespace characters.
+bool isNotBlank(String? str) => str != null && str.trim().isNotEmpty;
+
+/// Returns `true` if [str] reads the same forwards and backwards.
+bool isPalindrome(
+  String str, {
+  bool ignoreCase = true,
+  bool ignoreNonAlphanumeric = true,
+}) {
+  var processed = str;
+  if (ignoreNonAlphanumeric) {
+    processed = processed.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+  }
+  if (ignoreCase) {
+    processed = processed.toLowerCase();
+  }
+  if (processed.isEmpty) return false;
+  final reversed = processed.split('').reversed.join('');
+  return processed == reversed;
+}
+
+/// Returns `true` if [str] starts with an uppercase letter.
+bool isCapitalized(String str) {
+  if (str.isEmpty) return false;
+  final first = str[0];
+  return first == first.toUpperCase() && first != first.toLowerCase();
+}
+
+/// Returns `true` if [str] is in camelCase format (e.g. `fooBar`).
+bool isCamelCase(String str) => camelCaseReg.hasMatch(str);
+
+/// Returns `true` if [str] is in PascalCase format (e.g. `FooBar`).
+bool isPascalCase(String str) => pascalCaseReg.hasMatch(str);
+
+/// Returns `true` if [str] is in snake_case format (e.g. `foo_bar`).
+bool isSnakeCase(String str) => snakeCaseReg.hasMatch(str);
+
+/// Returns `true` if [str] is in kebab-case format (e.g. `foo-bar`).
+bool isKebabCase(String str) => kebabCaseReg.hasMatch(str);
+
+/// Returns `true` if [str] matches JSON Web Token (JWT) format structure.
+bool isJwt(String str) => jwtReg.hasMatch(str);
+
+/// Returns `true` if [str] is a valid MIME type format (e.g. `application/json`).
+bool isMimeType(String str) => mimeTypeReg.hasMatch(str);
+
+/// Returns `true` if [str] is a valid hash string for [algorithm] (e.g. `'md5'`, `'sha1'`, `'sha256'`, `'sha512'`).
+bool isHash(String str, String algorithm) {
+  final reg = hashReg[algorithm.toLowerCase()];
+  return reg != null && reg.hasMatch(str);
+}
+
+

@@ -25,3 +25,21 @@ final intReg = RegExp(r'^(?:-?(?:0|[1-9][0-9]*))$');
 final multiByteReg = RegExp(r'[^\x00-\x7F]');
 final numericReg = RegExp(r'^-?[0-9]+$');
 final surrogatePairsReg = RegExp(r'[\uD800-\uDBFF][\uDC00-\uDFFF]');
+
+final camelCaseReg = RegExp(r'^[a-z]+(?:[A-Z][a-z0-9]*)*$');
+final pascalCaseReg = RegExp(r'^[A-Z][a-zA-Z0-9]*$');
+final snakeCaseReg = RegExp(r'^[a-z0-9]+(?:_[a-z0-9]+)*$');
+final kebabCaseReg = RegExp(r'^[a-z0-9]+(?:-[a-z0-9]+)*$');
+
+final jwtReg = RegExp(r'^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]*$');
+final mimeTypeReg = RegExp(
+  r'^[a-zA-Z0-9][a-zA-Z0-9!#$&^_\-\.\+]*\/[a-zA-Z0-9][a-zA-Z0-9!#$&^_\-\.\+]*$',
+);
+
+final Map<String, RegExp> hashReg = {
+  'md5': RegExp(r'^[a-fA-F0-9]{32}$'),
+  'sha1': RegExp(r'^[a-fA-F0-9]{40}$'),
+  'sha256': RegExp(r'^[a-fA-F0-9]{64}$'),
+  'sha512': RegExp(r'^[a-fA-F0-9]{128}$'),
+};
+

@@ -76,3 +76,34 @@ bool isLeapYear(String str) {
   final y = date.year;
   return (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0);
 }
+
+/// Returns `true` if [str] matches 24-hour time format (`HH:mm` or `HH:mm:ss`).
+bool isTime(String str) {
+  final timeRegExp = RegExp(r'^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$');
+  return timeRegExp.hasMatch(str.trim());
+}
+
+/// Returns `true` if [date1] and [date2] represent the same UTC calendar day.
+bool isSameDay(String date1, String date2) {
+  final d1 = tryParseDate(date1);
+  final d2 = tryParseDate(date2);
+  if (d1 == null || d2 == null) return false;
+  return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
+}
+
+/// Returns `true` if [date1] and [date2] represent the same UTC year and month.
+bool isSameMonth(String date1, String date2) {
+  final d1 = tryParseDate(date1);
+  final d2 = tryParseDate(date2);
+  if (d1 == null || d2 == null) return false;
+  return d1.year == d2.year && d1.month == d2.month;
+}
+
+/// Returns `true` if [date1] and [date2] represent the same UTC year.
+bool isSameYear(String date1, String date2) {
+  final d1 = tryParseDate(date1);
+  final d2 = tryParseDate(date2);
+  if (d1 == null || d2 == null) return false;
+  return d1.year == d2.year;
+}
+
