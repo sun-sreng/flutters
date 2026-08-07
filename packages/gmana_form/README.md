@@ -9,8 +9,9 @@ import 'package:gmana_form/gmana_form.dart';
 ## What You Get
 
 - One generic text-field surface: `GTextField` + `GTextFieldConfig`.
-- Friendly presets for common inputs: text, multiline, email, number, password, confirm password, URL, and phone.
+- Friendly presets for common inputs: text, multiline, email, number, password, confirm password, URL, phone, identifier, network address, debounced search, and PIN code.
 - Non-text fields that validate too: checkbox, switch, dropdown, and date.
+
 - Named fields expose both text values and typed values.
 - Typed validation powered by `gmana_validation`, plus composable `GValidators`.
 - Focus management, dirty tracking, and UI-free error reporting on the controller.
