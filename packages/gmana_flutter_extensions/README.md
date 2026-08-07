@@ -22,6 +22,11 @@ import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
 - [Time of day](#time-of-day)
 - [Scroll controllers](#scroll-controllers)
 - [Text editing controllers](#text-editing-controllers)
+- [Animation & Controllers](#animation--controllers)
+- [FocusNode](#focusnode)
+- [Alignment](#alignment)
+- [Listenable & ValueNotifier](#listenable--valuenotifier)
+
 
 ---
 
