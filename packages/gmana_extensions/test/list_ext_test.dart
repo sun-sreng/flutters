@@ -149,10 +149,7 @@ void main() {
           'banana': 6,
         });
         expect(list.associateBy((s) => s.length), {5: 'apple', 6: 'banana'});
-        expect(list.associateWith((s) => s.length), {
-          'apple': 5,
-          'banana': 6,
-        });
+        expect(list.associateWith((s) => s.length), {'apple': 5, 'banana': 6});
       });
 
       test('intersperse inserts elements between items', () {

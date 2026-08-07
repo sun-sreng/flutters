@@ -127,7 +127,10 @@ void main() {
     });
 
     test('removePrefix and removeSuffix', () {
-      expect('https://example.com'.removePrefix('https://'), equals('example.com'));
+      expect(
+        'https://example.com'.removePrefix('https://'),
+        equals('example.com'),
+      );
       expect('example.com'.removePrefix('https://'), equals('example.com'));
 
       expect('image.png'.removeSuffix('.png'), equals('image'));
@@ -135,8 +138,14 @@ void main() {
     });
 
     test('mask', () {
-      expect('1234567890'.mask(unmaskedStart: 2, unmaskedEnd: 2), equals('12******90'));
-      expect('user@example.com'.mask(unmaskedStart: 1, unmaskedEnd: 4), equals('u***********.com'));
+      expect(
+        '1234567890'.mask(unmaskedStart: 2, unmaskedEnd: 2),
+        equals('12******90'),
+      );
+      expect(
+        'user@example.com'.mask(unmaskedStart: 1, unmaskedEnd: 4),
+        equals('u***********.com'),
+      );
       expect('123'.mask(unmaskedStart: 2, unmaskedEnd: 2), equals('123'));
     });
   });

@@ -91,6 +91,56 @@ extension IntX on int {
   /// Returns true if this value is between [min] and [max] inclusively.
   bool isBetween(int min, int max) => this >= min && this <= max;
 
+  /// Whether this value is a prime number.
+  ///
+  /// ```dart
+  /// 97.isPrime; // true
+  /// ```
+  bool get isPrime {
+    if (this < 2) return false;
+    if (this < 4) return true;
+    if (isEven) return false;
+
+    for (var divisor = 3; divisor * divisor <= this; divisor += 2) {
+      if (this % divisor == 0) return false;
+    }
+    return true;
+  }
+
+  /// Whether this value is an exact power of two.
+  bool get isPowerOfTwo => this > 0 && (this & (this - 1)) == 0;
+
+  /// Least common multiple of this value and [other].
+  ///
+  /// Complements the built-in [int.gcd].
+  ///
+  /// ```dart
+  /// 4.lcm(6); // 12
+  /// ```
+  int lcm(int other) {
+    if (this == 0 || other == 0) return 0;
+    return (this * other).abs() ~/ gcd(other);
+  }
+
+  /// Factorial of this value.
+  ///
+  /// Throws when negative. Values above 20 overflow a 64-bit int, so they
+  /// are rejected rather than returning silently wrong results.
+  int get factorial {
+    if (this < 0) {
+      throw ArgumentError.value(this, 'this', 'must not be negative');
+    }
+    if (this > 20) {
+      throw ArgumentError.value(this, 'this', 'must not exceed 20 (overflows)');
+    }
+
+    var result = 1;
+    for (var i = 2; i <= this; i++) {
+      result *= i;
+    }
+    return result;
+  }
+
   /// Returns this value constrained to the inclusive range [[min], [max]].
   int clampInt(int min, int max) {
     if (max < min) {

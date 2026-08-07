@@ -17,7 +17,7 @@ environment:
 resolution: workspace
 
 dependencies:
-  gmana_extensions: ^0.0.1
+  gmana_extensions: ^0.0.2
   gmana_functional: ^0.0.1
   gmana_predicates: ^0.0.1
   gmana_utils: ^0.0.1

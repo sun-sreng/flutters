@@ -160,6 +160,36 @@ extension NumX on num {
     _checkNonZeroMultiple(multiple);
     return (this / multiple).round() * multiple;
   }
+
+  // --- Angles and powers ---
+
+  /// Interprets this value as degrees and converts it to radians.
+  double get toRadians => toDouble() * pi / 180;
+
+  /// Interprets this value as radians and converts it to degrees.
+  double get toDegrees => toDouble() * 180 / pi;
+
+  /// Raises this value to [exponent].
+  ///
+  /// ```dart
+  /// 2.raisedTo(10); // 1024.0
+  /// ```
+  double raisedTo(num exponent) => pow(this, exponent).toDouble();
+
+  /// Square root of this value. Throws if negative.
+  double get squareRoot {
+    if (this < 0) {
+      throw ArgumentError.value(this, 'this', 'must not be negative');
+    }
+    return sqrt(this);
+  }
+
+  /// Returns this value, or [fallback] when it is not finite (NaN or infinite).
+  ///
+  /// ```dart
+  /// (0 / 0).orFinite(); // 0.0
+  /// ```
+  num orFinite([num fallback = 0]) => toDouble().isFinite ? this : fallback;
 }
 
 /// Internal safety check for multiple-based calculations.

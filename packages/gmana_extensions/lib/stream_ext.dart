@@ -223,4 +223,132 @@ extension StreamX<T> on Stream<T> {
   /// Emits only non-null values, narrowing the type to [R].
   Stream<R> whereNotNull<R extends Object>() =>
       where((e) => e != null).cast<R>();
+
+  /// Groups events into lists of [count]. The final buffer is emitted even
+  /// when it is short.
+  ///
+  /// ```dart
+  /// events.bufferCount(50).listen(batchUpload);
+  /// ```
+  Stream<List<T>> bufferCount(int count) async* {
+    if (count <= 0) {
+      throw ArgumentError.value(count, 'count', 'must be greater than zero');
+    }
+
+    var buffer = <T>[];
+    await for (final value in this) {
+      buffer.add(value);
+      if (buffer.length == count) {
+        yield buffer;
+        buffer = <T>[];
+      }
+    }
+    if (buffer.isNotEmpty) yield buffer;
+  }
+
+  /// Emits [value] immediately, then everything from this stream.
+  ///
+  /// Handy for giving a state stream an initial value.
+  Stream<T> startWith(T value) async* {
+    yield value;
+    yield* this;
+  }
+
+  /// Emits every element of [values] in order, then this stream's events.
+  Stream<T> startWithMany(Iterable<T> values) async* {
+    yield* Stream.fromIterable(values);
+    yield* this;
+  }
+
+  /// Runs [action] for each event without modifying the stream.
+  Stream<T> doOnData(void Function(T value) action) => transform(
+    StreamTransformer.fromHandlers(
+      handleData: (value, sink) {
+        action(value);
+        sink.add(value);
+      },
+    ),
+  );
+
+  /// Runs [action] for each error without swallowing it.
+  Stream<T> doOnError(
+    void Function(Object error, StackTrace stackTrace) action,
+  ) => transform(
+    StreamTransformer.fromHandlers(
+      handleError: (error, stackTrace, sink) {
+        action(error, stackTrace);
+        sink.addError(error, stackTrace);
+      },
+    ),
+  );
+
+  /// Runs [action] when the stream closes.
+  Stream<T> doOnDone(void Function() action) => transform(
+    StreamTransformer.fromHandlers(
+      handleDone: (sink) {
+        action();
+        sink.close();
+      },
+    ),
+  );
+
+  /// Maps each event and drops the `null` results.
+  Stream<R> mapNotNull<R extends Object>(R? Function(T value) transform) =>
+      map(transform).where((value) => value != null).cast<R>();
+
+  /// Emits only the events that do *not* satisfy [test].
+  Stream<T> whereNot(bool Function(T value) test) =>
+      where((value) => !test(value));
+
+  /// Discards errors instead of forwarding them.
+  Stream<T> ignoreErrors() => handleError((Object _) {});
+
+  /// The first event, or `null` if the stream closes empty.
+  ///
+  /// Unlike [Stream.first] this never throws a [StateError].
+  Future<T?> firstOrNull() async {
+    await for (final value in this) {
+      return value;
+    }
+    return null;
+  }
+
+  /// Interleaves this stream with [others], closing once all are done.
+  Stream<T> mergeWith(Iterable<Stream<T>> others) {
+    final sources = <Stream<T>>[this, ...others];
+
+    late StreamController<T> controller;
+    final subscriptions = <StreamSubscription<T>>[];
+    var remaining = 0;
+
+    void listenToSources() {
+      remaining = sources.length;
+      for (final source in sources) {
+        subscriptions.add(
+          source.listen(
+            controller.add,
+            onError: controller.addError,
+            onDone: () {
+              remaining--;
+              if (remaining == 0) unawaited(controller.close());
+            },
+          ),
+        );
+      }
+    }
+
+    Future<void> cancel() async {
+      await Future.wait(subscriptions.map((s) => s.cancel()));
+      subscriptions.clear();
+    }
+
+    controller =
+        isBroadcast
+            ? StreamController<T>.broadcast(
+              onListen: listenToSources,
+              onCancel: cancel,
+            )
+            : StreamController<T>(onListen: listenToSources, onCancel: cancel);
+    return controller.stream;
+  }
 }

@@ -10,6 +10,8 @@ final RegExp _slugHyphenRegExp = RegExp(r'-+');
 final RegExp _slugUnsafeRegExp = RegExp(r'[^a-z0-9\-]');
 final RegExp _whitespaceRegExp = RegExp(r'\s+');
 final RegExp _wordSeparatorRegExp = RegExp(r'[\s_\-]+');
+final RegExp _htmlTagRegExp = RegExp(r'<[^>]*>');
+final RegExp _lineBreakRegExp = RegExp(r'\r\n|\r|\n');
 
 /// Extension on nullable [String] providing safe fallback and mapping methods.
 extension StringNullableX on String? {
@@ -30,6 +32,19 @@ extension StringNullableX on String? {
     final s = orNull;
     return s != null ? transform(s) : null;
   }
+
+  /// Returns this string unless it is null or blank, in which case [fallback].
+  ///
+  /// ```dart
+  /// nickname.ifBlank('Anonymous')
+  /// ```
+  String ifBlank(String fallback) => orNull ?? fallback;
+
+  /// Returns this string unless it is null or empty, in which case [fallback].
+  ///
+  /// Unlike [ifBlank], a whitespace-only string is kept.
+  String ifEmpty(String fallback) =>
+      (this == null || this!.isEmpty) ? fallback : this!;
 }
 
 /// Main extension on String providing comprehensive conversion and formatting tools.
@@ -152,8 +167,7 @@ extension StringX on String {
       .join(' ');
 
   /// `'hello world'` -> `'HelloWorld'`
-  String get toPascalCase =>
-      _words.map((w) => w.toSentenceCase).join();
+  String get toPascalCase => _words.map((w) => w.toSentenceCase).join();
 
   /// `'hello world'` -> `'hello.world'`
   String get toDotCase => _words.map((w) => w.toLowerCase()).join('.');
@@ -190,10 +204,18 @@ extension StringX on String {
     String maskChar = '*',
   }) {
     if (unmaskedStart < 0) {
-      throw ArgumentError.value(unmaskedStart, 'unmaskedStart', 'must not be negative');
+      throw ArgumentError.value(
+        unmaskedStart,
+        'unmaskedStart',
+        'must not be negative',
+      );
     }
     if (unmaskedEnd < 0) {
-      throw ArgumentError.value(unmaskedEnd, 'unmaskedEnd', 'must not be negative');
+      throw ArgumentError.value(
+        unmaskedEnd,
+        'unmaskedEnd',
+        'must not be negative',
+      );
     }
 
     if (length <= unmaskedStart + unmaskedEnd) return this;
@@ -329,6 +351,238 @@ extension StringX on String {
     }
 
     return substring(start, end);
+  }
+
+  // --- Tokenizing ---
+
+  /// Words split on whitespace, underscores, hyphens, and camelCase
+  /// boundaries — the same tokenizer the case converters use.
+  ///
+  /// ```dart
+  /// 'user_firstName'.words; // ['user', 'first', 'Name']
+  /// ```
+  List<String> get words => _words;
+
+  /// Lines split on `\n`, `\r\n`, or `\r`.
+  List<String> get lines => split(_lineBreakRegExp);
+
+  /// Up to [max] uppercase initials taken from the leading words.
+  ///
+  /// ```dart
+  /// 'ada lovelace'.initials();        // 'AL'
+  /// 'Grace Brewster Hopper'.initials(max: 3); // 'GBH'
+  /// ```
+  String initials({int max = 2}) {
+    if (max < 0) {
+      throw ArgumentError.value(max, 'max', 'must not be negative');
+    }
+
+    return trim()
+        .split(_whitespaceRegExp)
+        .where((w) => w.isNotEmpty)
+        .take(max)
+        .map((w) => w[0].toUpperCase())
+        .join();
+  }
+
+  /// Splits into consecutive pieces of at most [size] characters.
+  ///
+  /// ```dart
+  /// '4111111111111111'.chunked(4); // ['4111', '1111', '1111', '1111']
+  /// ```
+  List<String> chunked(int size) {
+    if (size <= 0) {
+      throw ArgumentError.value(size, 'size', 'must be greater than zero');
+    }
+
+    return [
+      for (var i = 0; i < length; i += size)
+        substring(i, i + size > length ? length : i + size),
+    ];
+  }
+
+  // --- Case-insensitive comparison ---
+
+  /// Case-insensitive equality.
+  bool equalsIgnoreCase(String other) =>
+      length == other.length && toLowerCase() == other.toLowerCase();
+
+  /// Case-insensitive [String.contains].
+  bool containsIgnoreCase(String other) =>
+      toLowerCase().contains(other.toLowerCase());
+
+  /// Case-insensitive [String.startsWith].
+  bool startsWithIgnoreCase(String other) =>
+      toLowerCase().startsWith(other.toLowerCase());
+
+  /// Case-insensitive [String.endsWith].
+  bool endsWithIgnoreCase(String other) =>
+      toLowerCase().endsWith(other.toLowerCase());
+
+  /// Swaps the case of every character.
+  ///
+  /// ```dart
+  /// 'Hello'.swapCase; // 'hELLO'
+  /// ```
+  String get swapCase =>
+      split('').map((c) {
+        final upper = c.toUpperCase();
+        return c == upper ? c.toLowerCase() : upper;
+      }).join();
+
+  // --- Padding, affixes, and shaping ---
+
+  /// Prepends [prefix] unless it is already there.
+  ///
+  /// ```dart
+  /// 'example.com'.ensurePrefix('https://'); // 'https://example.com'
+  /// ```
+  String ensurePrefix(String prefix) =>
+      startsWith(prefix) ? this : '$prefix$this';
+
+  /// Appends [suffix] unless it is already there.
+  String ensureSuffix(String suffix) =>
+      endsWith(suffix) ? this : '$this$suffix';
+
+  /// Pads both sides so the result is [width] characters wide.
+  ///
+  /// Extra padding goes to the right when the difference is odd.
+  ///
+  /// ```dart
+  /// 'ok'.padCenter(6, '-'); // '--ok--'
+  /// ```
+  String padCenter(int width, [String padChar = ' ']) {
+    if (padChar.length != 1) {
+      throw ArgumentError.value(
+        padChar,
+        'padChar',
+        'must be exactly one character',
+      );
+    }
+    if (length >= width) return this;
+
+    final total = width - length;
+    final left = total ~/ 2;
+    return '${padChar * left}$this${padChar * (total - left)}';
+  }
+
+  /// Prefixes every line with [spaces] spaces (or a custom [prefix]).
+  String indent(int spaces, {String? prefix}) {
+    if (spaces < 0) {
+      throw ArgumentError.value(spaces, 'spaces', 'must not be negative');
+    }
+
+    final pad = prefix ?? ' ' * spaces;
+    return lines.map((line) => line.isEmpty ? line : '$pad$line').join('\n');
+  }
+
+  /// Collapses internal whitespace runs to a single space and trims the ends.
+  ///
+  /// ```dart
+  /// '  a   b \n c '.normalizeWhitespace; // 'a b c'
+  /// ```
+  String get normalizeWhitespace => trim().replaceAll(_whitespaceRegExp, ' ');
+
+  /// Removes anything that looks like an HTML/XML tag.
+  ///
+  /// This is a display helper, not a sanitizer — never trust the result as
+  /// safe markup.
+  String get stripHtmlTags => replaceAll(_htmlTagRegExp, '');
+
+  // --- Safe indexing ---
+
+  /// The character at [index], or `null` when out of range.
+  String? charAtOrNull(int index) =>
+      (index < 0 || index >= length) ? null : this[index];
+
+  /// [String.substring] that clamps out-of-range bounds instead of throwing.
+  ///
+  /// ```dart
+  /// 'abc'.substringSafe(1, 99); // 'bc'
+  /// ```
+  String substringSafe(int start, [int? end]) {
+    if (isEmpty) return this;
+    final from = start < 0 ? 0 : (start > length ? length : start);
+    final rawTo = end ?? length;
+    final to = rawTo > length ? length : (rawTo < from ? from : rawTo);
+    return substring(from, to);
+  }
+
+  // --- Encoding and parsing ---
+
+  /// UTF-8 Base64 encoding of this string.
+  String get toBase64 => base64Encode(utf8.encode(this));
+
+  /// Decodes Base64 (standard or URL-safe) back to a UTF-8 string,
+  /// returning `null` when the input is not valid Base64 text.
+  String? get fromBase64OrNull {
+    try {
+      final normalized = base64.normalize(
+        trim().replaceAll('-', '+').replaceAll('_', '/'),
+      );
+      return utf8.decode(base64Decode(normalized));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Lenient boolean parsing. Returns `null` when the value is not
+  /// recognizable as a boolean.
+  ///
+  /// Accepts `true/false`, `yes/no`, `y/n`, `on/off`, and `1/0`,
+  /// case-insensitively.
+  bool? get toBoolOrNull => switch (trim().toLowerCase()) {
+    'true' || 'yes' || 'y' || 'on' || '1' => true,
+    'false' || 'no' || 'n' || 'off' || '0' => false,
+    _ => null,
+  };
+
+  // --- Fuzzy matching ---
+
+  /// Levenshtein edit distance to [other].
+  ///
+  /// ```dart
+  /// 'kitten'.levenshteinDistance('sitting'); // 3
+  /// ```
+  int levenshteinDistance(String other) {
+    if (this == other) return 0;
+    if (isEmpty) return other.length;
+    if (other.isEmpty) return length;
+
+    var previous = List<int>.generate(other.length + 1, (i) => i);
+    var current = List<int>.filled(other.length + 1, 0);
+
+    for (var i = 0; i < length; i++) {
+      current[0] = i + 1;
+      for (var j = 0; j < other.length; j++) {
+        final substitutionCost = this[i] == other[j] ? 0 : 1;
+        final deletion = previous[j + 1] + 1;
+        final insertion = current[j] + 1;
+        final substitution = previous[j] + substitutionCost;
+        current[j + 1] =
+            deletion < insertion
+                ? (deletion < substitution ? deletion : substitution)
+                : (insertion < substitution ? insertion : substitution);
+      }
+      final swap = previous;
+      previous = current;
+      current = swap;
+    }
+    return previous[other.length];
+  }
+
+  /// Similarity to [other] in `[0, 1]`, derived from [levenshteinDistance].
+  ///
+  /// `1.0` means identical, `0.0` means nothing in common.
+  ///
+  /// ```dart
+  /// 'colour'.similarityTo('color'); // ~0.83
+  /// ```
+  double similarityTo(String other) {
+    if (this == other) return 1;
+    final longest = length > other.length ? length : other.length;
+    if (longest == 0) return 1;
+    return (longest - levenshteinDistance(other)) / longest;
   }
 }
 
