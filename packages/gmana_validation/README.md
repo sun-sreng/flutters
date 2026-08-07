@@ -17,8 +17,12 @@ import 'package:gmana_validation/gmana_validation.dart';
 - [Number](#number)
 - [URL](#url)
 - [Phone](#phone)
+- [Identifier](#identifier)
+- [Network](#network)
+- [Date](#date)
 - [Custom message resolvers](#custom-message-resolvers)
 - [Using with Flutter forms](#using-with-flutter-forms)
+
 
 ---
 
@@ -407,7 +411,50 @@ final validator = PhoneValidator(PhoneValidationConfig.e164());
 
 ---
 
+## Identifier
+
+Validates UUID, ULID, IMEI, EAN, Credit Card, MongoId, SemVer, or NanoId formats:
+
+```dart
+const uuidValidator = IdentifierValidator(
+  IdentifierValidationConfig(requiredType: IdentifierType.uuid),
+);
+
+final result = uuidValidator.validate('f47ac10b-58cc-4372-a567-0e02b2c3d479');
+```
+
+---
+
+## Network
+
+Validates IP addresses (IPv4, IPv6), CIDR blocks, MAC addresses, network Ports, Data URIs, or Magnet URIs:
+
+```dart
+const cidrValidator = NetworkValidator(
+  NetworkValidationConfig(requiredType: NetworkAddressType.cidr),
+);
+
+final result = cidrValidator.validate('192.168.1.0/24');
+```
+
+---
+
+## Date
+
+Validates ISO 8601 dates, 24-hour time format, past/future/today constraints, weekday/weekend restrictions, and date range bounds:
+
+```dart
+const pastDateValidator = DateValidator(
+  DateValidationConfig(mustBePast: true),
+);
+
+final result = pastDateValidator.validate('2000-01-01T00:00:00Z');
+```
+
+---
+
 ## Custom message resolvers
+
 
 Each domain ships a default resolver (`resolveEmailValidationIssue`, etc.) that returns English strings. Override per-issue for localization or custom copy.
 
