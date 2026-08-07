@@ -11,14 +11,17 @@ import 'package:gmana_functional/gmana_functional.dart';
 ## Table of contents
 
 - [Either](#either)
+- [Collections of Either](#collections-of-either)
+- [Async Either](#async-either)
 - [Option](#option)
+- [Collections of Option](#collections-of-option)
 - [State](#state)
 - [Try](#try)
 - [Reader](#reader)
 - [Result & type aliases](#result--type-aliases)
 - [Failure](#failure)
 - [Unit](#unit)
-- [UseCase & StreamUseCase](#usecase--streamusecase)
+- [UseCase, SyncUseCase & StreamUseCase](#usecase-syncusecase--streamusecase)
 - [NoParams](#noparams)
 - [Patterns & recipes](#patterns--recipes)
 
@@ -47,63 +50,21 @@ final safe = Either.tryCatch<String, int>(
 );
 ```
 
----
-
-## Option
-
-`Option<T>` represents an optional value that is either present (`Some<T>`) or absent (`None<T>`).
+Three more constructors cover the shapes that come up most often:
 
 ```dart
-final some = Option.fromNullable(42);     // Some(42)
-final none = Option<int>.fromNullable(null); // None
+// cond — branch on a boolean
+Either.cond(age >= 18, () => 'Too young', () => age);
 
-final val = some.fold(
-  () => 'empty',
-  (value) => 'Got $value',
-);
+// fromNullable — lift a nullable value, naming the reason it may be absent
+Either.fromNullable(map['id'], () => 'Missing id');
 
-final either = some.toEither(() => 'Missing value'); // Right(42)
-```
+// sequence — collapse a collection, short-circuiting on the first Left
+Either.sequence([Right(1), Right(2)]);           // Right([1, 2])
+Either.sequence([Right(1), Left('bad'), Right(3)]); // Left('bad')
 
----
-
-## State
-
-`State<S, A>` monad for stateful computations:
-
-```dart
-final increment = State.get<int>().flatMap(
-  (val) => State.set(val + 1).map((_) => 'Incremented from $val'),
-);
-
-final (message, newState) = increment.run(10); // ('Incremented from 10', 11)
-```
-
----
-
-## Try
-
-`Try<T>` monad for safe exception handling (`TrySuccess<T>` and `TryFailure<T>`):
-
-```dart
-final attempt = Try.of(() => int.parse('42'));
-
-if (attempt.isSuccess) {
-  print(attempt.getOrNull()); // 42
-}
-
-final either = attempt.toEither();
-```
-
----
-
-## Reader
-
-`Reader<R, A>` monad for dependency injection:
-
-```dart
-final getEndpoint = Reader.ask<Config>().map((config) => '${config.baseUrl}/api');
-final url = getEndpoint.run(Config('https://example.com'));
+// traverse — map each element through a fallible function, then sequence
+Either.traverse(['1', '2', 'x'], parseInt);      // Left('Not a number: x')
 ```
 
 ### Pattern matching — `fold`
@@ -201,6 +162,247 @@ Right<String, int>(42).swap()   // Left<int, String>(42)
 Left<String, int>('err').swap() // Right<int, String>('err')
 ```
 
+### Recovery
+
+Four ways to act on a `Left`, differing in what they may produce.
+
+```dart
+// recover — always succeed, deriving a value from the error
+loadSettings().recover((_) => Settings.defaults());   // Either<E, Settings>
+
+// orElse — try another Either of the same type
+fromCache(id).orElse((_) => fromDisk(id));
+
+// orElseWith — same, but the fallback may report a different error type
+fromCache(id).orElseWith((_) => fromNetwork(id));     // Either<HttpError, T>
+
+// flatMapLeft — map the error into another attempt (alias of orElseWith)
+result.flatMapLeft((e) => retryOnce(e));
+```
+
+`Right` passes through all four untouched, and the callback never runs.
+
+### Refinement — `filterOrElse`
+
+Demotes a `Right` whose value fails a test, naming the reason.
+
+```dart
+parseAge(input)
+    .filterOrElse((age) => age >= 0, (age) => 'Negative age: $age')
+    .filterOrElse((age) => age < 150, (age) => 'Implausible age: $age');
+```
+
+### Combining
+
+```dart
+// zip — pair two Rights into a record; the first Left wins
+final pair = name.zip(email);              // Either<E, (String, String)>
+
+// zipWith — combine through a function instead
+final user = name.zipWith(email, User.new);
+```
+
+Both short-circuit: if `name` is a `Left`, `email` is never inspected and the
+combiner never runs.
+
+### Conversion
+
+```dart
+result.getOrDefault(0)   // R — a constant fallback, no callback
+result.toOption()        // Option<R> — Some for Right, None for Left
+result.toList()          // List<R> — one element for Right, empty for Left
+```
+
+`toOption` discards the left value, so reach for it only once the error has
+been handled or logged.
+
+---
+
+## Collections of Either
+
+`IterableEitherX` operates on a whole collection at once.
+
+```dart
+final results = [Right(1), Left('bad id'), Right(3), Left('no access')];
+
+results.sequence()          // Left('bad id') — stops at the first failure
+results.rights              // [1, 3]
+results.lefts               // ['bad id', 'no access']
+results.allRight            // false
+results.anyLeft             // true
+```
+
+`sequence` is fail-fast; `partitionEithers` is the exhaustive counterpart,
+returning every failure alongside every success in one pass:
+
+```dart
+final (failures, values) = results.partitionEithers();
+// failures: ['bad id', 'no access']
+// values:   [1, 3]
+```
+
+Use `sequence` when one bad element invalidates the batch, and
+`partitionEithers` when you want to report all of them — a form with several
+invalid fields should show every error, not just the first.
+
+---
+
+## Async Either
+
+`FutureEitherX` puts the `Either` combinators directly on
+`Future<Either<L, R>>`, so an async pipeline reads top to bottom without
+`then` calls that unwrap and rewrap the value.
+
+```dart
+// Before
+final summary = await fetchUser(id)
+    .then((r) => r.flatMapAsync(fetchOrders))
+    .then((r) => r.map(summarise));
+
+// After
+final summary = await fetchUser(id)
+    .flatMap(fetchOrders)
+    .map(summarise);
+```
+
+The full set mirrors the synchronous API:
+
+```dart
+future.map(f)            // f may return R2 or Future<R2>
+future.mapLeft(f)
+future.flatMap(f)        // f returns Either or Future<Either>
+future.fold(ifLeft, ifRight)
+future.getOrElse((e) => fallback)
+future.getOrDefault(value)
+future.getOrNull()
+future.tap(onRight)      // observe without changing the value
+future.tapLeft(onLeft)
+future.orElseWith((e) => recoverAsync(e))
+await future.isRight()
+await future.isLeft()
+```
+
+These extensions chain lazily on the future; nothing runs until you `await`.
+
+---
+
+## Option
+
+`Option<T>` represents an optional value that is either present (`Some<T>`) or absent (`None<T>`).
+
+```dart
+final some = Option.fromNullable(42);     // Some(42)
+final none = Option<int>.fromNullable(null); // None
+
+final val = some.fold(
+  () => 'empty',
+  (value) => 'Got $value',
+);
+
+final either = some.toEither(() => 'Missing value'); // Right(42)
+```
+
+### Refinement
+
+```dart
+Some(4).filter((n) => n.isEven)     // Some(4)
+Some(3).filter((n) => n.isEven)     // None
+Some(3).filterNot((n) => n.isEven)  // Some(3)
+
+Some(4).isSomeAnd((n) => n.isEven)  // true
+None<int>().isSomeAnd((n) => true)  // false — the test never runs
+```
+
+### Fallback and side effects
+
+```dart
+// orElse — the alternative is only computed when this Option is None
+fromCache(id).orElse(() => fromDefaults(id));
+
+// tap / tapNone — observe a branch, returning the Option unchanged
+option
+    .tap((value) => logger.info('hit: $value'))
+    .tapNone(() => metrics.increment('cache.miss'));
+```
+
+### Combining and conversion
+
+```dart
+Some('a').zip(Some(1))                    // Some(('a', 1))
+Some('a').zip(None<int>())                // None
+Some(3).zipWith(Some(4), (a, b) => a * b) // Some(12)
+
+Some(5).toList()      // [5]
+None<int>().toList()  // []
+```
+
+> `Some` equality delegates to the inner value, so `Some([1, 2])` does **not**
+> equal another `Some([1, 2])` — two distinct lists are never `==`. Unwrap
+> before comparing collections.
+
+---
+
+## Collections of Option
+
+```dart
+const options = [Some(1), None<int>(), Some(3)];
+
+options.sequence()   // None — fail-fast, like Either.sequence
+options.values       // [1, 3] — the lenient counterpart
+options.firstSome    // Some(1)
+```
+
+`NullableOptionX` is the entry point from ordinary nullable Dart:
+
+```dart
+config['retries']
+    .toOption()
+    .map(int.parse)
+    .filter((n) => n > 0)
+    .getOrElse(() => 1);
+```
+
+---
+
+## State
+
+`State<S, A>` monad for stateful computations:
+
+```dart
+final increment = State.get<int>().flatMap(
+  (val) => State.set(val + 1).map((_) => 'Incremented from $val'),
+);
+
+final (message, newState) = increment.run(10); // ('Incremented from 10', 11)
+```
+
+---
+
+## Try
+
+`Try<T>` monad for safe exception handling (`TrySuccess<T>` and `TryFailure<T>`):
+
+```dart
+final attempt = Try.of(() => int.parse('42'));
+
+if (attempt.isSuccess) {
+  print(attempt.getOrNull()); // 42
+}
+
+final either = attempt.toEither();
+```
+
+---
+
+## Reader
+
+`Reader<R, A>` monad for dependency injection:
+
+```dart
+final getEndpoint = Reader.ask<Config>().map((config) => '${config.baseUrl}/api');
+final url = getEndpoint.run(Config('https://example.com'));
+```
+
 ---
 
 ## Result & type aliases
@@ -226,7 +428,7 @@ Future<Result<User>> fetchUser(String id) async {
     final data = await api.get('/users/$id');
     return Right(User.fromJson(data));
   } catch (e) {
-    return Left(Failure('Failed to load user', code: 'user.fetch_failed'));
+    return Left(Failure('Failed to load user', 'user.fetch_failed'));
   }
 }
 
@@ -274,11 +476,42 @@ result.fold(
 Failure('msg', 'code') == Failure('msg', 'code') // true
 ```
 
+### Wrapping a caught error
+
+`Failure.fromError` has the exact shape `Either.tryCatch` expects for its
+`onError` callback, so it can be passed as a tearoff:
+
+```dart
+final result = Either.tryCatch<Failure, Map<String, dynamic>>(
+  () => jsonDecode(raw),
+  Failure.fromError,
+);
+```
+
+The original error is kept under the `'error'` detail, and a stack trace under
+`'stackTrace'` when one is supplied.
+
+### Enriching a failure
+
+```dart
+failure.copyWith(code: 'validation.error')
+failure.withDetail('field', 'email')          // one entry
+failure.withDetails({'field': 'email', 'attempt': 2})  // merge; new keys win
+
+failure.detail<int>('attempt')     // 2
+failure.detail<String>('attempt')  // null — wrong type, not a throw
+failure.detail<int>('missing')     // null
+```
+
+All four return a new `Failure`; the original is untouched. Note that
+`copyWith(code: null)` *keeps* the existing code rather than clearing it —
+construct a new `Failure` when you need to drop one.
+
 ### Subclassing for domain errors
 
 ```dart
 class NetworkFailure extends Failure {
-  const NetworkFailure(super.message) : super('network.error');
+  const NetworkFailure(String message) : super(message, 'network.error');
 }
 
 class NotFoundFailure extends Failure {
@@ -287,6 +520,10 @@ class NotFoundFailure extends Failure {
       : super('$resource not found', '$resource.not_found');
 }
 ```
+
+`Failure`'s parameters are positional (`message`, `code`, `details`), so a
+subclass that wants to fix the `code` has to forward `message` explicitly —
+`super.message` cannot be combined with an explicit `super(...)` call.
 
 ---
 
@@ -320,9 +557,15 @@ unit.toString() // '()'
 
 ---
 
-## UseCase & StreamUseCase
+## UseCase, SyncUseCase & StreamUseCase
 
 Interfaces for application-layer business logic following clean architecture.
+
+| Interface       | Returns              | Use for                         |
+| --------------- | -------------------- | ------------------------------- |
+| `UseCase`       | `FutureResult<T>`    | anything touching I/O           |
+| `SyncUseCase`   | `Result<T>`          | pure rules — validation, policy |
+| `StreamUseCase` | `StreamResult<T>`    | values arriving over time       |
 
 ### `UseCase<SuccessType, Params>`
 
@@ -343,6 +586,29 @@ result.fold(
   (f) => handleError(f),
   (user) => render(user),
 );
+```
+
+### `SyncUseCase<SuccessType, Params>`
+
+For business rules that need no I/O, where a `Future` would only add ceremony
+at every call site.
+
+```dart
+class CheckWithdrawalUseCase implements SyncUseCase<Unit, Withdrawal> {
+  @override
+  Result<Unit> call(Withdrawal params) {
+    if (params.amount <= 0) {
+      return const Left(Failure('Amount must be positive.', 'amount.invalid'));
+    }
+    if (params.amount > params.balance) {
+      return const Left(Failure('Insufficient funds.', 'balance.insufficient'));
+    }
+    return const Right(unit);
+  }
+}
+
+// No await — composes straight into an async pipeline
+final result = checkWithdrawal(withdrawal).flatMap(submit);
 ```
 
 ### `StreamUseCase<SuccessType, Params>`
@@ -391,43 +657,47 @@ final result = await getCurrentUser(const NoParams());
 ### Chaining async operations
 
 ```dart
-FutureResult<OrderSummary> placeOrder(Cart cart) async {
+FutureResult<OrderSummary> placeOrder(Cart cart) {
   return Right<Failure, Cart>(cart)
       .flatMap(validateCart)           // sync validation first
-      .flatMapAsync(reserveInventory)  // then async
-      .then((r) => r.flatMapAsync(processPayment))
-      .then((r) => r.mapAsync(buildSummary));
+      .flatMapAsync(reserveInventory)  // returns a Future from here on
+      .flatMap(processPayment)         // FutureEitherX keeps the chain flat
+      .map(buildSummary);
 }
 ```
 
+Once any step returns a `Future`, `FutureEitherX` takes over and the rest of
+the chain reads the same as the synchronous part.
+
 ### Converting try/catch to Result
 
-```dart
-Result<T> tryResult<T>(T Function() action) {
-  try {
-    return Right(action());
-  } catch (e) {
-    return Left(Failure(e.toString()));
-  }
-}
+`Either.tryCatch` with `Failure.fromError` already covers this, so there is no
+need for a local helper:
 
-Future<Result<T>> tryResultAsync<T>(Future<T> Function() action) async {
-  try {
-    return Right(await action());
-  } catch (e) {
-    return Left(Failure(e.toString()));
-  }
-}
+```dart
+Result<T> tryResult<T>(T Function() action) =>
+    Either.tryCatch(action, Failure.fromError);
+
+FutureResult<T> tryResultAsync<T>(Future<T> Function() action) =>
+    Either.tryCatchAsync(action, Failure.fromError);
 ```
 
 ### Collecting multiple results
 
 ```dart
-// Fail fast on the first Left
-List<Either<String, int>> results = [Right(1), Right(2), Left('oops'), Right(4)];
+final results = <Either<String, int>>[Right(1), Right(2), Left('oops'), Right(4)];
 
-final firstFailure = results.firstWhere((r) => r.isLeft(), orElse: () => Right(0));
-final allValues    = results.whereType<Right<String, int>>().map((r) => r.value);
+// Fail fast — one bad element invalidates the batch
+results.sequence();          // Left('oops')
+
+// Exhaustive — report every failure, e.g. a form with several bad fields
+final (failures, values) = results.partitionEithers();
+// failures: ['oops']
+// values:   [1, 2, 4]
+
+// Or take one side only
+results.rights;              // [1, 2, 4]
+results.lefts;               // ['oops']
 ```
 
 ### Using with Riverpod / state management

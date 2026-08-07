@@ -1,6 +1,5 @@
 import 'use_case.dart';
 
-
 /// The `State<S, A>` monad represents a computation that passes a state `S` along with a result `A`.
 final class State<S, A> {
   /// The underlying function that runs the state computation given an initial state [S].

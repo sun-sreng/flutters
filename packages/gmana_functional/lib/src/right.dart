@@ -115,8 +115,6 @@ class Right<L, R> extends Either<L, R> {
     return value == otherVal;
   }
 
-
-
   @override
   int get hashCode => Object.hash(runtimeType, value);
 

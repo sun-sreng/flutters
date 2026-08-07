@@ -75,10 +75,14 @@ extension FutureEitherX<L, R> on Future<Either<L, R>> {
   }
 
   /// Whether this completed with a [Right].
-  Future<bool> get isRight async => (await this).isRight();
+  ///
+  /// A method rather than a getter, to mirror [Either.isRight].
+  Future<bool> isRight() async => (await this).isRight();
 
   /// Whether this completed with a [Left].
-  Future<bool> get isLeft async => (await this).isLeft();
+  ///
+  /// A method rather than a getter, to mirror [Either.isLeft].
+  Future<bool> isLeft() async => (await this).isLeft();
 }
 
 /// Batch operations over a collection of [Either] values.

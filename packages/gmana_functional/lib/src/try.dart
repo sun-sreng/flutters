@@ -24,21 +24,24 @@ sealed class Try<T> {
 
   /// Returns the value if successful, or `null` if failed.
   T? getOrNull() => switch (this) {
-        TrySuccess(:final value) => value,
-        TryFailure() => null,
-      };
+    TrySuccess(:final value) => value,
+    TryFailure() => null,
+  };
 
   /// Returns the value if successful, or [fallback] if failed.
   T getOrElse(T fallback) => switch (this) {
-        TrySuccess(:final value) => value,
-        TryFailure() => fallback,
-      };
+    TrySuccess(:final value) => value,
+    TryFailure() => fallback,
+  };
 
   /// Maps the value `T` to `R` if successful.
   Try<R> map<R>(R Function(T value) fn) {
     return switch (this) {
       TrySuccess(:final value) => Try.of(() => fn(value)),
-      TryFailure(:final error, :final stackTrace) => TryFailure(error, stackTrace),
+      TryFailure(:final error, :final stackTrace) => TryFailure(
+        error,
+        stackTrace,
+      ),
     };
   }
 
@@ -46,27 +49,30 @@ sealed class Try<T> {
   Try<R> flatMap<R>(Try<R> Function(T value) fn) {
     return switch (this) {
       TrySuccess(:final value) => () {
-          try {
-            return fn(value);
-          } catch (e, st) {
-            return TryFailure<R>(e, st);
-          }
-        }(),
-      TryFailure(:final error, :final stackTrace) => TryFailure<R>(error, stackTrace),
+        try {
+          return fn(value);
+        } catch (e, st) {
+          return TryFailure<R>(e, st);
+        }
+      }(),
+      TryFailure(:final error, :final stackTrace) => TryFailure<R>(
+        error,
+        stackTrace,
+      ),
     };
   }
 
   /// Converts this [Try] to an [Option].
   Option<T> toOption() => switch (this) {
-        TrySuccess(:final value) => Some(value),
-        TryFailure() => const None(),
-      };
+    TrySuccess(:final value) => Some(value),
+    TryFailure() => const None(),
+  };
 
   /// Converts this [Try] to an [Either].
   Either<Object, T> toEither() => switch (this) {
-        TrySuccess(:final value) => Right(value),
-        TryFailure(:final error) => Left(error),
-      };
+    TrySuccess(:final value) => Right(value),
+    TryFailure(:final error) => Left(error),
+  };
 }
 
 /// Successful outcome holding a value [T].
@@ -117,4 +123,3 @@ final class TryFailure<T> extends Try<T> {
   @override
   String toString() => 'Try.failure($error)';
 }
-

@@ -50,7 +50,8 @@
       "Bash(python -)",
       "Bash(sed -i 's/^version: 0\\\\.0\\\\.1$/version: 0.0.2/' pubspec.yaml)",
       "Bash(flutter pub *)",
-      "Read(//d/SSH/**)"
+      "Read(//d/SSH/**)",
+      "Bash(git log *)"
     ]
   }
 }

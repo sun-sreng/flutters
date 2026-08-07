@@ -34,7 +34,5 @@ void main() {
       expect(failure.toOption().isNone(), isTrue);
       expect(failure.toEither().isLeft(), isTrue);
     });
-
-
   });
 }

@@ -1,6 +1,6 @@
 name: gmana_functional
 description: Pure Dart functional programming primitives — Either<L,R>, Result, UseCase, Failure, and Unit.
-version: 0.0.1
+version: 0.0.2
 repository: https://github.com/sun-sreng/flutters/tree/main/packages/gmana_functional
 issue_tracker: https://github.com/sun-sreng/flutters/issues
 

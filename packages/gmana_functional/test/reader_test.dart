@@ -16,7 +16,10 @@ void main() {
 
       final modified = getUrl.local<String>(Config.new);
 
-      expect(modified.run('https://staging.example.com'), equals('https://staging.example.com/users'));
+      expect(
+        modified.run('https://staging.example.com'),
+        equals('https://staging.example.com/users'),
+      );
     });
   });
 }

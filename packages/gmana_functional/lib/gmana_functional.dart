@@ -13,5 +13,3 @@ export 'src/some.dart';
 export 'src/state.dart';
 export 'src/try.dart';
 export 'src/use_case.dart';
-
-
