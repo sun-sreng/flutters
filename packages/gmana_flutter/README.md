@@ -515,6 +515,47 @@ final isCompact = context.isMobile;
 final size = context.screenSize;
 ```
 
+## Layout & Responsive Widgets
+
+### GResponsiveBuilder
+
+```dart
+GResponsiveBuilder(
+  mobile: (context) => MobileLayout(),
+  tablet: (context) => TabletLayout(),
+  desktop: (context) => DesktopLayout(),
+)
+```
+
+### GGrid
+
+```dart
+GGrid(
+  maxItemWidth: 200,
+  spacing: GSpacing.md,
+  children: [Card1(), Card2(), Card3()],
+)
+```
+
+### GGap
+
+```dart
+Column(
+  children: [
+    WidgetA(),
+    GGap.vertical(GSpacing.md),
+    WidgetB(),
+  ],
+)
+```
+
+### GDivider
+
+```dart
+GDivider(label: 'OR')
+```
+
+
 ## Snackbars, Navigation, And Dialogs
 
 `ContextExt` gives short helpers for common app actions:

@@ -32,6 +32,35 @@ dependencies:
 
 Use the umbrella import when you want the curated public API:
 
+
+`gmana` is pure Dart, so it works in CLI tools, server apps, packages, and
+Flutter apps.
+
+For a function-by-function guide with examples, see [doc/api.md](doc/api.md).
+
+## Installation
+
+```bash
+dart pub add gmana
+```
+
+For Flutter projects:
+
+```bash
+flutter pub add gmana
+```
+
+Manual `pubspec.yaml` setup:
+
+```yaml
+dependencies:
+  gmana: ^0.2.0
+```
+
+## Imports
+
+Use the umbrella import when you want the curated public API:
+
 ```dart
 import 'package:gmana/gmana.dart';
 ```
@@ -43,24 +72,20 @@ import 'package:gmana/extensions.dart';
 import 'package:gmana/functional.dart';
 import 'package:gmana/utilities.dart';
 import 'package:gmana/validation.dart';
+import 'package:gmana/value_objects.dart';
 ```
 
 ## What You Can Use
 
 | Area                           | APIs                                                                        |
 | ------------------------------ | --------------------------------------------------------------------------- |
-| Functional results             | `Either`, `Result`, `FutureResult`, `Failure`, `Unit`, `UseCase`            |
+| Functional results             | `Either`, `Result`, `FutureResult`, `Failure`, `Unit`, `UseCase`, `State`, `Try`, `Reader` |
+| Value objects                  | `Email`, `Password`, `IdentifierValue`, `NetworkAddressValue`, `DateRangeValue`, `TextValue`, `NumberValue`, `Money` |
 | String extensions              | casing, parsing, blank handling, slugs, duration parsing, truncation        |
 | Number and duration extensions | `5.seconds`, `2.hours`, rounding, normalization, time formatting            |
 | Iterable and list extensions   | `sum`, `average`, `median`, `chunked`, `groupBy`, `flatten`, `whereNotNull` |
 | Stream extensions              | `debounce`, `throttle`, `scan`, `pairwise`, `whereNotNull`, `onErrorReturn` |
 | Validation                     | email, password, number, text validators, and predicate functions           |
-| Utilities                      | `IdGenerator`, `Debouncer`, `Throttler`                                     |
-
-## Functional Results
-
-Use `Either<L, R>` when a function can fail and you want explicit success and
-failure handling instead of exceptions.
 
 ```dart
 import 'package:gmana/functional.dart';

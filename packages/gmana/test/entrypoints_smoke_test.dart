@@ -3,6 +3,7 @@ import 'package:gmana/functional.dart' as functional;
 import 'package:gmana/gmana.dart' as gmana;
 import 'package:gmana/utilities.dart' as utilities;
 import 'package:gmana/validation.dart' as validation;
+import 'package:gmana/value_objects.dart' as value_objects;
 import 'package:test/test.dart';
 
 void main() {
@@ -15,6 +16,10 @@ void main() {
     final emailResult = const validation.EmailValidator().validate(
       ' User@Example.com ',
     );
+    final emailVo = value_objects.Email('user@example.com');
+    final gmanaEmailVo = gmana.Email('user@example.com');
+
+
     final debouncer = utilities.Debouncer(milliseconds: 1);
     final throttler = utilities.Throttler(milliseconds: 1);
 
@@ -32,8 +37,12 @@ void main() {
     );
     expect(gmana.StringValidation('user@example.com').isValidEmail, isTrue);
     expect(emailResult.getRight(), 'user@example.com');
+    expect(emailVo.value, 'user@example.com');
+    expect(gmanaEmailVo.value, 'user@example.com');
+
 
     debouncer.dispose();
     throttler.dispose();
   });
 }
+
