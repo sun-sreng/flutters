@@ -91,6 +91,79 @@ class GTextField extends StatelessWidget {
     return GTextField(key: key, config: configure?.call(config) ?? config);
   }
 
+  /// Multi-line text area.
+  ///
+  /// Every other preset pins `maxLines: 1`, so notes and descriptions had to
+  /// be assembled by hand. This one defaults to a growing box and an Enter key
+  /// that inserts a newline instead of moving to the next field.
+  factory GTextField.multiline({
+    Key? key,
+    String? name,
+    TextEditingController? controller,
+    String? initialValue,
+    String label = 'Notes',
+    String? hint,
+    TextInputAction textInputAction = TextInputAction.newline,
+    List<TextInputFormatter>? inputFormatters,
+    GFormValueParser? valueParser,
+    TextValidationConfig validationConfig = const TextValidationConfig(),
+    ValidationMessageResolver<TextValidationIssue> validationMessageResolver =
+        resolveTextValidationIssue,
+    GFormValidator? validator,
+    GTextFieldConfig Function(GTextFieldConfig config)? configure,
+    void Function(String)? onChanged,
+    void Function(String)? onFieldSubmitted,
+    void Function(String?)? onSaved,
+    IconData? prefixIcon,
+    FocusNode? focusNode,
+    AutovalidateMode? autovalidateMode,
+    bool? enabled,
+    bool readOnly = false,
+    int minLines = 3,
+    int maxLines = 6,
+    int? maxLength,
+    TextCapitalization textCapitalization = TextCapitalization.sentences,
+    TextAlign textAlign = TextAlign.start,
+    TextStyle? style,
+    Iterable<String>? autofillHints,
+    InputDecoration? decoration,
+  }) {
+    final config = GTextFieldConfig(
+      controller: controller,
+      name: name,
+      initialValue: initialValue,
+      label: label,
+      hint: hint,
+      keyboardType: TextInputType.multiline,
+      textInputAction: textInputAction,
+      inputFormatters: inputFormatters,
+      valueParser: valueParser,
+      validator: asFormValidator(
+        validate: TextValidator(validationConfig).validate,
+        resolve: validationMessageResolver,
+        validatorOverride: validator,
+      ),
+      onChanged: onChanged,
+      onFieldSubmitted: onFieldSubmitted,
+      onSaved: onSaved,
+      prefixIcon: prefixIcon,
+      focusNode: focusNode,
+      autovalidateMode: autovalidateMode,
+      enabled: enabled,
+      readOnly: readOnly,
+      minLines: minLines,
+      maxLines: maxLines,
+      maxLength: maxLength,
+      textCapitalization: textCapitalization,
+      textAlign: textAlign,
+      style: style,
+      autofillHints: autofillHints,
+      decoration: decoration,
+    );
+
+    return GTextField(key: key, config: configure?.call(config) ?? config);
+  }
+
   factory GTextField.email({
     Key? key,
     String? name,

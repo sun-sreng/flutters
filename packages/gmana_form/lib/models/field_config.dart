@@ -48,6 +48,9 @@ final class GTextFieldConfig {
   final TextStyle? style;
   final Iterable<String>? autofillHints;
   final InputDecoration? decoration;
+  final bool autofocus;
+  final VoidCallback? onTap;
+  final VoidCallback? onEditingComplete;
 
   const GTextFieldConfig({
     this.name,
@@ -83,6 +86,9 @@ final class GTextFieldConfig {
     this.style,
     this.autofillHints,
     this.decoration,
+    this.autofocus = false,
+    this.onTap,
+    this.onEditingComplete,
   }) : assert(
          controller == null || initialValue == null,
          'Provide either controller or initialValue, not both.',
@@ -122,6 +128,9 @@ final class GTextFieldConfig {
     TextStyle? style,
     Iterable<String>? autofillHints,
     InputDecoration? decoration,
+    bool? autofocus,
+    VoidCallback? onTap,
+    VoidCallback? onEditingComplete,
   }) {
     return GTextFieldConfig(
       name: name ?? this.name,
@@ -157,6 +166,9 @@ final class GTextFieldConfig {
       style: style ?? this.style,
       autofillHints: autofillHints ?? this.autofillHints,
       decoration: decoration ?? this.decoration,
+      autofocus: autofocus ?? this.autofocus,
+      onTap: onTap ?? this.onTap,
+      onEditingComplete: onEditingComplete ?? this.onEditingComplete,
     );
   }
 }

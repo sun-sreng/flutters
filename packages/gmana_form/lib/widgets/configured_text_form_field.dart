@@ -30,17 +30,28 @@ class GConfiguredTextFormField extends StatelessWidget {
             ));
 
     if (config.name != null && controller != null) {
-      formController!.bindTextController(
-        config.name!,
-        controller,
-        parser: config.valueParser,
-      );
+      formController!
+        ..bindTextController(
+          config.name!,
+          controller,
+          parser: config.valueParser,
+        )
+        ..bindTextValidator(config.name!, config.validator);
     }
+
+    // A named field without its own node borrows the controller's, so
+    // GFormController.requestFocus and focusFirstInvalid can reach it.
+    final focusNode =
+        config.focusNode ??
+        (config.name == null ? null : formController!.focusNode(config.name!));
 
     return TextFormField(
       controller: controller,
       initialValue: controller == null ? config.initialValue : null,
-      focusNode: config.focusNode,
+      focusNode: focusNode,
+      autofocus: config.autofocus,
+      onTap: config.onTap,
+      onEditingComplete: config.onEditingComplete,
       obscureText: config.obscureText,
       obscuringCharacter: config.obscuringCharacter,
       autocorrect: config.autocorrect,

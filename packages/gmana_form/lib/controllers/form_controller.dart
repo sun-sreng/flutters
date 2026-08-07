@@ -79,6 +79,10 @@ final class GFormController extends ChangeNotifier {
   final Map<String, VoidCallback> _textControllerListeners = {};
   final Map<String, GFormValueParser?> _textValueParsers = {};
   final Set<String> _ownedTextControllerNames = {};
+  final Map<String, String? Function(String?)> _textValidators = {};
+  final Map<String, FocusNode> _focusNodes = {};
+  final Map<String, String> _pristineText = {};
+  final Map<String, Object?> _initialFieldValues = {};
   bool _submitting = false;
 
   /// Creates a controller. Pass an existing [key] to reuse a form key, or
@@ -133,6 +137,7 @@ final class GFormController extends ChangeNotifier {
     }
 
     _fields[field.name] = field;
+    _initialFieldValues[field.name] = field.value;
     field.addListener(notifyListeners);
     return field;
   }
@@ -200,9 +205,147 @@ final class GFormController extends ChangeNotifier {
     _boundTextControllers[name] = controller;
     _textValueParsers[name] = parser;
     _textControllerListeners[name] = listener;
+    _pristineText.putIfAbsent(name, () => controller.text);
     controller.addListener(listener);
     fieldController.setValue(parser?.call(controller.text) ?? controller.text);
   }
+
+  /// Records the validator a named text field is using.
+  ///
+  /// Field widgets call this so the controller can answer [errorOf] and
+  /// [focusFirstInvalid] without going through the widget tree. Passing
+  /// `null` clears any previously bound validator.
+  void bindTextValidator(String name, String? Function(String?)? validator) {
+    if (validator == null) {
+      _textValidators.remove(name);
+      return;
+    }
+    _textValidators[name] = validator;
+  }
+
+  // --- Focus ---
+
+  /// Returns the [FocusNode] registered under [name], creating one if needed.
+  ///
+  /// Nodes are disposed automatically when this controller is disposed.
+  /// Named fields pick their node up from here, so [requestFocus] and
+  /// [focusFirstInvalid] work without threading nodes through your widgets.
+  FocusNode focusNode(String name) =>
+      _focusNodes.putIfAbsent(name, () => FocusNode(debugLabel: name));
+
+  /// Moves focus to the field registered under [name].
+  void requestFocus(String name) => focusNode(name).requestFocus();
+
+  /// Drops focus from every field this controller owns.
+  void unfocus() {
+    for (final node in _focusNodes.values) {
+      if (node.hasFocus) node.unfocus();
+    }
+  }
+
+  /// Focuses the first field that currently fails validation.
+  ///
+  /// Returns `false` when everything is valid, or when no invalid field has a
+  /// focus node. Fields are visited in registration order, which for fields
+  /// built inside a [Form] is top-to-bottom.
+  bool focusFirstInvalid() {
+    for (final name in _fieldOrder) {
+      if (errorOf(name) == null) continue;
+      final node = _focusNodes[name];
+      if (node != null) {
+        node.requestFocus();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // --- Errors ---
+
+  /// The current validation message for [name], or `null` when it passes.
+  ///
+  /// Unlike [validate] this does not paint error text into the UI, so it is
+  /// safe to call from a `build` method or a listener.
+  String? errorOf(String name) {
+    final textValidator = _textValidators[name];
+    if (textValidator != null) {
+      final message = textValidator(_boundTextControllers[name]?.text);
+      if (message != null) return message;
+    }
+
+    return _fields[name]?._validate(values());
+  }
+
+  /// Every current validation message, keyed by field name.
+  Map<String, String> errors() {
+    final result = <String, String>{};
+    for (final name in _fieldOrder) {
+      final message = errorOf(name);
+      if (message != null) result[name] = message;
+    }
+    return result;
+  }
+
+  /// Whether any field currently fails validation.
+  bool get hasErrors => errors().isNotEmpty;
+
+  // --- Text mutation ---
+
+  /// Replaces the text of the field registered under [name] and parks the
+  /// caret at the end.
+  ///
+  /// Assigning `controller.text` directly resets the caret to offset 0, which
+  /// makes the field jump if the user keeps typing.
+  void setText(String name, String value) {
+    final controller = _boundTextControllers[name] ?? textController(name);
+    controller.value = TextEditingValue(
+      text: value,
+      selection: TextSelection.collapsed(offset: value.length),
+    );
+  }
+
+  /// Applies [values] to the matching named fields.
+  void patchText(Map<String, String> values) {
+    values.forEach(setText);
+  }
+
+  /// Clears the text of the field registered under [name].
+  void clearText(String name) => setText(name, '');
+
+  // --- Dirty tracking ---
+
+  /// Treats the current text values as the new baseline for [isDirty].
+  ///
+  /// Call this after a successful save so the form stops reporting unsaved
+  /// changes.
+  void markPristine() {
+    _pristineText
+      ..clear()
+      ..addAll(textValues());
+  }
+
+  /// Whether [name] differs from the value it was last marked pristine at.
+  bool isFieldDirty(String name) {
+    final pristine = _pristineText[name];
+    if (pristine == null) return false;
+    return _boundTextControllers[name]?.text != pristine;
+  }
+
+  /// Whether any named text field differs from its pristine value.
+  ///
+  /// Useful for "discard unsaved changes?" prompts.
+  bool get isDirty => _boundTextControllers.keys.any(isFieldDirty);
+
+  /// Only the text values that changed since the last pristine mark.
+  Map<String, String> changedTextValues() => {
+    for (final entry in _boundTextControllers.entries)
+      if (isFieldDirty(entry.key)) entry.key: entry.value.text,
+  };
+
+  Iterable<String> get _fieldOrder => {
+    ..._fields.keys,
+    ..._textValidators.keys,
+  };
 
   /// Runs every registered validator. Returns `true` if the form is valid.
   bool validate() {
@@ -218,6 +361,9 @@ final class GFormController extends ChangeNotifier {
   void save() => state?.save();
 
   /// Resets the form and clears every registered text controller.
+  ///
+  /// Non-text fields go back to the value they were registered with rather
+  /// than to `null`, matching what Flutter's own [FormState.reset] does.
   void reset() {
     state?.reset();
     for (final controller in _textControllers.values) {
@@ -227,7 +373,7 @@ final class GFormController extends ChangeNotifier {
       if (_boundTextControllers.containsKey(entry.key)) {
         continue;
       }
-      entry.value.setValue(null);
+      entry.value.setValue(_initialFieldValues[entry.key]);
     }
   }
 
@@ -307,12 +453,19 @@ final class GFormController extends ChangeNotifier {
       field.removeListener(notifyListeners);
       field.dispose();
     }
+    for (final node in _focusNodes.values) {
+      node.dispose();
+    }
     _fields.clear();
     _boundTextControllers.clear();
     _textControllerListeners.clear();
     _textValueParsers.clear();
     _ownedTextControllerNames.clear();
     _textControllers.clear();
+    _textValidators.clear();
+    _focusNodes.clear();
+    _pristineText.clear();
+    _initialFieldValues.clear();
     super.dispose();
   }
 

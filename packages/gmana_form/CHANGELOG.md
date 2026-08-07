@@ -25,6 +25,31 @@
 - Removed unused `InputFormatterProvider`.
 - Simplified field widgets to use `StatelessWidget` directly instead of a package-specific base class.
 - Added common `TextFormField` passthrough options to the named field widgets.
+- Added `GValidators` (`required`, `minLength`, `maxLength`, `pattern`,
+  `matches`, `oneOf`, `numeric`, `range`, `satisfies`) and `combineValidators`
+  for layering rules. Only `required` objects to an empty value, so the rest
+  compose onto optional fields.
+- Added non-text field widgets that participate in `Form.validate` and, when
+  named, report into `GFormController.values`: `GCheckboxField`,
+  `GSwitchField`, `GDropdownField<T>` (plus `GDropdownField.fromValues`), and
+  `GDateField` (with `formatIsoDate` as the dependency-free default format).
+- Added `GTextField.multiline` for notes and descriptions — every other preset
+  pins `maxLines: 1`.
+- Added focus management to `GFormController`: `focusNode`, `requestFocus`,
+  `unfocus`, and `focusFirstInvalid`. Named text fields now adopt the
+  controller's focus node automatically, and the nodes are disposed with the
+  controller.
+- Added `GFormController.errorOf`, `errors`, and `hasErrors`, which report
+  validation messages without painting error text into the UI. Named text
+  fields register their validator via the new `bindTextValidator`.
+- Added `GFormController.setText`, `patchText`, and `clearText`. `setText`
+  parks the caret at the end, which assigning `controller.text` does not.
+- Added dirty tracking to `GFormController`: `isDirty`, `isFieldDirty`,
+  `changedTextValues`, and `markPristine`.
+- Added `autofocus`, `onTap`, and `onEditingComplete` to `GTextFieldConfig`.
+- Changed: `GFormController.reset` now restores non-text fields to the value
+  they were registered with instead of setting them to `null`, matching
+  `FormState.reset`. Text fields still clear.
 
 ## 0.0.1
 

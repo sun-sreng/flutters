@@ -9,9 +9,11 @@ import 'package:gmana_form/gmana_form.dart';
 ## What You Get
 
 - One generic text-field surface: `GTextField` + `GTextFieldConfig`.
-- Friendly presets for common inputs: text, email, number, password, confirm password, URL, and phone.
+- Friendly presets for common inputs: text, multiline, email, number, password, confirm password, URL, and phone.
+- Non-text fields that validate too: checkbox, switch, dropdown, and date.
 - Named fields expose both text values and typed values.
-- Typed validation powered by `gmana_validation`.
+- Typed validation powered by `gmana_validation`, plus composable `GValidators`.
+- Focus management, dirty tracking, and UI-free error reporting on the controller.
 - A loading submit button that accepts either plain text or any custom child.
 
 ## Quick Start
@@ -121,6 +123,52 @@ await form.submitValues((values) async {
 });
 ```
 
+### Reading and writing text
+
+```dart
+form.setText('email', 'ada@example.com');   // caret parks at the end
+form.patchText({'first': 'Ada', 'last': 'Lovelace'});
+form.clearText('note');
+```
+
+### Errors without repainting
+
+`validate()` paints error text into the UI. When you only want to *know* —
+from a `build` method, a listener, or a "can I enable submit?" check — use:
+
+```dart
+form.errorOf('email');   // String? for one field
+form.errors();           // {'email': 'Enter a valid email', ...}
+form.hasErrors;          // bool
+```
+
+Named `GTextField`s register their validator automatically, so this works
+without wiring anything up.
+
+### Focus
+
+Named fields adopt the controller's focus node, and the nodes are disposed
+along with the controller:
+
+```dart
+form.requestFocus('password');
+form.unfocus();
+
+// Jump the user to the first problem instead of leaving them to hunt for it
+if (!form.validate()) form.focusFirstInvalid();
+```
+
+### Unsaved changes
+
+```dart
+form.isDirty;                 // any field differs from its baseline
+form.isFieldDirty('email');
+form.changedTextValues();     // only what moved
+
+await repository.save(form.textValues());
+form.markPristine();          // new baseline after a successful save
+```
+
 ## Fields
 
 Use `GTextFieldConfig` for anything custom:
@@ -180,9 +228,132 @@ GTextField.confirmPassword(
 )
 ```
 
+Multi-line text has its own preset, because every other one pins
+`maxLines: 1`:
+
+```dart
+GTextField.multiline(
+  name: 'bio',
+  label: 'About you',
+  minLines: 3,
+  maxLines: 8,
+)
+```
+
 The preset widgets `GEmailField`, `GNumberField`, `GPasswordField`, and
 `GConfirmPasswordField` are still exported for discoverability. They delegate to
 the same `GTextField` preset constructors.
+
+## Non-text Fields
+
+These are real `FormField`s, so `Form.validate()` covers them, and a `name`
+puts their typed value into `form.values()`.
+
+### Checkbox and switch
+
+A bare `Checkbox` cannot express "you must accept the terms" — these can:
+
+```dart
+GCheckboxField(
+  name: 'terms',
+  title: const Text('I accept the terms'),
+  validator: (value) => value == true ? null : 'You must accept the terms',
+)
+
+GSwitchField(
+  name: 'notifications',
+  initialValue: true,
+  title: const Text('Email notifications'),
+)
+
+final accepted = form.value<bool>('terms');
+```
+
+### Dropdown
+
+```dart
+GDropdownField<String>(
+  name: 'country',
+  label: 'Country',
+  items: const [
+    DropdownMenuItem(value: 'kh', child: Text('Cambodia')),
+    DropdownMenuItem(value: 'us', child: Text('United States')),
+  ],
+  validator: (value) => value == null ? 'Pick a country' : null,
+)
+```
+
+Skip the `DropdownMenuItem` boilerplate when you already have the values:
+
+```dart
+GDropdownField.fromValues<Role>(
+  name: 'role',
+  values: Role.values,
+  labelBuilder: (role) => role.name,
+)
+```
+
+### Date
+
+The value is a real `DateTime`, so validation and `form.values()` work on
+dates rather than on strings. Formatting defaults to `yyyy-MM-dd` so the
+package stays free of an `intl` dependency:
+
+```dart
+GDateField(
+  name: 'birthday',
+  label: 'Date of birth',
+  firstDate: DateTime(1900),
+  lastDate: DateTime.now(),
+  clearable: true,
+  format: (date) => '${date.day}/${date.month}/${date.year}',
+  validator: (value) => value == null ? 'Pick a date' : null,
+)
+
+final birthday = form.value<DateTime>('birthday');
+```
+
+## Validators
+
+`GValidators` covers the rules that do not warrant a typed validator, and
+`combineValidators` layers them:
+
+```dart
+GTextField.text(
+  name: 'username',
+  validator: combineValidators([
+    GValidators.required(),
+    GValidators.minLength(3),
+    GValidators.maxLength(20),
+    GValidators.pattern(RegExp(r'^[a-z0-9_]+$'),
+        message: 'Lowercase letters, digits, and underscores only'),
+  ]),
+)
+```
+
+Available rules:
+
+| Validator | Fails when |
+| --- | --- |
+| `required()` | null, empty, or whitespace-only |
+| `minLength(n)` / `maxLength(n)` | outside the length bounds |
+| `pattern(regExp, message:)` | the expression does not match |
+| `matches(() => other.text)` | the value differs from the callback's result |
+| `oneOf([...])` | not in the allowed set |
+| `numeric()` | does not parse as a number |
+| `range(min:, max:)` | numeric value outside the bounds |
+| `satisfies(predicate, message:)` | the predicate returns false |
+
+**Only `required` objects to an empty value.** Every other rule lets an empty
+input through, so they layer onto optional fields without silently making them
+mandatory. Put `required()` first when you do want it enforced.
+
+`matches` takes a callback rather than a value so it reads the *current*
+contents of the other field:
+
+```dart
+GValidators.matches(() => passwordController.text)
+```
 
 ## Advanced Customization
 
