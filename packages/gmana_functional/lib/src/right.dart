@@ -100,11 +100,22 @@ class Right<L, R> extends Either<L, R> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        other.runtimeType == runtimeType &&
-            other is Right &&
-            other.value == value;
+    if (identical(this, other)) return true;
+    if (other is! Right<L, R>) return false;
+    final otherVal = other.value;
+    if (value is List && otherVal is List) {
+      final listA = value as List;
+      final listB = otherVal as List;
+      if (listA.length != listB.length) return false;
+      for (var i = 0; i < listA.length; i++) {
+        if (listA[i] != listB[i]) return false;
+      }
+      return true;
+    }
+    return value == otherVal;
   }
+
+
 
   @override
   int get hashCode => Object.hash(runtimeType, value);

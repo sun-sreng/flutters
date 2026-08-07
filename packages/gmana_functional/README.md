@@ -12,12 +12,16 @@ import 'package:gmana_functional/gmana_functional.dart';
 
 - [Either](#either)
 - [Option](#option)
+- [State](#state)
+- [Try](#try)
+- [Reader](#reader)
 - [Result & type aliases](#result--type-aliases)
 - [Failure](#failure)
 - [Unit](#unit)
 - [UseCase & StreamUseCase](#usecase--streamusecase)
 - [NoParams](#noparams)
 - [Patterns & recipes](#patterns--recipes)
+
 
 ---
 
@@ -59,6 +63,47 @@ final val = some.fold(
 );
 
 final either = some.toEither(() => 'Missing value'); // Right(42)
+```
+
+---
+
+## State
+
+`State<S, A>` monad for stateful computations:
+
+```dart
+final increment = State.get<int>().flatMap(
+  (val) => State.set(val + 1).map((_) => 'Incremented from $val'),
+);
+
+final (message, newState) = increment.run(10); // ('Incremented from 10', 11)
+```
+
+---
+
+## Try
+
+`Try<T>` monad for safe exception handling (`TrySuccess<T>` and `TryFailure<T>`):
+
+```dart
+final attempt = Try.of(() => int.parse('42'));
+
+if (attempt.isSuccess) {
+  print(attempt.getOrNull()); // 42
+}
+
+final either = attempt.toEither();
+```
+
+---
+
+## Reader
+
+`Reader<R, A>` monad for dependency injection:
+
+```dart
+final getEndpoint = Reader.ask<Config>().map((config) => '${config.baseUrl}/api');
+final url = getEndpoint.run(Config('https://example.com'));
 ```
 
 ### Pattern matching — `fold`
