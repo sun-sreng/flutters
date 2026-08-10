@@ -1,6 +1,8 @@
 # gmana_utils
 
-Pure Dart utilities for debouncing, throttling, and ID generation.
+Pure Dart runtime utilities and composable extensions for fallible async
+workflows, retries, caching, batching, rate limiting, timing, lazy values, and
+ID generation.
 
 ```dart
 import 'package:gmana_utils/gmana_utils.dart';
@@ -17,8 +19,9 @@ import 'package:gmana_utils/gmana_utils.dart';
 - [Lazy & ResettableLazy](#lazy--resettablelazy)
 - [RateLimiter](#ratelimiter)
 - [Retry](#retry)
-- [tryOrNull & tryOrDefault](#tryornull--tryodefault)
+- [tryOrNull & tryOrDefault](#tryornull--tryordefault)
 - [Result](#result)
+- [Result extensions](#result-extensions)
 - [CircuitBreaker](#circuitbreaker)
 - [AsyncCache & AsyncMemoizer](#asynccache--asyncmemoizer)
 - [Batcher](#batcher)
@@ -33,14 +36,14 @@ Delays execution until a quiet period has elapsed. Each call to `run()` resets t
 Use this for search fields, resize handlers, or any input that fires faster than you want to react.
 
 ```dart
-final debouncer = Debouncer();          // 150 ms default
-final debouncer = Debouncer(300);       // custom window
+final defaultDebouncer = Debouncer();                   // 150 ms default
+final customDebouncer = Debouncer(milliseconds: 300);  // custom window
 ```
 
 ### Quick start
 
 ```dart
-final _search = Debouncer(400);
+final _search = Debouncer(milliseconds: 400);
 
 void onSearchChanged(String query) {
   _search.run(() => performSearch(query));
@@ -53,7 +56,7 @@ void onSearchChanged(String query) {
 
 ```dart
 class _SearchState extends State<SearchPage> {
-  final _debouncer = Debouncer(400);
+  final _debouncer = Debouncer(milliseconds: 400);
 
   @override
   void dispose() {
@@ -89,14 +92,14 @@ Executes immediately on the first call, then **suppresses** subsequent calls for
 Use this for scroll listeners, button guards, or rapid-fire events where you want the first action to go through but subsequent duplicates dropped.
 
 ```dart
-final throttler = Throttler();          // 300 ms default
-final throttler = Throttler(500);       // custom window
+final defaultThrottler = Throttler();                   // 300 ms default
+final customThrottler = Throttler(milliseconds: 500);  // custom window
 ```
 
 ### Quick start
 
 ```dart
-final _save = Throttler(1000);
+final _save = Throttler(milliseconds: 1000);
 
 void onSavePressed() {
   _save.run(() => saveDocument()); // fires immediately; next call within 1 s is ignored
@@ -106,7 +109,7 @@ void onSavePressed() {
 ### Scroll listener example
 
 ```dart
-final _onScroll = Throttler(100);
+final _onScroll = Throttler(milliseconds: 100);
 
 NotificationListener<ScrollNotification>(
   onNotification: (notification) {
@@ -307,7 +310,8 @@ final id = IdGenerator.uuidV4Like();
 
 For a cryptographically random UUID-shaped token use `SecureIdGenerator.uuidV4Like()`.
 
-> **Deprecated**: `uuidV1()` has been removed — use `uuidV4Like()` instead.
+> **Deprecated**: `uuidV1()` remains as a compatibility alias for
+> `uuidV4Like()`. New code should call `uuidV4Like()` directly.
 
 ---
 
@@ -540,7 +544,8 @@ if (limiter.canRun) {
 
 ## Retry
 
-Asynchronous operation retry with exponential backoff and jitter predicate:
+Retries synchronous or asynchronous operations with optional exponential
+backoff and an error predicate:
 
 ```dart
 final data = await retry(
@@ -551,6 +556,38 @@ final data = await retry(
   retryIf: (e) => e is SocketException,
 );
 ```
+
+### Callback extension
+
+`GmanaRetryFunctionX.withRetry()` offers the same behavior on a zero-argument
+callback. The callback—not an already-running `Future`—is the receiver because
+every attempt must start the operation again.
+
+```dart
+Future<void> main() async {
+  var attempts = 0;
+
+  Future<String> loadConfig() async {
+    attempts++;
+    if (attempts < 3) throw StateError('Config is not ready');
+    return 'production';
+  }
+
+  final config = await loadConfig.withRetry(
+    maxAttempts: 3,
+    delay: const Duration(milliseconds: 100),
+    useExponentialBackoff: false,
+    retryIf: (error) => error is StateError,
+  );
+
+  print(config); // production
+}
+```
+
+`maxAttempts` includes the initial call. Synchronous throws and failed futures
+are both eligible for retry. The final error—or an error rejected by
+`retryIf`—is rethrown. Delays occur only between attempts; with exponential
+backoff enabled, the configured delay doubles after each failed attempt.
 
 ---
 
@@ -583,6 +620,136 @@ switch (result) {
 final value = result.getOrElse(0);
 final mapped = result.map((v) => v * 2);
 ```
+
+---
+
+## Result extensions
+
+The named extensions `GmanaResultX`, `GmanaFutureToResultX`,
+`GmanaFutureResultX`, and `GmanaIterableResultX` add lazy recovery,
+branch-specific observation, asynchronous composition, Future conversion, and
+collection aggregation. They preserve the original error type unless an API
+explicitly maps it.
+
+### Recover and observe a Result
+
+```dart
+final parsed = Result<int, String>.failure('missing port');
+
+// The fallback runs only for Failure.
+final port = parsed.getOrElseGet((error) => 8080);
+
+final recovered = parsed
+    .recover((error) => 8080)
+    .inspectSuccess((value) => print('Using port $value'));
+
+final recoveredFromBackup = parsed.recoverWith(
+  (error) => Result<int, String>.success(8081),
+);
+
+parsed.inspectFailure((error) => print('Could not parse: $error'));
+```
+
+| Method                   | Semantics                                                                 |
+| ------------------------ | ------------------------------------------------------------------------- |
+| `getOrElseGet(fallback)` | Returns the success value; lazily calls `fallback` only for a failure     |
+| `recover(transform)`     | Converts a failure into a success; leaves an existing success unchanged  |
+| `recoverWith(transform)` | Replaces a failure with another `Result`; leaves a success unchanged      |
+| `inspectSuccess(action)` | Runs `action` only for a success and returns the same result unchanged    |
+| `inspectFailure(action)` | Runs `action` only for a failure and returns the same result unchanged    |
+| `mapAsync(transform)`    | Maps a success with a sync or async callback and forwards a failure       |
+| `flatMapAsync(transform)` | Chains a success into a sync or async `Result` and forwards a failure   |
+
+Callbacks passed to these methods are not an error-catching boundary. If a
+recovery or inspection callback throws, that exception reaches the caller. If
+an async transform throws or returns a failed Future, the returned Future
+completes with that error rather than producing a `Failure`.
+
+```dart
+final normalized = await Result<String, String>.success(' 8080 ')
+    .mapAsync((text) async => text.trim());
+
+final validated = await normalized.flatMapAsync<int>((text) async {
+  final value = int.tryParse(text);
+  return value == null
+      ? Result<int, String>.failure('Not an integer')
+      : Result<int, String>.success(value);
+});
+```
+
+### Convert and compose Futures
+
+Use `toResult()` to preserve a Future error as `Object`, or `toResultWith()` to
+map the error and its original stack trace into a domain error.
+
+```dart
+Future<int> readCount() async => throw const FormatException('Bad count');
+
+final untyped = await readCount().toResult();
+// Result<int, Object> containing the FormatException as a Failure.
+
+final typed = await readCount().toResultWith<String>(
+  (error, stackTrace) => 'Unable to read count: $error',
+);
+// Result<int, String> containing the mapped message as a Failure.
+```
+
+`toResult()` and `toResultWith()` observe an already-created Future. If an
+operation can throw before returning its Future, invoke it inside
+`Result.captureAsync(() => operation())` instead. If the `toResultWith()` error
+mapper throws, its new error completes the returned Future.
+
+A `Future<Result<T, E>>` can be transformed without repeatedly awaiting and
+unwrapping it:
+
+```dart
+final message = await Future.value(Result<int, String>.success(21))
+    .mapResult((value) async => value * 2)
+    .flatMapResult<String>(
+      (value) => value == 42
+          ? Result<String, String>.success('answer')
+          : Result<String, String>.failure('unexpected value'),
+    )
+    .whenResult(
+      onSuccess: (value) => 'Success: $value',
+      onFailure: (error) => 'Failure: $error',
+    );
+```
+
+| Receiver               | Method                           | Semantics                                                        |
+| ---------------------- | -------------------------------- | ---------------------------------------------------------------- |
+| `Future<T>`            | `toResult()`                     | Converts completion or error to `Result<T, Object>`              |
+| `Future<T>`            | `toResultWith(mapError)`         | Maps an error and stack trace to `Result<T, E>`                   |
+| `Future<Result<T, E>>` | `mapResult(transform)`           | Maps a successful value with a sync or async callback            |
+| `Future<Result<T, E>>` | `flatMapResult(transform)`       | Chains a successful value into another sync or async `Result`    |
+| `Future<Result<T, E>>` | `whenResult(onSuccess, onFailure)` | Resolves the Future and invokes exactly one branch callback     |
+
+A failed source Future or an error thrown by a `mapResult`, `flatMapResult`, or
+`whenResult` callback remains a Future error. Use `toResult()` or
+`toResultWith()` when that error should become a `Failure`.
+
+### Aggregate Result collections
+
+```dart
+final results = <Result<int, String>>[
+  Result<int, String>.success(10),
+  Result<int, String>.failure('bad row'),
+  Result<int, String>.success(30),
+];
+
+final sequenced = results.sequenceResults();
+// Result.failure('bad row')
+
+final partition = results.partitionResults();
+print(partition.successes); // [10, 30]
+print(partition.failures);  // [bad row]
+```
+
+`sequenceResults()` consumes values in iteration order and stops at the first
+failure. An empty iterable produces `Result.success(<T>[])`.
+`partitionResults()` consumes the entire iterable once and returns new,
+growable `successes` and `failures` lists that preserve the relative order of
+each branch. For an empty iterable, both lists are empty.
 
 ---
 
@@ -640,5 +807,3 @@ final batcher = Batcher<int, String>(
 // Individual calls receive matching results when the batch processes
 final itemFuture = batcher.add(42);
 ```
-
-
