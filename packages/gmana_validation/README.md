@@ -1,6 +1,8 @@
 # gmana_validation
 
-Pure Dart typed validators for email, password, text, and number inputs. Returns `Either`-based results — no exceptions thrown, no stringly-typed errors.
+Pure Dart typed validators for common text, numeric, contact, identifier,
+network, and date/time inputs. Returns `Either`-based results — no exceptions
+thrown for ordinary validation failures, and no stringly-typed errors.
 
 ```dart
 import 'package:gmana_validation/gmana_validation.dart';
@@ -11,6 +13,7 @@ import 'package:gmana_validation/gmana_validation.dart';
 ## Table of contents
 
 - [Core types](#core-types)
+- [Validation extensions](#validation-extensions)
 - [Email](#email)
 - [Password](#password)
 - [Text](#text)
@@ -32,8 +35,10 @@ Every validator returns a `ValidationResult`, which is an alias for `Either<TIss
 
 ```dart
 // Aliases
-typedef ValidationResult<TIssue, TValue> = Either<TIssue, TValue>;
-typedef ValidationMessageResolver<TIssue> = String Function(TIssue issue);
+typedef ValidationResult<TIssue extends ValidationIssue, TValue> =
+    Either<TIssue, TValue>;
+typedef ValidationMessageResolver<TIssue extends ValidationIssue> =
+    String Function(TIssue issue);
 ```
 
 - **`Right(value)`** — validation passed; contains the normalized/parsed value.
@@ -63,6 +68,78 @@ result.fold(
   (email) => saveEmail(email),
 );
 ```
+
+---
+
+## Validation extensions
+
+The named extensions `GmanaValidationStringX` and
+`GmanaValidationResultX` provide concise entry points without changing the
+validators or their typed `Either` results.
+
+### Validate strings directly
+
+Every shortcut accepts its validator's config as an optional positional
+argument. Omitting it uses the same default config as constructing the
+corresponding validator directly.
+
+```dart
+final email = ' User@Example.COM '.validateEmail();
+// Right('user@example.com')
+
+final port = '443'.validateNetwork(
+  const NetworkValidationConfig(requiredType: NetworkAddressType.port),
+);
+
+final uuid = input.validateIdentifier(
+  const IdentifierValidationConfig(requiredType: IdentifierType.uuid),
+);
+```
+
+| Method                         | Success value | Behavior |
+| ------------------------------ | ------------- | -------- |
+| `validateEmail([config])`      | `String`      | Returns the trimmed, lowercased email |
+| `validatePassword([config])`   | `String`      | Returns the original password |
+| `validateText([config])`       | `String`      | Applies the configured trimming and text rules |
+| `validateNumber([config])`     | `num`         | Parses and returns the numeric value |
+| `validateUrl([config])`        | `Uri`         | Parses and returns the URL |
+| `validatePhone([config])`      | `String`      | Returns the normalized phone number |
+| `validateIdentifier([config])` | `String`      | Applies the selected `IdentifierType` |
+| `validateNetwork([config])`    | `String`      | Applies the selected `NetworkAddressType` |
+| `validateDate([config])`       | `DateTime?`   | Parses a date, or returns `null` for a valid empty/time-only input |
+
+These methods delegate to the existing validators, preserving their
+normalization, validation order, and domain-specific issue types. The default
+`IdentifierType.any` and `NetworkAddressType.any` configurations only require
+a non-empty input; select a concrete type when a particular format must be
+checked.
+
+### Inspect validation results
+
+```dart
+final result = ''.validateEmail();
+
+print(result.isValid);     // false
+print(result.isInvalid);   // true
+print(result.issueOrNull?.code); // 'email.empty'
+print(result.valueOrNull);       // null
+print(result.messageOrNull(resolveEmailValidationIssue));
+// 'Please enter an email address'
+```
+
+| Member                    | Semantics |
+| ------------------------- | --------- |
+| `isValid`                 | `true` for `Right`, including `Right(null)` |
+| `isInvalid`               | `true` for `Left` |
+| `issueOrNull`             | Returns the typed issue for `Left`; otherwise `null` |
+| `valueOrNull`             | Returns the success value for `Right`; otherwise `null` |
+| `messageOrNull(resolver)` | Lazily resolves the issue for `Left`; otherwise returns `null` |
+
+The inspection members do not alter the result. A successful nullable value,
+such as an allowed empty date or a time-only validation, makes `valueOrNull`
+indistinguishable from an invalid result; use `isValid` or `isInvalid` when
+that distinction matters. `messageOrNull` calls its resolver only for an
+invalid result, and an exception thrown by the resolver reaches the caller.
 
 ---
 
@@ -166,10 +243,13 @@ PasswordValidationConfig(
   rejectRepeatedCharacters: true,
   rejectSequentialPatterns: true,
   minSequentialRun: 5,                          // e.g. 'abcde' fails
-  commonPasswords: {'hunter2', 'letmein123'},   // extend the block list
-  commonPrefixes: ['password', 'qwerty'],
+  commonPasswords: {'hunter2', 'letmein123'},   // replace the exact block list
+  commonPrefixes: ['password', 'qwerty'],       // replace the prefix block list
 )
 ```
+
+Supplying `commonPasswords` or `commonPrefixes` replaces that built-in list;
+include any defaults you still want to reject.
 
 | Parameter                  | Type   | Default |
 | -------------------------- | ------ | ------- |

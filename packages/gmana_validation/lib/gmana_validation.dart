@@ -1,8 +1,8 @@
-/// Pure Dart typed validators with Either-based results.
+/// Pure Dart typed validators and validation-focused extensions.
 ///
-/// Provides configurable validators for email, password, text, number,
-/// URL, and phone inputs, each returning sealed issue types for exhaustive
-/// error handling.
+/// Provides configurable validators for common text, numeric, contact,
+/// identifier, network, and date/time inputs. Every validator returns an
+/// Either-based result with sealed issue types for exhaustive error handling.
 library;
 
 // Core types
@@ -18,6 +18,10 @@ export 'src/email/email_disposable.dart' show kDefaultDisposableDomains;
 export 'src/email/email_validation_config.dart';
 export 'src/email/email_validation_issue.dart';
 export 'src/email/email_validator.dart';
+
+// Extensions
+export 'src/extensions/string_validation_extensions.dart';
+export 'src/extensions/validation_result_extensions.dart';
 
 // Identifier
 export 'src/identifier/identifier_validation_config.dart';
@@ -50,4 +54,3 @@ export 'src/text/text_validator.dart';
 export 'src/url/url_validation_config.dart';
 export 'src/url/url_validation_issue.dart';
 export 'src/url/url_validator.dart';
-

@@ -1,5 +1,5 @@
 name: gmana_validation
-description: Pure Dart typed validators for email, password, text, and number inputs using Either-based results.
+description: Pure Dart typed validators and extensions for common input, identifier, network, and date formats.
 version: 0.0.1
 repository: https://github.com/sun-sreng/flutters/tree/main/packages/gmana_validation
 issue_tracker: https://github.com/sun-sreng/flutters/issues
@@ -8,6 +8,7 @@ topics:
   - validation
   - either
   - form
+  - extensions
 
 environment:
   sdk: ^3.7.2
