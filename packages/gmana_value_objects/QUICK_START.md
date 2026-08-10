@@ -94,4 +94,4 @@ vo.Either<MyFailure, vo.Email> parseEmail(String input) {
 }
 ```
 
-See [README.md](README.md) and the [doc/](doc) folder for the full API.
+See the canonical [README.md](README.md) for the full public API.

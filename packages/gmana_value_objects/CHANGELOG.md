@@ -1,5 +1,26 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Added `GmanaValueObjectResultX` for inspecting `Either`-based validation
+  results with `isValid`, `isInvalid`, `errorOrNull`, `valueOrNull`, and
+  localized `messageOrNull` helpers.
+- Added `sumOrNull` and `sumByCurrency` to `MoneyIterableExtension` for empty
+  and mixed-currency collection workflows.
+- Added `GmanaDateRangeX` with inclusive `overlaps`, `containsRange`,
+  `intersection`, and `span` operations.
+- Added copy-style update extensions `GmanaPhoneValidationConfigX`,
+  `GmanaUrlValidationConfigX`, `GmanaIdentifierValidationConfigX`, and
+  `GmanaNetworkValidationConfigX`, including explicit clearing of nullable
+  selector fields.
+
+### Documentation
+
+- Consolidated public API guidance in the README, added a table of contents,
+  and documented every supported value-object domain.
+
 ## 0.1.0 - 2026-06-16
 
 Major redesign around an "always valid" value-object model. This release

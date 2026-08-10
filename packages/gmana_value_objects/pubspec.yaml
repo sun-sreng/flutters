@@ -1,5 +1,5 @@
 name: gmana_value_objects
-description: Production-ready value objects with configurable validation for Email, Password, Text, Number, and Money
+description: Pure-Dart domain value objects for contact, text, numeric, money, identifier, network, URL, and date-range data.
 version: 0.1.0
 repository: https://github.com/sun-sreng/flutters/tree/main/packages/gmana_value_objects
 homepage: https://github.com/sun-sreng/flutters/tree/main/packages/gmana_value_objects

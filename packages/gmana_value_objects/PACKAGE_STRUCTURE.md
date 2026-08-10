@@ -1,13 +1,17 @@
 # gmana_value_objects — Package Structure
 
-Production-ready, framework-agnostic value objects for Email, Password, Text,
-Number, and Money, with configurable validation and sealed error hierarchies.
+Production-ready, framework-agnostic value objects for common contact, text,
+numeric, money, identifier, network, URL, and date-range data.
+
+The [README](README.md) is the canonical public API guide. This file describes
+the package's internal layout at a high level.
 
 - Pure Dart — works in CLI apps, Dart servers, and Flutter.
 - Value objects are **always valid by construction**.
 - `Either`-based smart constructors (`tryParse`) for untrusted input; throwing
   constructors for trusted literals.
-- Structural equality (`==` / `hashCode`) on every value object and config.
+- Structural equality (`==` / `hashCode`) on every value object and most
+  configs. Identifier and network configs currently retain identity equality.
 
 ## File structure
 
@@ -31,6 +35,12 @@ gmana_value_objects/
 │       │   ├── money_errors.dart
 │       │   ├── money_validation_config.dart
 │       │   └── money_validator.dart              # Either<MoneyError, Money>
+│       ├── date/                                  # DateRange + validator/value object
+│       ├── identifier/                            # identifier errors/config/validator/value
+│       ├── network/                               # network errors/config/validator/value
+│       ├── phone/                                 # phone errors/config/validator/value
+│       ├── url/                                   # URL errors/config/validator/value
+│       ├── extensions/                            # Result, config, and range helpers
 │       └── presentation/
 │           └── validation_error_messages.dart    # Default English messages + i18n hook
 ├── example/main.dart
@@ -45,10 +55,10 @@ gmana_value_objects/
 
 | Layer        | Responsibility                                                      |
 | ------------ | ------------------------------------------------------------------- |
-| Validator    | Pure function: input → `Either<Error, primitive>`. No object state. |
+| Validator    | Pure function: input → `Either<Error, validated value>`.           |
 | Value object | Always-valid wrapper built from a validated primitive.              |
 | Errors       | Sealed hierarchy per type, for exhaustive `switch` handling.        |
-| Config       | Immutable, value-equal rules with named presets.                    |
+| Config       | Copy-style rules with named presets; most are value-equal.          |
 | Presentation | Maps `ValidationError` → display strings (override for i18n).       |
 
 ## Usage patterns
@@ -97,6 +107,11 @@ final total = Money.fromDecimalString('19.99', Currency.usd) * 2;
   decimal-place limits; presets (age, rating, percentage, price, etc.).
 - **Money** — exact integer minor units + `Currency`, same-currency arithmetic,
   half-up rounding, lossless allocation, deterministic formatting.
+- **URL and phone** — parsed URLs and normalized phone values with configurable
+  scheme, host, prefix, and digit rules.
+- **Identifier and network** — typed identifier, IP/CIDR, MAC-address, and port
+  validation with explicit format selection.
+- **Date range** — validated, UTC-normalized ordered date ranges.
 
 ## Testing
 

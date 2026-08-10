@@ -1,7 +1,8 @@
-/// A package to handle domain value objects like Email, Password, Text, Number, Money, URL, and Phone.
+/// Pure-Dart value objects for common text, numeric, contact, identifier,
+/// network, money, and date-range domains.
 ///
-/// It provides core abstractions for value objects as well as
-/// concrete implementations for common use cases.
+/// Includes configurable validation, typed failures, presentation messages,
+/// and extensions for inspecting and composing validated values.
 library;
 
 export 'package:gmana_functional/gmana_functional.dart'
@@ -23,6 +24,11 @@ export 'src/email/email.dart';
 export 'src/email/email_errors.dart';
 export 'src/email/email_validation_config.dart';
 export 'src/email/email_validator.dart';
+
+// Extensions
+export 'src/extensions/date_range_extensions.dart';
+export 'src/extensions/validation_config_extensions.dart';
+export 'src/extensions/value_object_result_extensions.dart';
 
 // Identifier
 export 'src/identifier/identifier_errors.dart';
@@ -75,4 +81,3 @@ export 'src/url/url_validator.dart';
 
 // Presentation
 export 'src/presentation/validation_error_messages.dart';
-

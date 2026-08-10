@@ -330,4 +330,37 @@ extension MoneyIterableExtension on Iterable<Money> {
 
     return total;
   }
+
+  /// Sums the collection, or returns `null` when it is empty.
+  ///
+  /// Unlike [sum], this does not require a currency solely for the empty case.
+  /// Throws an [ArgumentError] when the collection mixes currencies.
+  Money? sumOrNull() {
+    final iterator = this.iterator;
+    if (!iterator.moveNext()) {
+      return null;
+    }
+
+    var total = iterator.current;
+    while (iterator.moveNext()) {
+      total += iterator.current;
+    }
+    return total;
+  }
+
+  /// Sums amounts independently by currency.
+  ///
+  /// Returns a fresh, insertion-ordered map whose keys follow the order in
+  /// which currencies first appear. An empty collection returns an empty map.
+  Map<Currency, Money> sumByCurrency() {
+    final totals = <Currency, Money>{};
+    for (final money in this) {
+      totals.update(
+        money.currency,
+        (total) => total + money,
+        ifAbsent: () => money,
+      );
+    }
+    return totals;
+  }
 }

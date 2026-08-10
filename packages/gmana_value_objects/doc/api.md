@@ -1,5 +1,8 @@
 # gmana_value_objects API Guide
 
+> The package [README](../README.md) is the canonical and complete public API
+> guide. This focused guide is retained for existing links.
+
 Import the package:
 
 ```dart
@@ -33,7 +36,7 @@ print(email.value);
 | `isSensitive`                                      | `true` for sensitive values (for example `Password`), which mask `toString`. |
 | `==` / `hashCode`                                  | Structural equality by concrete type and `value`.                            |
 | `ValueObjectException`                             | Thrown by throwing constructors; wraps the `ValidationError`.                |
-| `ValidationError.code`                             | Stable machine-readable error code.                                          |
+| `ValidationError.code`                             | Machine-readable code; override it when obfuscation-stable output is needed. |
 | `DefaultValidationErrorMessages.getMessage(error)` | Convert known errors to English display messages.                            |
 | Re-exported `Either`, `Left`, `Right`              | Compose value-object validation with `gmana_functional` APIs.                |
 
