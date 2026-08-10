@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 
 import '../painters/wave_spinner_painter.dart';
 
+import '../theme/g_spinner_theme.dart';
+
 /// A circular spinner with an optional animated wave fill.
 class GWaveSpinner extends StatefulWidget {
   /// Active arc color.
@@ -34,6 +36,12 @@ class GWaveSpinner extends StatefulWidget {
   /// use it as-is and will not call `repeat()`, `stop()`, or `dispose()` on it.
   final AnimationController? controller;
 
+  /// Screen-reader label announced while the spinner runs.
+  ///
+  /// Falls back to [GSpinnerTheme.semanticsLabel]. When neither is set the
+  /// spinner contributes no semantics node.
+  final String? semanticsLabel;
+
   /// Creates a circular wave spinner.
   const GWaveSpinner({
     super.key,
@@ -45,6 +53,7 @@ class GWaveSpinner extends StatefulWidget {
     this.curve = Curves.decelerate,
     this.child,
     this.controller,
+    this.semanticsLabel,
   }) : assert(size > 0, 'size must be greater than zero.');
 
   @override
@@ -102,7 +111,13 @@ class _GWaveSpinnerState extends State<GWaveSpinner>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => wrapSpinnerSemantics(
+    context: context,
+    semanticsLabel: widget.semanticsLabel,
+    child: _buildSpinner(context),
+  );
+
+  Widget _buildSpinner(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final size = Size.square(

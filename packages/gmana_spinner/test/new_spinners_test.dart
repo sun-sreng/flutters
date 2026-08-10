@@ -27,10 +27,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: GChasingDotsSpinner(
-              color: Colors.red,
-              size: 50,
-            ),
+            body: GChasingDotsSpinner(color: Colors.red, size: 50),
           ),
         ),
       );
@@ -44,10 +41,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: GFadingCubeSpinner(
-              color: Colors.green,
-              size: 40,
-            ),
+            body: GFadingCubeSpinner(color: Colors.green, size: 40),
           ),
         ),
       );

@@ -6,7 +6,15 @@ Flutter loading spinner widgets for the Gmana ecosystem.
 import 'package:gmana_spinner/gmana_spinner.dart';
 ```
 
-`gmana_flutter` re-exports all widgets for compatibility — existing code needs no changes.
+---
+
+## Table of contents
+
+- [Widgets at a glance](#widgets-at-a-glance)
+- [Accessibility](#accessibility)
+- [GSpinnerTheme](#gspinnertheme)
+- [GSpinnerOverlay](#gspinneroverlay)
+- [External AnimationController](#external-animationcontroller)
 
 ---
 
@@ -27,7 +35,106 @@ import 'package:gmana_spinner/gmana_spinner.dart';
 | `GRippleSpinner`      | Expanding concentric ripples    | no               |
 | `GOrbitSpinner`       | Satellite dots around a core    | no               |
 | `GWaveSpinner`        | Circular arc + wave fill        | **yes**          |
+| `GSpinnerOverlay`     | Scrim + spinner over content    | no               |
 
+Every one of them also accepts `semanticsLabel`.
+
+---
+
+## Accessibility
+
+A spinner with no label is invisible to a screen reader — the user gets no
+signal that anything is happening. Give one either per widget or once for the
+whole app:
+
+```dart
+// Per call site
+GDotSpinner(semanticsLabel: 'Loading results')
+
+// Or once, from your localizations
+GSpinnerTheme(semanticsLabel: AppLocalizations.of(context).loading)
+```
+
+When a label resolves, the spinner becomes a labelled live region so the
+announcement fires as soon as it appears. When none resolves the spinner adds
+no semantics node at all, matching a bare `CircularProgressIndicator`.
+
+There is no built-in default label on purpose: it is user-facing text, and a
+package cannot know your app's language.
+
+---
+
+## GSpinnerTheme
+
+A `ThemeExtension` holding the defaults every spinner falls back to.
+
+```dart
+MaterialApp(
+  theme: ThemeData(
+    extensions: const [
+      GSpinnerTheme(
+        color: Colors.teal,
+        secondaryColor: Colors.tealAccent,
+        semanticsLabel: 'Loading',
+      ),
+    ],
+  ),
+)
+```
+
+Each value resolves in the same order:
+
+1. the argument passed to the widget,
+2. `GSpinnerTheme`,
+3. the widget's own default.
+
+So installing the extension never changes a call site that was already
+explicit. It is also the way to move `GCircularSpinner` and `GLinearSpinner`
+off their legacy purple — the other eleven spinners default to
+`ColorScheme.primary` instead.
+
+| Field            | Applies to                                        |
+| ---------------- | ------------------------------------------------- |
+| `color`          | every spinner                                      |
+| `secondaryColor` | `GRingSpinner`, `GDualRingSpinner`, `GOrbitSpinner` |
+| `semanticsLabel` | every spinner, and `GSpinnerOverlay`               |
+
+---
+
+## GSpinnerOverlay
+
+Covers content with a scrim and a centered spinner while a save or fetch runs.
+
+```dart
+GSpinnerOverlay(
+  isLoading: _saving,
+  semanticsLabel: 'Saving',
+  message: const Text('Saving your changes'),
+  child: MyForm(),
+)
+```
+
+It handles the three things that are easy to get wrong separately:
+
+- the child stays laid out, so nothing reflows when loading ends;
+- pointer input is genuinely blocked, so a button behind the scrim cannot fire
+  a second submission;
+- the blocked controls are hidden from assistive technology while the overlay
+  announces itself.
+
+| Parameter          | Type       | Default                  |
+| ------------------ | ---------- | ------------------------ |
+| `isLoading`        | `bool`     | **required**             |
+| `child`            | `Widget`   | **required**             |
+| `spinner`          | `Widget?`  | `GCircularSpinner()`     |
+| `barrierColor`     | `Color?`   | theme scrim at 46%       |
+| `blockInteraction` | `bool`     | `true`                   |
+| `message`          | `Widget?`  | `null`                   |
+| `semanticsLabel`   | `String?`  | `GSpinnerTheme` value    |
+| `fadeDuration`     | `Duration` | `150 ms`                 |
+
+Set `blockInteraction: false` only when the content behind must stay
+interactive — a visible-but-clickable overlay invites double submissions.
 
 ---
 
@@ -49,11 +156,12 @@ GCircularSpinner(
 )
 ```
 
-| Parameter     | Type                 | Default                    |
-| ------------- | -------------------- | -------------------------- |
-| `color`       | `Color`              | `Colors.purple`            |
-| `strokeWidth` | `double`             | `4.0`                      |
-| `padding`     | `EdgeInsetsGeometry` | `EdgeInsets.only(top: 10)` |
+| Parameter        | Type                 | Default                       |
+| ---------------- | -------------------- | ----------------------------- |
+| `color`          | `Color?`             | `GSpinnerTheme`, else purple  |
+| `strokeWidth`    | `double`             | `4.0`                         |
+| `padding`        | `EdgeInsetsGeometry` | `EdgeInsets.only(top: 10)`    |
+| `semanticsLabel` | `String?`            | `GSpinnerTheme` value         |
 
 ---
 
@@ -73,11 +181,12 @@ GLinearSpinner(
 )
 ```
 
-| Parameter   | Type                 | Default                       |
-| ----------- | -------------------- | ----------------------------- |
-| `color`     | `Color`              | `Colors.purple`               |
-| `minHeight` | `double`             | `4.0`                         |
-| `padding`   | `EdgeInsetsGeometry` | `EdgeInsets.only(bottom: 10)` |
+| Parameter        | Type                 | Default                       |
+| ---------------- | -------------------- | ----------------------------- |
+| `color`          | `Color?`             | `GSpinnerTheme`, else purple  |
+| `minHeight`      | `double`             | `4.0`                         |
+| `padding`        | `EdgeInsetsGeometry` | `EdgeInsets.only(bottom: 10)` |
+| `semanticsLabel` | `String?`            | `GSpinnerTheme` value         |
 
 ---
 
@@ -101,7 +210,7 @@ const GDotSpinner(
 ```
 
 ```dart
-// Custom dot shape via itemBuilder (mutually exclusive with color)
+// Custom dot shape via itemBuilder (takes precedence over color)
 GDotSpinner(
   size: 40,
   dotCount: 3,
@@ -131,8 +240,10 @@ GDotSpinner(
 | `duration`    | `Duration`              | `1200 ms`     |
 | `itemBuilder` | `IndexedWidgetBuilder?` | `null`        |
 | `controller`  | `AnimationController?`  | `null`        |
+| `semanticsLabel` | `String?`            | `GSpinnerTheme` value |
 
-> `itemBuilder` and `color` are mutually exclusive — providing both throws an assertion error.
+> When `itemBuilder` is given it builds every dot, and `color` goes unused.
+> Passing both is allowed and does not throw — the builder simply wins.
 
 ---
 
@@ -170,6 +281,7 @@ GWaveDotSpinner(
 | `dotCount`   | `int`                  | `5`           |
 | `duration`   | `Duration`             | `1600 ms`     |
 | `controller` | `AnimationController?` | `null`        |
+| `semanticsLabel` | `String?`          | `GSpinnerTheme` value |
 
 ---
 
@@ -193,7 +305,7 @@ GBarWaveSpinner(
 ```
 
 ```dart
-// Custom bar widget (mutually exclusive with color)
+// Custom bar widget (takes precedence over color)
 GBarWaveSpinner(
   size: 48,
   itemCount: 5,
@@ -216,6 +328,7 @@ GBarWaveSpinner(
 | `duration`    | `Duration`              | `1200 ms`     |
 | `itemBuilder` | `IndexedWidgetBuilder?` | `null`        |
 | `controller`  | `AnimationController?`  | `null`        |
+| `semanticsLabel` | `String?`            | `GSpinnerTheme` value |
 
 ### `GBarWaveSpinnerType`
 
@@ -285,6 +398,7 @@ GWaveSpinner(
 | `curve`      | `Curve`                | `Curves.decelerate` |
 | `child`      | `Widget?`              | `null`              |
 | `controller` | `AnimationController?` | `null`              |
+| `semanticsLabel` | `String?`          | `GSpinnerTheme` value |
 
 ---
 

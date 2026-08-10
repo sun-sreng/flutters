@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../theme/g_spinner_theme.dart';
+
 /// A 2x2 grid of fading and scaling cubes loading spinner widget.
 class GFadingCubeSpinner extends StatefulWidget {
   /// Cube color. Defaults to active theme primary color.
@@ -16,6 +18,12 @@ class GFadingCubeSpinner extends StatefulWidget {
   /// Optional external animation controller.
   final AnimationController? controller;
 
+  /// Screen-reader label announced while the spinner runs.
+  ///
+  /// Falls back to [GSpinnerTheme.semanticsLabel]. When neither is set the
+  /// spinner contributes no semantics node.
+  final String? semanticsLabel;
+
   /// Creates a 2x2 fading cube spinner.
   const GFadingCubeSpinner({
     super.key,
@@ -23,6 +31,7 @@ class GFadingCubeSpinner extends StatefulWidget {
     this.size = 40.0,
     this.duration = const Duration(milliseconds: 1200),
     this.controller,
+    this.semanticsLabel,
   }) : assert(size > 0, 'size must be greater than zero.');
 
   @override
@@ -45,10 +54,7 @@ class _GFadingCubeSpinnerState extends State<GFadingCubeSpinner>
       _controller = widget.controller!;
       _ownsController = false;
     } else {
-      _controller = AnimationController(
-        vsync: this,
-        duration: widget.duration,
-      );
+      _controller = AnimationController(vsync: this, duration: widget.duration);
       _ownsController = true;
       unawaited(_controller.repeat());
     }
@@ -92,11 +98,22 @@ class _GFadingCubeSpinnerState extends State<GFadingCubeSpinner>
   }
 
   @override
-  Widget build(BuildContext context) {
-    final cubeColor = widget.color ?? Theme.of(context).colorScheme.primary;
+  Widget build(BuildContext context) => wrapSpinnerSemantics(
+    context: context,
+    semanticsLabel: widget.semanticsLabel,
+    child: _buildSpinner(context),
+  );
+
+  Widget _buildSpinner(BuildContext context) {
+    final cubeColor = GSpinnerTheme.resolveColor(context, widget.color);
     final cubeSize = widget.size * 0.42;
 
-    const delays = [0.0, 0.25, 0.75, 0.5]; // Top-Left, Top-Right, Bottom-Left, Bottom-Right
+    const delays = [
+      0.0,
+      0.25,
+      0.75,
+      0.5,
+    ]; // Top-Left, Top-Right, Bottom-Left, Bottom-Right
 
     return Center(
       child: SizedBox(
@@ -111,15 +128,31 @@ class _GFadingCubeSpinnerState extends State<GFadingCubeSpinner>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildCube(cubeSize, cubeColor, _getCubeOpacity(_controller.value, delays[0])),
-                    _buildCube(cubeSize, cubeColor, _getCubeOpacity(_controller.value, delays[1])),
+                    _buildCube(
+                      cubeSize,
+                      cubeColor,
+                      _getCubeOpacity(_controller.value, delays[0]),
+                    ),
+                    _buildCube(
+                      cubeSize,
+                      cubeColor,
+                      _getCubeOpacity(_controller.value, delays[1]),
+                    ),
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildCube(cubeSize, cubeColor, _getCubeOpacity(_controller.value, delays[2])),
-                    _buildCube(cubeSize, cubeColor, _getCubeOpacity(_controller.value, delays[3])),
+                    _buildCube(
+                      cubeSize,
+                      cubeColor,
+                      _getCubeOpacity(_controller.value, delays[2]),
+                    ),
+                    _buildCube(
+                      cubeSize,
+                      cubeColor,
+                      _getCubeOpacity(_controller.value, delays[3]),
+                    ),
                   ],
                 ),
               ],

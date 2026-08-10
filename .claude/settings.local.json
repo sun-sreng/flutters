@@ -56,7 +56,8 @@
       "Bash(grep -rhoE \"^ [a-zA-Z<>,\\\\[\\\\] ?]+ \\(get \\)?[a-zA-Z0-9_]+\\\\s*[\\({=]\" packages/gmana_extensions/lib/string_ext.dart packages/gmana_extensions/lib/string_date_ext.dart packages/gmana_extensions/lib/is_ext.dart)",
       "Bash(grep -oE \"[a-zA-Z0-9_]+\\\\s*[\\({=]$\")",
       "Bash(cat /tmp/pred_str.txt | tr '\\\\n' ' ')",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(python /tmp/xform.py)"
     ]
   }
 }

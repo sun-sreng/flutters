@@ -3,6 +3,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../theme/g_spinner_theme.dart';
+
 /// An orbiting satellite loading spinner with a central core and revolving dots.
 class GOrbitSpinner extends StatefulWidget {
   /// Core and satellite color. Defaults to theme primary color.
@@ -23,6 +25,12 @@ class GOrbitSpinner extends StatefulWidget {
   /// Optional external animation controller.
   final AnimationController? controller;
 
+  /// Screen-reader label announced while the spinner runs.
+  ///
+  /// Falls back to [GSpinnerTheme.semanticsLabel]. When neither is set the
+  /// spinner contributes no semantics node.
+  final String? semanticsLabel;
+
   /// Creates an orbit spinner widget.
   const GOrbitSpinner({
     super.key,
@@ -32,6 +40,7 @@ class GOrbitSpinner extends StatefulWidget {
     this.satelliteCount = 3,
     this.duration = const Duration(milliseconds: 1600),
     this.controller,
+    this.semanticsLabel,
   }) : assert(size > 0, 'size must be greater than zero.'),
        assert(satelliteCount > 0, 'satelliteCount must be greater than zero.');
 
@@ -55,10 +64,7 @@ class _GOrbitSpinnerState extends State<GOrbitSpinner>
       _controller = widget.controller!;
       _ownsController = false;
     } else {
-      _controller = AnimationController(
-        vsync: this,
-        duration: widget.duration,
-      );
+      _controller = AnimationController(vsync: this, duration: widget.duration);
       _ownsController = true;
       unawaited(_controller.repeat());
     }
@@ -93,9 +99,19 @@ class _GOrbitSpinnerState extends State<GOrbitSpinner>
   }
 
   @override
-  Widget build(BuildContext context) {
-    final primary = widget.color ?? Theme.of(context).colorScheme.primary;
-    final secondary = widget.secondaryColor ?? primary.withValues(alpha: 0.6);
+  Widget build(BuildContext context) => wrapSpinnerSemantics(
+    context: context,
+    semanticsLabel: widget.semanticsLabel,
+    child: _buildSpinner(context),
+  );
+
+  Widget _buildSpinner(BuildContext context) {
+    final primary = GSpinnerTheme.resolveColor(context, widget.color);
+    final secondary = GSpinnerTheme.resolveSecondaryColor(
+      context,
+      widget.secondaryColor,
+      primary.withValues(alpha: 0.6),
+    );
     final coreSize = widget.size * 0.25;
     final satelliteSize = widget.size * 0.18;
     final radius = (widget.size - satelliteSize) / 2;
@@ -121,8 +137,10 @@ class _GOrbitSpinnerState extends State<GOrbitSpinner>
                 ),
                 // Satellites
                 ...List.generate(widget.satelliteCount, (index) {
-                  final angleOffset = (2 * math.pi / widget.satelliteCount) * index;
-                  final currentAngle = (_controller.value * 2 * math.pi) + angleOffset;
+                  final angleOffset =
+                      (2 * math.pi / widget.satelliteCount) * index;
+                  final currentAngle =
+                      (_controller.value * 2 * math.pi) + angleOffset;
                   final dx = radius * math.cos(currentAngle);
                   final dy = radius * math.sin(currentAngle);
                   final dotColor = index.isEven ? primary : secondary;

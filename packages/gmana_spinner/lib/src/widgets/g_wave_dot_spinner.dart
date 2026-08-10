@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '../animation/dot_animation_config.dart';
 import 'g_wave_dot_spinner_dot.dart';
 
+import '../theme/g_spinner_theme.dart';
+
 /// A customizable loading spinner with a wave-like animation of scaling dots.
 ///
 /// Example:
@@ -34,6 +36,12 @@ class GWaveDotSpinner extends StatefulWidget {
   /// use it as-is and will not call `repeat()`, `stop()`, or `dispose()` on it.
   final AnimationController? controller;
 
+  /// Screen-reader label announced while the spinner runs.
+  ///
+  /// Falls back to [GSpinnerTheme.semanticsLabel]. When neither is set the
+  /// spinner contributes no semantics node.
+  final String? semanticsLabel;
+
   /// Creates a wave-ripple dot spinner.
   const GWaveDotSpinner({
     super.key,
@@ -42,6 +50,7 @@ class GWaveDotSpinner extends StatefulWidget {
     this.dotCount = 5,
     this.duration = const Duration(milliseconds: 1600),
     this.controller,
+    this.semanticsLabel,
   }) : assert(size > 0, 'size must be greater than zero.'),
        assert(dotCount > 0, 'dotCount must be greater than zero.');
 
@@ -100,7 +109,13 @@ class _GWaveDotSpinnerState extends State<GWaveDotSpinner>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => wrapSpinnerSemantics(
+    context: context,
+    semanticsLabel: widget.semanticsLabel,
+    child: _buildSpinner(context),
+  );
+
+  Widget _buildSpinner(BuildContext context) {
     return SizedBox(
       width: widget.size,
       height: widget.size,
@@ -115,7 +130,7 @@ class _GWaveDotSpinnerState extends State<GWaveDotSpinner>
               isEven: index % 2 == 1,
             ),
             size: widget.size,
-            color: widget.color ?? Theme.of(context).colorScheme.primary,
+            color: GSpinnerTheme.resolveColor(context, widget.color),
             controller: _controller,
           );
         }),

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '../animation/delayed_animation_tween.dart';
 import 'g_scale_y.dart';
 
+import '../theme/g_spinner_theme.dart';
+
 /// A bar-style wave spinner.
 ///
 /// When [itemBuilder] is provided, [color] is ignored.
@@ -35,6 +37,12 @@ class GBarWaveSpinner extends StatefulWidget {
   /// use it as-is and will not call `repeat()`, `stop()`, or `dispose()` on it.
   final AnimationController? controller;
 
+  /// Screen-reader label announced while the spinner runs.
+  ///
+  /// Falls back to [GSpinnerTheme.semanticsLabel]. When neither is set the
+  /// spinner contributes no semantics node.
+  final String? semanticsLabel;
+
   /// Creates a bar-wave spinner.
   const GBarWaveSpinner({
     super.key,
@@ -45,6 +53,7 @@ class GBarWaveSpinner extends StatefulWidget {
     this.itemCount = 5,
     this.duration = const Duration(milliseconds: 1200),
     this.controller,
+    this.semanticsLabel,
   }) : assert(itemCount >= 2, 'itemCount cannot be less than 2.'),
        assert(size > 0, 'size must be greater than zero.');
 
@@ -115,7 +124,13 @@ class _GBarWaveSpinnerState extends State<GBarWaveSpinner>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => wrapSpinnerSemantics(
+    context: context,
+    semanticsLabel: widget.semanticsLabel,
+    child: _buildSpinner(context),
+  );
+
+  Widget _buildSpinner(BuildContext context) {
     final List<double> bars = getAnimationDelay(widget.itemCount);
     return Center(
       child: SizedBox.fromSize(
@@ -184,7 +199,7 @@ class _GBarWaveSpinnerState extends State<GBarWaveSpinner>
           ? widget.itemBuilder!(context, index)
           : DecoratedBox(
             decoration: BoxDecoration(
-              color: widget.color ?? Theme.of(context).colorScheme.primary,
+              color: GSpinnerTheme.resolveColor(context, widget.color),
             ),
           );
 

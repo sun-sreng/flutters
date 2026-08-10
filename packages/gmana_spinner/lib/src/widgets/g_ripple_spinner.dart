@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../theme/g_spinner_theme.dart';
+
 /// A ripple loading spinner widget with expanding concentric rings.
 class GRippleSpinner extends StatefulWidget {
   /// Ripple ring color. Defaults to theme primary color.
@@ -22,6 +24,12 @@ class GRippleSpinner extends StatefulWidget {
   /// Optional external animation controller.
   final AnimationController? controller;
 
+  /// Screen-reader label announced while the spinner runs.
+  ///
+  /// Falls back to [GSpinnerTheme.semanticsLabel]. When neither is set the
+  /// spinner contributes no semantics node.
+  final String? semanticsLabel;
+
   /// Creates a ripple ring loading spinner.
   const GRippleSpinner({
     super.key,
@@ -31,6 +39,7 @@ class GRippleSpinner extends StatefulWidget {
     this.strokeWidth = 3.0,
     this.duration = const Duration(milliseconds: 1500),
     this.controller,
+    this.semanticsLabel,
   }) : assert(size > 0, 'size must be greater than zero.'),
        assert(rippleCount > 0, 'rippleCount must be greater than zero.'),
        assert(strokeWidth > 0, 'strokeWidth must be greater than zero.');
@@ -55,10 +64,7 @@ class _GRippleSpinnerState extends State<GRippleSpinner>
       _controller = widget.controller!;
       _ownsController = false;
     } else {
-      _controller = AnimationController(
-        vsync: this,
-        duration: widget.duration,
-      );
+      _controller = AnimationController(vsync: this, duration: widget.duration);
       _ownsController = true;
       unawaited(_controller.repeat());
     }
@@ -93,8 +99,14 @@ class _GRippleSpinnerState extends State<GRippleSpinner>
   }
 
   @override
-  Widget build(BuildContext context) {
-    final rippleColor = widget.color ?? Theme.of(context).colorScheme.primary;
+  Widget build(BuildContext context) => wrapSpinnerSemantics(
+    context: context,
+    semanticsLabel: widget.semanticsLabel,
+    child: _buildSpinner(context),
+  );
+
+  Widget _buildSpinner(BuildContext context) {
+    final rippleColor = GSpinnerTheme.resolveColor(context, widget.color);
 
     return Center(
       child: SizedBox(

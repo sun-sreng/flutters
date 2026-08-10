@@ -3,6 +3,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../theme/g_spinner_theme.dart';
+
 /// A dual-ring loading spinner with two concentric arcs rotating in opposite directions.
 class GDualRingSpinner extends StatefulWidget {
   /// Outer ring color. Defaults to theme primary color.
@@ -23,6 +25,12 @@ class GDualRingSpinner extends StatefulWidget {
   /// Optional external animation controller.
   final AnimationController? controller;
 
+  /// Screen-reader label announced while the spinner runs.
+  ///
+  /// Falls back to [GSpinnerTheme.semanticsLabel]. When neither is set the
+  /// spinner contributes no semantics node.
+  final String? semanticsLabel;
+
   /// Creates a dual-ring spinner with counter-rotating arcs.
   const GDualRingSpinner({
     super.key,
@@ -32,6 +40,7 @@ class GDualRingSpinner extends StatefulWidget {
     this.strokeWidth = 3.5,
     this.duration = const Duration(milliseconds: 1200),
     this.controller,
+    this.semanticsLabel,
   }) : assert(size > 0, 'size must be greater than zero.'),
        assert(strokeWidth > 0, 'strokeWidth must be greater than zero.');
 
@@ -55,10 +64,7 @@ class _GDualRingSpinnerState extends State<GDualRingSpinner>
       _controller = widget.controller!;
       _ownsController = false;
     } else {
-      _controller = AnimationController(
-        vsync: this,
-        duration: widget.duration,
-      );
+      _controller = AnimationController(vsync: this, duration: widget.duration);
       _ownsController = true;
       unawaited(_controller.repeat());
     }
@@ -93,12 +99,20 @@ class _GDualRingSpinnerState extends State<GDualRingSpinner>
   }
 
   @override
-  Widget build(BuildContext context) {
-    final primary = widget.color ?? Theme.of(context).colorScheme.primary;
-    final secondary =
-        widget.secondaryColor ??
-        widget.color?.withValues(alpha: 0.6) ??
-        Theme.of(context).colorScheme.secondary;
+  Widget build(BuildContext context) => wrapSpinnerSemantics(
+    context: context,
+    semanticsLabel: widget.semanticsLabel,
+    child: _buildSpinner(context),
+  );
+
+  Widget _buildSpinner(BuildContext context) {
+    final primary = GSpinnerTheme.resolveColor(context, widget.color);
+    final secondary = GSpinnerTheme.resolveSecondaryColor(
+      context,
+      widget.secondaryColor,
+      widget.color?.withValues(alpha: 0.6) ??
+          Theme.of(context).colorScheme.secondary,
+    );
 
     return Center(
       child: SizedBox(
@@ -141,11 +155,12 @@ class _DualRingSpinnerPainter extends CustomPainter {
 
     // Outer ring (clockwise)
     final outerRadius = (math.min(size.width, size.height) - strokeWidth) / 2;
-    final outerPaint = Paint()
-      ..color = primaryColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
+    final outerPaint =
+        Paint()
+          ..color = primaryColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = strokeWidth
+          ..strokeCap = StrokeCap.round;
 
     final outerAngle = progress * 2 * math.pi;
     final outerRect = Rect.fromCircle(center: center, radius: outerRadius);
@@ -154,11 +169,12 @@ class _DualRingSpinnerPainter extends CustomPainter {
     // Inner ring (counter-clockwise)
     final innerRadius = outerRadius - strokeWidth * 1.5;
     if (innerRadius > 0) {
-      final innerPaint = Paint()
-        ..color = secondaryColor
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth
-        ..strokeCap = StrokeCap.round;
+      final innerPaint =
+          Paint()
+            ..color = secondaryColor
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = strokeWidth
+            ..strokeCap = StrokeCap.round;
 
       final innerAngle = -progress * 2 * math.pi;
       final innerRect = Rect.fromCircle(center: center, radius: innerRadius);

@@ -3,6 +3,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../theme/g_spinner_theme.dart';
+
 /// A loading spinner with two chasing dots rotating and scaling around a center.
 class GChasingDotsSpinner extends StatefulWidget {
   /// Color of the chasing dots. Defaults to theme primary color.
@@ -17,6 +19,12 @@ class GChasingDotsSpinner extends StatefulWidget {
   /// Optional external animation controller.
   final AnimationController? controller;
 
+  /// Screen-reader label announced while the spinner runs.
+  ///
+  /// Falls back to [GSpinnerTheme.semanticsLabel]. When neither is set the
+  /// spinner contributes no semantics node.
+  final String? semanticsLabel;
+
   /// Creates a chasing dots spinner widget.
   const GChasingDotsSpinner({
     super.key,
@@ -24,6 +32,7 @@ class GChasingDotsSpinner extends StatefulWidget {
     this.size = 40.0,
     this.duration = const Duration(milliseconds: 1400),
     this.controller,
+    this.semanticsLabel,
   }) : assert(size > 0, 'size must be greater than zero.');
 
   @override
@@ -46,10 +55,7 @@ class _GChasingDotsSpinnerState extends State<GChasingDotsSpinner>
       _controller = widget.controller!;
       _ownsController = false;
     } else {
-      _controller = AnimationController(
-        vsync: this,
-        duration: widget.duration,
-      );
+      _controller = AnimationController(vsync: this, duration: widget.duration);
       _ownsController = true;
       unawaited(_controller.repeat());
     }
@@ -84,8 +90,14 @@ class _GChasingDotsSpinnerState extends State<GChasingDotsSpinner>
   }
 
   @override
-  Widget build(BuildContext context) {
-    final dotColor = widget.color ?? Theme.of(context).colorScheme.primary;
+  Widget build(BuildContext context) => wrapSpinnerSemantics(
+    context: context,
+    semanticsLabel: widget.semanticsLabel,
+    child: _buildSpinner(context),
+  );
+
+  Widget _buildSpinner(BuildContext context) {
+    final dotColor = GSpinnerTheme.resolveColor(context, widget.color);
     final dotSize = widget.size * 0.6;
 
     return Center(
@@ -104,7 +116,9 @@ class _GChasingDotsSpinnerState extends State<GChasingDotsSpinner>
                   Positioned(
                     top: 0,
                     child: Transform.scale(
-                      scale: 0.4 + 0.6 * math.sin(_controller.value * math.pi).abs(),
+                      scale:
+                          0.4 +
+                          0.6 * math.sin(_controller.value * math.pi).abs(),
                       child: Container(
                         width: dotSize,
                         height: dotSize,
@@ -119,7 +133,9 @@ class _GChasingDotsSpinnerState extends State<GChasingDotsSpinner>
                   Positioned(
                     bottom: 0,
                     child: Transform.scale(
-                      scale: 0.4 + 0.6 * math.cos(_controller.value * math.pi).abs(),
+                      scale:
+                          0.4 +
+                          0.6 * math.cos(_controller.value * math.pi).abs(),
                       child: Container(
                         width: dotSize,
                         height: dotSize,

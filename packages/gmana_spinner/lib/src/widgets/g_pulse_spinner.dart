@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../animation/delayed_animation_tween.dart';
 
+import '../theme/g_spinner_theme.dart';
+
 /// A loading spinner widget with expanding and fading pulse rings.
 class GPulseSpinner extends StatefulWidget {
   /// Pulse ring color. Defaults to active theme primary color.
@@ -24,6 +26,12 @@ class GPulseSpinner extends StatefulWidget {
   /// Optional external animation controller.
   final AnimationController? controller;
 
+  /// Screen-reader label announced while the spinner runs.
+  ///
+  /// Falls back to [GSpinnerTheme.semanticsLabel]. When neither is set the
+  /// spinner contributes no semantics node.
+  final String? semanticsLabel;
+
   /// Creates a pulse ring spinner.
   const GPulseSpinner({
     super.key,
@@ -33,6 +41,7 @@ class GPulseSpinner extends StatefulWidget {
     this.duration = const Duration(milliseconds: 1500),
     this.itemBuilder,
     this.controller,
+    this.semanticsLabel,
   }) : assert(size > 0, 'size must be greater than zero.'),
        assert(pulseCount > 0, 'pulseCount must be greater than zero.');
 
@@ -91,9 +100,14 @@ class _GPulseSpinnerState extends State<GPulseSpinner>
   }
 
   @override
-  Widget build(BuildContext context) {
-    final effectiveColor =
-        widget.color ?? Theme.of(context).colorScheme.primary;
+  Widget build(BuildContext context) => wrapSpinnerSemantics(
+    context: context,
+    semanticsLabel: widget.semanticsLabel,
+    child: _buildSpinner(context),
+  );
+
+  Widget _buildSpinner(BuildContext context) {
+    final effectiveColor = GSpinnerTheme.resolveColor(context, widget.color);
 
     return Center(
       child: SizedBox(
@@ -120,20 +134,21 @@ class _GPulseSpinnerState extends State<GPulseSpinner>
                     child: SizedBox(
                       width: widget.size,
                       height: widget.size,
-                      child: widget.itemBuilder != null
-                          ? widget.itemBuilder!(context, index)
-                          : DecoratedBox(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: effectiveColor.withValues(
-                                  alpha: 0.6 * opacity,
-                                ),
-                                border: Border.all(
-                                  color: effectiveColor,
-                                  width: 2.0,
+                      child:
+                          widget.itemBuilder != null
+                              ? widget.itemBuilder!(context, index)
+                              : DecoratedBox(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: effectiveColor.withValues(
+                                    alpha: 0.6 * opacity,
+                                  ),
+                                  border: Border.all(
+                                    color: effectiveColor,
+                                    width: 2.0,
+                                  ),
                                 ),
                               ),
-                            ),
                     ),
                   ),
                 );

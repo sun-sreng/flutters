@@ -255,7 +255,6 @@ Widget gOrbitSpinnerPreview() {
   return const GOrbitSpinner();
 }
 
-
 typedef _AnimatedSpinnerBuilder =
     Widget Function(BuildContext context, AnimationController controller);
 

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../animation/delayed_animation_tween.dart';
+import '../theme/g_spinner_theme.dart';
 
 /// A customizable loading spinner with animated scaling dots.
 ///
@@ -41,6 +42,12 @@ class GDotSpinner extends StatefulWidget {
   /// use it as-is and will not call `repeat()`, `stop()`, or `dispose()` on it.
   final AnimationController? controller;
 
+  /// Screen-reader label announced while the spinner runs.
+  ///
+  /// Falls back to [GSpinnerTheme.semanticsLabel]. When neither is set the
+  /// spinner contributes no semantics node.
+  final String? semanticsLabel;
+
   /// Creates a pulsing-dot spinner.
   const GDotSpinner({
     super.key,
@@ -50,6 +57,7 @@ class GDotSpinner extends StatefulWidget {
     this.itemBuilder,
     this.duration = const Duration(milliseconds: 1200),
     this.controller,
+    this.semanticsLabel,
   }) : assert(size > 0, 'size must be greater than zero.'),
        assert(dotCount > 0, 'dotCount must be greater than zero.');
 
@@ -108,7 +116,13 @@ class _GDotSpinnerState extends State<GDotSpinner>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => wrapSpinnerSemantics(
+    context: context,
+    semanticsLabel: widget.semanticsLabel,
+    child: _buildSpinner(context),
+  );
+
+  Widget _buildSpinner(BuildContext context) {
     return Center(
       child: SizedBox(
         width: widget.size * 2,
@@ -137,7 +151,7 @@ class _GDotSpinnerState extends State<GDotSpinner>
         ? widget.itemBuilder!(context, index)
         : DecoratedBox(
           decoration: BoxDecoration(
-            color: widget.color ?? Theme.of(context).colorScheme.primary,
+            color: GSpinnerTheme.resolveColor(context, widget.color),
             shape: BoxShape.circle,
           ),
         );

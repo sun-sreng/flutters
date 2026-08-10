@@ -3,6 +3,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../theme/g_spinner_theme.dart';
+
 /// A dual-ring spinning loading indicator widget.
 class GRingSpinner extends StatefulWidget {
   /// Primary ring color. Defaults to theme primary color.
@@ -23,6 +25,12 @@ class GRingSpinner extends StatefulWidget {
   /// Optional external animation controller.
   final AnimationController? controller;
 
+  /// Screen-reader label announced while the spinner runs.
+  ///
+  /// Falls back to [GSpinnerTheme.semanticsLabel]. When neither is set the
+  /// spinner contributes no semantics node.
+  final String? semanticsLabel;
+
   /// Creates a dual-ring spinner.
   const GRingSpinner({
     super.key,
@@ -32,6 +40,7 @@ class GRingSpinner extends StatefulWidget {
     this.strokeWidth = 4.0,
     this.duration = const Duration(milliseconds: 1200),
     this.controller,
+    this.semanticsLabel,
   }) : assert(size > 0, 'size must be greater than zero.'),
        assert(strokeWidth > 0, 'strokeWidth must be greater than zero.');
 
@@ -90,10 +99,19 @@ class _GRingSpinnerState extends State<GRingSpinner>
   }
 
   @override
-  Widget build(BuildContext context) {
-    final primary = widget.color ?? Theme.of(context).colorScheme.primary;
-    final secondary =
-        widget.secondaryColor ?? primary.withValues(alpha: 0.2);
+  Widget build(BuildContext context) => wrapSpinnerSemantics(
+    context: context,
+    semanticsLabel: widget.semanticsLabel,
+    child: _buildSpinner(context),
+  );
+
+  Widget _buildSpinner(BuildContext context) {
+    final primary = GSpinnerTheme.resolveColor(context, widget.color);
+    final secondary = GSpinnerTheme.resolveSecondaryColor(
+      context,
+      widget.secondaryColor,
+      primary.withValues(alpha: 0.2),
+    );
 
     return Center(
       child: SizedBox(
@@ -135,16 +153,18 @@ class _RingSpinnerPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = (math.min(size.width, size.height) - strokeWidth) / 2;
 
-    final backgroundPaint = Paint()
-      ..color = secondaryColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth;
+    final backgroundPaint =
+        Paint()
+          ..color = secondaryColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = strokeWidth;
 
-    final foregroundPaint = Paint()
-      ..color = primaryColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
+    final foregroundPaint =
+        Paint()
+          ..color = primaryColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = strokeWidth
+          ..strokeCap = StrokeCap.round;
 
     // Draw full background track
     canvas.drawCircle(center, radius, backgroundPaint);
