@@ -21,6 +21,15 @@ class Batcher<T, R> {
   final List<_BatchItem<T, R>> _queue = [];
   Timer? _timer;
   bool _isProcessing = false;
+  bool _disposed = false;
+
+  /// Whether [dispose] has been called.
+  ///
+  /// A disposed batcher rejects further [add] calls.
+  bool get isDisposed => _disposed;
+
+  /// Number of items waiting to be flushed.
+  int get pendingCount => _queue.length;
 
   /// Creates a [Batcher].
   Batcher({
@@ -30,7 +39,17 @@ class Batcher<T, R> {
   })  : assert(maxBatchSize > 0, 'maxBatchSize must be > 0');
 
   /// Adds [item] to the batch queue and returns a `Future` that completes when the batch processes.
+  ///
+  /// Returns a failed future with a [StateError] if this batcher has already
+  /// been disposed, rather than a future that never completes.
   Future<R> add(T item) {
+    if (_disposed) {
+      return Future<R>.error(
+        StateError('Cannot add to a disposed Batcher'),
+        StackTrace.current,
+      );
+    }
+
     final completer = Completer<R>();
     _queue.add(_BatchItem(item, completer));
 
@@ -88,7 +107,10 @@ class Batcher<T, R> {
   }
 
   /// Cancels pending timer and rejects queued futures.
+  ///
+  /// After this call [add] rejects immediately and [isDisposed] is `true`.
   void dispose() {
+    _disposed = true;
     _timer?.cancel();
     _timer = null;
     for (final item in _queue) {

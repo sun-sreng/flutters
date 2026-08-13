@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:clock/clock.dart';
+
 /// Public API for generating IDs and reversible encodings.
 ///
 /// All methods use Dart's non-cryptographic [Random]. They are safe for
@@ -79,6 +81,27 @@ class IdGenerator {
     return _service.generateUlid();
   }
 
+  /// Generates a ULID that sorts after every ULID this generator produced
+  /// before it, including within the same millisecond.
+  ///
+  /// Plain [ulid] re-randomises the 80-bit suffix on every call, so two IDs
+  /// created in the same millisecond sort arbitrarily. This variant instead
+  /// increments the previous suffix while the millisecond is unchanged, giving
+  /// strictly ascending IDs — what code that sorts by ID actually expects.
+  ///
+  /// Monotonicity holds per generator, so [IdGenerator] and
+  /// [SecureIdGenerator] each maintain their own sequence, and separate
+  /// processes are not coordinated.
+  ///
+  /// Example:
+  /// ```dart
+  /// final ids = List.generate(3, (_) => IdGenerator.ulidMonotonic());
+  /// // ids is already in ascending order.
+  /// ```
+  static String ulidMonotonic() {
+    return _service.generateUlidMonotonic();
+  }
+
   /// Generates a UUID v4-shaped random ID.
   ///
   /// This uses [Random], so it is not suitable for security-sensitive IDs.
@@ -151,6 +174,16 @@ class SecureIdGenerator {
   /// The timestamp part is always deterministic (current millisecond); only
   /// the 80-bit random suffix is cryptographically random.
   static String ulid() => _service.generateUlid();
+
+  /// Generates a ULID that sorts after every ULID this generator produced
+  /// before it, using [Random.secure()] for the initial suffix of each
+  /// millisecond.
+  ///
+  /// See [IdGenerator.ulidMonotonic] for how monotonicity is maintained. Note
+  /// that consecutive IDs within one millisecond differ by an increment and
+  /// are therefore predictable relative to each other; use [nanoid] or
+  /// [prefixed] where each value must be independently unguessable.
+  static String ulidMonotonic() => _service.generateUlidMonotonic();
 
   /// Generates a UUID v4-shaped ID whose bits are from [Random.secure()].
   static String uuidV4Like() => _service.generateUuidV4Like();
@@ -270,14 +303,14 @@ final class _IdGeneratorService {
 
   String generateTimestampId() {
     final special = 8 + _random.nextInt(4);
-    return 'G${DateTime.now().millisecondsSinceEpoch}-'
+    return 'G${clock.now().millisecondsSinceEpoch}-'
         '${_IdGeneratorUtils.printDigits(special, 1)}'
         '${_IdGeneratorUtils.generateBits(_random, 12, 3)}-'
         '${_IdGeneratorUtils.generateBits(_random, 12, 4)}';
   }
 
   String generateUlid() {
-    var ts = DateTime.now().millisecondsSinceEpoch;
+    var ts = clock.now().millisecondsSinceEpoch;
 
     // 10 Crockford-base32 chars encode 50 bits of timestamp (enough until ~10K AD).
     final tsChars = List<String>.filled(10, '');
@@ -293,6 +326,73 @@ final class _IdGeneratorService {
     );
 
     return tsChars.join() + randChars.join();
+  }
+
+  /// Timestamp of the most recent monotonic ULID, in epoch milliseconds.
+  int _lastUlidMs = -1;
+
+  /// Crockford digit values of the most recent monotonic ULID's random suffix.
+  final List<int> _lastUlidSuffix = List<int>.filled(16, 0);
+
+  String generateUlidMonotonic() {
+    var ts = clock.now().millisecondsSinceEpoch;
+
+    if (ts == _lastUlidMs) {
+      // Same millisecond: increment the previous 80-bit suffix so the new ID
+      // sorts strictly after it.
+      if (!_incrementSuffix()) {
+        // All 80 bits were exhausted within one millisecond. Borrowing from
+        // the next millisecond keeps the sequence ascending; reaching this
+        // needs 2^80 IDs in a millisecond, so it is defensive only.
+        ts += 1;
+        _randomiseSuffix();
+      }
+    } else {
+      if (ts < _lastUlidMs) {
+        // The clock moved backwards (NTP correction, manual change). Holding
+        // the previous millisecond keeps IDs ascending.
+        ts = _lastUlidMs;
+        if (!_incrementSuffix()) {
+          ts += 1;
+          _randomiseSuffix();
+        }
+      } else {
+        _randomiseSuffix();
+      }
+    }
+
+    _lastUlidMs = ts;
+
+    final tsChars = List<String>.filled(10, '');
+    var remaining = ts;
+    for (var i = 9; i >= 0; i--) {
+      tsChars[i] = _IdGeneratorUtils.crockford[remaining & 0x1F];
+      remaining >>= 5;
+    }
+
+    final buffer = StringBuffer(tsChars.join());
+    for (final digit in _lastUlidSuffix) {
+      buffer.write(_IdGeneratorUtils.crockford[digit]);
+    }
+    return buffer.toString();
+  }
+
+  void _randomiseSuffix() {
+    for (var i = 0; i < _lastUlidSuffix.length; i++) {
+      _lastUlidSuffix[i] = _random.nextInt(32);
+    }
+  }
+
+  /// Adds one to the stored suffix. Returns `false` if it overflowed.
+  bool _incrementSuffix() {
+    for (var i = _lastUlidSuffix.length - 1; i >= 0; i--) {
+      if (_lastUlidSuffix[i] < 31) {
+        _lastUlidSuffix[i]++;
+        return true;
+      }
+      _lastUlidSuffix[i] = 0;
+    }
+    return false;
   }
 
   String generateUuidV4Like() {

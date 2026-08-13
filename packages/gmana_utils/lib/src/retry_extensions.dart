@@ -13,12 +13,18 @@ extension GmanaRetryFunctionX<T> on FutureOr<T> Function() {
     int maxAttempts = 3,
     Duration delay = const Duration(milliseconds: 500),
     bool useExponentialBackoff = true,
+    Duration? maxDelay,
+    bool jitter = false,
     bool Function(Object error)? retryIf,
+    retry_utils.RetryCallback? onRetry,
   }) => retry_utils.retry<T>(
     this,
     maxAttempts: maxAttempts,
     delay: delay,
     useExponentialBackoff: useExponentialBackoff,
+    maxDelay: maxDelay,
+    jitter: jitter,
     retryIf: retryIf,
+    onRetry: onRetry,
   );
 }
