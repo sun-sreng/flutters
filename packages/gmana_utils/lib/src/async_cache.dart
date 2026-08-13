@@ -1,22 +1,35 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
+
 /// Caches the result of an async computation so that subsequent calls return the memoized result.
 class AsyncMemoizer<T> {
   final _completer = Completer<T>();
+  bool _started = false;
 
   /// Returns `true` if the memoized calculation has started.
-  bool get hasRun => _completer.isCompleted;
+  ///
+  /// This becomes `true` as soon as [runOnce] first invokes the computation,
+  /// not when that computation finishes. Concurrent callers therefore share
+  /// the single in-flight run rather than starting their own.
+  bool get hasRun => _started;
 
   /// Returns the future for the memoized calculation.
   ///
-  /// Runs [computation] only the first time this method is called.
+  /// Runs [computation] only the first time this method is called. Every
+  /// caller — including callers that arrive while the first run is still in
+  /// flight — receives the same value or the same error.
   Future<T> runOnce(Future<T> Function() computation) {
-    if (!hasRun) {
-      unawaited(
-        computation()
-            .then(_completer.complete)
-            .catchError(_completer.completeError),
-      );
+    if (!_started) {
+      _started = true;
+      try {
+        unawaited(
+          computation().then(_completer.complete, onError: _completer.completeError),
+        );
+      } catch (error, stackTrace) {
+        // The computation threw synchronously, before returning a future.
+        _completer.completeError(error, stackTrace);
+      }
     }
     return _completer.future;
   }
@@ -29,7 +42,7 @@ class _CacheEntry<V> {
   _CacheEntry(this.value, this.createdAt);
 
   bool isExpired(Duration ttl) {
-    return DateTime.now().difference(createdAt) > ttl;
+    return clock.now().difference(createdAt) >= ttl;
   }
 }
 
@@ -84,7 +97,7 @@ class AsyncCache<K, V> {
   Future<V> _fetchAndCache(K key, Future<V> Function() ifAbsent) async {
     try {
       final val = await ifAbsent();
-      _cache[key] = _CacheEntry(val, DateTime.now());
+      _cache[key] = _CacheEntry(val, clock.now());
       return val;
     } finally {
       // ignore: unawaited_futures

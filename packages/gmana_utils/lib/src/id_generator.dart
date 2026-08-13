@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:clock/clock.dart';
+
 /// Public API for generating IDs and reversible encodings.
 ///
 /// All methods use Dart's non-cryptographic [Random]. They are safe for
@@ -270,14 +272,14 @@ final class _IdGeneratorService {
 
   String generateTimestampId() {
     final special = 8 + _random.nextInt(4);
-    return 'G${DateTime.now().millisecondsSinceEpoch}-'
+    return 'G${clock.now().millisecondsSinceEpoch}-'
         '${_IdGeneratorUtils.printDigits(special, 1)}'
         '${_IdGeneratorUtils.generateBits(_random, 12, 3)}-'
         '${_IdGeneratorUtils.generateBits(_random, 12, 4)}';
   }
 
   String generateUlid() {
-    var ts = DateTime.now().millisecondsSinceEpoch;
+    var ts = clock.now().millisecondsSinceEpoch;
 
     // 10 Crockford-base32 chars encode 50 bits of timestamp (enough until ~10K AD).
     final tsChars = List<String>.filled(10, '');

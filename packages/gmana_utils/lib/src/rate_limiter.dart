@@ -1,3 +1,5 @@
+import 'package:clock/clock.dart';
+
 /// A sliding-window rate limiter utility.
 class RateLimiter {
   /// Maximum number of allowed executions within [duration].
@@ -35,7 +37,7 @@ class RateLimiter {
     _purgeOldTimestamps();
     if (_timestamps.length >= maxRequests) return false;
 
-    _timestamps.add(DateTime.now());
+    _timestamps.add(clock.now());
     action();
     return true;
   }
@@ -46,7 +48,7 @@ class RateLimiter {
   }
 
   void _purgeOldTimestamps() {
-    final cutoff = DateTime.now().subtract(duration);
+    final cutoff = clock.now().subtract(duration);
     _timestamps.removeWhere((timestamp) => timestamp.isBefore(cutoff));
   }
 }

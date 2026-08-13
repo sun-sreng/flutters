@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
+
 /// States of a [CircuitBreaker].
 enum CircuitState {
   /// Normal operation: calls pass through.
@@ -42,6 +44,7 @@ class CircuitBreaker {
   CircuitState _state = CircuitState.closed;
   int _failureCount = 0;
   int _halfOpenSuccessCount = 0;
+  bool _halfOpenProbeInFlight = false;
   DateTime? _openedAt;
 
   /// Creates a [CircuitBreaker].
@@ -72,7 +75,7 @@ class CircuitBreaker {
 
   void _evaluateStateTransition() {
     if (_state == CircuitState.open && _openedAt != null) {
-      if (DateTime.now().difference(_openedAt!) >= resetTimeout) {
+      if (clock.now().difference(_openedAt!) >= resetTimeout) {
         _state = CircuitState.halfOpen;
         _halfOpenSuccessCount = 0;
       }
@@ -81,17 +84,32 @@ class CircuitBreaker {
 
   /// Runs [action] guarded by the circuit breaker.
   ///
-  /// Throws [CircuitBreakerOpenException] if circuit is currently open.
+  /// Throws [CircuitBreakerOpenException] if the circuit is currently open, or
+  /// if the circuit is half-open and a trial call is already in flight. Only
+  /// one half-open trial runs at a time, so a recovering dependency receives a
+  /// single probe rather than the full concurrent load.
   Future<T> run<T>(Future<T> Function() action) async {
     _evaluateStateTransition();
 
     if (_state == CircuitState.open) {
-      final elapsed = DateTime.now().difference(_openedAt!);
+      final elapsed = clock.now().difference(_openedAt!);
       final remaining = resetTimeout - elapsed;
       throw CircuitBreakerOpenException(
         'Circuit breaker is OPEN.',
         remaining.isNegative ? Duration.zero : remaining,
       );
+    }
+
+    var isTrialCall = false;
+    if (_state == CircuitState.halfOpen) {
+      if (_halfOpenProbeInFlight) {
+        throw const CircuitBreakerOpenException(
+          'Circuit breaker is HALF-OPEN and a trial call is already in flight.',
+          Duration.zero,
+        );
+      }
+      _halfOpenProbeInFlight = true;
+      isTrialCall = true;
     }
 
     try {
@@ -101,6 +119,8 @@ class CircuitBreaker {
     } catch (e) {
       _onFailure();
       rethrow;
+    } finally {
+      if (isTrialCall) _halfOpenProbeInFlight = false;
     }
   }
 
@@ -128,7 +148,7 @@ class CircuitBreaker {
 
   void _tripOpen() {
     _state = CircuitState.open;
-    _openedAt = DateTime.now();
+    _openedAt = clock.now();
     _failureCount = 0;
     _halfOpenSuccessCount = 0;
   }
@@ -138,6 +158,7 @@ class CircuitBreaker {
     _state = CircuitState.closed;
     _failureCount = 0;
     _halfOpenSuccessCount = 0;
+    _halfOpenProbeInFlight = false;
     _openedAt = null;
   }
 }
