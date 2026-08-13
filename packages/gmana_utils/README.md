@@ -14,10 +14,13 @@ import 'package:gmana_utils/gmana_utils.dart';
 
 - [Debouncer](#debouncer)
 - [Throttler](#throttler)
+- [Stream timing extensions](#stream-timing-extensions)
 - [IdGenerator](#idgenerator)
 - [SecureIdGenerator](#secureidgenerator)
 - [Lazy & ResettableLazy](#lazy--resettablelazy)
 - [RateLimiter](#ratelimiter)
+- [Semaphore & KeyedLock](#semaphore--keyedlock)
+- [mapConcurrent & forEachConcurrent](#mapconcurrent--foreachconcurrent)
 - [Retry](#retry)
 - [tryOrNull & tryOrDefault](#tryornull--tryordefault)
 - [Result](#result)
@@ -25,6 +28,7 @@ import 'package:gmana_utils/gmana_utils.dart';
 - [CircuitBreaker](#circuitbreaker)
 - [AsyncCache & AsyncMemoizer](#asynccache--asyncmemoizer)
 - [Batcher](#batcher)
+- [Choosing between Result and gmana_functional](#choosing-between-result-and-gmana_functional)
 
 
 ---
@@ -76,12 +80,38 @@ class _SearchState extends State<SearchPage> {
 
 ### API
 
-| Method        | Description                                             |
-| ------------- | ------------------------------------------------------- |
-| `run(action)` | Resets the timer; `action` fires after the quiet period |
-| `dispose()`   | Cancels any pending timer immediately                   |
+| Method             | Description                                              |
+| ------------------ | -------------------------------------------------------- |
+| `run(action)`      | Resets the timer; `action` fires after the quiet period  |
+| `runAsync(action)` | Same, but returns the action's eventual result           |
+| `flush()`          | Runs any pending action immediately                      |
+| `isPending`        | Whether an action is currently scheduled                 |
+| `dispose()`        | Cancels any pending timer immediately                    |
 
 > **Ownership**: you own the `Debouncer` — always call `dispose()` when done.
+
+### Awaiting the result
+
+`runAsync` returns whatever the debounced action produces. Only the final call
+of a burst runs; every superseded call — and anything still pending at
+`dispose()` — completes with a `DebouncedException` rather than hanging.
+
+```dart
+final _debouncer = Debouncer(milliseconds: 300);
+
+Future<void> onQueryChanged(String query) async {
+  try {
+    final results = await _debouncer.runAsync(() => search(query));
+    setState(() => _results = results);
+  } on DebouncedException {
+    // A newer keystroke took over. Nothing to do.
+  }
+}
+```
+
+Errors thrown by the action itself surface normally, so a `catch` still sees a
+genuine search failure. A superseded future you never await will not raise an
+unhandled async error.
 
 ---
 
@@ -132,16 +162,39 @@ void dispose() {
 
 ### Parameters
 
-| Parameter      | Type  | Default                          |
-| -------------- | ----- | -------------------------------- |
-| `milliseconds` | `int` | `kDefaultThrottleDuration` (300) |
+| Parameter      | Type   | Default                          |
+| -------------- | ------ | -------------------------------- |
+| `milliseconds` | `int`  | `kDefaultThrottleDuration` (300) |
+| `trailing`     | `bool` | `false`                          |
 
 ### API
 
-| Method        | Description                                                          |
-| ------------- | -------------------------------------------------------------------- |
-| `run(action)` | Runs `action` immediately if idle; no-op if within the active window |
-| `dispose()`   | Cancels the active window timer                                      |
+| Method             | Description                                                          |
+| ------------------ | -------------------------------------------------------------------- |
+| `run(action)`      | Runs `action` immediately if idle; suppressed within the active window |
+| `isActive`         | Whether a cooldown window is currently open                          |
+| `hasPendingAction` | Whether a trailing action is waiting                                 |
+| `dispose()`        | Cancels the active window timer and drops any trailing action        |
+
+### Trailing edge
+
+By default a suppressed action is dropped outright, so the **last** event of a
+burst never runs. Enable `trailing` to run the most recent suppressed action
+when the window closes.
+
+```dart
+final throttler = Throttler(milliseconds: 100, trailing: true);
+
+throttler..run(() => print('a'))   // runs now
+         ..run(() => print('b'))   // suppressed
+         ..run(() => print('c'));  // suppressed, but retained
+
+// 'a' immediately, then 'c' at the 100 ms mark. 'b' never runs —
+// only the most recent suppressed action is kept.
+```
+
+A trailing run opens the next window itself, so a continuous stream is shaped
+to one action per window rather than two.
 
 ### Debounce vs Throttle at a glance
 
@@ -150,6 +203,56 @@ void dispose() {
 | When does it fire? | After the **last** call + quiet period | On the **first** call immediately |
 | Rapid calls        | Only the last survives                 | First fires; rest are dropped     |
 | Good for           | Search fields, resize handlers         | Scroll events, button guards      |
+
+---
+
+## Stream timing extensions
+
+`Debouncer` and `Throttler` shape **callbacks**. When the events already arrive
+as a `Stream`, use `debounce` and `throttle` directly — no rxdart dependency
+needed for these two operators.
+
+```dart
+searchQueries
+    .debounce(const Duration(milliseconds: 300))
+    .listen(performSearch);
+
+scrollOffsets
+    .throttle(const Duration(milliseconds: 100))
+    .listen(updateHeader);
+```
+
+### `debounce`
+
+Emits an event only after `duration` passes with no further events. A burst
+collapses to a single emission carrying the burst's **last** value.
+
+If the source closes while an event is still pending, that event is emitted
+before the done signal rather than dropped — so the final value of a stream
+that ends mid-burst is not lost.
+
+### `throttle`
+
+Emits the first event of each window and drops the rest. Pass `trailing: true`
+to also emit the most recent dropped event when the window closes; a window
+during which nothing was dropped emits nothing extra.
+
+```dart
+events.throttle(const Duration(milliseconds: 100), trailing: true);
+```
+
+### Error handling
+
+Both operators forward errors immediately. An error does not reset a debounce
+timer and does not open or close a throttle window, so a failing event cannot
+delay or suppress a legitimate one.
+
+| Operator     | Emits                         | On source close       |
+| ------------ | ----------------------------- | --------------------- |
+| `debounce`   | Last event of a quiet burst   | Flushes pending event |
+| `throttle`   | First event of each window    | Flushes trailing event |
+
+Both throw `ArgumentError` for a non-positive duration.
 
 ---
 
@@ -271,18 +374,48 @@ final id = IdGenerator.ulid();
 **Structure** (Crockford Base32, `0–9 A–Z` excluding `I L O U`):
 
 ```text
-01HGZQ3K4M  XNPF0CVWRY2STJF0C7
-──────────  ────────────────────
-10 chars    16 chars
-timestamp   random (80 bits)
-(48 bits)
+01HGZQ3K4M        XNP8VWRY2STJF0C7
+──────────        ────────────────
+10 chars          16 chars
+timestamp         random
+(50 bits encoded) (80 bits)
 ```
 
 - The timestamp part makes ULIDs **lexicographically sortable** by creation time.
-- ULIDs generated within the same millisecond differ only in the random suffix.
 - 26 characters, no hyphens — fits neatly in a `VARCHAR(26)` or URL path segment.
+- ULIDs generated within the same millisecond differ only in the random
+  suffix, so they **do not** sort against each other. Use
+  [`ulidMonotonic()`](#ulidmonotonic) when order within a millisecond matters.
 
 > Uses `Random` (not `Random.secure()`). For security-sensitive ULIDs use `SecureIdGenerator.ulid()`.
+
+---
+
+### `ulidMonotonic`
+
+Like `ulid()`, but guarantees each ID sorts strictly after the previous one —
+including within the same millisecond, where plain `ulid()` re-randomises the
+suffix and produces arbitrary order.
+
+```dart
+final ids = List.generate(3, (_) => IdGenerator.ulidMonotonic());
+// Already ascending, even though all three share a millisecond:
+// ['01HGZQ3K4MXNP8VWRY2STJF0C7',
+//  '01HGZQ3K4MXNP8VWRY2STJF0C8',
+//  '01HGZQ3K4MXNP8VWRY2STJF0C9']
+```
+
+Within a millisecond the 80-bit suffix is incremented rather than redrawn. If
+the system clock moves backwards, the generator holds its previous position so
+the sequence stays ascending.
+
+Monotonicity is **per generator instance**: `IdGenerator` and
+`SecureIdGenerator` keep separate sequences, and separate processes are not
+coordinated with each other.
+
+> Because consecutive IDs in one millisecond differ by an increment, they are
+> predictable relative to each other. Use `nanoid()` or `prefixed()` where each
+> value must be independently unguessable — even under `SecureIdGenerator`.
 
 ---
 
@@ -542,6 +675,88 @@ if (limiter.canRun) {
 
 ---
 
+## Semaphore & KeyedLock
+
+`RateLimiter` bounds calls *per unit time*. `Semaphore` bounds how many run
+*at once* — the limit that matters for connection pools, file handles, and
+APIs that reject concurrent bursts.
+
+```dart
+final uploads = Semaphore(3);
+
+await Future.wait([
+  for (final file in files) uploads.withPermit(() => upload(file)),
+]);
+// At most three uploads in flight at any moment.
+```
+
+Permits are handed to waiters in **FIFO order**, so a long queue cannot starve
+its earliest members. Prefer `withPermit` over a manual `acquire`/`release`
+pair — it releases the permit even when the action throws, including a
+synchronous throw.
+
+| Member                | Description                                          |
+| --------------------- | ---------------------------------------------------- |
+| `permits`             | Configured maximum                                   |
+| `available`           | Permits currently free                               |
+| `queueLength`         | Callers waiting                                      |
+| `acquire()`           | Takes a permit, waiting if none is free              |
+| `release()`           | Returns a permit                                     |
+| `withPermit(action)`  | Runs `action` holding a permit, releasing after      |
+
+`release()` throws `StateError` if it would push free permits above `permits`,
+which means a release was not paired with an acquire.
+
+### KeyedLock
+
+Serializes work **per key** while letting different keys run concurrently.
+
+```dart
+final lock = KeyedLock<String>();
+
+// Concurrent writes to one account are serialized; writes to different
+// accounts still overlap.
+await lock.synchronized(accountId, () => applyTransaction(accountId, delta));
+```
+
+Key state is dropped once no operation holds it, so a long-lived lock over
+high-cardinality keys does not leak. Pairs naturally with `AsyncCache` when a
+cache miss triggers an expensive load that must not run twice.
+
+---
+
+## mapConcurrent & forEachConcurrent
+
+Bounded-concurrency iteration. `Future.wait` starts *everything* at once;
+these start at most `concurrency` at a time.
+
+```dart
+// Fetch 200 users without hammering the API with 200 simultaneous requests.
+final users = await mapConcurrent(
+  userIds,
+  (id) => api.fetchUser(id),
+  concurrency: 8,
+);
+```
+
+`mapConcurrent` returns results in **input order**, regardless of the order in
+which individual conversions complete.
+
+```dart
+await forEachConcurrent(pendingJobs, (job) => job.run(), concurrency: 4);
+```
+
+| Parameter     | Type  | Default |
+| ------------- | ----- | ------- |
+| `concurrency` | `int` | `4`     |
+
+**Error behavior**: the first error stops new work from starting. The returned
+future completes with that error — carrying its original stack trace — once
+already-started work has settled. Both throw `ArgumentError` for a
+non-positive `concurrency`.
+
+---
+
 ## Retry
 
 Retries synchronous or asynchronous operations with optional exponential
@@ -556,6 +771,57 @@ final data = await retry(
   retryIf: (e) => e is SocketException,
 );
 ```
+
+### Parameters
+
+| Parameter               | Type        | Default  | Description                                     |
+| ----------------------- | ----------- | -------- | ----------------------------------------------- |
+| `maxAttempts`           | `int`       | `3`      | Includes the initial call                       |
+| `delay`                 | `Duration`  | `500 ms` | Base wait between attempts                      |
+| `useExponentialBackoff` | `bool`      | `true`   | Doubles the wait after each failure             |
+| `maxDelay`              | `Duration?` | `null`   | Caps how large a single wait can grow            |
+| `jitter`                | `bool`      | `false`  | Randomizes each wait into `[0, computedDelay]`  |
+| `retryIf`               | predicate   | `null`   | Decides whether an error is worth retrying      |
+| `onRetry`               | callback    | `null`   | Notified after each attempt that will be retried |
+
+### Capping the backoff
+
+Without `maxDelay` the exponential curve is uncapped. That is harmless at the
+default 3 attempts, but grows absurd quickly: attempt 30 from a 500 ms base
+waits roughly **8,500 years**. Set `maxDelay` whenever `maxAttempts` is raised.
+
+```dart
+await retry(
+  () => fetchApiData(),
+  maxAttempts: 10,
+  delay: const Duration(milliseconds: 200),
+  maxDelay: const Duration(seconds: 5),   // 0.2s, 0.4s, 0.8s … 5s, 5s, 5s
+);
+```
+
+### Jitter
+
+Clients that fail together retry together, re-creating the load that caused the
+failure. `jitter: true` applies full jitter — each wait becomes a random
+duration in `[0, computedDelay]` — spreading retries out.
+
+```dart
+await retry(() => fetchApiData(), maxAttempts: 5, jitter: true);
+```
+
+### Observing retries
+
+```dart
+await retry(
+  () => fetchApiData(),
+  onRetry: (attempt, error, nextDelay) {
+    log.warning('Attempt $attempt failed: $error. Retrying in $nextDelay.');
+  },
+);
+```
+
+`attempt` is the 1-based number of the attempt that just failed. `onRetry` is
+not called after the final attempt, since nothing follows it.
 
 ### Callback extension
 
@@ -599,7 +865,36 @@ Exception-safe wrapper functions:
 final number = tryOrNull(() => int.parse(rawInput)); // returns null on FormatException
 final value = tryOrDefault(() => int.parse(rawInput), 0); // returns 0 on error
 final asyncResult = await tryOrNullAsync(() => fetchUserData());
+final port = await tryOrDefaultAsync(() => readPortFromConfig(), 8080);
 ```
+
+`tryOrNull` and `tryOrDefault` discard the error entirely. When the recovery
+needs to know what went wrong, `tryOrElse` hands it the error *and* its stack
+trace:
+
+```dart
+final config = tryOrElse(
+  () => parseConfig(raw),
+  (error, stackTrace) {
+    log.warning('Falling back to defaults', error, stackTrace);
+    return Config.defaults();
+  },
+);
+
+final remote = await tryOrElseAsync(
+  () => fetchRemoteConfig(),
+  (error, stackTrace) async => loadCachedConfig(),
+);
+```
+
+| Function            | Recovery                          | Sync/Async |
+| ------------------- | --------------------------------- | ---------- |
+| `tryOrNull`         | `null`                            | sync       |
+| `tryOrNullAsync`    | `null`                            | async      |
+| `tryOrDefault`      | A fixed value                     | sync       |
+| `tryOrDefaultAsync` | A fixed value                     | async      |
+| `tryOrElse`         | Computed from error + stack trace | sync       |
+| `tryOrElseAsync`    | Computed from error + stack trace | async      |
 
 ---
 
@@ -620,6 +915,76 @@ switch (result) {
 final value = result.getOrElse(0);
 final mapped = result.map((v) => v * 2);
 ```
+
+### Core API
+
+| Method                          | Semantics                                                    |
+| ------------------------------- | ------------------------------------------------------------ |
+| `isSuccess` / `isFailure`       | Branch tests                                                 |
+| `valueOrNull` / `errorOrNull`   | Nullable access to either branch                             |
+| `getOrElse(fallback)`           | Success value, or a fixed fallback                           |
+| `getOrThrow()`                  | Success value, or throws the error                           |
+| `map` / `mapError` / `mapBoth`  | Transform one branch, the other, or whichever is present     |
+| `flatMap(fn)`                   | Chain into another `Result`                                  |
+| `filter(predicate, orElse:)`    | Demote a success failing the predicate into a failure        |
+| `swap()`                        | Exchange the success and failure branches                    |
+| `when(...)` / `fold(...)`       | Collapse both branches into one value                        |
+
+### Capturing failures
+
+```dart
+// Discards the stack trace.
+final quick = Result.capture(() => parseData());
+
+// Keeps it — the mapper receives both error and stack trace.
+final detailed = Result.captureWith<Config, String>(
+  () => parseConfig(raw),
+  (error, stackTrace) => 'Invalid config: $error',
+);
+
+final remote = await Result.captureAsyncWith<Data, String>(
+  () => fetchData(),
+  (error, stackTrace) => 'Fetch failed: $error',
+);
+```
+
+### Working with nullables
+
+```dart
+final user = Result.fromNullable<User, String>(
+  cache[id],
+  () => 'No cached user for $id',
+);
+```
+
+### getOrThrow
+
+Throws an `Exception` or `Error` as-is, preserving its type for `catch`
+clauses. Any other error type is wrapped in a `StateError` describing it,
+rather than throwing a bare value that callers would struggle to handle.
+
+```dart
+Result<int, Object>.failure(StateError('boom')).getOrThrow(); // throws StateError
+Result<int, String>.failure('bad input').getOrThrow();        // throws StateError('Result was a failure: bad input')
+```
+
+Prefer `getOrElse` or `when` where a throw is not wanted.
+
+### fold and filter
+
+```dart
+final label = result.fold(
+  onSuccess: (port) => 'Listening on $port',
+  onFailure: (error) => 'Cannot start: $error',
+);
+
+final port = parsed.filter(
+  (value) => value > 0 && value < 65536,
+  orElse: (value) => '$value is not a valid port',
+);
+```
+
+`filter` leaves an existing failure untouched and does not run the predicate.
 
 ---
 
@@ -770,6 +1135,41 @@ try {
 }
 ```
 
+### States
+
+| State      | Behavior                                                          |
+| ---------- | ----------------------------------------------------------------- |
+| `closed`   | Calls pass through; consecutive failures accumulate               |
+| `open`     | Calls fail immediately without touching the dependency            |
+| `halfOpen` | A **single** trial call is admitted to test recovery              |
+
+After `resetTimeout` an open circuit moves to half-open. Only one trial call
+runs at a time — concurrent callers get a `CircuitBreakerOpenException` with a
+`remainingTimeout` of zero. This is the point of half-open: a recovering
+dependency receives one probe, not the full concurrent load.
+
+A successful trial (or `halfOpenSuccessThreshold` of them) closes the circuit;
+a failed trial re-opens it.
+
+### Observability
+
+```dart
+final breaker = CircuitBreaker(
+  failureThreshold: 3,
+  onStateChange: (state) => metrics.recordCircuitState(state),
+);
+
+print(breaker.failureCount); // consecutive failures so far
+```
+
+| Member          | Description                                     |
+| --------------- | ----------------------------------------------- |
+| `state`         | Current state, re-evaluating the reset timeout  |
+| `isClosed` / `isOpen` / `isHalfOpen` | State predicates            |
+| `failureCount`  | Consecutive failures since the last success     |
+| `onStateChange` | Called on each actual transition                |
+| `reset()`       | Manually returns the circuit to `closed`        |
+
 ---
 
 ## AsyncCache & AsyncMemoizer
@@ -791,6 +1191,42 @@ final memoizer = AsyncMemoizer<Config>();
 final config = await memoizer.runOnce(() => loadConfigFromFile());
 ```
 
+`AsyncMemoizer` runs its computation **exactly once**, including for callers
+that arrive while the first run is still in flight — they share the single run
+rather than starting their own.
+
+### Cache API
+
+| Method                       | Description                                            |
+| ---------------------------- | ------------------------------------------------------ |
+| `get(key, ifAbsent:)`        | Cached value, loading it on a miss                     |
+| `getIfPresent(key)`          | Cached value or `null` — never loads                   |
+| `set(key, value)`            | Stores a value directly; its TTL starts now            |
+| `invalidate(key)`            | Drops one key                                          |
+| `invalidateWhere(test)`      | Drops every matching key; returns how many             |
+| `evictExpired()`             | Drops every expired entry; returns how many            |
+| `clear()`                    | Drops everything, including in-flight bookkeeping      |
+| `containsKey(key)`           | Whether a live (unexpired) entry exists                |
+| `length` / `keys`            | Current size and keys, least to most recently used     |
+
+Concurrent misses for the same key share one in-flight request, so a cold cache
+under load issues a single load per key rather than one per caller.
+
+### Bounding memory
+
+Expired entries are otherwise only dropped when their key is read again — a key
+never read again is retained indefinitely. Two ways to bound this:
+
+```dart
+// Hard cap: evicts the least recently used entry past the limit.
+final cache = AsyncCache<String, User>(maxEntries: 500);
+
+// Or sweep periodically.
+Timer.periodic(const Duration(minutes: 5), (_) => cache.evictExpired());
+```
+
+Reads through `get` and `getIfPresent` count as uses for LRU ordering.
+
 ---
 
 ## Batcher
@@ -807,3 +1243,37 @@ final batcher = Batcher<int, String>(
 // Individual calls receive matching results when the batch processes
 final itemFuture = batcher.add(42);
 ```
+
+A batch flushes when it reaches `maxBatchSize` or when `maxDelay` elapses,
+whichever comes first. The handler must return exactly one result per input, in
+the same order; a length mismatch fails every future in that batch.
+
+| Member          | Description                                             |
+| --------------- | ------------------------------------------------------- |
+| `add(item)`     | Queues an item; resolves when its batch processes       |
+| `flush()`       | Forces an immediate flush                               |
+| `pendingCount`  | Items currently queued                                  |
+| `isDisposed`    | Whether `dispose()` has been called                     |
+| `dispose()`     | Cancels the timer and rejects queued futures            |
+
+After `dispose()`, `add()` returns a failed future with a `StateError` rather
+than a future that never completes.
+
+---
+
+## Choosing between Result and gmana_functional
+
+This package's `Result` overlaps conceptually with `Either` and `Try` in
+[`gmana_functional`](../gmana_functional). They are not interchangeable, and
+which one to reach for depends on what you are modelling:
+
+| Use                       | When                                                                 |
+| ------------------------- | -------------------------------------------------------------------- |
+| `Result<T, E>` (here)     | Success-or-failure where failure is an **expected outcome** you name — parse errors, validation, network failures. Pairs with `retry`, `CircuitBreaker`, and the async combinators in this package. |
+| `Either<L, R>`            | A genuine sum type where neither side is "the error" — two equally valid alternatives. |
+| `Try<T>`                  | Wrapping code that throws, where the error is always `Object` and you have no domain error type to map onto. |
+
+`Result` is the right default inside this package's async workflows because
+every combinator here (`toResult`, `mapResult`, `sequenceResults`, and the rest)
+is built on it. Reach for `gmana_functional` when the algebra matters more than
+the workflow.

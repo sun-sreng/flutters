@@ -14,7 +14,7 @@ The monorepo is organized into three layers. The `gmana` facade gives you everyt
 | [**gmana_extensions**](./packages/gmana_extensions) | `0.0.1` | Extension methods on `Duration`, `String`, `num`, `Iterable`, and `Stream`.                 |
 | [**gmana_functional**](./packages/gmana_functional) | `0.0.1` | Functional primitives — `Either<L,R>`, `Result`, `UseCase`, `Failure`, `Unit`.              |
 | [**gmana_predicates**](./packages/gmana_predicates) | `0.0.1` | Boolean predicate functions — email, alpha, date, UUID, credit card, and more.              |
-| [**gmana_utils**](./packages/gmana_utils)           | `0.0.1` | Runtime utilities — `Debouncer`, `Throttler`, `IdGenerator`.                                |
+| [**gmana_utils**](./packages/gmana_utils)           | `0.0.1` | Resilience and timing utilities — retry, `CircuitBreaker`, `Semaphore`, `AsyncCache`, `Batcher`, debounce/throttle, `Result`, ID generation. |
 | [**gmana_validation**](./packages/gmana_validation) | `0.0.1` | Typed validators for email, password, text, and number inputs using `Either`-based results. |
 
 ### Pure Dart — domain
