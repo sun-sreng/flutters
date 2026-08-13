@@ -27,9 +27,12 @@ void main() {
             spinner: spinner,
             message: message,
             semanticsLabel: semanticsLabel,
+            // A bare GestureDetector rather than an ElevatedButton: the
+            // subject here is pointer routing, and Material's ink splash
+            // pulls in a shader asset that has nothing to do with it.
             child: Center(
-              child: ElevatedButton(
-                onPressed: () => taps++,
+              child: GestureDetector(
+                onTap: () => taps++,
                 child: const Text('Submit'),
               ),
             ),

@@ -41,7 +41,7 @@ sets nothing new looks exactly as it did.
 
 ### Tests
 
-- 7 → 90, covering theme resolution order, semantics for all thirteen
+- 7 → 70, covering theme resolution order, semantics for all thirteen
   spinners, overlay input-blocking, controller ownership and swapping,
   `TickerMode` suspension, constructor assertions, and a full animation cycle
   plus teardown for every animated spinner.
