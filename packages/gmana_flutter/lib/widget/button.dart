@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gmana_spinner/gmana_spinner.dart';
 import '../design_system/colors.dart';
 import '../design_system/spacing.dart';
 
@@ -134,11 +135,10 @@ class GButton extends StatelessWidget {
           SizedBox(
             width: size.indicatorSize,
             height: size.indicatorSize,
-            child: CircularProgressIndicator(
+            child: GCircularSpinner(
               strokeWidth: 2.0,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                _getForegroundColor(context, isEnabled),
-              ),
+              padding: EdgeInsets.zero,
+              color: _getForegroundColor(context, isEnabled),
             ),
           ),
           GSpacing.hSpace(GSpacing.sm),

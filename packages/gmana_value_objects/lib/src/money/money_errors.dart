@@ -10,12 +10,18 @@ sealed class MoneyError extends ValidationError {
 final class MoneyEmpty extends MoneyError {
   /// Creates a new [MoneyEmpty] error.
   const MoneyEmpty();
+
+  @override
+  String get code => 'money_empty';
 }
 
 /// Error indicating that the money amount is not a valid decimal format.
 final class MoneyInvalidFormat extends MoneyError {
   /// Creates a new [MoneyInvalidFormat] error.
   const MoneyInvalidFormat();
+
+  @override
+  String get code => 'money_invalid_format';
 }
 
 /// Error indicating that a negative money amount is disallowed.
@@ -25,6 +31,9 @@ final class MoneyNegativeNotAllowed extends MoneyError {
 
   /// Creates a new [MoneyNegativeNotAllowed] error.
   const MoneyNegativeNotAllowed(this.minorUnits);
+
+  @override
+  String get code => 'money_negative_not_allowed';
 }
 
 /// Error indicating that the amount has too many fractional digits.
@@ -40,6 +49,9 @@ final class MoneyDecimalPlacesExceeded extends MoneyError {
     required this.currentPlaces,
     required this.maxPlaces,
   });
+
+  @override
+  String get code => 'money_decimal_places_exceeded';
 }
 
 /// Error indicating that the currency code is empty or malformed.
@@ -49,6 +61,9 @@ final class MoneyInvalidCurrency extends MoneyError {
 
   /// Creates a new [MoneyInvalidCurrency] error.
   const MoneyInvalidCurrency(this.currency);
+
+  @override
+  String get code => 'money_invalid_currency';
 }
 
 /// Error indicating that the currency is not in the allowed currency set.
@@ -64,6 +79,9 @@ final class MoneyUnsupportedCurrency extends MoneyError {
     required this.currency,
     required this.allowedCurrencies,
   });
+
+  @override
+  String get code => 'money_unsupported_currency';
 }
 
 /// Error indicating that the money amount is smaller than the minimum allowed value.
@@ -79,6 +97,9 @@ final class MoneyTooSmall extends MoneyError {
     required this.currentMinorUnits,
     required this.minMinorUnits,
   });
+
+  @override
+  String get code => 'money_too_small';
 }
 
 /// Error indicating that the money amount is larger than the maximum allowed value.
@@ -94,4 +115,7 @@ final class MoneyTooLarge extends MoneyError {
     required this.currentMinorUnits,
     required this.maxMinorUnits,
   });
+
+  @override
+  String get code => 'money_too_large';
 }

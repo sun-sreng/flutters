@@ -10,12 +10,18 @@ sealed class NumberError extends ValidationError {
 final class NumberEmpty extends NumberError {
   /// Creates a new [NumberEmpty] error.
   const NumberEmpty();
+
+  @override
+  String get code => 'number_empty';
 }
 
 /// Error indicating that the number string is not a valid recognized format.
 final class NumberInvalidFormat extends NumberError {
   /// Creates a new [NumberInvalidFormat] error.
   const NumberInvalidFormat();
+
+  @override
+  String get code => 'number_invalid_format';
 }
 
 /// Error indicating that the number is smaller than the minimum allowed value.
@@ -28,6 +34,9 @@ final class NumberTooSmall extends NumberError {
 
   /// Creates a new [NumberTooSmall] error.
   const NumberTooSmall({required this.currentValue, required this.minValue});
+
+  @override
+  String get code => 'number_too_small';
 }
 
 /// Error indicating that the number is larger than the maximum allowed value.
@@ -40,6 +49,9 @@ final class NumberTooLarge extends NumberError {
 
   /// Creates a new [NumberTooLarge] error.
   const NumberTooLarge({required this.currentValue, required this.maxValue});
+
+  @override
+  String get code => 'number_too_large';
 }
 
 /// Error indicating that the number must be an integer, but has fractional parts.
@@ -49,6 +61,9 @@ final class NumberNotInteger extends NumberError {
 
   /// Creates a new [NumberNotInteger] error.
   const NumberNotInteger(this.currentValue);
+
+  @override
+  String get code => 'number_not_integer';
 }
 
 /// Error indicating that the number is negative but negative numbers are disallowed.
@@ -58,6 +73,9 @@ final class NumberNegativeNotAllowed extends NumberError {
 
   /// Creates a new [NumberNegativeNotAllowed] error.
   const NumberNegativeNotAllowed(this.currentValue);
+
+  @override
+  String get code => 'number_negative_not_allowed';
 }
 
 /// Error indicating that the number does not fall within the required inclusive range.
@@ -77,6 +95,9 @@ final class NumberNotInRange extends NumberError {
     required this.minValue,
     required this.maxValue,
   });
+
+  @override
+  String get code => 'number_not_in_range';
 }
 
 /// Error indicating that the number has too many fractional digits after the decimal point.
@@ -92,4 +113,7 @@ final class NumberDecimalPlacesExceeded extends NumberError {
     required this.currentPlaces,
     required this.maxPlaces,
   });
+
+  @override
+  String get code => 'number_decimal_places_exceeded';
 }

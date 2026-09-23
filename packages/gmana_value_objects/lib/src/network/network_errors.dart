@@ -10,6 +10,9 @@ sealed class NetworkAddressError extends ValidationError {
 final class NetworkAddressEmpty extends NetworkAddressError {
   /// Creates a [NetworkAddressEmpty] error.
   const NetworkAddressEmpty();
+
+  @override
+  String get code => 'network_address_empty';
 }
 
 /// Error indicating that the input is not a valid IP address.
@@ -19,6 +22,9 @@ final class NetworkAddressInvalidIp extends NetworkAddressError {
 
   /// Creates a [NetworkAddressInvalidIp] error.
   const NetworkAddressInvalidIp([this.version]);
+
+  @override
+  String get code => 'network_address_invalid_ip';
 }
 
 /// Error indicating that the input is not a valid CIDR notation.
@@ -28,16 +34,25 @@ final class NetworkAddressInvalidCidr extends NetworkAddressError {
 
   /// Creates a [NetworkAddressInvalidCidr] error.
   const NetworkAddressInvalidCidr([this.version]);
+
+  @override
+  String get code => 'network_address_invalid_cidr';
 }
 
 /// Error indicating that the input is not a valid MAC address.
 final class NetworkAddressInvalidMac extends NetworkAddressError {
   /// Creates a [NetworkAddressInvalidMac] error.
   const NetworkAddressInvalidMac();
+
+  @override
+  String get code => 'network_address_invalid_mac';
 }
 
 /// Error indicating that the input is not a valid Port number.
 final class NetworkAddressInvalidPort extends NetworkAddressError {
   /// Creates a [NetworkAddressInvalidPort] error.
   const NetworkAddressInvalidPort();
+
+  @override
+  String get code => 'network_address_invalid_port';
 }

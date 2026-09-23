@@ -624,3 +624,9 @@ class GTextField extends StatelessWidget {
     return config.integerOnly ? int.tryParse : double.tryParse;
   }
 }
+
+/// Canonical alias for form-integrated [GTextField].
+///
+/// Use [GTextFormField] when importing `package:gmana_flutter/gmana_flutter.dart`
+/// to distinguish form fields from presentation `GTextField`.
+typedef GTextFormField = GTextField;

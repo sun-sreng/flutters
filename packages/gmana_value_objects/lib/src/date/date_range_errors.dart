@@ -16,4 +16,7 @@ final class DateRangeInvalidOrder extends DateRangeError {
 
   /// Creates a [DateRangeInvalidOrder] error.
   const DateRangeInvalidOrder({required this.start, required this.end});
+
+  @override
+  String get code => 'date_range_invalid_order';
 }

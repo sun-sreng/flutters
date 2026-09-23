@@ -10,12 +10,18 @@ sealed class EmailError extends ValidationError {
 final class EmailEmpty extends EmailError {
   /// Creates a new [EmailEmpty] error.
   const EmailEmpty();
+
+  @override
+  String get code => 'email_empty';
 }
 
 /// Error indicating that the email does not match the valid format.
 final class EmailInvalidFormat extends EmailError {
   /// Creates a new [EmailInvalidFormat] error.
   const EmailInvalidFormat();
+
+  @override
+  String get code => 'email_invalid_format';
 }
 
 /// Error indicating that the entire email exceeds the maximum allowed length.
@@ -28,6 +34,9 @@ final class EmailTooLong extends EmailError {
 
   /// Creates a new [EmailTooLong] error.
   const EmailTooLong({required this.currentLength, required this.maxLength});
+
+  @override
+  String get code => 'email_too_long';
 }
 
 /// Error indicating that the local part of the email exceeds the maximum allowed length.
@@ -43,6 +52,9 @@ final class EmailLocalPartTooLong extends EmailError {
     required this.currentLength,
     required this.maxLength,
   });
+
+  @override
+  String get code => 'email_local_part_too_long';
 }
 
 /// Error indicating that the domain part of the email exceeds the maximum allowed length.
@@ -58,6 +70,9 @@ final class EmailDomainTooLong extends EmailError {
     required this.currentLength,
     required this.maxLength,
   });
+
+  @override
+  String get code => 'email_domain_too_long';
 }
 
 /// Error indicating that the email belongs to a disposable domain list.
@@ -67,6 +82,9 @@ final class EmailDisposableDomain extends EmailError {
 
   /// Creates a new [EmailDisposableDomain] error.
   const EmailDisposableDomain(this.domain);
+
+  @override
+  String get code => 'email_disposable_domain';
 }
 
 /// Error indicating that the email belongs to a blocked domain list.
@@ -76,4 +94,7 @@ final class EmailBlockedDomain extends EmailError {
 
   /// Creates a new [EmailBlockedDomain] error.
   const EmailBlockedDomain(this.domain);
+
+  @override
+  String get code => 'email_blocked_domain';
 }

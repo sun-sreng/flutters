@@ -20,7 +20,7 @@ dependencies:
   gmana_extensions: ^0.0.2
   gmana_functional: ^0.0.2
   gmana_predicates: ^0.0.2
-  gmana_utils: ^0.0.1
+  gmana_utils: ^0.1.0
   gmana_validation: ^0.0.1
   gmana_value_objects: ^0.1.0
 
