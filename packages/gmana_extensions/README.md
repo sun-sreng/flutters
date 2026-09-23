@@ -1052,7 +1052,7 @@ uri.isHttp;         // true
 uri.domain;         // 'example.com'  — leading `www.` dropped
 uri.fileName;       // 'guide.pdf'
 uri.fileExtension;  // 'pdf'
-uri.origin;         // https://www.example.com
+uri.originUri;      // Uri(scheme: 'https', host: 'www.example.com')
 ```
 
 ### Immutable builders

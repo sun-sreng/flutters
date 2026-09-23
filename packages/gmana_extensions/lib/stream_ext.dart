@@ -41,9 +41,11 @@ extension StreamX<T> on Stream<T> {
   /// Skips the first event (no previous exists).
   Stream<(T, T)> get pairwise async* {
     T? prev;
+    var hasPrev = false;
     await for (final value in this) {
-      if (prev != null) yield (prev, value);
+      if (hasPrev) yield (prev as T, value);
       prev = value;
+      hasPrev = true;
     }
   }
 
@@ -207,6 +209,7 @@ extension StreamX<T> on Stream<T> {
 
     Future<void> cancel() async {
       timer?.cancel();
+      suppressed = false;
       await subscription?.cancel();
     }
 

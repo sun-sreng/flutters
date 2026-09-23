@@ -53,7 +53,10 @@ extension NumFormatX on num {
             : const ['B', 'kB', 'MB', 'GB', 'TB', 'PB'];
     final base = binary ? 1024 : 1000;
 
-    var value = toDouble();
+    final valueDouble = toDouble();
+    if (!valueDouble.isFinite) return toString();
+
+    var value = valueDouble;
     final negative = value < 0;
     value = value.abs();
 
@@ -79,6 +82,8 @@ extension NumFormatX on num {
   /// ```
   String toThousands({String separator = ',', int? decimals}) {
     if (decimals != null) _checkNonNegativeDecimals(decimals);
+
+    if (!toDouble().isFinite) return toString();
 
     final text = decimals == null ? toString() : toStringAsFixed(decimals);
     final negative = text.startsWith('-');
@@ -224,11 +229,17 @@ extension IntFormatX on int {
     }
 
     final negative = this < 0;
-    final digits = abs().toString().padLeft(
-      negative ? width - 1 : width,
-      padChar,
-    );
-    return negative ? '-$digits' : digits;
+    if (negative) {
+      if (padChar == ' ') {
+        return '-${abs()}'.padLeft(width, ' ');
+      }
+      final digits = abs().toString().padLeft(
+        width > 0 ? width - 1 : 0,
+        padChar,
+      );
+      return '-$digits';
+    }
+    return toString().padLeft(width, padChar);
   }
 
   /// Binary representation, optionally prefixed with `0b`.

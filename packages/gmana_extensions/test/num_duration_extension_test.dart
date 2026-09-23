@@ -159,7 +159,7 @@ void main() {
       expect(const Duration(seconds: 45).toHHMMSS(), equals('00:45'));
       expect(
         const Duration(hours: -1, minutes: -5, seconds: -9).toHHMMSS(),
-        equals('01:05:09'),
+        equals('-01:05:09'),
       );
     });
 

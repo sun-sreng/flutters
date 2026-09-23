@@ -39,7 +39,7 @@ extension UriX on Uri {
   }
 
   /// Scheme, host, and port only — path, query, and fragment stripped.
-  Uri get origin =>
+  Uri get originUri =>
       Uri(scheme: scheme, host: host, port: hasPort ? port : null);
 
   /// Returns a copy with [parameters] merged into the query string.

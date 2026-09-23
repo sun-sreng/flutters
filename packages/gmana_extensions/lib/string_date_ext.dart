@@ -83,7 +83,9 @@ extension StringDateExtension on String {
   /// Returns an ISO date string after adding [days], or `null` when invalid.
   String? addDays(int days) {
     final date = toDateTimeOrNull;
-    return date == null ? null : _formatIsoDate(date.add(Duration(days: days)));
+    return date == null
+        ? null
+        : _formatIsoDate(DateTime.utc(date.year, date.month, date.day + days));
   }
 
   /// Difference from [other], or `null` when either value is invalid.

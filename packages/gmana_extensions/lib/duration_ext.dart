@@ -6,23 +6,23 @@ extension HumanizedDuration on Duration {
   /// Waits for this duration.
   Future<void> get delay => Future.delayed(this);
 
-  /// Returns the absolute hours component of the duration.
-  int get hoursPart => inHours.abs();
+  /// Returns the absolute hours component of the duration, from 0 to 23.
+  int get hoursPart => inHours.abs() % 24;
 
   /// Returns the absolute days component of the duration.
   int get daysPart => inDays.abs();
 
   /// Returns the absolute milliseconds component of the duration, from 0 to 999.
-  int get millisecondsPart => (inMilliseconds % 1000).abs();
+  int get millisecondsPart => inMilliseconds.abs() % 1000;
 
   /// Returns the absolute microseconds component of the duration, from 0 to 999.
-  int get microsecondsPart => (inMicroseconds % 1000).abs();
+  int get microsecondsPart => inMicroseconds.abs() % 1000;
 
   /// Returns the absolute minutes component of the duration, from 0 to 59.
-  int get minutesPart => (inMinutes % 60).abs();
+  int get minutesPart => inMinutes.abs() % 60;
 
   /// Returns the absolute seconds component of the duration, from 0 to 59.
-  int get secondsPart => (inSeconds % 60).abs();
+  int get secondsPart => inSeconds.abs() % 60;
 
   /// Total duration in fractional days.
   double get inDaysDouble => inMicroseconds / Duration.microsecondsPerDay;
@@ -232,7 +232,9 @@ extension HumanizedDuration on Duration {
     final m = inMinutes.abs().remainder(60);
     final s = inSeconds.abs().remainder(60);
     final hh = h > 0 ? '${h.toString().padLeft(2, '0')}:' : '';
-    return '$hh${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+    final body =
+        '$hh${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+    return isNegative ? '-$body' : body;
   }
 
   /// Formats this duration as compact human-readable text.

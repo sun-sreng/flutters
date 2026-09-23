@@ -30,6 +30,7 @@ void main() {
       expect(21.lcm(6), 42);
       expect(0.lcm(5), 0);
       expect((-4).lcm(6), 12);
+      expect(10000000000.lcm(10000000000), 10000000000);
     });
 
     test('factorial', () {

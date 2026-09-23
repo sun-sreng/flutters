@@ -286,25 +286,25 @@ extension StringX on String {
   Duration toDuration() {
     final parts = split(':');
 
-    int parse(String s, String label, {int max = 59}) {
+    int parse(String s, String label, {int? max}) {
       final v = int.tryParse(s.trim());
       if (v == null) throw FormatException('Invalid $label: "$this"');
-      if (v < 0 || v > max) {
+      if (v < 0 || (max != null && v > max)) {
         throw FormatException('$label out of range: "$this"');
       }
       return v;
     }
 
     return switch (parts.length) {
-      1 => Duration(seconds: parse(parts[0], 'seconds')),
+      1 => Duration(seconds: parse(parts[0], 'seconds', max: 59)),
       2 => Duration(
         minutes: parse(parts[0], 'minutes'),
-        seconds: parse(parts[1], 'seconds'),
+        seconds: parse(parts[1], 'seconds', max: 59),
       ),
       3 => Duration(
-        hours: parse(parts[0], 'hours', max: 23),
-        minutes: parse(parts[1], 'minutes'),
-        seconds: parse(parts[2], 'seconds'),
+        hours: parse(parts[0], 'hours'),
+        minutes: parse(parts[1], 'minutes', max: 59),
+        seconds: parse(parts[2], 'seconds', max: 59),
       ),
       _ => throw FormatException('Invalid duration format: "$this"'),
     };

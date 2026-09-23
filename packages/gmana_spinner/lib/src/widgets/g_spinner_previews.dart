@@ -18,14 +18,39 @@ import 'g_wave_dot_spinner.dart';
 import 'g_wave_dot_spinner_dot.dart';
 import 'g_wave_spinner.dart';
 
+/// Theme data implementation for spinner widget previews.
+final class GSpinnerPreviewThemeData extends PreviewThemeData {
+  /// Creates a preview theme with optional [light] and [dark] themes.
+  const GSpinnerPreviewThemeData({this.light, this.dark});
+
+  /// The theme to apply in light mode.
+  final ThemeData? light;
+
+  /// The theme to apply in dark mode.
+  final ThemeData? dark;
+
+  @override
+  Widget apply(BuildContext context, Widget child) {
+    final Brightness brightness = MediaQuery.platformBrightnessOf(context);
+    final ThemeData? theme = switch (brightness) {
+      Brightness.dark => dark ?? light,
+      Brightness.light => light ?? dark,
+    };
+    if (theme != null) {
+      return Theme(data: theme, child: child);
+    }
+    return child;
+  }
+}
+
 /// Builds the shared theme used by the spinner widget previews.
 PreviewThemeData buildGSpinnerPreviewTheme() {
-  return PreviewThemeData(
-    materialLight: ThemeData(
+  return GSpinnerPreviewThemeData(
+    light: ThemeData(
       colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2563EB)),
       useMaterial3: true,
     ),
-    materialDark: ThemeData(
+    dark: ThemeData(
       colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xFF60A5FA),
         brightness: Brightness.dark,

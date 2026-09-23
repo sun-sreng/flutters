@@ -299,12 +299,17 @@ void main() {
       expect(5.digitCount, equals(1));
       expect(123.digitCount, equals(3));
       expect((-123).digitCount, equals(3));
+      expect((-9223372036854775808).digitCount, equals(19));
     });
 
     test('digits', () {
       expect(1234.digits, equals([1, 2, 3, 4]));
       expect((-1234).digits, equals([1, 2, 3, 4]));
       expect(0.digits, equals([0]));
+      expect(
+        (-9223372036854775808).digits,
+        equals([9, 2, 2, 3, 3, 7, 2, 0, 3, 6, 8, 5, 4, 7, 7, 5, 8, 0, 8]),
+      );
     });
 
     test('sign helpers', () {

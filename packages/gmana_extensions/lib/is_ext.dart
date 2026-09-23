@@ -8,6 +8,25 @@ import 'package:gmana_validation/gmana_validation.dart';
 export 'package:gmana_validation/gmana_validation.dart'
     show PasswordStrength, PasswordValidationConfig, PasswordValidator;
 
+final RegExp _base64RegExp = RegExp(r'^[A-Za-z0-9+/_-]*={0,2}$');
+final RegExp _e164PhoneRegExp = RegExp(r'^\+\d{7,15}$');
+final RegExp _isoDateRegExp = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+final RegExp _jwtSignatureRegExp = RegExp(r'^[A-Za-z0-9_-]*$');
+final RegExp _macAddressColonRegExp =
+    RegExp(r'^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$');
+final RegExp _macAddressDotRegExp =
+    RegExp(r'^[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}$');
+final RegExp _namePatternRegExp = RegExp(r"^[\p{L}\p{M}' .\-]+$", unicode: true);
+final RegExp _nameLetterRegExp = RegExp(r'\p{L}', unicode: true);
+final RegExp _phoneStripRegExp = RegExp(r'[\s\-().+]');
+final RegExp _phoneDigitsRegExp = RegExp(r'^\d{7,15}$');
+final RegExp _slugRegExp = RegExp(r'^[a-z0-9]+(?:-[a-z0-9]+)*$');
+final RegExp _uuidAnyRegExp = RegExp(
+  r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
+);
+final RegExp _usernameRegExp =
+    RegExp(r'^[A-Za-z0-9](?:[A-Za-z0-9._]*[A-Za-z0-9])?$');
+
 /// A vast collection of validation utilities mapped as getters on [String].
 extension StringValidation on String {
   /// Checks whether the string is valid Base64 or Base64URL text.
@@ -15,7 +34,7 @@ extension StringValidation on String {
   /// Missing padding is accepted.
   bool get isValidBase64 {
     final s = trim();
-    if (s.isEmpty || !RegExp(r'^[A-Za-z0-9+/_-]*={0,2}$').hasMatch(s)) {
+    if (s.isEmpty || !_base64RegExp.hasMatch(s)) {
       return false;
     }
 
@@ -34,9 +53,7 @@ extension StringValidation on String {
   bool get isValidCreditCard => id_preds.isCreditCard(this);
 
   /// Validates against E.164 format: `+` followed by 7–15 digits, no spaces.
-  bool get isValidE164Phone {
-    return RegExp(r'^\+\d{7,15}$').hasMatch(this);
-  }
+  bool get isValidE164Phone => _e164PhoneRegExp.hasMatch(this);
 
   /// RFC-5321-aligned. Handles subdomains, hyphens, multi-part TLDs.
   /// Still a heuristic — true validation requires sending a mail.
@@ -73,7 +90,7 @@ extension StringValidation on String {
 
   /// ISO 8601 date only: `2024-01-31`
   bool get isValidIsoDate {
-    if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(this)) return false;
+    if (!_isoDateRegExp.hasMatch(this)) return false;
     final year = int.parse(substring(0, 4));
     final month = int.parse(substring(5, 7));
     final day = int.parse(substring(8, 10));
@@ -93,7 +110,7 @@ extension StringValidation on String {
     if (parts.length != 3 || parts.any((part) => part.isEmpty)) return false;
     return parts[0].isValidBase64 &&
         parts[1].isValidBase64 &&
-        RegExp(r'^[A-Za-z0-9_-]*$').hasMatch(parts[2]);
+        _jwtSignatureRegExp.hasMatch(parts[2]);
   }
 
   /// Checks if the string is a valid MAC address.
@@ -101,8 +118,8 @@ extension StringValidation on String {
   /// Accepts colon, hyphen, and dotted Cisco-style notation.
   bool get isValidMacAddress {
     final s = trim();
-    return RegExp(r'^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$').hasMatch(s) ||
-        RegExp(r'^[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}$').hasMatch(s);
+    return _macAddressColonRegExp.hasMatch(s) ||
+        _macAddressDotRegExp.hasMatch(s);
   }
 
   /// Accepts Unicode letters, spaces, hyphens, apostrophes, periods.
@@ -110,9 +127,7 @@ extension StringValidation on String {
   bool get isValidName {
     final s = trim();
     if (s.isEmpty || s.length > 100) return false;
-    final re = RegExp(r"^[\p{L}\p{M}' .\-]+$", unicode: true);
-    final hasLetter = RegExp(r'\p{L}', unicode: true).hasMatch(s);
-    return hasLetter && re.hasMatch(s);
+    return _nameLetterRegExp.hasMatch(s) && _namePatternRegExp.hasMatch(s);
   }
 
   /// At least 8 chars, one uppercase, one lowercase, one digit,
@@ -125,16 +140,15 @@ extension StringValidation on String {
   /// Does NOT enforce country-specific formats — use a package like
   /// `phone_numbers_parser` when you need locale validation.
   bool get isValidPhone {
-    final digits = replaceAll(RegExp(r'[\s\-().+]'), '');
+    final digits = replaceAll(_phoneStripRegExp, '');
     if (digits.isEmpty) return false;
-    return RegExp(r'^\d{7,15}$').hasMatch(digits);
+    return _phoneDigitsRegExp.hasMatch(digits);
   }
 
   /// Checks if the string is a URL-safe slug.
   ///
   /// Accepts lowercase letters, numbers, and single hyphens between tokens.
-  bool get isValidSlug =>
-      RegExp(r'^[a-z0-9]+(?:-[a-z0-9]+)*$').hasMatch(trim());
+  bool get isValidSlug => _slugRegExp.hasMatch(trim());
 
   /// Valid URL (http/https). Intentionally simple — use `Uri.tryParse`
   /// for structural checks; this validates the common displayed format.
@@ -149,9 +163,7 @@ extension StringValidation on String {
   bool get isValidUuid => id_preds.isUuid(this, '4');
 
   /// Checks if the string is any valid UUID version 1 through 5.
-  bool get isValidUuidAny => RegExp(
-    r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
-  ).hasMatch(trim());
+  bool get isValidUuidAny => _uuidAnyRegExp.hasMatch(trim());
 
   /// Returns which password requirements are unmet — useful for live UI feedback.
   PasswordStrength get passwordStrength =>
@@ -191,6 +203,6 @@ extension StringValidation on String {
 
     final s = trim();
     if (s.length < min || s.length > max) return false;
-    return RegExp(r'^[A-Za-z0-9](?:[A-Za-z0-9._]*[A-Za-z0-9])?$').hasMatch(s);
+    return _usernameRegExp.hasMatch(s);
   }
 }

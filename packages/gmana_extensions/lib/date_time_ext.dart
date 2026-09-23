@@ -5,13 +5,15 @@ extension DateTimeX on DateTime {
 
   /// Whether this date fell on yesterday's calendar date.
   bool get isYesterday {
-    final yesterday = DateTime.now().subtract(const Duration(days: 1));
+    final now = DateTime.now();
+    final yesterday = DateTime(now.year, now.month, now.day - 1);
     return isSameDay(yesterday);
   }
 
   /// Whether this date falls on tomorrow's calendar date.
   bool get isTomorrow {
-    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    final now = DateTime.now();
+    final tomorrow = DateTime(now.year, now.month, now.day + 1);
     return isSameDay(tomorrow);
   }
 
@@ -52,22 +54,48 @@ extension DateTimeX on DateTime {
   DateTime startOfWeek({int firstDayOfWeek = DateTime.monday}) {
     var daysToSubtract = weekday - firstDayOfWeek;
     if (daysToSubtract < 0) daysToSubtract += 7;
-    final date = subtract(Duration(days: daysToSubtract));
-    return date.startOfDay;
+    return isUtc
+        ? DateTime.utc(year, month, day - daysToSubtract)
+        : DateTime(year, month, day - daysToSubtract);
   }
 
   /// Returns the end of the week given a starting weekday (default Monday).
   DateTime endOfWeek({int firstDayOfWeek = DateTime.monday}) {
-    return startOfWeek(
-      firstDayOfWeek: firstDayOfWeek,
-    ).add(const Duration(days: 6)).endOfDay;
+    final start = startOfWeek(firstDayOfWeek: firstDayOfWeek);
+    return isUtc
+        ? DateTime.utc(
+          start.year,
+          start.month,
+          start.day + 6,
+          23,
+          59,
+          59,
+          999,
+          999,
+        )
+        : DateTime(
+          start.year,
+          start.month,
+          start.day + 6,
+          23,
+          59,
+          59,
+          999,
+          999,
+        );
   }
 
   /// Returns the next calendar day at 00:00:00.
-  DateTime get nextDay => startOfDay.add(const Duration(days: 1));
+  DateTime get nextDay =>
+      isUtc
+          ? DateTime.utc(year, month, day + 1)
+          : DateTime(year, month, day + 1);
 
   /// Returns the previous calendar day at 00:00:00.
-  DateTime get previousDay => startOfDay.subtract(const Duration(days: 1));
+  DateTime get previousDay =>
+      isUtc
+          ? DateTime.utc(year, month, day - 1)
+          : DateTime(year, month, day - 1);
 
   /// Checks if this date has the same year, month, and day as [other].
   bool isSameDay(DateTime other) =>
@@ -298,43 +326,6 @@ extension DateTimeX on DateTime {
     return deltaMicroseconds >= 0 ? 'in $phrase' : '$phrase ago';
   }
 
-  /// Returns a new [DateTime] with updated components.
-  DateTime copyWith({
-    int? year,
-    int? month,
-    int? day,
-    int? hour,
-    int? minute,
-    int? second,
-    int? millisecond,
-    int? microsecond,
-    bool? isUtc,
-  }) {
-    final utc = isUtc ?? this.isUtc;
-    if (utc) {
-      return DateTime.utc(
-        year ?? this.year,
-        month ?? this.month,
-        day ?? this.day,
-        hour ?? this.hour,
-        minute ?? this.minute,
-        second ?? this.second,
-        millisecond ?? this.millisecond,
-        microsecond ?? this.microsecond,
-      );
-    } else {
-      return DateTime(
-        year ?? this.year,
-        month ?? this.month,
-        day ?? this.day,
-        hour ?? this.hour,
-        minute ?? this.minute,
-        second ?? this.second,
-        millisecond ?? this.millisecond,
-        microsecond ?? this.microsecond,
-      );
-    }
-  }
 }
 
 /// Extension on nullable [DateTime] values.

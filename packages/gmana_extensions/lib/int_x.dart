@@ -1,7 +1,11 @@
 /// Core extensions on [int] adding digits access and iterative range utilities.
 extension IntX on int {
   /// Number of decimal digits (ignores sign). Safe against integer overflows.
-  int get digitCount => this == 0 ? 1 : abs().toString().length;
+  int get digitCount {
+    if (this == 0) return 1;
+    final str = toString();
+    return str.startsWith('-') ? str.length - 1 : str.length;
+  }
 
   /// Individual digits, most-significant first. Optimized mathematically.
   /// ```dart
@@ -9,6 +13,9 @@ extension IntX on int {
   /// ```
   List<int> get digits {
     if (this == 0) return [0];
+    if (this == -9223372036854775808) {
+      return [9, 2, 2, 3, 3, 7, 2, 0, 3, 6, 8, 5, 4, 7, 7, 5, 8, 0, 8];
+    }
 
     final result = <int>[];
     var value = abs();
@@ -119,7 +126,7 @@ extension IntX on int {
   /// ```
   int lcm(int other) {
     if (this == 0 || other == 0) return 0;
-    return (this * other).abs() ~/ gcd(other);
+    return (this ~/ gcd(other)).abs() * other.abs();
   }
 
   /// Factorial of this value.

@@ -257,6 +257,31 @@ void main() {
       },
     );
 
+    test(
+      'throttle resets suppression when broadcast listeners cancel and re-subscribe',
+      () async {
+        final controller = StreamController<int>.broadcast();
+        final stream = controller.stream.throttle(
+          const Duration(milliseconds: 50),
+        );
+
+        final sub1 = stream.listen((_) {});
+        controller.add(1);
+        await Future<void>.delayed(Duration.zero);
+        await sub1.cancel();
+
+        final results = <int>[];
+        final sub2 = stream.listen(results.add);
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        controller.add(2);
+        await Future<void>.delayed(Duration.zero);
+        await sub2.cancel();
+        await controller.close();
+
+        expect(results, equals([2]));
+      },
+    );
+
     test('throttle validates duration', () {
       expect(
         () => const Stream<int>.empty().throttle(Duration.zero),
@@ -290,6 +315,14 @@ void main() {
     test('pairwise', () async {
       final stream = Stream.fromIterable([1, 2, 3, 4]).pairwise;
       expect(await stream.toList(), equals([(1, 2), (2, 3), (3, 4)]));
+    });
+
+    test('pairwise handles nullable elements and leading null', () async {
+      final stream = Stream<int?>.fromIterable([null, 1, 2, null, 3]).pairwise;
+      expect(
+        await stream.toList(),
+        equals([(null, 1), (1, 2), (2, null), (null, 3)]),
+      );
     });
 
     test('scan', () async {

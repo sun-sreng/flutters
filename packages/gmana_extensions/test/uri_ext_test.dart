@@ -28,11 +28,10 @@ void main() {
       expect(Uri.parse('https://x.com/a/.env').fileExtension, isNull);
     });
 
-    test('origin drops path, query, and fragment', () {
-      expect(
-        Uri.parse('https://x.com:8080/a/b?c=1#d').origin.toString(),
-        'https://x.com:8080',
-      );
+    test('originUri drops path, query, and fragment', () {
+      final origin = Uri.parse('https://x.com:8080/a/b?c=1#d').originUri;
+      expect(origin, isA<Uri>());
+      expect(origin.toString(), 'https://x.com:8080');
     });
   });
 

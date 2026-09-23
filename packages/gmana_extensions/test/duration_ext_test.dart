@@ -156,14 +156,26 @@ void main() {
           microseconds: 250,
         );
         expect(d.daysPart, 3);
-        expect(d.hoursPart, 74);
+        expect(d.hoursPart, 2);
         expect(d.minutesPart, 15);
         expect(d.secondsPart, 30);
         expect(d.millisecondsPart, 500);
         expect(d.microsecondsPart, 250);
 
-        // Note: For negative durations, the extension uses % which can yield confusing results in Dart,
-        // so we mainly verify standard extraction here.
+        const neg = Duration(
+          days: -3,
+          hours: -2,
+          minutes: -15,
+          seconds: -30,
+          milliseconds: -500,
+          microseconds: -250,
+        );
+        expect(neg.daysPart, 3);
+        expect(neg.hoursPart, 2);
+        expect(neg.minutesPart, 15);
+        expect(neg.secondsPart, 30);
+        expect(neg.millisecondsPart, 500);
+        expect(neg.microsecondsPart, 250);
       });
 
       test('total accessors return correct float values', () {

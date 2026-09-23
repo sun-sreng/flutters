@@ -46,6 +46,7 @@ void main() {
 
     test('keeps the sign', () {
       expect((-2048).toBytes(), '-2 KiB');
+      expect(double.infinity.toBytes(), 'Infinity');
     });
   });
 
@@ -54,6 +55,8 @@ void main() {
       expect(999.toThousands(), '999');
       expect(1234567.toThousands(), '1,234,567');
       expect((-1234567).toThousands(), '-1,234,567');
+      expect(double.infinity.toThousands(), 'Infinity');
+      expect(double.nan.toThousands(), 'NaN');
     });
 
     test('respects a custom separator', () {
@@ -132,6 +135,7 @@ void main() {
       expect(7.toPadded(3), '007');
       expect(7.toPadded(3, padChar: ' '), '  7');
       expect((-7).toPadded(3), '-07');
+      expect((-7).toPadded(3, padChar: ' '), ' -7');
       expect(1234.toPadded(2), '1234');
     });
 

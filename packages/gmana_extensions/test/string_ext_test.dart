@@ -57,6 +57,10 @@ void main() {
         '02:30:45'.toDuration(),
         equals(const Duration(hours: 2, minutes: 30, seconds: 45)),
       );
+      expect(
+        '25:10:00'.toDuration(),
+        equals(const Duration(hours: 25, minutes: 10)),
+      );
       expect(() => '70'.toDuration(), throwsFormatException);
       expect(() => '05:70'.toDuration(), throwsFormatException);
       expect(() => 'abc'.toDuration(), throwsFormatException);
