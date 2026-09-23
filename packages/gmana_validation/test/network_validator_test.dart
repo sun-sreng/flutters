@@ -41,6 +41,5 @@ void main() {
       expect(invalid.isLeft(), isTrue);
       expect(invalid.leftOrNull(), isA<NetworkInvalidPortIssue>());
     });
-
   });
 }

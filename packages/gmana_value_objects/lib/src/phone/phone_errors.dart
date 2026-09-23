@@ -42,10 +42,7 @@ final class PhoneTooShort extends PhoneError {
   final int minDigits;
 
   /// Creates a phone-too-short error.
-  const PhoneTooShort({
-    required this.currentDigits,
-    required this.minDigits,
-  });
+  const PhoneTooShort({required this.currentDigits, required this.minDigits});
 
   @override
   String get code => 'phone.tooShort';
@@ -60,10 +57,7 @@ final class PhoneTooLong extends PhoneError {
   final int maxDigits;
 
   /// Creates a phone-too-long error.
-  const PhoneTooLong({
-    required this.currentDigits,
-    required this.maxDigits,
-  });
+  const PhoneTooLong({required this.currentDigits, required this.maxDigits});
 
   @override
   String get code => 'phone.tooLong';

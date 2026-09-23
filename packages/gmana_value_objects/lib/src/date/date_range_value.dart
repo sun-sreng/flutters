@@ -18,10 +18,10 @@ final class DateRangeValue extends ValueObject<DateRange> {
   /// Constructs a [DateRangeValue] from trusted [start] and [end] dates.
   /// Throws [ValueObjectException] if `start > end`.
   factory DateRangeValue(DateTime start, DateTime end) {
-    return tryParse(start, end).fold(
-      (error) => throw ValueObjectException(error),
-      (val) => val,
-    );
+    return tryParse(
+      start,
+      end,
+    ).fold((error) => throw ValueObjectException(error), (val) => val);
   }
 
   /// Attempts to parse [start] and [end] into a [DateRangeValue].
@@ -30,6 +30,8 @@ final class DateRangeValue extends ValueObject<DateRange> {
     DateTime start,
     DateTime end,
   ) {
-    return const DateRangeValidator().validate(start, end).map(DateRangeValue._);
+    return const DateRangeValidator()
+        .validate(start, end)
+        .map(DateRangeValue._);
   }
 }

@@ -31,7 +31,10 @@ void main() {
       expect(failure.map((v) => v * 2).isFailure, isTrue);
 
       expect(success.mapError((e) => e.toUpperCase()).valueOrNull, equals(10));
-      expect(failure.mapError((e) => e.toUpperCase()).errorOrNull, equals('FAIL'));
+      expect(
+        failure.mapError((e) => e.toUpperCase()).errorOrNull,
+        equals('FAIL'),
+      );
     });
 
     test('flatMap binds results', () {
@@ -51,7 +54,9 @@ void main() {
 
     test('capture wraps sync exceptions', () {
       final success = Result.capture(() => 123);
-      final failure = Result.capture(() => throw const FormatException('invalid'));
+      final failure = Result.capture(
+        () => throw const FormatException('invalid'),
+      );
 
       expect(success.isSuccess, isTrue);
       expect(failure.isFailure, isTrue);
@@ -60,7 +65,9 @@ void main() {
 
     test('captureAsync wraps async exceptions', () async {
       final success = await Result.captureAsync(() async => 'hello');
-      final failure = await Result.captureAsync(() async => throw StateError('err'));
+      final failure = await Result.captureAsync(
+        () async => throw StateError('err'),
+      );
 
       expect(success.valueOrNull, equals('hello'));
       expect(failure.errorOrNull, isA<StateError>());

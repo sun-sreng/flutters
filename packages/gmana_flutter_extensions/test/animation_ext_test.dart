@@ -4,7 +4,6 @@ import 'package:flutter/animation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
 
-
 void main() {
   testWidgets('AnimationControllerX toggle and restart', (tester) async {
     final controller = AnimationController(
@@ -20,7 +19,6 @@ void main() {
     controller.stop();
     unawaited(controller.restart());
     expect(controller.status, equals(AnimationStatus.forward));
-
 
     controller.dispose();
   });

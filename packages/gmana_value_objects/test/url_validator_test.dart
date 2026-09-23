@@ -8,7 +8,10 @@ void main() {
       expect(url.value.host, 'example.com');
       expect(url.toString(), 'UrlValue(https://example.com/api)');
 
-      expect(() => UrlValue('invalid-url'), throwsA(isA<ValueObjectException>()));
+      expect(
+        () => UrlValue('invalid-url'),
+        throwsA(isA<ValueObjectException>()),
+      );
     });
 
     test('UrlValue.tryParse returns Either', () {

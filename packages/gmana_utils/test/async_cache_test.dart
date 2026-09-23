@@ -46,25 +46,28 @@ void main() {
       expect(loadCount, equals(2));
     });
 
-    test('AsyncCache deduplicates concurrent requests for the same key', () async {
-      final cache = AsyncCache<String, int>();
-      var loadCount = 0;
+    test(
+      'AsyncCache deduplicates concurrent requests for the same key',
+      () async {
+        final cache = AsyncCache<String, int>();
+        var loadCount = 0;
 
-      Future<int> fetch() async {
-        loadCount++;
-        await Future<void>.delayed(const Duration(milliseconds: 50));
-        return 99;
-      }
+        Future<int> fetch() async {
+          loadCount++;
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+          return 99;
+        }
 
-      final results = await Future.wait([
-        cache.get('same_key', ifAbsent: fetch),
-        cache.get('same_key', ifAbsent: fetch),
-        cache.get('same_key', ifAbsent: fetch),
-      ]);
+        final results = await Future.wait([
+          cache.get('same_key', ifAbsent: fetch),
+          cache.get('same_key', ifAbsent: fetch),
+          cache.get('same_key', ifAbsent: fetch),
+        ]);
 
-      expect(results, equals([99, 99, 99]));
-      expect(loadCount, equals(1));
-    });
+        expect(results, equals([99, 99, 99]));
+        expect(loadCount, equals(1));
+      },
+    );
 
     test('AsyncCache invalidate and clear', () async {
       final cache = AsyncCache<String, int>();

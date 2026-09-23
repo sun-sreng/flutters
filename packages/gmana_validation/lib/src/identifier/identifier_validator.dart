@@ -11,9 +11,7 @@ final class IdentifierValidator {
   final IdentifierValidationConfig config;
 
   /// Creates an identifier validator.
-  const IdentifierValidator([
-    this.config = const IdentifierValidationConfig(),
-  ]);
+  const IdentifierValidator([this.config = const IdentifierValidationConfig()]);
 
   /// Validates and normalizes [input].
   ValidationResult<IdentifierValidationIssue, String> validate(String input) {

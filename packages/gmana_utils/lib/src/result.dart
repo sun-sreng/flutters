@@ -83,9 +83,10 @@ sealed class Result<T, E> {
   static Result<T, E> fromNullable<T extends Object, E>(
     T? value,
     E Function() onNull,
-  ) => value == null
-      ? Result<T, E>.failure(onNull())
-      : Result<T, E>.success(value);
+  ) =>
+      value == null
+          ? Result<T, E>.failure(onNull())
+          : Result<T, E>.success(value);
 
   /// Returns `true` if this result is [Success].
   bool get isSuccess => this is Success<T, E>;
@@ -261,4 +262,3 @@ final class Failure<T, E> extends Result<T, E> {
   @override
   String toString() => 'Result.failure($error)';
 }
-

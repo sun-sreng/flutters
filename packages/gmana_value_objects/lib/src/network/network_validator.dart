@@ -24,13 +24,9 @@ final class NetworkValidator {
     return switch (config.requiredType) {
       NetworkAddressType.any => Right(value),
       NetworkAddressType.ipv4 =>
-        _isIpv4(value)
-            ? Right(value)
-            : const Left(NetworkAddressInvalidIp(4)),
+        _isIpv4(value) ? Right(value) : const Left(NetworkAddressInvalidIp(4)),
       NetworkAddressType.ipv6 =>
-        _isIpv6(value)
-            ? Right(value)
-            : const Left(NetworkAddressInvalidIp(6)),
+        _isIpv6(value) ? Right(value) : const Left(NetworkAddressInvalidIp(6)),
       NetworkAddressType.ip =>
         _isIp(value, config.ipVersion)
             ? Right(value)
@@ -40,13 +36,9 @@ final class NetworkValidator {
             ? Right(value)
             : Left(NetworkAddressInvalidCidr(config.ipVersion)),
       NetworkAddressType.macAddress =>
-        _isMac(value)
-            ? Right(value)
-            : const Left(NetworkAddressInvalidMac()),
+        _isMac(value) ? Right(value) : const Left(NetworkAddressInvalidMac()),
       NetworkAddressType.port =>
-        _isPort(value)
-            ? Right(value)
-            : const Left(NetworkAddressInvalidPort()),
+        _isPort(value) ? Right(value) : const Left(NetworkAddressInvalidPort()),
     };
   }
 
@@ -61,7 +53,9 @@ final class NetworkValidator {
   }
 
   static bool _isIpv6(String str) {
-    return RegExp(r'^::|^::1|^([a-fA-F0-9]{1,4}::?){1,7}([a-fA-F0-9]{1,4})$').hasMatch(str);
+    return RegExp(
+      r'^::|^::1|^([a-fA-F0-9]{1,4}::?){1,7}([a-fA-F0-9]{1,4})$',
+    ).hasMatch(str);
   }
 
   static bool _isIp(String str, int? version) {

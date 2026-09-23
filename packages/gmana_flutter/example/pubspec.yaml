@@ -1,4 +1,4 @@
-name: example
+name: gmana_flutter_example
 description: Demonstrates gmana_flutter widgets, form helpers, color utilities, and theme-mode extensions.
 publish_to: "none"
 version: 0.0.1
@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  gmana_flutter: ^0.0.8
+  gmana_flutter: ^0.0.10
 
 dev_dependencies:
   flutter_test:

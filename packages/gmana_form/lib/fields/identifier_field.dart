@@ -23,7 +23,8 @@ class GIdentifierField extends StatelessWidget {
     IdentifierValidationConfig validationConfig =
         const IdentifierValidationConfig(),
     ValidationMessageResolver<IdentifierValidationIssue>
-    validationMessageResolver = resolveIdentifierValidationIssue,
+        validationMessageResolver =
+        resolveIdentifierValidationIssue,
     GFormValidator? validator,
     GTextFieldConfig Function(GTextFieldConfig config)? configure,
     void Function(String)? onChanged,
@@ -85,4 +86,3 @@ class GIdentifierField extends StatelessWidget {
     return GConfiguredTextFormField(config: config);
   }
 }
-

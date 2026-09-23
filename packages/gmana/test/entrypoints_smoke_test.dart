@@ -19,7 +19,6 @@ void main() {
     final emailVo = value_objects.Email('user@example.com');
     final gmanaEmailVo = gmana.Email('user@example.com');
 
-
     final debouncer = utilities.Debouncer(milliseconds: 1);
     final throttler = utilities.Throttler(milliseconds: 1);
 
@@ -40,9 +39,7 @@ void main() {
     expect(emailVo.value, 'user@example.com');
     expect(gmanaEmailVo.value, 'user@example.com');
 
-
     debouncer.dispose();
     throttler.dispose();
   });
 }
-

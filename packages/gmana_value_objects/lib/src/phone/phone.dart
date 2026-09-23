@@ -21,10 +21,10 @@ final class PhoneValue extends ValueObject<String> {
     String input, [
     PhoneValidationConfig config = const PhoneValidationConfig(),
   ]) {
-    return tryParse(input, config).fold(
-      (error) => throw ValueObjectException(error),
-      (phone) => phone,
-    );
+    return tryParse(
+      input,
+      config,
+    ).fold((error) => throw ValueObjectException(error), (phone) => phone);
   }
 
   /// Attempts to parse [input] into a [PhoneValue].
@@ -33,8 +33,6 @@ final class PhoneValue extends ValueObject<String> {
     String input, [
     PhoneValidationConfig config = const PhoneValidationConfig(),
   ]) {
-    return PhoneValidator(config)
-        .validate(input)
-        .map(PhoneValue._);
+    return PhoneValidator(config).validate(input).map(PhoneValue._);
   }
 }

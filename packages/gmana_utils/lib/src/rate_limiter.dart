@@ -11,10 +11,7 @@ class RateLimiter {
   final List<DateTime> _timestamps = [];
 
   /// Creates a [RateLimiter] allowing up to [maxRequests] executions per [duration].
-  RateLimiter({
-    required this.maxRequests,
-    required this.duration,
-  }) {
+  RateLimiter({required this.maxRequests, required this.duration}) {
     if (maxRequests <= 0) {
       throw ArgumentError.value(maxRequests, 'maxRequests', 'must be positive');
     }

@@ -27,4 +27,3 @@ export 'widget/sized_box_width.dart';
 export 'widget/star_rating_bar.dart';
 export 'widget/tag.dart';
 export 'widget/text_field.dart';
-

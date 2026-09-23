@@ -121,13 +121,14 @@ class _GSearchFieldState extends State<GSearchField> {
 
   @override
   Widget build(BuildContext context) {
-    final suffixIcon = _hasText
-        ? IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: _clear,
-            tooltip: 'Clear',
-          )
-        : null;
+    final suffixIcon =
+        _hasText
+            ? IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: _clear,
+              tooltip: 'Clear',
+            )
+            : null;
 
     final config = GTextFieldConfig(
       controller: _controller,
@@ -143,10 +144,6 @@ class _GSearchFieldState extends State<GSearchField> {
       decoration: widget.decoration,
     );
 
-    return GConfiguredTextFormField(
-      config: config,
-      suffixIcon: suffixIcon,
-    );
+    return GConfiguredTextFormField(config: config, suffixIcon: suffixIcon);
   }
 }
-

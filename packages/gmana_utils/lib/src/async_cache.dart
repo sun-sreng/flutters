@@ -24,7 +24,10 @@ class AsyncMemoizer<T> {
       _started = true;
       try {
         unawaited(
-          computation().then(_completer.complete, onError: _completer.completeError),
+          computation().then(
+            _completer.complete,
+            onError: _completer.completeError,
+          ),
         );
       } catch (error, stackTrace) {
         // The computation threw synchronously, before returning a future.
@@ -107,9 +110,10 @@ class AsyncCache<K, V> {
     _inFlight[key] = completer.future;
 
     unawaited(
-      _fetchAndCache(key, ifAbsent)
-          .then(completer.complete)
-          .catchError(completer.completeError),
+      _fetchAndCache(
+        key,
+        ifAbsent,
+      ).then(completer.complete).catchError(completer.completeError),
     );
 
     return completer.future;
@@ -228,4 +232,3 @@ class AsyncCache<K, V> {
     return true;
   }
 }
-

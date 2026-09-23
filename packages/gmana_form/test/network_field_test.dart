@@ -5,13 +5,7 @@ import 'package:gmana_form/gmana_form.dart';
 void main() {
   testWidgets('GNetworkField renders label and accepts input', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: GNetworkField(
-            label: 'IP Field',
-          ),
-        ),
-      ),
+      MaterialApp(home: Scaffold(body: GNetworkField(label: 'IP Field'))),
     );
 
     expect(find.text('IP Field'), findsOneWidget);

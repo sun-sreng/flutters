@@ -15,20 +15,30 @@ get:
 format:
     dart format .
 
+# Check formatting without modifying files.
+format-check:
+    dart format --output=none --set-exit-if-changed .
+
 # Analyze every package in the workspace.
 analyze:
     dart analyze --fatal-infos --fatal-warnings .
 
-# Run tests for the core Dart packages.
+# Run tests for all pure Dart packages.
 test-dart:
     dart test packages/gmana
+    dart test packages/gmana_extensions
+    dart test packages/gmana_functional
+    dart test packages/gmana_predicates
+    dart test packages/gmana_utils
+    dart test packages/gmana_validation
     dart test packages/gmana_value_objects
 
-# Run Flutter tests for Flutter packages.
+# Run Flutter tests for all Flutter packages.
 test-flutter:
+    flutter test packages/gmana_flutter
+    flutter test packages/gmana_flutter_extensions
     flutter test packages/gmana_form
     flutter test packages/gmana_spinner
-    flutter test packages/gmana_flutter
 
 test: test-dart test-flutter
 

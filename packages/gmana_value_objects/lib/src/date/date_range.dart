@@ -11,8 +11,8 @@ final class DateRange {
 
   /// Creates a [DateRange].
   DateRange({required DateTime start, required DateTime end})
-      : start = start.toUtc(),
-        end = end.toUtc();
+    : start = start.toUtc(),
+      end = end.toUtc();
 
   /// Duration spanned by this date range.
   Duration get duration => end.difference(start);

@@ -9,18 +9,14 @@ final class IdentifierValidator {
   final IdentifierValidationConfig config;
 
   /// Creates an [IdentifierValidator].
-  const IdentifierValidator([
-    this.config = const IdentifierValidationConfig(),
-  ]);
+  const IdentifierValidator([this.config = const IdentifierValidationConfig()]);
 
   /// Validates [input] returning `Either<IdentifierError, String>`.
   Either<IdentifierError, String> validate(String input) {
     final value = config.trimWhitespace ? input.trim() : input;
 
     if (value.isEmpty) {
-      return config.allowEmpty
-          ? Right(value)
-          : const Left(IdentifierEmpty());
+      return config.allowEmpty ? Right(value) : const Left(IdentifierEmpty());
     }
 
     return switch (config.requiredType) {
@@ -46,9 +42,7 @@ final class IdentifierValidator {
             ? Right(value)
             : const Left(IdentifierInvalidMongoId()),
       IdentifierType.semVer =>
-        _isSemVer(value)
-            ? Right(value)
-            : const Left(IdentifierInvalidSemVer()),
+        _isSemVer(value) ? Right(value) : const Left(IdentifierInvalidSemVer()),
       IdentifierType.nanoId =>
         _isNanoId(value, config.nanoIdLength)
             ? Right(value)
@@ -58,16 +52,27 @@ final class IdentifierValidator {
 
   static bool _isUuid(String str, String? version) {
     final reg = switch (version) {
-      '3' => RegExp(r'^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-3[0-9A-Fa-f]{3}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'),
-      '4' => RegExp(r'^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89abAB][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$'),
-      '5' => RegExp(r'^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-5[0-9A-Fa-f]{3}-[89abAB][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$'),
-      _ => RegExp(r'^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'),
+      '3' => RegExp(
+        r'^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-3[0-9A-Fa-f]{3}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$',
+      ),
+      '4' => RegExp(
+        r'^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89abAB][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$',
+      ),
+      '5' => RegExp(
+        r'^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-5[0-9A-Fa-f]{3}-[89abAB][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$',
+      ),
+      _ => RegExp(
+        r'^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$',
+      ),
     };
     return reg.hasMatch(str);
   }
 
   static bool _isUlid(String str) {
-    return RegExp(r'^[0-7][0-9A-HJKMNP-TV-Z]{25}$', caseSensitive: false).hasMatch(str);
+    return RegExp(
+      r'^[0-7][0-9A-HJKMNP-TV-Z]{25}$',
+      caseSensitive: false,
+    ).hasMatch(str);
   }
 
   static bool _isImei(String str) {
@@ -81,7 +86,9 @@ final class IdentifierValidator {
       return _checkEanChecksum(sanitized);
     } else if (version == '13' && RegExp(r'^\d{13}$').hasMatch(sanitized)) {
       return _checkEanChecksum(sanitized);
-    } else if (version == null && (RegExp(r'^\d{8}$').hasMatch(sanitized) || RegExp(r'^\d{13}$').hasMatch(sanitized))) {
+    } else if (version == null &&
+        (RegExp(r'^\d{8}$').hasMatch(sanitized) ||
+            RegExp(r'^\d{13}$').hasMatch(sanitized))) {
       return _checkEanChecksum(sanitized);
     }
     return false;
@@ -101,7 +108,9 @@ final class IdentifierValidator {
 
   static bool _isCreditCard(String str) {
     final sanitized = str.replaceAll(RegExp(r'\D'), '');
-    return sanitized.length >= 13 && sanitized.length <= 19 && _isLuhn(sanitized);
+    return sanitized.length >= 13 &&
+        sanitized.length <= 19 &&
+        _isLuhn(sanitized);
   }
 
   static bool _isLuhn(String str) {

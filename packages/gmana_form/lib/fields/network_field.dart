@@ -22,7 +22,8 @@ class GNetworkField extends StatelessWidget {
     GFormValueParser? valueParser,
     NetworkValidationConfig validationConfig = const NetworkValidationConfig(),
     ValidationMessageResolver<NetworkValidationIssue>
-    validationMessageResolver = resolveNetworkValidationIssue,
+        validationMessageResolver =
+        resolveNetworkValidationIssue,
     GFormValidator? validator,
     GTextFieldConfig Function(GTextFieldConfig config)? configure,
     void Function(String)? onChanged,
@@ -50,9 +51,10 @@ class GNetworkField extends StatelessWidget {
       initialValue: initialValue,
       label: label,
       hint: hint,
-      keyboardType: validationConfig.requiredType == NetworkAddressType.port
-          ? TextInputType.number
-          : TextInputType.url,
+      keyboardType:
+          validationConfig.requiredType == NetworkAddressType.port
+              ? TextInputType.number
+              : TextInputType.url,
       textInputAction: textInputAction,
       inputFormatters: inputFormatters,
       valueParser: valueParser,
@@ -86,4 +88,3 @@ class GNetworkField extends StatelessWidget {
     return GConfiguredTextFormField(config: config);
   }
 }
-

@@ -119,7 +119,8 @@ final class DateInvalidTimeIssue extends DateValidationIssue {
   String get code => 'date.invalidTime';
 
   @override
-  String get defaultMessage => 'Invalid time format (expected HH:mm or HH:mm:ss)';
+  String get defaultMessage =>
+      'Invalid time format (expected HH:mm or HH:mm:ss)';
 }
 
 /// Date is before configured minDate.
@@ -134,7 +135,8 @@ final class DateBeforeMinIssue extends DateValidationIssue {
   String get code => 'date.beforeMin';
 
   @override
-  String get defaultMessage => 'Date must not be before ${minDate.toIso8601String()}';
+  String get defaultMessage =>
+      'Date must not be before ${minDate.toIso8601String()}';
 }
 
 /// Date is after configured maxDate.
@@ -149,5 +151,6 @@ final class DateAfterMaxIssue extends DateValidationIssue {
   String get code => 'date.afterMax';
 
   @override
-  String get defaultMessage => 'Date must not be after ${maxDate.toIso8601String()}';
+  String get defaultMessage =>
+      'Date must not be after ${maxDate.toIso8601String()}';
 }

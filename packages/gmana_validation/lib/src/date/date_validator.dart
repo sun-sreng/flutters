@@ -18,7 +18,9 @@ final class DateValidator {
     final value = config.trimWhitespace ? input.trim() : input;
 
     if (value.isEmpty) {
-      return config.allowEmpty ? const Right(null) : const Left(DateEmptyIssue());
+      return config.allowEmpty
+          ? const Right(null)
+          : const Left(DateEmptyIssue());
     }
 
     if (config.mustBeTime) {
@@ -27,7 +29,6 @@ final class DateValidator {
       }
       return const Right(null);
     }
-
 
     final parsedDate = predicates.tryParseDate(value);
     if (parsedDate == null) {

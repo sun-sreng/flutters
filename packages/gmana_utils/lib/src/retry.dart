@@ -6,11 +6,8 @@ import 'dart:math';
 /// [attempt] is the 1-based number of the attempt that just failed, [error] is
 /// what it threw, and [nextDelay] is how long [retry] will wait before the
 /// following attempt.
-typedef RetryCallback = void Function(
-  int attempt,
-  Object error,
-  Duration nextDelay,
-);
+typedef RetryCallback =
+    void Function(int attempt, Object error, Duration nextDelay);
 
 final Random _jitterRandom = Random();
 

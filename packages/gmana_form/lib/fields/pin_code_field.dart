@@ -46,7 +46,7 @@ class GPinCodeField extends StatefulWidget {
     this.obscuringCharacter = '●',
     this.initialValue,
     this.enabled = true,
-  })  : assert(length > 0, 'PIN length must be > 0');
+  }) : assert(length > 0, 'PIN length must be > 0');
 
   @override
   State<GPinCodeField> createState() => _GPinCodeFieldState();

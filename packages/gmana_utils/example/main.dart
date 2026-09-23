@@ -55,8 +55,12 @@ Future<void> _streamTiming() async {
   final throttled = <int>[];
 
   final subscriptions = [
-    controller.stream.debounce(const Duration(milliseconds: 30)).listen(debounced.add),
-    controller.stream.throttle(const Duration(milliseconds: 30)).listen(throttled.add),
+    controller.stream
+        .debounce(const Duration(milliseconds: 30))
+        .listen(debounced.add),
+    controller.stream
+        .throttle(const Duration(milliseconds: 30))
+        .listen(throttled.add),
   ];
 
   for (final value in [1, 2, 3]) {
@@ -152,8 +156,9 @@ Future<void> _resilience() async {
     delay: const Duration(milliseconds: 10),
     maxDelay: const Duration(milliseconds: 50),
     jitter: true,
-    onRetry: (attempt, error, nextDelay) =>
-        print('  attempt $attempt failed ($error); waiting $nextDelay'),
+    onRetry:
+        (attempt, error, nextDelay) =>
+            print('  attempt $attempt failed ($error); waiting $nextDelay'),
   );
   print('  retry: $value');
 
@@ -181,7 +186,8 @@ Future<void> _resilience() async {
     maxRequests: 2,
     duration: const Duration(seconds: 1),
   );
-  final accepted = List.generate(4, (_) => limiter.tryRun(() {})).where((ok) => ok).length;
+  final accepted =
+      List.generate(4, (_) => limiter.tryRun(() {})).where((ok) => ok).length;
   print('  rate limiter accepted $accepted of 4');
 }
 
@@ -229,7 +235,11 @@ Future<void> _cachingAndBatching() async {
     },
   );
 
-  final batched = await Future.wait([batcher.add(1), batcher.add(2), batcher.add(3)]);
+  final batched = await Future.wait([
+    batcher.add(1),
+    batcher.add(2),
+    batcher.add(3),
+  ]);
   print('  batched results: $batched');
   batcher.dispose();
 }
@@ -243,7 +253,10 @@ void _fallibleWorkflows() {
   );
 
   final port = parsed
-      .filter((value) => value > 0 && value < 65536, orElse: (v) => '$v is out of range')
+      .filter(
+        (value) => value > 0 && value < 65536,
+        orElse: (v) => '$v is out of range',
+      )
       .inspectSuccess((value) => print('  using port $value'))
       .getOrElse(80);
   print('  port: $port');
@@ -252,7 +265,9 @@ void _fallibleWorkflows() {
     () => int.parse('not-a-port'),
     (error, stackTrace) => 'Not a number',
   );
-  print('  fold on failure: ${bad.fold(onSuccess: (v) => 'ok $v', onFailure: (e) => 'err $e')}');
+  print(
+    '  fold on failure: ${bad.fold(onSuccess: (v) => 'ok $v', onFailure: (e) => 'err $e')}',
+  );
   print('  recovered: ${bad.recover((_) => 8080).getOrThrow()}');
 
   final results = <Result<int, String>>[

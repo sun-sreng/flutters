@@ -36,7 +36,7 @@ class Batcher<T, R> {
     required this.maxBatchSize,
     required this.maxDelay,
     required this.handler,
-  })  : assert(maxBatchSize > 0, 'maxBatchSize must be > 0');
+  }) : assert(maxBatchSize > 0, 'maxBatchSize must be > 0');
 
   /// Adds [item] to the batch queue and returns a `Future` that completes when the batch processes.
   ///
@@ -58,7 +58,6 @@ class Batcher<T, R> {
     } else {
       _timer ??= Timer(maxDelay, () => unawaited(_flush()));
     }
-
 
     return completer.future;
   }

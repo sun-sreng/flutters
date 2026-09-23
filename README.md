@@ -11,9 +11,9 @@ The monorepo is organized into three layers. The `gmana` facade gives you everyt
 | Package                                             | Version | Description                                                                                 |
 | --------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------- |
 | [**gmana**](./packages/gmana)                       | `0.2.0` | Convenience facade — re-exports all Pure Dart packages below from a single import.          |
-| [**gmana_extensions**](./packages/gmana_extensions) | `0.0.1` | Extension methods on `Duration`, `String`, `num`, `Iterable`, and `Stream`.                 |
-| [**gmana_functional**](./packages/gmana_functional) | `0.0.1` | Functional primitives — `Either<L,R>`, `Result`, `UseCase`, `Failure`, `Unit`.              |
-| [**gmana_predicates**](./packages/gmana_predicates) | `0.0.1` | Boolean predicate functions — email, alpha, date, UUID, credit card, and more.              |
+| [**gmana_extensions**](./packages/gmana_extensions) | `0.0.2` | Extension methods on `Duration`, `String`, `num`, `Iterable`, and `Stream`.                 |
+| [**gmana_functional**](./packages/gmana_functional) | `0.0.2` | Functional primitives — `Either<L,R>`, `Result`, `UseCase`, `Failure`, `Unit`.              |
+| [**gmana_predicates**](./packages/gmana_predicates) | `0.0.2` | Boolean predicate functions — email, alpha, date, UUID, credit card, and more.              |
 | [**gmana_utils**](./packages/gmana_utils)           | `0.0.1` | Resilience and timing utilities — retry, `CircuitBreaker`, `Semaphore`, `AsyncCache`, `Batcher`, debounce/throttle, `Result`, ID generation. |
 | [**gmana_validation**](./packages/gmana_validation) | `0.0.1` | Typed validators for email, password, text, and number inputs using `Either`-based results. |
 
@@ -21,16 +21,16 @@ The monorepo is organized into three layers. The `gmana` facade gives you everyt
 
 | Package                                                   | Version | Description                                                                                                   |
 | --------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------- |
-| [**gmana_value_objects**](./packages/gmana_value_objects) | `0.0.6` | Production-ready value objects with configurable validation — `Email`, `Password`, `Text`, `Number`, `Money`. |
+| [**gmana_value_objects**](./packages/gmana_value_objects) | `0.1.0` | Production-ready value objects with configurable validation — `Email`, `Password`, `Text`, `Number`, `Money`. |
 
 ### Flutter — presentation
 
 | Package                                                             | Version | Description                                                                                                       |
 | ------------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------- |
-| [**gmana_flutter**](./packages/gmana_flutter)                       | `0.0.8` | UI library — branded `G*` widgets, theme management, and a compatibility re-export of all Flutter packages below. |
-| [**gmana_flutter_extensions**](./packages/gmana_flutter_extensions) | `0.0.1` | Flutter extension methods — color, layout, `BuildContext`, icons, time, and theme mode.                           |
+| [**gmana_flutter**](./packages/gmana_flutter)                       | `0.0.10` | UI library — branded `G*` widgets, design tokens, responsive builders, and theme management.                      |
+| [**gmana_flutter_extensions**](./packages/gmana_flutter_extensions) | `0.0.2` | Flutter extension methods — color, layout, `BuildContext`, icons, time, and theme mode.                           |
 | [**gmana_form**](./packages/gmana_form)                             | `0.0.1` | Form fields, validators, and submit controls — `GEmailField`, `GPasswordField`, `GElevatedButton`, and more.      |
-| [**gmana_spinner**](./packages/gmana_spinner)                       | `0.0.1` | Loading indicators — `GCircularSpinner`, `GWaveDotSpinner`, `GDotSpinner`, and more.                              |
+| [**gmana_spinner**](./packages/gmana_spinner)                       | `0.0.2` | Loading indicators — `GCircularSpinner`, `GWaveDotSpinner`, `GDotSpinner`, and more.                              |
 
 ---
 
@@ -48,16 +48,16 @@ dart pub add gmana gmana_value_objects
 ### 2. Full Flutter app
 
 ```bash
-flutter pub add gmana gmana_flutter gmana_value_objects
+flutter pub add gmana gmana_flutter gmana_flutter_extensions gmana_form gmana_spinner gmana_value_objects
 ```
 
-- `gmana_flutter` re-exports all Flutter packages, so one import covers widgets, forms, spinners, and extensions.
-- Use focused packages directly when you only need part of the stack:
+- Pick focused packages directly when you only need part of the stack:
 
 ```bash
-flutter pub add gmana_flutter_extensions   # just context/color/layout helpers
-flutter pub add gmana_form                 # just form fields
-flutter pub add gmana_spinner              # just loading indicators
+flutter pub add gmana_flutter_extensions   # context/color/layout helpers
+flutter pub add gmana_form                 # form fields & validation adapters
+flutter pub add gmana_spinner              # loading indicators
+flutter pub add gmana_flutter              # branded design tokens & core UI widgets
 ```
 
 ### 3. Manual `pubspec.yaml` setup
@@ -66,13 +66,13 @@ flutter pub add gmana_spinner              # just loading indicators
 dependencies:
   # Pure Dart
   gmana: ^0.2.0
-  gmana_value_objects: ^0.0.6
+  gmana_value_objects: ^0.1.0
 
-  # Flutter (use gmana_flutter as the umbrella, or pick individually)
-  gmana_flutter: ^0.0.8
-  gmana_flutter_extensions: ^0.0.1
+  # Flutter
+  gmana_flutter: ^0.0.10
+  gmana_flutter_extensions: ^0.0.2
   gmana_form: ^0.0.1
-  gmana_spinner: ^0.0.1
+  gmana_spinner: ^0.0.2
 ```
 
 ---

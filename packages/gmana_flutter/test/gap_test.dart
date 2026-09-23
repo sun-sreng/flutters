@@ -3,16 +3,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:gmana_flutter/gmana_flutter.dart';
 
 void main() {
-  testWidgets('GGap renders SizedBox with specified dimensions', (tester) async {
+  testWidgets('GGap renders SizedBox with specified dimensions', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       const Directionality(
         textDirection: TextDirection.ltr,
         child: Column(
-          children: [
-            Text('Top'),
-            GGap.vertical(16.0),
-            Text('Bottom'),
-          ],
+          children: [Text('Top'), GGap.vertical(16.0), Text('Bottom')],
         ),
       ),
     );

@@ -41,7 +41,8 @@ class GGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final cols = crossAxisCount ??
+        final cols =
+            crossAxisCount ??
             ((maxItemWidth != null && maxItemWidth! > 0)
                 ? (constraints.maxWidth / maxItemWidth!).floor().clamp(1, 12)
                 : 2);

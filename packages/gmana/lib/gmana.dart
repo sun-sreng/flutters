@@ -24,5 +24,3 @@ export 'value_objects.dart'
         TextValidator,
         UrlValidationConfig,
         UrlValidator;
-
-

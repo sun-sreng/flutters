@@ -21,10 +21,10 @@ final class IdentifierValue extends ValueObject<String> {
     String input, {
     IdentifierValidationConfig config = const IdentifierValidationConfig(),
   }) {
-    return tryParse(input, config: config).fold(
-      (error) => throw ValueObjectException(error),
-      (val) => val,
-    );
+    return tryParse(
+      input,
+      config: config,
+    ).fold((error) => throw ValueObjectException(error), (val) => val);
   }
 
   /// Attempts to parse [input] into an [IdentifierValue].

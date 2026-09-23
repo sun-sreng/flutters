@@ -9,10 +9,7 @@ void main() {
         home: Scaffold(
           body: GGrid(
             crossAxisCount: 2,
-            children: [
-              Text('Item 1'),
-              Text('Item 2'),
-            ],
+            children: [Text('Item 1'), Text('Item 2')],
           ),
         ),
       ),

@@ -51,7 +51,8 @@ void main() {
           },
           maxAttempts: 3,
           delay: const Duration(milliseconds: 5),
-          retryIf: (error) => error is StateError, // ArgumentError is not retried
+          retryIf:
+              (error) => error is StateError, // ArgumentError is not retried
         ),
         throwsArgumentError,
       );

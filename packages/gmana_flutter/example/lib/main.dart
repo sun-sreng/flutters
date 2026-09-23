@@ -1,12 +1,12 @@
-import 'package:example/theme/showcase_theme.dart';
-import 'package:example/views/color_ext_view.dart';
-import 'package:example/widgets/benefit_tile.dart';
-import 'package:example/widgets/glow_orb.dart';
-import 'package:example/widgets/hero_panel.dart';
-import 'package:example/widgets/section_label.dart';
-import 'package:example/widgets/showcase_card.dart';
-import 'package:example/widgets/signal_panel.dart';
-import 'package:example/widgets/top_bar.dart';
+import 'theme/showcase_theme.dart';
+import 'views/color_ext_view.dart';
+import 'widgets/benefit_tile.dart';
+import 'widgets/glow_orb.dart';
+import 'widgets/hero_panel.dart';
+import 'widgets/section_label.dart';
+import 'widgets/showcase_card.dart';
+import 'widgets/signal_panel.dart';
+import 'widgets/top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:gmana_flutter/gmana_flutter.dart';
 

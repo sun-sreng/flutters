@@ -21,10 +21,10 @@ final class PhoneValidationConfig {
 
   /// Preset for strict E.164 phone numbers (e.g. `+14155552671`).
   factory PhoneValidationConfig.e164() => const PhoneValidationConfig(
-        requirePlusPrefix: true,
-        minDigits: 7,
-        maxDigits: 15,
-      );
+    requirePlusPrefix: true,
+    minDigits: 7,
+    maxDigits: 15,
+  );
 
   @override
   bool operator ==(Object other) =>

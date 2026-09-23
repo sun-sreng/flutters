@@ -135,7 +135,6 @@ void main() {
 
       await expectLater(batcher.add(1), throwsStateError);
     });
-
   });
 
   group('AsyncCache', () {

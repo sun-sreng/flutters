@@ -10,9 +10,7 @@ void main() {
     });
 
     test('measureAsync measures async execution duration', () async {
-      final (res, elapsed) = await StopwatchX.measureAsync(
-        () async => 'done',
-      );
+      final (res, elapsed) = await StopwatchX.measureAsync(() async => 'done');
       expect(res, equals('done'));
       expect(elapsed.inMilliseconds, greaterThanOrEqualTo(0));
     });

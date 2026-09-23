@@ -21,10 +21,10 @@ final class NetworkAddressValue extends ValueObject<String> {
     String input, {
     NetworkValidationConfig config = const NetworkValidationConfig(),
   }) {
-    return tryParse(input, config: config).fold(
-      (error) => throw ValueObjectException(error),
-      (val) => val,
-    );
+    return tryParse(
+      input,
+      config: config,
+    ).fold((error) => throw ValueObjectException(error), (val) => val);
   }
 
   /// Attempts to parse [input] into a [NetworkAddressValue].

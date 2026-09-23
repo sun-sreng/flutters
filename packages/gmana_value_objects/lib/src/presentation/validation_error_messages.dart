@@ -127,11 +127,15 @@ final class DefaultValidationErrorMessages implements ValidationErrorMessages {
       // Identifier errors
       IdentifierEmpty() => 'Identifier cannot be empty',
       IdentifierInvalidUuid(:final version) =>
-        version != null ? 'Invalid UUID v$version format' : 'Invalid UUID format',
+        version != null
+            ? 'Invalid UUID v$version format'
+            : 'Invalid UUID format',
       IdentifierInvalidUlid() => 'Invalid ULID format',
       IdentifierInvalidImei() => 'Invalid IMEI number',
       IdentifierInvalidEan(:final version) =>
-        version != null ? 'Invalid EAN-$version barcode' : 'Invalid EAN barcode',
+        version != null
+            ? 'Invalid EAN-$version barcode'
+            : 'Invalid EAN barcode',
       IdentifierInvalidCreditCard() => 'Invalid credit card number',
       IdentifierInvalidMongoId() => 'Invalid MongoDB ObjectId',
       IdentifierInvalidSemVer() => 'Invalid Semantic Version format',
@@ -143,7 +147,9 @@ final class DefaultValidationErrorMessages implements ValidationErrorMessages {
       NetworkAddressInvalidIp(:final version) =>
         version != null ? 'Invalid IPv$version address' : 'Invalid IP address',
       NetworkAddressInvalidCidr(:final version) =>
-        version != null ? 'Invalid IPv$version CIDR block' : 'Invalid CIDR block',
+        version != null
+            ? 'Invalid IPv$version CIDR block'
+            : 'Invalid CIDR block',
       NetworkAddressInvalidMac() => 'Invalid MAC address',
       NetworkAddressInvalidPort() => 'Invalid port number (must be 1–65535)',
 
@@ -155,4 +161,3 @@ final class DefaultValidationErrorMessages implements ValidationErrorMessages {
     };
   }
 }
-

@@ -21,10 +21,10 @@ final class UrlValue extends ValueObject<Uri> {
     String input, [
     UrlValidationConfig config = const UrlValidationConfig(),
   ]) {
-    return tryParse(input, config).fold(
-      (error) => throw ValueObjectException(error),
-      (url) => url,
-    );
+    return tryParse(
+      input,
+      config,
+    ).fold((error) => throw ValueObjectException(error), (url) => url);
   }
 
   /// Attempts to parse [input] into a [UrlValue].

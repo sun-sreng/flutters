@@ -22,7 +22,7 @@ dependencies:
   flutter:
     sdk: flutter
   gmana: ^0.2.0
-  gmana_flutter_extensions: ^0.0.1
+  gmana_flutter_extensions: ^0.0.2
 
 dev_dependencies:
   flutter_lints: ^6.0.0

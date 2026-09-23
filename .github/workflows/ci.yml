@@ -1,0 +1,118 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze_and_format:
+    name: Analyze & Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze workspace
+        run: dart analyze --fatal-infos --fatal-warnings .
+
+  test_dart:
+    name: Dart Tests (${{ matrix.os }})
+    needs: analyze_and_format
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Run Pure Dart tests
+        run: |
+          dart test packages/gmana
+          dart test packages/gmana_extensions
+          dart test packages/gmana_functional
+          dart test packages/gmana_predicates
+          dart test packages/gmana_utils
+          dart test packages/gmana_validation
+          dart test packages/gmana_value_objects
+
+  test_flutter:
+    name: Flutter Tests (${{ matrix.os }})
+    needs: analyze_and_format
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run Flutter package tests
+        run: |
+          flutter test packages/gmana_flutter
+          flutter test packages/gmana_flutter_extensions
+          flutter test packages/gmana_form
+          flutter test packages/gmana_spinner
+
+  publish_dry_run:
+    name: Pub Publish Dry Run
+    needs: [test_dart, test_flutter]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Validate package publishability
+        run: |
+          for pkg in gmana gmana_extensions gmana_functional gmana_predicates gmana_utils gmana_validation gmana_value_objects; do
+            echo "Checking $pkg..."
+            (cd packages/$pkg && dart pub publish --dry-run)
+          done
+          for pkg in gmana_flutter gmana_flutter_extensions gmana_form gmana_spinner; do
+            echo "Checking $pkg..."
+            (cd packages/$pkg && flutter pub publish --dry-run)
+          done

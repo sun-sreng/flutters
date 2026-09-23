@@ -12,11 +12,16 @@ final RegExp _base64RegExp = RegExp(r'^[A-Za-z0-9+/_-]*={0,2}$');
 final RegExp _e164PhoneRegExp = RegExp(r'^\+\d{7,15}$');
 final RegExp _isoDateRegExp = RegExp(r'^\d{4}-\d{2}-\d{2}$');
 final RegExp _jwtSignatureRegExp = RegExp(r'^[A-Za-z0-9_-]*$');
-final RegExp _macAddressColonRegExp =
-    RegExp(r'^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$');
-final RegExp _macAddressDotRegExp =
-    RegExp(r'^[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}$');
-final RegExp _namePatternRegExp = RegExp(r"^[\p{L}\p{M}' .\-]+$", unicode: true);
+final RegExp _macAddressColonRegExp = RegExp(
+  r'^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$',
+);
+final RegExp _macAddressDotRegExp = RegExp(
+  r'^[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}$',
+);
+final RegExp _namePatternRegExp = RegExp(
+  r"^[\p{L}\p{M}' .\-]+$",
+  unicode: true,
+);
 final RegExp _nameLetterRegExp = RegExp(r'\p{L}', unicode: true);
 final RegExp _phoneStripRegExp = RegExp(r'[\s\-().+]');
 final RegExp _phoneDigitsRegExp = RegExp(r'^\d{7,15}$');
@@ -24,8 +29,9 @@ final RegExp _slugRegExp = RegExp(r'^[a-z0-9]+(?:-[a-z0-9]+)*$');
 final RegExp _uuidAnyRegExp = RegExp(
   r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
 );
-final RegExp _usernameRegExp =
-    RegExp(r'^[A-Za-z0-9](?:[A-Za-z0-9._]*[A-Za-z0-9])?$');
+final RegExp _usernameRegExp = RegExp(
+  r'^[A-Za-z0-9](?:[A-Za-z0-9._]*[A-Za-z0-9])?$',
+);
 
 /// A vast collection of validation utilities mapped as getters on [String].
 extension StringValidation on String {

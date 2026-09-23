@@ -67,17 +67,15 @@ void main() {
 
     test('mapBoth transforms whichever branch is present', () {
       expect(
-        const Result<int, String>.success(2).mapBoth(
-          onSuccess: (v) => v * 2,
-          onFailure: (e) => e.length,
-        ),
+        const Result<int, String>.success(
+          2,
+        ).mapBoth(onSuccess: (v) => v * 2, onFailure: (e) => e.length),
         const Result<int, int>.success(4),
       );
       expect(
-        const Result<int, String>.failure('abc').mapBoth(
-          onSuccess: (v) => v * 2,
-          onFailure: (e) => e.length,
-        ),
+        const Result<int, String>.failure(
+          'abc',
+        ).mapBoth(onSuccess: (v) => v * 2, onFailure: (e) => e.length),
         const Result<int, int>.failure(3),
       );
     });
@@ -180,7 +178,10 @@ void main() {
 
         expect(attempts, 8);
         // First attempt is immediate; later gaps double then hold at the cap.
-        expect(gaps.skip(1), everyElement(lessThanOrEqualTo(const Duration(seconds: 4))));
+        expect(
+          gaps.skip(1),
+          everyElement(lessThanOrEqualTo(const Duration(seconds: 4))),
+        );
         expect(gaps.last, const Duration(seconds: 4));
       });
     });
@@ -232,7 +233,10 @@ void main() {
         async.elapse(const Duration(minutes: 5));
 
         // With full jitter each delay lands in [0, computedDelay].
-        expect(gaps.skip(1), everyElement(lessThanOrEqualTo(const Duration(seconds: 32))));
+        expect(
+          gaps.skip(1),
+          everyElement(lessThanOrEqualTo(const Duration(seconds: 32))),
+        );
       });
     });
   });
@@ -383,19 +387,21 @@ void main() {
     });
 
     test('invalidateWhere removes matching keys', () {
-      final cache = AsyncCache<String, int>()
-        ..set('user:1', 1)
-        ..set('user:2', 2)
-        ..set('post:1', 3);
+      final cache =
+          AsyncCache<String, int>()
+            ..set('user:1', 1)
+            ..set('user:2', 2)
+            ..set('post:1', 3);
 
       expect(cache.invalidateWhere((key) => key.startsWith('user:')), 2);
       expect(cache.keys, ['post:1']);
     });
 
     test('evicts the least recently used entry past maxEntries', () async {
-      final cache = AsyncCache<String, int>(maxEntries: 2)
-        ..set('a', 1)
-        ..set('b', 2);
+      final cache =
+          AsyncCache<String, int>(maxEntries: 2)
+            ..set('a', 1)
+            ..set('b', 2);
 
       // Touch 'a' so 'b' becomes least recently used.
       cache.getIfPresent('a');

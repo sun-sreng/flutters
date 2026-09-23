@@ -100,12 +100,11 @@ void main() {
       final lock = KeyedLock<String>();
       final order = <String>[];
 
-      Future<void> task(String label) =>
-          lock.synchronized('shared', () async {
-            order.add('$label-start');
-            await Future<void>.delayed(const Duration(milliseconds: 20));
-            order.add('$label-end');
-          });
+      Future<void> task(String label) => lock.synchronized('shared', () async {
+        order.add('$label-start');
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        order.add('$label-end');
+      });
 
       await Future.wait([task('a'), task('b')]);
 
@@ -138,7 +137,10 @@ void main() {
       );
 
       expect(lock.isLocked('k'), isFalse);
-      expect(await lock.synchronized('k', () async => 'recovered'), 'recovered');
+      expect(
+        await lock.synchronized('k', () async => 'recovered'),
+        'recovered',
+      );
     });
 
     test('does not retain state for released keys', () async {

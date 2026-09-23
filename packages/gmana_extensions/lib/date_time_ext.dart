@@ -325,7 +325,6 @@ extension DateTimeX on DateTime {
 
     return deltaMicroseconds >= 0 ? 'in $phrase' : '$phrase ago';
   }
-
 }
 
 /// Extension on nullable [DateTime] values.

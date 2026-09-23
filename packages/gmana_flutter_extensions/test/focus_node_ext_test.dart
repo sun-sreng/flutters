@@ -10,10 +10,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: TextField(
-            focusNode: focusNode,
-            controller: controller,
-          ),
+          body: TextField(focusNode: focusNode, controller: controller),
         ),
       ),
     );

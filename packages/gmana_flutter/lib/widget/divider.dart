@@ -41,15 +41,17 @@ class GDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final lineColor = color ?? theme.colorScheme.outlineVariant;
-    final textWidget = child ??
+    final textWidget =
+        child ??
         (label != null
             ? Text(
-                label!,
-                style: labelStyle ??
-                    theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-              )
+              label!,
+              style:
+                  labelStyle ??
+                  theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+            )
             : null);
 
     if (textWidget == null) {
