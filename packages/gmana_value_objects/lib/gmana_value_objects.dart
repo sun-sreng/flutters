@@ -27,6 +27,7 @@ export 'src/email/email_validator.dart';
 
 // Extensions
 export 'src/extensions/date_range_extensions.dart';
+export 'src/extensions/validation_adapter_extensions.dart';
 export 'src/extensions/validation_config_extensions.dart';
 export 'src/extensions/value_object_result_extensions.dart';
 

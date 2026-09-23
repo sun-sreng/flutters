@@ -262,3 +262,12 @@ final class Failure<T, E> extends Result<T, E> {
   @override
   String toString() => 'Result.failure($error)';
 }
+
+/// An alias for [Result] to avoid collisions with other libraries defining `Result`.
+typedef GResult<T, E> = Result<T, E>;
+
+/// An alias for [Success] for consistency when using [GResult].
+typedef GSuccess<T, E> = Success<T, E>;
+
+/// An alias for [Failure] to avoid collisions with error models named `Failure`.
+typedef GFailure<T, E> = Failure<T, E>;

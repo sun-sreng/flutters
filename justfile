@@ -81,3 +81,13 @@ gmana-check:
     dart analyze --fatal-infos --fatal-warnings packages/gmana
     dart test packages/gmana
     cd packages/gmana && dart pub publish --dry-run
+
+# Melos monorepo helpers
+melos-bootstrap:
+    dart pub global run melos bootstrap
+
+melos-version:
+    dart pub global run melos version
+
+melos-list:
+    dart pub global run melos list

@@ -1,0 +1,43 @@
+name: flutters
+repository: https://github.com/sun-sreng/flutters
+
+packages:
+  - packages/**
+  - packages/**/example
+
+command:
+  version:
+    changelogCommitBrief: true
+    linkToCommits: true
+    workspaceChangelog: true
+
+scripts:
+  lint:
+    run: melos exec -- "dart analyze --fatal-infos --fatal-warnings ."
+    description: Run dart analyze in all packages.
+
+  format:
+    run: dart format --output=none --set-exit-if-changed .
+    description: Check formatting of all code in workspace.
+
+  format:fix:
+    run: dart format .
+    description: Auto-format all code in workspace.
+
+  test:dart:
+    run: dart test
+    description: Run tests in pure Dart packages.
+    packageFilters:
+      flutter: false
+      dirExists: test
+
+  test:flutter:
+    run: flutter test
+    description: Run tests in Flutter packages.
+    packageFilters:
+      flutter: true
+      dirExists: test
+
+  test:
+    run: melos run test:dart && melos run test:flutter
+    description: Run all unit and widget tests across the monorepo.

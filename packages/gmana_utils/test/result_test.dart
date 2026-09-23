@@ -72,5 +72,21 @@ void main() {
       expect(success.valueOrNull, equals('hello'));
       expect(failure.errorOrNull, isA<StateError>());
     });
+
+    test('GResult, GSuccess, and GFailure aliases function identically', () {
+      const GResult<int, String> ok = GSuccess(42);
+      const GResult<int, String> err = GFailure('oops');
+
+      expect(ok.isSuccess, isTrue);
+      expect(ok.valueOrNull, equals(42));
+      expect(err.isFailure, isTrue);
+      expect(err.errorOrNull, equals('oops'));
+
+      final matchedOk = switch (ok) {
+        GSuccess(:final value) => value,
+        GFailure() => -1,
+      };
+      expect(matchedOk, equals(42));
+    });
   });
 }

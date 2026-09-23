@@ -18,6 +18,7 @@ resolution: workspace
 
 dependencies:
   gmana_functional: ^0.0.1
+  gmana_validation: ^0.0.1
   meta: ^1.17.0
 
 dev_dependencies:

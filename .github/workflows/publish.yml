@@ -1,0 +1,97 @@
+name: Publish to Pub.dev
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package to publish (path relative to repo root, or "all")'
+        required: true
+        default: 'all'
+      dry_run:
+        description: 'Perform dry run instead of actual publish'
+        type: boolean
+        default: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Required for pub.dev Trusted Publishing (OIDC)
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Verify analysis
+        run: dart analyze --fatal-infos --fatal-warnings .
+
+      - name: Run Dart tests
+        run: |
+          dart test packages/gmana \
+                    packages/gmana_extensions \
+                    packages/gmana_functional \
+                    packages/gmana_predicates \
+                    packages/gmana_utils \
+                    packages/gmana_validation \
+                    packages/gmana_value_objects
+
+      - name: Run Flutter tests
+        run: |
+          flutter test packages/gmana_flutter \
+                       packages/gmana_flutter_extensions \
+                       packages/gmana_form \
+                       packages/gmana_spinner
+
+      - name: Publish Packages (Trusted Publishing)
+        run: |
+          PACKAGES=(
+            "packages/gmana_lints"
+            "packages/gmana_predicates"
+            "packages/gmana_functional"
+            "packages/gmana_utils"
+            "packages/gmana_validation"
+            "packages/gmana_value_objects"
+            "packages/gmana_extensions"
+            "packages/gmana_spinner"
+            "packages/gmana_form"
+            "packages/gmana_flutter_extensions"
+            "packages/gmana_flutter"
+            "packages/gmana"
+          )
+          
+          DRY_RUN="${{ github.event.inputs.dry_run }}"
+          TARGET="${{ github.event.inputs.package }}"
+          
+          if [ -z "$DRY_RUN" ]; then
+            DRY_RUN="false"
+          fi
+          
+          for PKG in "${PACKAGES[@]}"; do
+            if [ "$TARGET" != "all" ] && [ -n "$TARGET" ] && [ "$PKG" != "$TARGET" ]; then
+              continue
+            fi
+            
+            echo "::group::Processing $PKG"
+            cd "$PKG"
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "Dry-run publishing $PKG..."
+              dart pub publish --dry-run
+            else
+              echo "Publishing $PKG..."
+              dart pub publish --force
+            fi
+            cd - > /dev/null
+            echo "::endgroup::"
+          done
