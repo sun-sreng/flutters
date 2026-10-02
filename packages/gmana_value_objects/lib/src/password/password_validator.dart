@@ -1,4 +1,6 @@
 import 'package:gmana_functional/gmana_functional.dart';
+import 'package:gmana_validation/gmana_validation.dart' as v;
+
 import 'password_errors.dart';
 import 'password_validation_config.dart';
 
@@ -8,14 +10,9 @@ final class PasswordValidator {
   final PasswordValidationConfig config;
 
   /// Creates a new [PasswordValidator].
-  ///
-  /// If [config] is not provided, the default [PasswordValidationConfig] will be used.
   const PasswordValidator([this.config = const PasswordValidationConfig()]);
 
   /// Validates the given [input] string as a password.
-  ///
-  /// Returns a `Right` containing the input string if valid.
-  /// Otherwise, returns a `Left` containing the specific [PasswordError] detailing why.
   Either<PasswordError, String> validate(String input) {
     if (input.isEmpty) {
       return const Left(PasswordEmpty());
@@ -49,14 +46,14 @@ final class PasswordValidator {
       return const Left(PasswordTooCommon());
     }
 
-    if (_allSameChar(input)) {
+    if (v.PasswordValidator.hasOnlyRepeatedCharacters(input)) {
       return const Left(PasswordTooWeak());
     }
 
     final maxAllowedRun = (input.length * config.sequentialRunFactor)
         .floor()
         .clamp(3, 7);
-    if (_hasLongSequentialRun(lowered, minRun: maxAllowedRun)) {
+    if (v.PasswordValidator.hasSequentialRun(lowered, minRun: maxAllowedRun)) {
       return const Left(PasswordTooPredictable());
     }
 
@@ -89,48 +86,9 @@ final class PasswordValidator {
   }
 
   int _classScore(String s) {
-    final hasLower = s.contains(RegExp(r'[a-z]'));
-    final hasUpper = s.contains(RegExp(r'[A-Z]'));
-    final hasDigit = s.contains(RegExp(r'\d'));
-    final hasSymbol = s.contains(RegExp(r'[^A-Za-z0-9]'));
-
-    return (hasLower ? 1 : 0) +
-        (hasUpper ? 1 : 0) +
-        (hasDigit ? 1 : 0) +
-        (hasSymbol ? 1 : 0);
-  }
-
-  bool _allSameChar(String s) {
-    if (s.isEmpty) return false;
-    final first = s.codeUnitAt(0);
-    return s.codeUnits.every((c) => c == first);
-  }
-
-  bool _hasLongSequentialRun(String s, {required int minRun}) {
-    if (s.length < minRun) return false;
-
-    int inc = 1;
-    int dec = 1;
-
-    for (var i = 1; i < s.length; i++) {
-      final prev = s.codeUnitAt(i - 1);
-      final curr = s.codeUnitAt(i);
-
-      if (curr == prev + 1) {
-        inc++;
-        if (inc >= minRun) return true;
-      } else {
-        inc = 1;
-      }
-
-      if (curr == prev - 1) {
-        dec++;
-        if (dec >= minRun) return true;
-      } else {
-        dec = 1;
-      }
-    }
-
-    return false;
+    return (v.PasswordValidator.hasLowercase(s) ? 1 : 0) +
+        (v.PasswordValidator.hasUppercase(s) ? 1 : 0) +
+        (v.PasswordValidator.hasDigit(s) ? 1 : 0) +
+        (v.PasswordValidator.hasSpecialCharacter(s) ? 1 : 0);
   }
 }

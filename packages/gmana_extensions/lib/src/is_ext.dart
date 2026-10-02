@@ -1,7 +1,10 @@
 import 'dart:convert';
 
+import 'package:gmana_predicates/predicates/date_predicates.dart' as date_preds;
 import 'package:gmana_predicates/predicates/identifier_predicates.dart'
     as id_preds;
+import 'package:gmana_predicates/predicates/network_predicates.dart'
+    as net_preds;
 import 'package:gmana_predicates/predicates/string_predicates.dart' as preds;
 import 'package:gmana_validation/gmana_validation.dart';
 
@@ -12,12 +15,6 @@ final RegExp _base64RegExp = RegExp(r'^[A-Za-z0-9+/_-]*={0,2}$');
 final RegExp _e164PhoneRegExp = RegExp(r'^\+\d{7,15}$');
 final RegExp _isoDateRegExp = RegExp(r'^\d{4}-\d{2}-\d{2}$');
 final RegExp _jwtSignatureRegExp = RegExp(r'^[A-Za-z0-9_-]*$');
-final RegExp _macAddressColonRegExp = RegExp(
-  r'^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$',
-);
-final RegExp _macAddressDotRegExp = RegExp(
-  r'^[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}$',
-);
 final RegExp _namePatternRegExp = RegExp(
   r"^[\p{L}\p{M}' .\-]+$",
   unicode: true,
@@ -25,7 +22,6 @@ final RegExp _namePatternRegExp = RegExp(
 final RegExp _nameLetterRegExp = RegExp(r'\p{L}', unicode: true);
 final RegExp _phoneStripRegExp = RegExp(r'[\s\-().+]');
 final RegExp _phoneDigitsRegExp = RegExp(r'^\d{7,15}$');
-final RegExp _slugRegExp = RegExp(r'^[a-z0-9]+(?:-[a-z0-9]+)*$');
 final RegExp _uuidAnyRegExp = RegExp(
   r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
 );
@@ -69,43 +65,17 @@ extension StringValidation on String {
   bool get isValidHexColor => preds.isHexColor(this);
 
   /// Checks if the string is a valid IPv4 address.
-  bool get isValidIpv4 {
-    final parts = trim().split('.');
-    if (parts.length != 4) return false;
-    return parts.every((p) {
-      final n = int.tryParse(p);
-      return n != null && n >= 0 && n <= 255 && p == n.toString();
-    });
-  }
+  bool get isValidIpv4 => net_preds.isIpv4(this);
 
   /// Checks if the string is a valid IPv6 address.
-  bool get isValidIpv6 {
-    final s = trim();
-    if (!s.contains(':')) return false;
-
-    try {
-      Uri.parseIPv6Address(s);
-      return true;
-    } on FormatException {
-      return false;
-    }
-  }
+  bool get isValidIpv6 => net_preds.isIpv6(this);
 
   /// Checks if the string is a valid IPv4 or IPv6 address.
   bool get isValidIpAddress => isValidIpv4 || isValidIpv6;
 
   /// ISO 8601 date only: `2024-01-31`
-  bool get isValidIsoDate {
-    if (!_isoDateRegExp.hasMatch(this)) return false;
-    final year = int.parse(substring(0, 4));
-    final month = int.parse(substring(5, 7));
-    final day = int.parse(substring(8, 10));
-    final parsed = DateTime.tryParse(this);
-    return parsed != null &&
-        parsed.year == year &&
-        parsed.month == month &&
-        parsed.day == day;
-  }
+  bool get isValidIsoDate =>
+      _isoDateRegExp.hasMatch(this) && date_preds.isIso8601(this);
 
   /// Checks if the string looks like a JSON Web Token (`header.payload.signature`).
   ///
@@ -122,11 +92,7 @@ extension StringValidation on String {
   /// Checks if the string is a valid MAC address.
   ///
   /// Accepts colon, hyphen, and dotted Cisco-style notation.
-  bool get isValidMacAddress {
-    final s = trim();
-    return _macAddressColonRegExp.hasMatch(s) ||
-        _macAddressDotRegExp.hasMatch(s);
-  }
+  bool get isValidMacAddress => net_preds.isMacAddress(this);
 
   /// Accepts Unicode letters, spaces, hyphens, apostrophes, periods.
   /// Single names (mononyms) are valid. Max 100 chars guards against abuse.
@@ -154,16 +120,12 @@ extension StringValidation on String {
   /// Checks if the string is a URL-safe slug.
   ///
   /// Accepts lowercase letters, numbers, and single hyphens between tokens.
-  bool get isValidSlug => _slugRegExp.hasMatch(trim());
+  bool get isValidSlug => preds.isSlug(trim());
 
   /// Valid URL (http/https). Intentionally simple — use `Uri.tryParse`
   /// for structural checks; this validates the common displayed format.
-  bool get isValidUrl {
-    final uri = Uri.tryParse(trim());
-    return uri != null &&
-        (uri.scheme == 'http' || uri.scheme == 'https') &&
-        uri.host.isNotEmpty;
-  }
+  bool get isValidUrl =>
+      net_preds.isUrl(this, allowedSchemes: const {'http', 'https'});
 
   /// Checks if the string is a valid UUID (v4).
   bool get isValidUuid => id_preds.isUuid(this, '4');

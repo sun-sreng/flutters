@@ -1,5 +1,7 @@
 import 'package:gmana_functional/gmana_functional.dart';
+import 'package:gmana_validation/gmana_validation.dart' as v;
 
+import '../extensions/validation_adapter_extensions.dart';
 import 'url_errors.dart';
 import 'url_validation_config.dart';
 
@@ -13,25 +15,12 @@ final class UrlValidator {
 
   /// Validates [input] and returns parsed [Uri] on success.
   Either<UrlError, Uri> validate(String input) {
-    final trimmed = input.trim();
-
-    if (trimmed.isEmpty) return const Left(UrlEmpty());
-
-    final uri = Uri.tryParse(trimmed);
-    if (uri == null || !uri.hasScheme) {
-      return const Left(UrlInvalidFormat());
-    }
-
-    final scheme = uri.scheme.toLowerCase();
-    if (config.allowedSchemes.isNotEmpty &&
-        !config.allowedSchemes.contains(scheme)) {
-      return Left(UrlDisallowedScheme(scheme));
-    }
-
-    if (config.requireHost && uri.host.isEmpty) {
-      return const Left(UrlMissingHost());
-    }
-
-    return Right(uri);
+    final vConfig = v.UrlValidationConfig(
+      allowedSchemes: config.allowedSchemes,
+      requireHost: config.requireHost,
+    );
+    return v.UrlValidator(
+      vConfig,
+    ).validate(input).fold((issue) => Left(issue.toUrlError()), Right.new);
   }
 }

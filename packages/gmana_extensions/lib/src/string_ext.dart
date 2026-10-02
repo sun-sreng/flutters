@@ -1,11 +1,8 @@
 import 'dart:convert';
 
-final RegExp _alphaRegExp = RegExp(r'^[a-zA-Z]+$');
-final RegExp _alphanumericRegExp = RegExp(r'^[a-zA-Z0-9]+$');
+import 'package:gmana_predicates/predicates/string_predicates.dart' as preds;
+
 final RegExp _camelBoundaryRegExp = RegExp(r'([a-z])([A-Z])');
-final RegExp _emailRegExp = RegExp(
-  r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$',
-);
 final RegExp _slugHyphenRegExp = RegExp(r'-+');
 final RegExp _slugUnsafeRegExp = RegExp(r'[^a-z0-9\-]');
 final RegExp _whitespaceRegExp = RegExp(r'\s+');
@@ -56,19 +53,19 @@ extension StringX on String {
   String? get blankToNull => isBlank ? null : this;
 
   /// Returns true if the string only contains letters.
-  bool get isAlpha => _alphaRegExp.hasMatch(this);
+  bool get isAlpha => preds.isAlpha(this);
 
   /// Returns true if the string only contains letters and numbers.
-  bool get isAlphanumeric => _alphanumericRegExp.hasMatch(this);
+  bool get isAlphanumeric => preds.isAlphaNumeric(this);
 
   /// Returns true if the string is purely whitespace or empty.
-  bool get isBlank => trim().isEmpty;
+  bool get isBlank => preds.isBlank(this);
 
   /// Returns true if the string is a valid email format.
-  bool get isEmail => _emailRegExp.hasMatch(trim());
+  bool get isEmail => preds.isEmail(trim());
 
   /// Returns true if the string contains non-whitespace characters.
-  bool get isNotBlank => trim().isNotEmpty;
+  bool get isNotBlank => preds.isNotBlank(this);
 
   /// Returns true if the string represents a valid number.
   bool get isNumeric => double.tryParse(this) != null;

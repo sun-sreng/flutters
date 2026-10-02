@@ -7,7 +7,6 @@ import 'package:gmana_validation/gmana_validation.dart';
 
 import '../controllers/form_controller.dart';
 import '../models/field_config.dart';
-import '../validators/confirm_password_validator.dart';
 import 'text_field.dart';
 
 /// Confirm-password preset kept for discoverability.

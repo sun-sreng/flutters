@@ -1,5 +1,6 @@
 import 'package:gmana/extensions.dart' as extensions;
 import 'package:gmana/functional.dart' as functional;
+import 'package:gmana/gmana.dart';
 import 'package:gmana/gmana.dart' as gmana;
 import 'package:gmana/utilities.dart' as utilities;
 import 'package:gmana/validation.dart' as validation;
@@ -41,5 +42,11 @@ void main() {
 
     debouncer.dispose();
     throttler.dispose();
+  });
+
+  test('stream debounce resolves cleanly via umbrella gmana', () {
+    final stream = Stream.value(42);
+    final debounced = stream.debounce(const Duration(milliseconds: 10));
+    expect(debounced, isA<Stream<int>>());
   });
 }

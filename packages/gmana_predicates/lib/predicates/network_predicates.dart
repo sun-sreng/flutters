@@ -3,17 +3,25 @@ import '../src/regex/network_patterns.dart';
 
 /// Returns `true` if [str] is a valid IPv4 address.
 bool isIpv4(String str) {
-  if (!ipv4Maybe.hasMatch(str)) return false;
-  final parts = str.split('.');
-  for (final part in parts) {
-    final n = int.tryParse(part);
-    if (n == null || n < 0 || n > 255) return false;
-  }
-  return true;
+  final parts = str.trim().split('.');
+  if (parts.length != 4) return false;
+  return parts.every((p) {
+    final n = int.tryParse(p);
+    return n != null && n >= 0 && n <= 255 && p == n.toString();
+  });
 }
 
 /// Returns `true` if [str] is a valid IPv6 address.
-bool isIpv6(String str) => ipv6.hasMatch(str);
+bool isIpv6(String str) {
+  final s = str.trim();
+  if (!s.contains(':')) return false;
+  try {
+    Uri.parseIPv6Address(s);
+    return true;
+  } on FormatException {
+    return false;
+  }
+}
 
 /// Returns `true` if [text] is a valid postal code for [locale].
 ///
@@ -47,10 +55,17 @@ bool isUrl(String str, {Set<String>? allowedSchemes, bool requireHost = true}) {
   return true;
 }
 
-/// Returns `true` if [str] is a valid MAC address (e.g. `00:1A:2B:3C:4D:5E` or `00-1A-2B-3C-4D-5E`).
+final RegExp _macAddressColonRegExp = RegExp(
+  r'^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$',
+);
+final RegExp _macAddressDotRegExp = RegExp(
+  r'^[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}$',
+);
+
+/// Returns `true` if [str] is a valid MAC address (e.g. `00:1A:2B:3C:4D:5E`, `00-1A-2B-3C-4D-5E`, or `001A.2B3C.4D5E`).
 bool isMacAddress(String str) {
-  final macRegex = RegExp(r'^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$');
-  return macRegex.hasMatch(str);
+  final s = str.trim();
+  return _macAddressColonRegExp.hasMatch(s) || _macAddressDotRegExp.hasMatch(s);
 }
 
 /// Returns `true` if [str] is a valid network port number (1–65535).

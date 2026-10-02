@@ -3,6 +3,10 @@ import 'package:gmana_validation/gmana_validation.dart' as v;
 
 import '../email/email.dart';
 import '../email/email_errors.dart';
+import '../identifier/identifier_errors.dart';
+import '../identifier/identifier_value.dart';
+import '../network/network_address_value.dart';
+import '../network/network_errors.dart';
 import '../number/number_errors.dart';
 import '../number/number_value.dart';
 import '../password/password.dart';
@@ -210,6 +214,81 @@ extension NumberValidationAdapterX on Either<v.NumberValidationIssue, num> {
     return fold(
       (issue) => Left(issue.toNumberError()),
       (n) => NumberValue.tryParse(n.toString()),
+    );
+  }
+}
+
+/// Adapts an [v.IdentifierValidationIssue] to an [IdentifierError].
+extension IdentifierValidationIssueToDomainErrorX
+    on v.IdentifierValidationIssue {
+  /// Maps a validation issue to its domain [IdentifierError] equivalent.
+  IdentifierError toIdentifierError() => switch (this) {
+    v.IdentifierEmptyIssue() => const IdentifierEmpty(),
+    v.IdentifierInvalidUuidIssue(:final version) => IdentifierInvalidUuid(
+      version,
+    ),
+    v.IdentifierInvalidUlidIssue() => const IdentifierInvalidUlid(),
+    v.IdentifierInvalidImeiIssue() => const IdentifierInvalidImei(),
+    v.IdentifierInvalidEanIssue(:final version) => IdentifierInvalidEan(
+      version,
+    ),
+    v.IdentifierInvalidCreditCardIssue() => const IdentifierInvalidCreditCard(),
+    v.IdentifierInvalidMongoIdIssue() => const IdentifierInvalidMongoId(),
+    v.IdentifierInvalidSemVerIssue() => const IdentifierInvalidSemVer(),
+    v.IdentifierInvalidNanoIdIssue(:final expectedLength) =>
+      IdentifierInvalidNanoId(expectedLength),
+  };
+}
+
+/// Extensions adapting `gmana_validation` identifier results into `gmana_value_objects` types.
+extension IdentifierValidationAdapterX
+    on Either<v.IdentifierValidationIssue, String> {
+  /// Converts a successful validation into an [IdentifierValue] value object.
+  Either<v.IdentifierValidationIssue, IdentifierValue>
+  toIdentifierValueObject() {
+    return map(IdentifierValue.new);
+  }
+
+  /// Converts this validation result to a domain [IdentifierValue] result with [IdentifierError].
+  Either<IdentifierError, IdentifierValue> toIdentifierDomainResult() {
+    return fold(
+      (issue) => Left(issue.toIdentifierError()),
+      IdentifierValue.tryParse,
+    );
+  }
+}
+
+/// Adapts a [v.NetworkValidationIssue] to a [NetworkAddressError].
+extension NetworkValidationIssueToDomainErrorX on v.NetworkValidationIssue {
+  /// Maps a validation issue to its domain [NetworkAddressError] equivalent.
+  NetworkAddressError toNetworkAddressError() => switch (this) {
+    v.NetworkEmptyIssue() => const NetworkAddressEmpty(),
+    v.NetworkInvalidIpIssue(:final version) => NetworkAddressInvalidIp(version),
+    v.NetworkInvalidCidrIssue(:final version) => NetworkAddressInvalidCidr(
+      version,
+    ),
+    v.NetworkInvalidMacIssue() => const NetworkAddressInvalidMac(),
+    v.NetworkInvalidPortIssue() => const NetworkAddressInvalidPort(),
+    v.NetworkInvalidDataUriIssue() => const NetworkAddressInvalidDataUri(),
+    v.NetworkInvalidMagnetUriIssue() => const NetworkAddressInvalidMagnetUri(),
+  };
+}
+
+/// Extensions adapting `gmana_validation` network results into `gmana_value_objects` types.
+extension NetworkValidationAdapterX
+    on Either<v.NetworkValidationIssue, String> {
+  /// Converts a successful validation into a [NetworkAddressValue] value object.
+  Either<v.NetworkValidationIssue, NetworkAddressValue>
+  toNetworkAddressValueObject() {
+    return map(NetworkAddressValue.new);
+  }
+
+  /// Converts this validation result to a domain [NetworkAddressValue] result with [NetworkAddressError].
+  Either<NetworkAddressError, NetworkAddressValue>
+  toNetworkAddressDomainResult() {
+    return fold(
+      (issue) => Left(issue.toNetworkAddressError()),
+      NetworkAddressValue.tryParse,
     );
   }
 }

@@ -1,34 +1,7 @@
+import 'package:gmana_validation/gmana_validation.dart' show IdentifierType;
 import 'package:meta/meta.dart';
 
-/// Supported identifier validation types.
-enum IdentifierType {
-  /// Accepts any string non-empty.
-  any,
-
-  /// UUID validation.
-  uuid,
-
-  /// ULID validation.
-  ulid,
-
-  /// IMEI validation.
-  imei,
-
-  /// EAN-8 or EAN-13 barcode validation.
-  ean,
-
-  /// Credit card number (Luhn) validation.
-  creditCard,
-
-  /// MongoDB ObjectId validation.
-  mongoId,
-
-  /// Semantic Versioning (SemVer) validation.
-  semVer,
-
-  /// Nano ID validation.
-  nanoId,
-}
+export 'package:gmana_validation/gmana_validation.dart' show IdentifierType;
 
 /// Configuration options for identifier validation.
 @immutable

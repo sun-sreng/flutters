@@ -172,7 +172,7 @@ final class NumberValidator {
     }
 
     final parsed = num.tryParse(trimmed);
-    if (parsed == null) {
+    if (parsed == null || !parsed.isFinite) {
       return const Left(NumberInvalidFormatIssue());
     }
 

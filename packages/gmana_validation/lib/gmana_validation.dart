@@ -37,6 +37,7 @@ export 'src/network/network_validator.dart';
 export 'src/number/number_validator.dart';
 
 // Password
+export 'src/password/confirm_password_validator.dart';
 export 'src/password/password_strength.dart';
 export 'src/password/password_validator.dart';
 

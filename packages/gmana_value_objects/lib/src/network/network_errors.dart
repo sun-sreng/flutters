@@ -56,3 +56,21 @@ final class NetworkAddressInvalidPort extends NetworkAddressError {
   @override
   String get code => 'network_address_invalid_port';
 }
+
+/// Error indicating that the input is not a valid Data URI.
+final class NetworkAddressInvalidDataUri extends NetworkAddressError {
+  /// Creates a [NetworkAddressInvalidDataUri] error.
+  const NetworkAddressInvalidDataUri();
+
+  @override
+  String get code => 'network_address_invalid_data_uri';
+}
+
+/// Error indicating that the input is not a valid Magnet URI.
+final class NetworkAddressInvalidMagnetUri extends NetworkAddressError {
+  /// Creates a [NetworkAddressInvalidMagnetUri] error.
+  const NetworkAddressInvalidMagnetUri();
+
+  @override
+  String get code => 'network_address_invalid_magnet_uri';
+}

@@ -1,28 +1,7 @@
+import 'package:gmana_validation/gmana_validation.dart' show NetworkAddressType;
 import 'package:meta/meta.dart';
 
-/// Supported network address validation types.
-enum NetworkAddressType {
-  /// Accepts any valid IP, IPv4, IPv6, CIDR, MAC, or Port based on flags.
-  any,
-
-  /// Validates IPv4 address only.
-  ipv4,
-
-  /// Validates IPv6 address only.
-  ipv6,
-
-  /// Validates IPv4 or IPv6 address.
-  ip,
-
-  /// Validates CIDR notation.
-  cidr,
-
-  /// Validates MAC address.
-  macAddress,
-
-  /// Validates network Port (1-65535).
-  port,
-}
+export 'package:gmana_validation/gmana_validation.dart' show NetworkAddressType;
 
 /// Configuration options for network address validation.
 @immutable

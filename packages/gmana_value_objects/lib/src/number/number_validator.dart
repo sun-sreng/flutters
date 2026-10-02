@@ -1,4 +1,7 @@
 import 'package:gmana_functional/gmana_functional.dart';
+import 'package:gmana_validation/gmana_validation.dart' as v;
+
+import '../extensions/validation_adapter_extensions.dart';
 import 'number_errors.dart';
 import 'number_validation_config.dart';
 
@@ -8,61 +11,19 @@ final class NumberValidator {
   final NumberValidationConfig config;
 
   /// Creates a new [NumberValidator].
-  ///
-  /// If [config] is not provided, the default [NumberValidationConfig] will be used.
   const NumberValidator([this.config = const NumberValidationConfig()]);
 
   /// Validates the given [input] string as a number.
-  ///
-  /// Returns a `Right` containing the parsed `num` if valid.
-  /// Otherwise, returns a `Left` containing the specific [NumberError].
   Either<NumberError, num> validate(String input) {
-    final trimmed = input.trim();
-
-    if (trimmed.isEmpty) {
-      return const Left(NumberEmpty());
-    }
-
-    final parsed = num.tryParse(trimmed);
-    if (parsed == null || !parsed.isFinite) {
-      return const Left(NumberInvalidFormat());
-    }
-
-    if (!config.allowNegative && parsed < 0) {
-      return Left(NumberNegativeNotAllowed(parsed));
-    }
-
-    if (config.integerOnly && parsed != parsed.toInt()) {
-      return Left(NumberNotInteger(parsed));
-    }
-
-    if (config.min != null && parsed < config.min!) {
-      return Left(NumberTooSmall(currentValue: parsed, minValue: config.min!));
-    }
-
-    if (config.max != null && parsed > config.max!) {
-      return Left(NumberTooLarge(currentValue: parsed, maxValue: config.max!));
-    }
-
-    if (config.maxDecimalPlaces != null) {
-      final decimalPlaces = _countDecimalPlaces(trimmed, parsed);
-      if (decimalPlaces > config.maxDecimalPlaces!) {
-        return Left(
-          NumberDecimalPlacesExceeded(
-            currentPlaces: decimalPlaces,
-            maxPlaces: config.maxDecimalPlaces!,
-          ),
-        );
-      }
-    }
-
-    return Right(parsed);
-  }
-
-  int _countDecimalPlaces(String input, num parsed) {
-    final normalized = input.toLowerCase();
-    final str = normalized.contains('e') ? parsed.toString() : normalized;
-    if (!str.contains('.')) return 0;
-    return str.split('.')[1].length;
+    final vConfig = v.NumberValidationConfig(
+      min: config.min,
+      max: config.max,
+      allowNegative: config.allowNegative,
+      integerOnly: config.integerOnly,
+      maxDecimalPlaces: config.maxDecimalPlaces,
+    );
+    return v.NumberValidator(
+      vConfig,
+    ).validate(input).fold((issue) => Left(issue.toNumberError()), Right.new);
   }
 }
