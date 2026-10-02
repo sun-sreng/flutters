@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fake_async/fake_async.dart';
 import 'package:gmana_extensions/gmana_extensions.dart';
 import 'package:test/test.dart';
 
@@ -84,12 +85,20 @@ void main() {
       expect(seen, [3]);
     });
 
-    test('delayedBy postpones completion', () async {
-      final watch = Stopwatch()..start();
-      await Future.value(1).delayedBy(const Duration(milliseconds: 30));
-      watch.stop();
+    test('delayedBy postpones completion', () {
+      fakeAsync((async) {
+        int? result;
+        unawaited(
+          Future.value(1)
+              .delayedBy(const Duration(milliseconds: 30))
+              .then((value) => result = value),
+        );
 
-      expect(watch.elapsedMilliseconds, greaterThanOrEqualTo(25));
+        async.elapse(const Duration(milliseconds: 29));
+        expect(result, isNull);
+        async.elapse(const Duration(milliseconds: 1));
+        expect(result, 1);
+      });
     });
   });
 

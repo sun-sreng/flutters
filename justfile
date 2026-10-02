@@ -1,11 +1,14 @@
 set dotenv-load := true
 
+# Package selection lives in the root pubspec.yaml: the `workspace` list, and
+# the melos scripts that filter it. No recipe here names a set of packages.
+
 default:
     @just --list
 
 # Show workspace packages.
 packages:
-    @find packages -mindepth 2 -maxdepth 2 -name pubspec.yaml -print | sed 's#packages/##; s#/pubspec.yaml##' | sort
+    @dart run melos list
 
 # Install workspace dependencies.
 get:
@@ -13,32 +16,23 @@ get:
 
 # Format Dart code in the workspace.
 format:
-    dart format .
+    dart run melos run format:fix
 
 # Check formatting without modifying files.
 format-check:
-    dart format --output=none --set-exit-if-changed .
+    dart run melos run format
 
 # Analyze every package in the workspace.
 analyze:
-    dart analyze --fatal-infos --fatal-warnings .
+    dart run melos run lint
 
 # Run tests for all pure Dart packages.
 test-dart:
-    dart test packages/gmana
-    dart test packages/gmana_extensions
-    dart test packages/gmana_functional
-    dart test packages/gmana_predicates
-    dart test packages/gmana_utils
-    dart test packages/gmana_validation
-    dart test packages/gmana_value_objects
+    dart run melos run test:dart
 
 # Run Flutter tests for all Flutter packages.
 test-flutter:
-    flutter test packages/gmana_flutter
-    flutter test packages/gmana_flutter_extensions
-    flutter test packages/gmana_form
-    flutter test packages/gmana_spinner
+    dart run melos run test:flutter
 
 test: test-dart test-flutter
 
@@ -84,10 +78,10 @@ gmana-check:
 
 # Melos monorepo helpers
 melos-bootstrap:
-    dart pub global run melos bootstrap
+    dart run melos bootstrap
 
 melos-version:
-    dart pub global run melos version
+    dart run melos version
 
 melos-list:
-    dart pub global run melos list
+    dart run melos list

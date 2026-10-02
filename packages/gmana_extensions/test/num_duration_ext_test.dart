@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:fake_async/fake_async.dart';
 import 'package:gmana_extensions/gmana_extensions.dart';
 import 'package:test/test.dart';
 
@@ -173,16 +176,26 @@ void main() {
       expect((-90).seconds.toHuman(), equals('1m 30s'));
     });
 
-    test('delay and delayed', () async {
-      final start = DateTime.now();
-      await 50.milliseconds.delay;
-      expect(
-        DateTime.now().difference(start).inMilliseconds,
-        greaterThanOrEqualTo(45),
-      );
+    test('delay and delayed', () {
+      fakeAsync((async) {
+        var delayCompleted = false;
+        unawaited(50.milliseconds.delay.then((_) => delayCompleted = true));
 
-      final result = await 50.milliseconds.delayed(() => 'done');
-      expect(result, equals('done'));
+        async.elapse(49.milliseconds);
+        expect(delayCompleted, isFalse);
+        async.elapse(1.milliseconds);
+        expect(delayCompleted, isTrue);
+
+        String? result;
+        unawaited(
+          50.milliseconds.delayed(() => 'done').then((value) => result = value),
+        );
+
+        async.elapse(49.milliseconds);
+        expect(result, isNull);
+        async.elapse(1.milliseconds);
+        expect(result, equals('done'));
+      });
     });
   });
 }

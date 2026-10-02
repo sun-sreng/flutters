@@ -20,3 +20,63 @@ workspace:
   - packages/gmana_form/example
   - packages/gmana_flutter_extensions/example
   - packages/gmana_flutter/example
+
+dev_dependencies:
+  melos: ^8.9.0
+
+# Melos reads its configuration from here, not from a melos.yaml. The package
+# list is the `workspace` above; CI, the justfile and the publish workflow all
+# go through these scripts instead of naming packages themselves.
+melos:
+  repository: https://github.com/sun-sreng/flutters
+
+  command:
+    version:
+      linkToCommits: true
+      workspaceChangelog: true
+
+  scripts:
+    lint:
+      description: Analyze every package. Infos and warnings are fatal.
+      run: dart analyze --fatal-infos --fatal-warnings .
+
+    format:
+      description: Check formatting of all code in the workspace.
+      run: dart format --output=none --set-exit-if-changed .
+
+    format:fix:
+      description: Format all code in the workspace.
+      run: dart format .
+
+    test:dart:
+      description: Run tests in pure Dart packages.
+      exec:
+        command: dart test
+        concurrency: 1
+      packageFilters:
+        flutter: false
+        dirExists: test
+
+    test:flutter:
+      description: Run tests in Flutter packages.
+      exec:
+        command: flutter test
+        concurrency: 1
+      packageFilters:
+        flutter: true
+        dirExists: test
+
+    test:
+      description: Run all unit and widget tests across the workspace.
+      steps:
+        - test:dart
+        - test:flutter
+
+    publish:dry-run:
+      description: Validate every publishable package, dependencies first.
+      exec:
+        command: dart pub publish --dry-run
+        concurrency: 1
+        orderDependents: true
+      packageFilters:
+        noPrivate: true

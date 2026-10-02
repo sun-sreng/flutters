@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       package:
-        description: 'Package to publish (path relative to repo root, or "all")'
+        description: 'Package to publish (name, e.g. gmana_form, or "all")'
         required: true
         default: 'all'
       dry_run:
@@ -32,74 +32,38 @@ jobs:
           cache: true
 
       - name: Install dependencies
-        run: dart pub get
+        run: flutter pub get
 
       - name: Verify analysis
-        run: dart analyze --fatal-infos --fatal-warnings .
+        run: dart run melos run lint
 
       - name: Run Dart tests
-        run: |
-          dart test packages/gmana \
-                    packages/gmana_extensions \
-                    packages/gmana_functional \
-                    packages/gmana_predicates \
-                    packages/gmana_utils \
-                    packages/gmana_validation \
-                    packages/gmana_value_objects
+        run: dart run melos run test:dart
 
       - name: Run Flutter tests
-        run: |
-          flutter test packages/gmana_flutter \
-                       packages/gmana_flutter_extensions \
-                       packages/gmana_form \
-                       packages/gmana_spinner
+        run: dart run melos run test:flutter
 
       - name: Publish Packages (Trusted Publishing)
         run: |
-          PACKAGES=(
-            "packages/gmana_lints"
-            "packages/gmana_predicates"
-            "packages/gmana_functional"
-            "packages/gmana_utils"
-            "packages/gmana_validation"
-            "packages/gmana_value_objects"
-            "packages/gmana_extensions"
-            "packages/gmana_spinner"
-            "packages/gmana_form"
-            "packages/gmana_flutter_extensions"
-            "packages/gmana_flutter"
-            "packages/gmana"
-          )
-          
           DRY_RUN="${{ github.event.inputs.dry_run }}"
           TARGET="${{ github.event.inputs.package }}"
-          
+
           if [ -z "$DRY_RUN" ]; then
             DRY_RUN="false"
           fi
-          
-          for PKG in "${PACKAGES[@]}"; do
-            if [ "$TARGET" != "all" ] && [ -n "$TARGET" ] && [ "$PKG" != "$TARGET" ]; then
-              continue
-            fi
-            
-            # Same rule as publish.sh: a private package is still validated
-            # by a dry run, but a real publish of it fails and would abort
-            # the loop before any other package is published.
-            if [ "$DRY_RUN" != "true" ] && grep -qE '^publish_to:[[:space:]]*none[[:space:]]*$' "$PKG/pubspec.yaml"; then
-              echo "Skipping $PKG because publish_to is none."
-              continue
-            fi
 
-            echo "::group::Processing $PKG"
-            cd "$PKG"
-            if [ "$DRY_RUN" = "true" ]; then
-              echo "Dry-run publishing $PKG..."
-              dart pub publish --dry-run
-            else
-              echo "Publishing $PKG..."
-              dart pub publish --force
-            fi
-            cd - > /dev/null
-            echo "::endgroup::"
-          done
+          # Melos takes the packages from the workspace, leaves out the ones
+          # marked `publish_to: none`, and runs them dependencies first, so no
+          # package list or order is kept here.
+          FILTERS=(--no-private --order-dependents --concurrency=1 --fail-fast)
+
+          if [ "$TARGET" != "all" ] && [ -n "$TARGET" ]; then
+            # Accept the former "packages/<name>" form as well as a bare name.
+            FILTERS+=(--scope="${TARGET#packages/}")
+          fi
+
+          if [ "$DRY_RUN" = "true" ]; then
+            dart run melos exec "${FILTERS[@]}" -- dart pub publish --dry-run
+          else
+            dart run melos exec "${FILTERS[@]}" -- dart pub publish --force
+          fi

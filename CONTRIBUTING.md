@@ -18,8 +18,10 @@ Gmana is a Dart & Flutter monorepo organized into three layers:
 ## 🛠 Local Development Setup
 
 ### Prerequisites
-- [Flutter SDK](https://flutter.dev/docs/get-started/install) (>= 3.29.0)
-- [Dart SDK](https://dart.dev/get-dart) (>= 3.7.0)
+- [Flutter SDK](https://flutter.dev/docs/get-started/install), current stable. The workspace root
+  requires Dart >= 3.10.7, which is newer than the minimum the published packages declare.
+  The Dart SDK on its own is not enough: `pub get` cannot resolve a workspace that contains
+  Flutter packages without Flutter.
 - Optional: [Just command runner](https://github.com/casey/just)
 
 ### Getting Started
@@ -54,7 +56,30 @@ Gmana is a Dart & Flutter monorepo organized into three layers:
 5. Run all tests:
    ```bash
    just test
+   # or without just:
+   dart run melos run test
    ```
+
+### Tooling
+
+[Melos](https://melos.invertase.dev) is a dev dependency of the workspace root and is configured in
+the root `pubspec.yaml` under `melos:`. Its scripts — `lint`, `format`, `test:dart`, `test:flutter`,
+`publish:dry-run` — are what CI, the publish workflow, and the `just` recipes run.
+
+To add a package, create it under `packages/` and add it to `workspace:` in the root `pubspec.yaml`.
+Nothing else lists packages: the scripts pick Dart or Flutter packages by their dependencies, and
+the publish order follows the dependency graph.
+
+### Changelog format
+
+Each package's `CHANGELOG.md`:
+
+- Starts at the newest entry, with no `# Changelog` title.
+- Collects pending changes under `## Unreleased`. At release that heading becomes
+  `## <version> - <YYYY-MM-DD>`.
+- Groups entries under `### Added`, `### Changed`, `### Deprecated`, `### Removed`, and
+  `### Fixed`, in that order, leaving out the empty ones. Prefix a breaking entry with
+  `**Breaking:**`.
 
 ---
 

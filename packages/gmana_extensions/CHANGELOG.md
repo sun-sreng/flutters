@@ -28,6 +28,12 @@
   `'a@b.c'.isEmail` keep working; only explicit overrides like
   `StringX(value).isEmail` need the new extension name.
 
+### Internal
+
+- Added `fake_async` as a dev dependency so the `Duration.delay`,
+  `Duration.delayed`, and `Future.delayedBy` tests run on fake time instead of
+  asserting on wall-clock elapsed time. No public API changes.
+
 ## 0.0.2
 
 Additive release — no existing member changed behaviour or signature.
