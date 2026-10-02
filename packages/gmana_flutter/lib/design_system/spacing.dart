@@ -73,8 +73,14 @@ abstract class GSpacing {
   );
 
   /// Returns a vertical [SizedBox] with height equal to [height] (defaults to [GSpacing.md]).
+  @Deprecated(
+    'Use GGap.vertical instead. This duplicate will be removed before 1.0.',
+  )
   static SizedBox vSpace([double height = md]) => SizedBox(height: height);
 
   /// Returns a horizontal [SizedBox] with width equal to [width] (defaults to [GSpacing.md]).
+  @Deprecated(
+    'Use GGap.horizontal instead. This duplicate will be removed before 1.0.',
+  )
   static SizedBox hSpace([double width = md]) => SizedBox(width: width);
 }

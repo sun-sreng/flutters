@@ -15,9 +15,6 @@ extension StringNullableX on String? {
   /// Returns true if the string is null or entirely whitespace.
   bool get isNullOrBlank => this == null || this!.trim().isEmpty;
 
-  /// Returns true if the string is null or strictly empty.
-  bool get isNullOrEmpty => this == null || this!.isEmpty;
-
   /// Returns the string, or an empty string `""` if null.
   String get orEmpty => this ?? '';
 
@@ -52,31 +49,14 @@ extension StringX on String {
   /// ```
   String? get blankToNull => isBlank ? null : this;
 
-  /// Returns true if the string only contains letters.
-  bool get isAlpha => preds.isAlpha(this);
-
   /// Returns true if the string only contains letters and numbers.
   bool get isAlphanumeric => preds.isAlphaNumeric(this);
 
   /// Returns true if the string is purely whitespace or empty.
   bool get isBlank => preds.isBlank(this);
 
-  /// Returns true if the string is a valid email format.
-  bool get isEmail => preds.isEmail(trim());
-
   /// Returns true if the string contains non-whitespace characters.
   bool get isNotBlank => preds.isNotBlank(this);
-
-  /// Returns true if the string represents a valid number.
-  bool get isNumeric => double.tryParse(this) != null;
-
-  /// Returns true if the string is a valid URL.
-  bool get isUrl {
-    final uri = Uri.tryParse(trim());
-    return uri != null &&
-        (uri.scheme == 'http' || uri.scheme == 'https') &&
-        uri.host.isNotEmpty;
-  }
 
   /// Decodes JSON, returns `null` on failure instead of throwing.
   dynamic get jsonDecodeOrNull {
@@ -403,10 +383,6 @@ extension StringX on String {
   /// Case-insensitive equality.
   bool equalsIgnoreCase(String other) =>
       length == other.length && toLowerCase() == other.toLowerCase();
-
-  /// Case-insensitive [String.contains].
-  bool containsIgnoreCase(String other) =>
-      toLowerCase().contains(other.toLowerCase());
 
   /// Case-insensitive [String.startsWith].
   bool startsWithIgnoreCase(String other) =>

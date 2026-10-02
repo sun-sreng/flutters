@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Deprecated `GElevatedButton`; use `GSubmitButton.text`.
+- Removed the unused `gmana_functional` dependency.
 - Breaking: replaced `GFieldConfig` with `GTextFieldConfig`.
 - Breaking: renamed field constructor labels from `labelText`/`hintText` to
   `label`/`hint`.

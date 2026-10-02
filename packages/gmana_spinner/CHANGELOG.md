@@ -1,3 +1,13 @@
+## Unreleased
+
+### Fixed
+
+- **The package analyzes on the Flutter versions it declares support for.**
+  `lib/src/widgets/g_spinner_previews.dart` imported
+  `package:flutter/widget_previews.dart`, which first shipped in Flutter 3.35,
+  while the package declares `flutter: >=3.29.0`. The previews were never
+  exported; they now live in `example/lib/spinner_previews.dart`.
+
 ## 0.0.2
 
 Additive release — no existing parameter changed meaning, and a spinner that

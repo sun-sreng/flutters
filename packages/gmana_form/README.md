@@ -426,7 +426,7 @@ GSubmitButton(
 )
 ```
 
-`GElevatedButton` remains available as a compatibility wrapper.
+`GElevatedButton` remains available as a deprecated compatibility wrapper.
 
 ## Validator Adapter
 

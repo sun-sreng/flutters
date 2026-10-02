@@ -14,7 +14,7 @@ The monorepo is organized into three layers. The `gmana` facade gives you everyt
 | [**gmana_extensions**](./packages/gmana_extensions) | `0.0.2` | Extension methods on `Duration`, `String`, `num`, `Iterable`, and `Stream`.                 |
 | [**gmana_functional**](./packages/gmana_functional) | `0.0.2` | Functional primitives — `Either<L,R>`, `Result`, `UseCase`, `Failure`, `Unit`.              |
 | [**gmana_predicates**](./packages/gmana_predicates) | `0.0.2` | Boolean predicate functions — email, alpha, date, UUID, credit card, and more.              |
-| [**gmana_utils**](./packages/gmana_utils)           | `0.1.0` | Resilience and timing utilities — retry, `CircuitBreaker`, `Semaphore`, `AsyncCache`, `Batcher`, debounce/throttle, `Result`, ID generation. |
+| [**gmana_utils**](./packages/gmana_utils)           | `0.0.2` | Resilience and timing utilities — retry, `CircuitBreaker`, `Semaphore`, `AsyncCache`, `Batcher`, debounce/throttle, `Result`, ID generation. |
 | [**gmana_validation**](./packages/gmana_validation) | `0.0.1` | Typed validators for email, password, text, and number inputs using `Either`-based results. |
 
 ### Pure Dart — domain
@@ -29,7 +29,7 @@ The monorepo is organized into three layers. The `gmana` facade gives you everyt
 | ------------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------- |
 | [**gmana_flutter**](./packages/gmana_flutter)                       | `0.0.10` | UI library — branded `G*` widgets, design tokens, responsive builders, and theme management.                      |
 | [**gmana_flutter_extensions**](./packages/gmana_flutter_extensions) | `0.0.2` | Flutter extension methods — color, layout, `BuildContext`, icons, time, and theme mode.                           |
-| [**gmana_form**](./packages/gmana_form)                             | `0.0.1` | Form fields, validators, and submit controls — `GEmailField`, `GPasswordField`, `GElevatedButton`, and more.      |
+| [**gmana_form**](./packages/gmana_form)                             | `0.0.1` | Form fields, validators, and submit controls — `GEmailField`, `GPasswordField`, `GSubmitButton`, and more.        |
 | [**gmana_spinner**](./packages/gmana_spinner)                       | `0.0.2` | Loading indicators — `GCircularSpinner`, `GWaveDotSpinner`, `GDotSpinner`, and more.                              |
 
 ---
@@ -44,6 +44,8 @@ dart pub add gmana gmana_value_objects
 
 - `gmana` gives you extensions, functional primitives, validation, and utilities in one import.
 - `gmana_value_objects` enforces strongly-typed domain models before data reaches your database or state.
+  `gmana` already re-exports it (`package:gmana/value_objects.dart`); add it directly only if you
+  import it by its own package name.
 
 ### 2. Full Flutter app
 
@@ -85,8 +87,8 @@ This repository uses Dart/Flutter's native workspace.
 # Install all dependencies across every package
 flutter pub get
 
-# Run all tests
-dart test
+# Run all Dart and Flutter tests (requires `just`)
+just test
 ```
 
 ---

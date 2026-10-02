@@ -141,10 +141,10 @@ class GButton extends StatelessWidget {
               color: _getForegroundColor(context, isEnabled),
             ),
           ),
-          GSpacing.hSpace(GSpacing.sm),
+          const SizedBox(width: GSpacing.sm),
         ] else if (icon != null) ...[
           icon!,
-          GSpacing.hSpace(GSpacing.sm),
+          const SizedBox(width: GSpacing.sm),
         ],
         Text(
           label,
@@ -154,7 +154,7 @@ class GButton extends StatelessWidget {
           ),
         ),
         if (trailingIcon != null && !isLoading) ...[
-          GSpacing.hSpace(GSpacing.sm),
+          const SizedBox(width: GSpacing.sm),
           trailingIcon!,
         ],
       ],

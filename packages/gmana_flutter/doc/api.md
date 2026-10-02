@@ -44,7 +44,7 @@ MaterialApp(
 | `GColors.background`, `surface`, `outline` and dark variants      | Neutral surfaces and borders.                       |
 | `GColors.lightTheme`, `GColors.darkTheme`                         | Ready-to-use Material 3 themes.                     |
 | `GFontWeight.thin` through `black`                                | Named `FontWeight` constants from `w100` to `w900`. |
-| `GSpacing.xxxs` through `xxxlg`, `padding*`, `vSpace`, `hSpace`   | Spacing scale and `EdgeInsets` builders.            |
+| `GSpacing.xxxs` through `xxxlg`, `padding*`                       | Spacing scale and `EdgeInsets` builders.            |
 | `GRadius.xs` through `xl`, `pill`, `all`, `top`, `shape`          | Corner-radius scale and `BorderRadius` builders.    |
 | `GMotion.xfast` through `xslow`, `standard`, `enter`, `exit`      | Animation duration and curve tokens.                |
 | `GTone` + `GToneScheme`                                           | Semantic intent resolved to accent/container colors.|
@@ -176,9 +176,9 @@ Form(
         controller: confirm,
         passwordController: password,
       ),
-      GElevatedButton(
-        isLoading: false,
-        text: 'Create account',
+      GSubmitButton.text(
+        loading: false,
+        label: 'Create account',
         onPressed: () => formKey.currentState?.validate(),
       ),
     ],
@@ -197,7 +197,7 @@ Form(
 | `GConfirmPasswordField`                        | Confirmation input that compares against a password controller.             |
 | `GNumberField`                                 | Numeric input with keyboard/input-formatters from `NumberValidationConfig`. |
 | `GTextField`                                   | Text input with `TextValidator`.                                            |
-| `GElevatedButton`                              | Elevated button that swaps text for `GWaveDotSpinner` while loading.        |
+| `GSubmitButton`                                | Elevated button that swaps its child for `GWaveDotSpinner` while loading.   |
 | `ConfirmPasswordValidationConfig`              | Configure required confirmation and whitespace trimming.                    |
 | `ConfirmPasswordValidator.validate(...)`       | Validate password/confirmation pairs.                                       |
 | `resolveConfirmPasswordValidationIssue(issue)` | Convert confirm-password issues to English messages.                        |
@@ -209,7 +209,7 @@ Scaffold(
   appBar: const GAppBar(title: 'Profile'),
   body: Column(
     children: const [
-      SizedBoxHeight(),
+      GGap.vertical(GSpacing.md),
       GStarRatingBar(ratingValue: 4.5),
     ],
   ),
@@ -223,7 +223,7 @@ Scaffold(
 | `GCard`          | Surface container with optional border, tap, and long-press.                     |
 | `GListTile`      | List tile with leading icon, title, subtitle, trailing label/widget, and arrow.   |
 | `GTextField`     | Text input with clear button, password toggle, formatters, and helper text.      |
-| `SizedBoxHeight` | Vertical spacing using `GSpacing.md` by default.                                 |
+| `GGap`           | Fixed gap: `GGap(size)`, `GGap.vertical(height)`, `GGap.horizontal(width)`.      |
 | `GStarRatingBar` | Star rating display; interactive when `onRatingChanged` is supplied.             |
 
 ## Status And Placeholder Widgets
@@ -236,11 +236,11 @@ Column(
       title: 'Payment overdue',
       message: 'Update your card to keep the subscription active.',
     ),
-    const SizedBoxHeight(),
+    const GGap.vertical(GSpacing.md),
     Row(
       children: [
         GAvatar(name: 'Ada Lovelace'),
-        const SizedBoxWidth(),
+        const GGap.horizontal(GSpacing.md),
         const GTag(label: 'Active', tone: GTone.success),
       ],
     ),

@@ -2,21 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
-
-import '../animation/dot_animation_config.dart';
-import 'g_bar_wave_spinner.dart';
-import 'g_chasing_dots_spinner.dart';
-import 'g_circular_spinner.dart';
-import 'g_dot_spinner.dart';
-import 'g_dual_ring_spinner.dart';
-import 'g_fading_cube_spinner.dart';
-import 'g_linear_spinner.dart';
-import 'g_orbit_spinner.dart';
-import 'g_ripple_spinner.dart';
-import 'g_scale_y.dart';
-import 'g_wave_dot_spinner.dart';
-import 'g_wave_dot_spinner_dot.dart';
-import 'g_wave_spinner.dart';
+import 'package:gmana_spinner/gmana_spinner.dart';
+// The single-dot preview renders a widget the package does not export.
+// ignore: implementation_imports
+import 'package:gmana_spinner/src/widgets/g_wave_dot_spinner_dot.dart';
 
 /// Theme data implementation for spinner widget previews.
 final class GSpinnerPreviewThemeData extends PreviewThemeData {

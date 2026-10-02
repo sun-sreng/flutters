@@ -93,7 +93,7 @@ class HomePage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const GWaveDotSpinner(size: 28, color: GColors.primary),
-            const SizedBoxHeight(),
+            const GGap.vertical(GSpacing.md),
             Text(
               'Ready',
               style: TextStyle(color: GColors.primary.contrastText),
@@ -110,9 +110,9 @@ class HomePage extends StatelessWidget {
 
 | Area       | APIs                                                                                                       |
 | ---------- | ---------------------------------------------------------------------------------------------------------- |
-| Widgets    | `GAppBar`, `GButton`, `GCard`, `GListTile`, `SizedBoxHeight`, `GStarRatingBar`, `GTextField`                |
+| Widgets    | `GAppBar`, `GButton`, `GCard`, `GListTile`, `GGap`, `GStarRatingBar`, `GTextField`                          |
 | Status UI  | `GTag`, `GBanner`, `GAvatar`, `GEmptyState`                                                                |
-| Forms      | `GEmailField`, `GPasswordField`, `GNumberField`, `GTextField`, `GConfirmPasswordField`, `GElevatedButton`  |
+| Forms      | `GEmailField`, `GPasswordField`, `GNumberField`, `GTextField`, `GConfirmPasswordField`, `GSubmitButton`    |
 | Loading    | `GCircularSpinner`, `GLinearSpinner`, `GDotSpinner`, `GWaveSpinner`, `GWaveDotSpinner`                     |
 | Tokens     | `GColors`, `GFontWeight`, `GSpacing`, `GRadius`, `GMotion`, `GTone`                                        |
 | Theme      | Re-exported `ThemeModeExt`, `ThemeModeService`                                                             |
@@ -203,20 +203,20 @@ class _AccountFormState extends State<AccountForm> {
             controller: emailController,
             labelText: 'Email',
           ),
-          const SizedBoxHeight(),
+          const GGap.vertical(GSpacing.md),
           GPasswordField(
             controller: passwordController,
             validationConfig: PasswordValidationConfig.strong(),
           ),
-          const SizedBoxHeight(),
+          const GGap.vertical(GSpacing.md),
           GConfirmPasswordField(
             controller: confirmPasswordController,
             passwordController: passwordController,
           ),
-          const SizedBoxHeight(spacing: 24),
-          GElevatedButton(
-            text: 'Create account',
-            isLoading: false,
+          const GGap.vertical(GSpacing.xlg),
+          GSubmitButton.text(
+            label: 'Create account',
+            loading: false,
             onPressed: () {
               if (formKey.currentState?.validate() ?? false) {
                 context.showSuccessSnackBar(message: 'Account form is valid');
@@ -282,10 +282,9 @@ GTextField(
 );
 
 // Spacing
-const SizedBoxHeight(spacing: GSpacing.md);
-const SizedBoxWidth(spacing: GSpacing.lg);
-GSpacing.vSpace(GSpacing.sm);
-GSpacing.hSpace(GSpacing.sm);
+const GGap.vertical(GSpacing.md);
+const GGap.horizontal(GSpacing.lg);
+const GGap(GSpacing.sm);
 ```
 
 `GButton` has size presets, a destructive variant, and a trailing icon slot:
@@ -437,12 +436,12 @@ const SizedBox(
 );
 ```
 
-`GElevatedButton` can show a spinner while work is running:
+`GSubmitButton` can show a spinner while work is running:
 
 ```dart
-GElevatedButton(
-  text: 'Save',
-  isLoading: saving,
+GSubmitButton.text(
+  label: 'Save',
+  loading: saving,
   onPressed: saving ? null : save,
 );
 ```

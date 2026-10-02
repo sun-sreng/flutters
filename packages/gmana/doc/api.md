@@ -75,12 +75,11 @@ final title = 'hello world'.toTitleCase; // Hello World
 
 | API                                                     | Use it for                                            |
 | ------------------------------------------------------- | ----------------------------------------------------- |
-| `isNullOrBlank`, `isNullOrEmpty`                        | Check nullable strings safely.                        |
+| `isNullOrBlank`                                         | Check nullable strings safely.                        |
 | `orEmpty`, `orNull`                                     | Normalize nullable or blank strings.                  |
 | `mapNotBlank(transform)`                                | Transform only non-null, non-blank strings.           |
 | `blankToNull`                                           | Convert a blank string to `null`.                     |
-| `isAlpha`, `isAlphanumeric`, `isBlank`, `isNotBlank`    | Common text checks.                                   |
-| `isEmail`, `isNumeric`, `isUrl`                         | Simple format checks.                                 |
+| `isAlphanumeric`, `isBlank`, `isNotBlank`               | Common text checks.                                   |
 | `jsonDecodeOrNull`                                      | Decode JSON without throwing on invalid input.        |
 | `readingTimeMinutes`                                    | Estimate reading time at 225 words per minute.        |
 | `removeWhitespace`, `reversed`                          | Transform string content.                             |

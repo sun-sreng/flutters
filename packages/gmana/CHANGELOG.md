@@ -1,3 +1,8 @@
+## Unreleased
+
+- fix: `package:gmana/gmana.dart` no longer exports two declarations of `isEmail`, `isUrl`, `isAlpha`, `isNumeric`, `containsIgnoreCase`, `isNullOrEmpty`, `isDate`, `isToday`, `isPast`, `isFuture`, `isWeekend`, `isWeekday`, `isLeapYear`, `isAfter`, `isBefore`, and `isBetween` on `String`. Every call to one of them was an ambiguous-extension compile error. They now resolve to `gmana_predicates`; note that its `isUrl` is a method (`value.isUrl()`), its `isEmail` does not trim, and its `isNumeric` accepts digits only.
+- docs: the package description now lists `gmana_value_objects`, which the facade has re-exported since 0.2.0.
+
 ## 0.2.0 - 2026-05-18
 
 - breaking: remove `GSpacing` from `utilities.dart`; import from `package:gmana_flutter/gmana_flutter.dart` instead

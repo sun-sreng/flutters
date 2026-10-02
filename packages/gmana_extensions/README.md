@@ -314,7 +314,6 @@ math.pi.toDegrees    // 180.0
 ```dart
 String? s;
 s.orEmpty            // ''
-s.isNullOrEmpty      // true
 s.isNullOrBlank      // true
 s.orNull             // null (coerces blank '' to null)
 s.mapNotBlank((v) => v.toUpperCase())  // null if blank, else transformed
@@ -326,9 +325,7 @@ s.mapNotBlank((v) => v.toUpperCase())  // null if blank, else transformed
 'hello'.isBlank          // false
 '  '.isBlank             // true
 'hello'.isNotBlank       // true
-'ABC'.isAlpha            // true
 'A1B2'.isAlphanumeric    // true
-'42'.isNumeric           // true
 'hello'.blankToNull      // 'hello'
 '  '.blankToNull         // null
 ```
@@ -352,7 +349,6 @@ s.mapNotBlank((v) => v.toUpperCase())  // null if blank, else transformed
 'Hello World! 2024'.toSlug   // 'hello-world-2024'
 'hello'.toUriOrNull          // null (no scheme)
 'https://example.com'.toUriOrNull  // Uri(...)
-'https://example.com'.isUrl  // true
 ```
 
 ### Parse helpers
@@ -404,7 +400,6 @@ s.mapNotBlank((v) => v.toUpperCase())  // null if blank, else transformed
 
 ```dart
 'Hello'.equalsIgnoreCase('HELLO')      // true
-'Hello World'.containsIgnoreCase('lo wo') // true
 'Hello'.startsWithIgnoreCase('HE')     // true
 'Hello'.endsWithIgnoreCase('LO')       // true
 'Hello'.swapCase                       // 'hELLO'
@@ -489,20 +484,24 @@ nickname.ifBlank('Anonymous')  // 'Anonymous'
 'hello'.isWithinLength(min: 3, max: 10)  // true
 ```
 
+### Deprecated classification members (`StringPredicateCompatX`)
+
+`isAlpha`, `isEmail`, `isNumeric`, `isUrl`, `containsIgnoreCase`,
+`isNullOrEmpty`, and the date-string checks `isDate`, `isToday`, `isPast`,
+`isFuture`, `isWeekend`, `isWeekday`, `isLeapYear`, `isAfter`, `isBefore`,
+`isBetween` still work but are deprecated. `gmana_predicates` declares members
+with the same names on `String`, and importing both packages made every call
+ambiguous. Use the `gmana_predicates` extensions instead; three of them differ:
+
+| Deprecated here       | Replacement                                         |
+| --------------------- | --------------------------------------------------- |
+| `value.isEmail`       | `value.trim().isEmail` (no implicit trim)           |
+| `value.isNumeric`     | `double.tryParse(value) != null` (theirs is digits-only) |
+| `value.isUrl`         | `value.isUrl(allowedSchemes: {'http', 'https'})`    |
+
 ### Date strings (`StringDateExtension`)
 
 ```dart
-'2024-01-15'.isDate        // true
-'2024-01-15'.isToday       // depends on today
-'2020-01-01'.isPast        // true
-'2099-12-31'.isFuture      // true
-'2024-01-13'.isWeekend     // true  (Saturday)
-'2024-01-15'.isWeekday     // true  (Monday)
-'2024-01-01'.isLeapYear    // true
-
-'2024-06-01'.isAfter('2024-01-01')    // true
-'2024-01-01'.isBefore('2025-01-01')   // true
-'2024-06-15'.isBetween('2024-01-01', '2024-12-31') // true
 '2024-01-01'.isBetweenInclusive('2024-01-01', '2024-12-31') // true
 '2024-03-15'.isSameDayAs('2024-03-15T12:00:00') // true
 '2024-03-15'.daysUntil('2024-03-20') // 5
@@ -1112,7 +1111,7 @@ date.isInRange(start, end);
 'a'.coerceMin('b');   // 'a'
 ```
 
-> Named `isInRange` rather than `isBetween`: `StringDateExtension.isBetween`
+> Named `isInRange` rather than `isBetween`: `StringPredicateCompatX.isBetween`
 > already owns that name on `String` with date-parsing semantics, and the
 > more specific extension always wins.
 

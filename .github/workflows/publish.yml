@@ -83,6 +83,14 @@ jobs:
               continue
             fi
             
+            # Same rule as publish.sh: a private package is still validated
+            # by a dry run, but a real publish of it fails and would abort
+            # the loop before any other package is published.
+            if [ "$DRY_RUN" != "true" ] && grep -qE '^publish_to:[[:space:]]*none[[:space:]]*$' "$PKG/pubspec.yaml"; then
+              echo "Skipping $PKG because publish_to is none."
+              continue
+            fi
+
             echo "::group::Processing $PKG"
             cd "$PKG"
             if [ "$DRY_RUN" = "true" ]; then

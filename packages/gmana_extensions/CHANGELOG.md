@@ -1,3 +1,19 @@
+## Unreleased
+
+### Deprecated
+
+- **String classification members that duplicate `gmana_predicates`.**
+  `isAlpha`, `isEmail`, `isNumeric`, `isUrl`, `containsIgnoreCase`,
+  `isNullOrEmpty`, `isDate`, `isToday`, `isPast`, `isFuture`, `isWeekend`,
+  `isWeekday`, `isLeapYear`, `isAfter`, `isBefore`, and `isBetween` moved from
+  `StringX`, `StringNullableX`, and `StringDateExtension` into
+  `StringPredicateCompatX` / `StringNullablePredicateCompatX` and are
+  deprecated. `gmana_predicates` declares the same names on `String`, so
+  importing both packages — as `package:gmana/gmana.dart` does — made every
+  call ambiguous. Behaviour is unchanged and implicit calls such as
+  `'a@b.c'.isEmail` keep working; only explicit overrides like
+  `StringX(value).isEmail` need the new extension name.
+
 ## 0.0.2
 
 Additive release — no existing member changed behaviour or signature.

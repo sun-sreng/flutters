@@ -27,7 +27,6 @@ dependencies:
   gmana_spinner: ^0.0.2
 
 dev_dependencies:
-  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
   gmana_lints: ^0.1.0

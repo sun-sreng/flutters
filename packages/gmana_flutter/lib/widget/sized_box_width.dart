@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../design_system/spacing.dart';
 
 /// A widget that adds horizontal spacing using a SizedBox with a specified width.
+@Deprecated(
+  'Use GGap.horizontal instead. This duplicate will be removed before 1.0.',
+)
 class SizedBoxWidth extends StatelessWidget {
   /// The width of the SizedBox, defined by [GSpacing].
   final double spacing;

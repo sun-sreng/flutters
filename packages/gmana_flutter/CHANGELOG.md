@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Deprecated
+
+- `lighten()` and `darken()` top-level functions — use `color.lighten(amount)`
+  / `color.darken(amount)` from `gmana_flutter_extensions`.
+- `SizedBoxHeight`, `SizedBoxWidth`, `GSpacing.vSpace`, and `GSpacing.hSpace` —
+  use `GGap.vertical` / `GGap.horizontal`.
+
 ## 0.0.10 - 2026-08-07
 
 ### Added — design tokens

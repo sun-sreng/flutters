@@ -63,6 +63,9 @@ class GSubmitButton extends StatelessWidget {
 }
 
 /// Backward-compatible alias for the original loading elevated button.
+@Deprecated(
+  'Use GSubmitButton.text instead. This alias will be removed before 1.0.',
+)
 class GElevatedButton extends StatelessWidget {
   final bool isLoading;
   final VoidCallback? onPressed;
