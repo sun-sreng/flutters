@@ -11,11 +11,11 @@ import '../number/number_errors.dart';
 import '../number/number_value.dart';
 import '../password/password.dart';
 import '../password/password_errors.dart';
-import '../phone/phone.dart';
+import '../phone/phone_value.dart';
 import '../phone/phone_errors.dart';
 import '../text/text_errors.dart';
 import '../text/text_value.dart';
-import '../url/url.dart';
+import '../url/url_value.dart';
 import '../url/url_errors.dart';
 
 /// Adapts an [v.EmailValidationIssue] to an [EmailError].

@@ -38,7 +38,7 @@ class GEmailField extends StatelessWidget {
     TextStyle? style,
     Iterable<String>? autofillHints = const [AutofillHints.email],
     InputDecoration? decoration,
-  }) : field = GTextField.email(
+  }) : field = GTextFormField.email(
          name: name,
          controller: controller,
          initialValue: initialValue,
@@ -67,7 +67,7 @@ class GEmailField extends StatelessWidget {
          decoration: decoration,
        );
 
-  final GTextField field;
+  final GTextFormField field;
 
   GTextFieldConfig get config => field.config;
 

@@ -36,7 +36,7 @@ void main() {
     });
 
     test('isBetween still resolves to the date-string extension', () {
-      // StringDateExtension is more specific than ComparableX on String.
+      // StringDateX is more specific than ComparableX on String.
       expect('2024-06-15'.isBetween('2024-01-01', '2024-12-31'), isTrue);
     });
 

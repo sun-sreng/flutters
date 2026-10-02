@@ -13,15 +13,15 @@ import '../widgets/form.dart';
 import '../widgets/obscurable_text_form_field.dart';
 
 /// Generic text form field with named constructors for common form inputs.
-class GTextField extends StatelessWidget {
-  const GTextField({
+class GTextFormField extends StatelessWidget {
+  const GTextFormField({
     super.key,
     required this.config,
     this.obscurable = false,
     this.resolveConfig,
   });
 
-  factory GTextField.text({
+  factory GTextFormField.text({
     Key? key,
     String? name,
     TextEditingController? controller,
@@ -87,7 +87,7 @@ class GTextField extends StatelessWidget {
       decoration: decoration,
     );
 
-    return GTextField(key: key, config: configure?.call(config) ?? config);
+    return GTextFormField(key: key, config: configure?.call(config) ?? config);
   }
 
   /// Multi-line text area.
@@ -95,7 +95,7 @@ class GTextField extends StatelessWidget {
   /// Every other preset pins `maxLines: 1`, so notes and descriptions had to
   /// be assembled by hand. This one defaults to a growing box and an Enter key
   /// that inserts a newline instead of moving to the next field.
-  factory GTextField.multiline({
+  factory GTextFormField.multiline({
     Key? key,
     String? name,
     TextEditingController? controller,
@@ -160,10 +160,10 @@ class GTextField extends StatelessWidget {
       decoration: decoration,
     );
 
-    return GTextField(key: key, config: configure?.call(config) ?? config);
+    return GTextFormField(key: key, config: configure?.call(config) ?? config);
   }
 
-  factory GTextField.email({
+  factory GTextFormField.email({
     Key? key,
     String? name,
     TextEditingController? controller,
@@ -222,10 +222,10 @@ class GTextField extends StatelessWidget {
       decoration: decoration,
     );
 
-    return GTextField(key: key, config: configure?.call(config) ?? config);
+    return GTextFormField(key: key, config: configure?.call(config) ?? config);
   }
 
-  factory GTextField.number({
+  factory GTextFormField.number({
     Key? key,
     String? name,
     TextEditingController? controller,
@@ -293,10 +293,10 @@ class GTextField extends StatelessWidget {
       decoration: decoration,
     );
 
-    return GTextField(key: key, config: configure?.call(config) ?? config);
+    return GTextFormField(key: key, config: configure?.call(config) ?? config);
   }
 
-  factory GTextField.password({
+  factory GTextFormField.password({
     Key? key,
     String? name,
     TextEditingController? controller,
@@ -360,14 +360,14 @@ class GTextField extends StatelessWidget {
       decoration: decoration,
     );
 
-    return GTextField(
+    return GTextFormField(
       key: key,
       config: configure?.call(config) ?? config,
       obscurable: true,
     );
   }
 
-  factory GTextField.confirmPassword({
+  factory GTextFormField.confirmPassword({
     Key? key,
     String? name,
     TextEditingController? controller,
@@ -449,7 +449,7 @@ class GTextField extends StatelessWidget {
       decoration: decoration,
     );
 
-    return GTextField(
+    return GTextFormField(
       key: key,
       config: configure?.call(config) ?? config,
       obscurable: true,
@@ -465,7 +465,7 @@ class GTextField extends StatelessWidget {
     );
   }
 
-  factory GTextField.url({
+  factory GTextFormField.url({
     Key? key,
     String? name,
     TextEditingController? controller,
@@ -524,10 +524,10 @@ class GTextField extends StatelessWidget {
       decoration: decoration,
     );
 
-    return GTextField(key: key, config: configure?.call(config) ?? config);
+    return GTextFormField(key: key, config: configure?.call(config) ?? config);
   }
 
-  factory GTextField.phone({
+  factory GTextFormField.phone({
     Key? key,
     String? name,
     TextEditingController? controller,
@@ -586,7 +586,7 @@ class GTextField extends StatelessWidget {
       decoration: decoration,
     );
 
-    return GTextField(key: key, config: configure?.call(config) ?? config);
+    return GTextFormField(key: key, config: configure?.call(config) ?? config);
   }
 
   final GTextFieldConfig config;
@@ -624,8 +624,12 @@ class GTextField extends StatelessWidget {
   }
 }
 
-/// Canonical alias for form-integrated [GTextField].
+/// Former name of [GTextFormField].
 ///
-/// Use [GTextFormField] when importing `package:gmana_flutter/gmana_flutter.dart`
-/// to distinguish form fields from presentation `GTextField`.
-typedef GTextFormField = GTextField;
+/// `package:gmana_flutter/gmana_flutter.dart` declares a plain-input widget
+/// with the same name, so the form field is named after the `TextFormField` it
+/// wraps.
+@Deprecated(
+  'Use GTextFormField instead. This alias will be removed before 1.0.',
+)
+typedef GTextField = GTextFormField;

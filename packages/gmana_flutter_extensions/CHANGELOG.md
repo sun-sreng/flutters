@@ -1,3 +1,21 @@
+## Unreleased
+
+### Changed
+
+- **`ColorService` → `ColorMath`, `ThemeModeService` → `ThemeModes`,
+  `IconDataExt` → `IconDataCodec`.** None of the three holds state or is an
+  extension. The old names remain as deprecated aliases.
+- **Extensions renamed to the `…X` convention.** `ColorExt` → `ColorX`,
+  `ContextExt` → `BuildContextX`, `ResponsiveContext` →
+  `BuildContextResponsiveX`, `BreakpointUtils` → `BoxConstraintsX`,
+  `ThemeModeExt` → `ThemeModeX`, `ThemeModeStringExt` → `StringThemeModeX`,
+  `StringColorExtension` → `StringColorX`, `TimeOfDayExtensions` →
+  `TimeOfDayX`, `IconDataSerialization` → `IconDataX`. Extension members are
+  unaffected; only code that names the extension — a `show`/`hide` clause or
+  an explicit override such as `ColorExt(color).lighten()` — needs the new
+  name. `TimeOfDayExtensions.fromMinutes` keeps working through a deprecated
+  shim.
+
 ## 0.0.2
 
 Additive release — no existing member changed behaviour or signature.

@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 /// `TimeOfDay` is a bare hour/minute pair — it has no `compareTo`, no
 /// arithmetic, and no way to express a span. These fill that in, treating the
 /// value as an offset within a single 24-hour day.
-extension TimeOfDayExtensions on TimeOfDay {
+extension TimeOfDayX on TimeOfDay {
   /// Builds a [TimeOfDay] from [minutes] past midnight, wrapping across days.
   ///
   /// ```dart
-  /// TimeOfDayExtensions.fromMinutes(90);   // 01:30
-  /// TimeOfDayExtensions.fromMinutes(1500); // 01:00 the next day
+  /// TimeOfDayX.fromMinutes(90);   // 01:30
+  /// TimeOfDayX.fromMinutes(1500); // 01:00 the next day
   /// ```
   static TimeOfDay fromMinutes(int minutes) {
     // Dart's `%` is the Euclidean modulus, so negative inputs already wrap
@@ -159,4 +159,15 @@ extension TimeOfDayExtensions on TimeOfDay {
 extension DateTimeTimeOfDayX on DateTime {
   /// The hour and minute of this moment, discarding the date.
   TimeOfDay get timeOfDay => TimeOfDay(hour: hour, minute: minute);
+}
+
+/// Former name of [TimeOfDayX].
+///
+/// An extension cannot be aliased, so this keeps the one member that was
+/// called through the old name, `TimeOfDayExtensions.fromMinutes`, resolving.
+@Deprecated(
+  'Use TimeOfDayX.fromMinutes instead. This shim will be removed before 1.0.',
+)
+abstract final class TimeOfDayExtensions {
+  static TimeOfDay fromMinutes(int minutes) => TimeOfDayX.fromMinutes(minutes);
 }

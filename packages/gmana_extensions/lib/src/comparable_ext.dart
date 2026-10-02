@@ -43,7 +43,7 @@ extension ComparableX<T extends Comparable<T>> on T {
   /// Whether this value falls within [[min], [max]] inclusively.
   ///
   /// Named `isInRange` rather than `isBetween` because
-  /// `StringDateExtension.isBetween` already claims that name on [String]
+  /// `StringDateX.isBetween` already claims that name on [String]
   /// with date-parsing semantics.
   bool isInRange(T min, T max) => compareTo(min) >= 0 && compareTo(max) <= 0;
 

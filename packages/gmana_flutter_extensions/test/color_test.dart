@@ -6,22 +6,22 @@ const _pureRed = Color(0xFFFF0000);
 const _brand = Color(0xFFF57224);
 
 void main() {
-  group('ColorService.tryParseHex', () {
+  group('ColorMath.tryParseHex', () {
     test('accepts the three supported lengths', () {
-      expect(ColorService.tryParseHex('#F50')?.toARGB32(), 0xFFFF5500);
-      expect(ColorService.tryParseHex('#FF5500')?.toARGB32(), 0xFFFF5500);
-      expect(ColorService.tryParseHex('#80FF5500')?.toARGB32(), 0x80FF5500);
+      expect(ColorMath.tryParseHex('#F50')?.toARGB32(), 0xFFFF5500);
+      expect(ColorMath.tryParseHex('#FF5500')?.toARGB32(), 0xFFFF5500);
+      expect(ColorMath.tryParseHex('#80FF5500')?.toARGB32(), 0x80FF5500);
     });
 
     test('the hash prefix is optional', () {
-      expect(ColorService.tryParseHex('FF5500')?.toARGB32(), 0xFFFF5500);
+      expect(ColorMath.tryParseHex('FF5500')?.toARGB32(), 0xFFFF5500);
     });
 
     test('returns null for anything else', () {
-      expect(ColorService.tryParseHex(''), isNull);
-      expect(ColorService.tryParseHex('#FF55'), isNull);
-      expect(ColorService.tryParseHex('#GGGGGG'), isNull);
-      expect(ColorService.tryParseHex('not-a-color'), isNull);
+      expect(ColorMath.tryParseHex(''), isNull);
+      expect(ColorMath.tryParseHex('#FF55'), isNull);
+      expect(ColorMath.tryParseHex('#GGGGGG'), isNull);
+      expect(ColorMath.tryParseHex('not-a-color'), isNull);
     });
 
     test('String.toColor throws where tryParseHex returns null', () {
@@ -36,7 +36,7 @@ void main() {
     });
   });
 
-  group('ColorExt hex output', () {
+  group('ColorX hex output', () {
     test('toHexRGB drops alpha, toHexARGB keeps it', () {
       expect(const Color(0x80FF5500).toHexRGB(), '#FF5500');
       expect(const Color(0x80FF5500).toHexARGB(), '#80FF5500');
@@ -61,7 +61,7 @@ void main() {
     });
   });
 
-  group('ColorExt HSL accessors', () {
+  group('ColorX HSL accessors', () {
     test('reads hue, saturation, and lightness', () {
       expect(_pureRed.hue, closeTo(0, 0.001));
       expect(_pureRed.saturation, closeTo(1, 0.001));
@@ -89,7 +89,7 @@ void main() {
     });
   });
 
-  group('ColorExt alpha', () {
+  group('ColorX alpha', () {
     test('isTransparent and isOpaque', () {
       expect(const Color(0x00FF5500).isTransparent, isTrue);
       expect(_brand.isTransparent, isFalse);
@@ -109,7 +109,7 @@ void main() {
     });
   });
 
-  group('ColorExt harmonies', () {
+  group('ColorX harmonies', () {
     test('complementary is the opposite hue', () {
       expect(_pureRed.complementary.toARGB32(), 0xFF00FFFF);
     });
@@ -155,7 +155,7 @@ void main() {
     });
   });
 
-  group('ColorExt adjustments', () {
+  group('ColorX adjustments', () {
     test('lighten and darken move lightness', () {
       expect(_brand.lighten(0.2).lightness, greaterThan(_brand.lightness));
       expect(_brand.darken(0.2).lightness, lessThan(_brand.lightness));
@@ -181,7 +181,7 @@ void main() {
 
     test('mix, tint, and shade interpolate', () {
       expect(
-        ColorService.mix(_pureRed, const Color(0xFF0000FF)).toARGB32(),
+        ColorMath.mix(_pureRed, const Color(0xFF0000FF)).toARGB32(),
         Color.lerp(_pureRed, const Color(0xFF0000FF), 0.5)!.toARGB32(),
       );
       expect(_pureRed.tint(1).toARGB32(), 0xFFFFFFFF);
@@ -190,7 +190,7 @@ void main() {
     });
   });
 
-  group('ColorExt contrast', () {
+  group('ColorX contrast', () {
     test('contrastRatio peaks at 21 for black on white', () {
       expect(
         const Color(0xFFFFFFFF).contrastRatio(const Color(0xFF000000)),
@@ -232,7 +232,7 @@ void main() {
     });
   });
 
-  group('ColorService.createMaterialColor', () {
+  group('ColorMath.createMaterialColor', () {
     test('shade 500 is the input color', () {
       final swatch = _brand.toMaterialColor();
       expect(swatch[500]!.toARGB32(), _brand.toARGB32());

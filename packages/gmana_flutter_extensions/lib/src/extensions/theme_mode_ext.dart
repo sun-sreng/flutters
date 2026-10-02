@@ -3,17 +3,17 @@
 
 import 'package:flutter/material.dart';
 
-import '../services/theme_mode_service.dart';
+import '../theme_modes.dart';
 
-extension ThemeModeExt on ThemeMode {
-  IconData toIcon() => ThemeModeService.getIcon(this);
+extension ThemeModeX on ThemeMode {
+  IconData toIcon() => ThemeModes.getIcon(this);
 
-  String toKey() => ThemeModeService.getKey(this);
+  String toKey() => ThemeModes.getKey(this);
 
-  String toLabel() => ThemeModeService.getLabel(this);
+  String toLabel() => ThemeModes.getLabel(this);
 
   /// The next mode in the system → light → dark cycle.
-  ThemeMode next() => ThemeModeService.next(this);
+  ThemeMode next() => ThemeModes.next(this);
 
   bool get isSystem => this == ThemeMode.system;
 
@@ -24,22 +24,22 @@ extension ThemeModeExt on ThemeMode {
   /// Resolves to a concrete [Brightness], consulting [platformBrightness]
   /// only for [ThemeMode.system].
   Brightness resolveBrightness(Brightness platformBrightness) =>
-      ThemeModeService.resolveBrightness(
+      ThemeModes.resolveBrightness(
         this,
         platformBrightness: platformBrightness,
       );
 }
 
-extension ThemeModeStringExt on String {
-  IconData toThemeIcon() => ThemeModeService.getIconFromKey(this);
+extension StringThemeModeX on String {
+  IconData toThemeIcon() => ThemeModes.getIconFromKey(this);
 
-  String toThemeLabel() => ThemeModeService.getLabelFromKey(this);
+  String toThemeLabel() => ThemeModes.getLabelFromKey(this);
 
-  ThemeMode toThemeMode() => ThemeModeService.fromKey(this);
+  ThemeMode toThemeMode() => ThemeModes.fromKey(this);
 
   /// The next theme key in the cycle.
-  String nextThemeKey() => ThemeModeService.nextKey(this);
+  String nextThemeKey() => ThemeModes.nextKey(this);
 
   /// Whether this string is one of the known theme keys.
-  bool get isThemeKey => ThemeModeService.isKnownKey(this);
+  bool get isThemeKey => ThemeModes.isKnownKey(this);
 }

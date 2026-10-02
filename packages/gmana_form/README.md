@@ -8,7 +8,7 @@ import 'package:gmana_form/gmana_form.dart';
 
 ## What You Get
 
-- One generic text-field surface: `GTextField` + `GTextFieldConfig`.
+- One generic text-field surface: `GTextFormField` + `GTextFieldConfig`.
 - Friendly presets for common inputs: text, multiline, email, number, password, confirm password, URL, phone, identifier, network address, debounced search, and PIN code.
 - Non-text fields that validate too: checkbox, switch, dropdown, and date.
 
@@ -27,9 +27,9 @@ GForm(
   autovalidateMode: AutovalidateMode.onUserInteraction,
   child: Column(
     children: [
-      GTextField.email(name: 'email'),
+      GTextFormField.email(name: 'email'),
       const SizedBox(height: 12),
-      GTextField.password(
+      GTextFormField.password(
         name: 'password',
         validationConfig: PasswordValidationConfig.strong(),
       ),
@@ -82,7 +82,7 @@ final form = GFormController();
 
 GForm(
   controller: form,
-  child: GTextField.email(name: 'email'),
+  child: GTextFormField.email(name: 'email'),
 );
 
 if (form.validateAndSave()) {
@@ -100,7 +100,7 @@ You can still request a controller directly when another widget needs it:
 ```dart
 final password = form.textController('password');
 
-GTextField.password(controller: password)
+GTextFormField.password(controller: password)
 ```
 
 `textValues()` keeps the original `Map<String, String>` behavior. Use
@@ -143,7 +143,7 @@ form.errors();           // {'email': 'Enter a valid email', ...}
 form.hasErrors;          // bool
 ```
 
-Named `GTextField`s register their validator automatically, so this works
+Named `GTextFormField`s register their validator automatically, so this works
 without wiring anything up.
 
 ### Focus
@@ -175,7 +175,7 @@ form.markPristine();          // new baseline after a successful save
 Use `GTextFieldConfig` for anything custom:
 
 ```dart
-GTextField(
+GTextFormField(
   config: GTextFieldConfig(
     controller: notesController,
     label: 'Notes',
@@ -193,18 +193,18 @@ GTextField(
 Use preset constructors when the intent is common:
 
 ```dart
-GTextField.text(
+GTextFormField.text(
   name: 'name',
   label: 'Full name',
   validationConfig: const TextValidationConfig(minLength: 2),
 )
 
-GTextField.email(
+GTextFormField.email(
   name: 'email',
   validationConfig: EmailValidationConfig.strict(),
 )
 
-GTextField.number(
+GTextFormField.number(
   name: 'age',
   label: 'Age',
   validationConfig: NumberValidationConfig.positiveInteger(min: 13, max: 120),
@@ -213,17 +213,17 @@ GTextField.number(
 // Integer number fields expose `int?`; decimal configs expose `double?`.
 final age = form.value<int>('age');
 
-GTextField.number(
+GTextFormField.number(
   name: 'price',
   valueParser: (text) => num.tryParse(text),
 )
 
-GTextField.password(
+GTextFormField.password(
   name: 'password',
   textInputAction: TextInputAction.next,
 )
 
-GTextField.confirmPassword(
+GTextFormField.confirmPassword(
   name: 'confirmPassword',
   passwordName: 'password',
 )
@@ -233,7 +233,7 @@ Multi-line text has its own preset, because every other one pins
 `maxLines: 1`:
 
 ```dart
-GTextField.multiline(
+GTextFormField.multiline(
   name: 'bio',
   label: 'About you',
   minLines: 3,
@@ -243,7 +243,7 @@ GTextField.multiline(
 
 The preset widgets `GEmailField`, `GNumberField`, `GPasswordField`, and
 `GConfirmPasswordField` are still exported for discoverability. They delegate to
-the same `GTextField` preset constructors.
+the same `GTextFormField` preset constructors.
 
 ## Non-text Fields
 
@@ -320,7 +320,7 @@ final birthday = form.value<DateTime>('birthday');
 `combineValidators` layers them:
 
 ```dart
-GTextField.text(
+GTextFormField.text(
   name: 'username',
   validator: combineValidators([
     GValidators.required(),
@@ -362,7 +362,7 @@ Every preset accepts a `configure` hook so teams can keep the built-in defaults
 and still modify config that is not exposed as a top-level constructor argument:
 
 ```dart
-GTextField.email(
+GTextFormField.email(
   controller: email,
   configure: (config) => config.copyWith(
     suffixIcon: IconButton(
@@ -376,7 +376,7 @@ GTextField.email(
 For custom validation, pass `validator`. It runs after the package validator:
 
 ```dart
-GTextField.email(
+GTextFormField.email(
   controller: email,
   validator: (value) {
     final domainAllowed = value?.endsWith('@company.com') ?? false;
@@ -447,6 +447,6 @@ TextFormField(validator: validator)
 - `GFieldConfig` has been replaced by `GTextFieldConfig`.
 - Field labels use `label` and hints use `hint`.
 - `validatorOverride` has been renamed to `validator`.
-- `GTextField.text`, `.email`, `.number`, `.password`, and `.confirmPassword`
+- `GTextFormField.text`, `.email`, `.number`, `.password`, and `.confirmPassword`
   are now the preferred high-level API.
 - `GSubmitButton` is the preferred submit button API.

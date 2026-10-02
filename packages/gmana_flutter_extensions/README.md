@@ -32,7 +32,7 @@ import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
 
 ## Color
 
-Extensions on `Color` (`ColorExt`) and `String` (`StringColorExtension`), backed by `ColorService`.
+Extensions on `Color` (`ColorX`) and `String` (`StringColorX`), backed by `ColorMath`.
 
 ### Parsing
 
@@ -46,7 +46,7 @@ final shorthand = '#F50'.toColor();            // expands to #FF5500
 final faded = '#FF5500'.toColorWithOpacity(0.5);
 
 // Nullable parse (returns null on invalid input)
-final maybeColor = ColorService.tryParseHex('not-a-color'); // null
+final maybeColor = ColorMath.tryParseHex('not-a-color'); // null
 ```
 
 ### Hex output
@@ -156,7 +156,7 @@ swatch[700]; // darker variant
 
 Breakpoint thresholds: mobile `< 730`, tablet `730–1199`, desktop `1200–1599`, widescreen `≥ 1600`.
 
-### From `BuildContext` (`ResponsiveContext`)
+### From `BuildContext` (`BuildContextResponsiveX`)
 
 ```dart
 // Current breakpoint
@@ -173,7 +173,7 @@ final padding = context.responsive<double>(mobile: 16, tablet: 24, desktop: 32);
 final columns = context.responsive<int>(mobile: 1, tablet: 2, desktop: 4);
 ```
 
-### From `BoxConstraints` (`BreakpointUtils`)
+### From `BoxConstraints` (`BoxConstraintsX`)
 
 Useful inside `LayoutBuilder` — reacts to the widget's available width, not the screen width.
 
@@ -230,7 +230,7 @@ context.breakpoint.isDesktop;    // true for desktop AND widescreen
 
 ## Build context
 
-All helpers available via `ContextExt` on `BuildContext`.
+All helpers available via `BuildContextX` on `BuildContext`.
 
 ### Theme & media
 
@@ -521,7 +521,7 @@ final border = context.byBrightness(light: Colors.grey, dark: Colors.white30);
 
 ## Theme mode
 
-Extensions on `ThemeMode` (`ThemeModeExt`) and `String` (`ThemeModeStringExt`), backed by `ThemeModeService`.
+Extensions on `ThemeMode` (`ThemeModeX`) and `String` (`StringThemeModeX`), backed by `ThemeModes`.
 
 ```dart
 // ThemeMode → display values
@@ -538,8 +538,8 @@ ThemeMode.system.toKey();   // 'system'
 'system'.toThemeLabel();    // 'System Mode'
 
 // All available keys — useful for building a picker
-ThemeModeService.getThemeKeys(); // ['system', 'light', 'dark']
-ThemeModeService.all;            // [system, light, dark]
+ThemeModes.getThemeKeys(); // ['system', 'light', 'dark']
+ThemeModes.all;            // [system, light, dark]
 ```
 
 Cycling and predicates. `ThemeMode` has three values, so a single "toggle
@@ -574,7 +574,7 @@ final mode = saved.toThemeMode();
 
 ## Icon serialization
 
-`IconDataExt` (static parser) and `IconDataSerialization` (extension on `IconData`).
+`IconDataCodec` (static parser) and `IconDataX` (extension on `IconData`).
 
 ```dart
 // Serialize
@@ -583,11 +583,11 @@ final json = Icons.star.toJsonString();
 // null fields and matchTextDirection:false are omitted for compact output
 
 // Parse — returns null on failure
-final icon = IconDataExt.tryParse(json);
+final icon = IconDataCodec.tryParse(json);
 
 // Parse — returns a fallback on failure
-final safeIcon = IconDataExt.parse(json, fallback: Icons.question_mark);
-IconDataExt.parse('bad input');   // Icons.question_mark (default fallback)
+final safeIcon = IconDataCodec.parse(json, fallback: Icons.question_mark);
+IconDataCodec.parse('bad input');   // Icons.question_mark (default fallback)
 ```
 
 ### Storage / database example
@@ -597,14 +597,14 @@ IconDataExt.parse('bad input');   // Icons.question_mark (default fallback)
 row['icon'] = selectedIcon.toJsonString();
 
 // Read
-final icon = IconDataExt.tryParse(row['icon'] as String? ?? '') ?? Icons.label;
+final icon = IconDataCodec.tryParse(row['icon'] as String? ?? '') ?? Icons.label;
 ```
 
 ---
 
 ## Time of day
 
-Extension on `TimeOfDay` (`TimeOfDayExtensions`).
+Extension on `TimeOfDay` (`TimeOfDayX`).
 
 `TimeOfDay` is a bare hour/minute pair with no `compareTo`, no arithmetic, and
 no way to express a span. These fill that in, treating the value as an offset
@@ -625,8 +625,8 @@ const TimeOfDay(hour: 13, minute: 30).inMinutes;           // 810
 const TimeOfDay(hour: 13, minute: 30).asFractionalHours;   // 13.5
 const TimeOfDay(hour: 13, minute: 30).sinceMidnight;       // 13h 30m
 
-TimeOfDayExtensions.fromMinutes(90);    // 01:30
-TimeOfDayExtensions.fromMinutes(1500);  // 01:00 — wraps past a day
+TimeOfDayX.fromMinutes(90);    // 01:30
+TimeOfDayX.fromMinutes(1500);  // 01:00 — wraps past a day
 
 const TimeOfDay(hour: 14, minute: 30).toDateTime(DateTime(2024, 3, 5));
 DateTime.now().timeOfDay;

@@ -128,8 +128,8 @@ void main() {
       );
     });
 
-    // toClockString was removed — use HumanizedDuration.toHumanizedString instead
-    test('clock format via HumanizedDuration', () {
+    // toClockString was removed — use DurationX.toHumanizedString instead
+    test('clock format via DurationX', () {
       expect(
         const Duration(hours: 1, minutes: 3, seconds: 7).toHumanizedString(),
         '1:03:07',

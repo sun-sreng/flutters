@@ -2,7 +2,7 @@ import 'package:gmana_extensions/gmana_extensions.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('NumDurationExtension', () {
+  group('NumDurationX', () {
     test('seconds creates correct Duration', () {
       expect(5.seconds, equals(const Duration(seconds: 5)));
     });
@@ -12,13 +12,13 @@ void main() {
     });
   });
 
-  group('HumanizedDuration', () {
+  group('DurationX', () {
     test('toHuman formats short durations', () {
       expect(const Duration(seconds: 5).toHuman(), equals('5.0s'));
     });
 
     test('isZero returns true for zero duration', () {
-      expect(HumanizedDuration(Duration.zero).isZero, isTrue);
+      expect(DurationX(Duration.zero).isZero, isTrue);
     });
 
     test('toHHMMSS formats correctly', () {

@@ -1,12 +1,21 @@
 ## Unreleased
 
+### Changed
+
+- **Extensions renamed to the `…X` convention.** `HumanizedDuration` →
+  `DurationX`, `StringDateExtension` → `StringDateX`, `NumDurationExtension` →
+  `NumDurationX`. Extension members are unaffected; only code that names the
+  extension — a `show`/`hide` clause or an explicit override such as
+  `HumanizedDuration(value).humanized` — needs the new name.
+  `HumanizedDuration.fromFrames` keeps working through a deprecated shim.
+
 ### Deprecated
 
 - **String classification members that duplicate `gmana_predicates`.**
   `isAlpha`, `isEmail`, `isNumeric`, `isUrl`, `containsIgnoreCase`,
   `isNullOrEmpty`, `isDate`, `isToday`, `isPast`, `isFuture`, `isWeekend`,
   `isWeekday`, `isLeapYear`, `isAfter`, `isBefore`, and `isBetween` moved from
-  `StringX`, `StringNullableX`, and `StringDateExtension` into
+  `StringX`, `StringNullableX`, and `StringDateX` into
   `StringPredicateCompatX` / `StringNullablePredicateCompatX` and are
   deprecated. `gmana_predicates` declares the same names on `String`, so
   importing both packages — as `package:gmana/gmana.dart` does — made every

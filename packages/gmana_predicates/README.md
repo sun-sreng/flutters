@@ -110,7 +110,7 @@ DateTime.now().isWeekend           // true/false
 > `isWeekend`, `isLeapYear`. When both libraries are in scope Dart reports
 > those calls as ambiguous. Use the top-level function form
 > (`isEmail(value)`), which is never ambiguous, or an explicit extension
-> override: `GmanaStringPredicatesExt(value).isEmail`.
+> override: `GmanaStringPredicatesX(value).isEmail`.
 
 ---
 

@@ -168,7 +168,7 @@ available only by direct import from `extensions/duration_natural_language_ext.d
 | `isLongerThan(other)`, `isShorterThan(other)`, `isWithin(range, other)` | Duration comparisons.                               |
 | `progressOf(total)`                                                     | Convert elapsed duration into a 0-1 progress value. |
 | `remainingIn(total)`                                                    | Calculate remaining duration.                       |
-| `toFrames(fps)`, `HumanizedDuration.fromFrames(frames, fps)`            | Convert between duration and frame counts.          |
+| `toFrames(fps)`, `DurationX.fromFrames(frames, fps)`            | Convert between duration and frame counts.          |
 | `toHumanizedString()`, `toPaddedString()`                               | Stopwatch-style formatting.                         |
 | `toRelativeString()`                                                    | Format as `in 2 hours` or `5 minutes ago`.          |
 | `toSeconds()`                                                           | Fractional seconds.                                 |

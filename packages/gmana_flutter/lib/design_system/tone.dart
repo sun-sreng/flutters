@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart'
-    show ColorExt;
+    show ColorX;
 
 import 'colors.dart';
 

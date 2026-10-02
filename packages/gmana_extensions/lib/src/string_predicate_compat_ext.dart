@@ -3,7 +3,7 @@ import 'package:gmana_predicates/predicates/string_predicates.dart' as preds;
 
 /// String classification members that duplicate `gmana_predicates`.
 ///
-/// These used to live on `StringX` and `StringDateExtension`. `gmana_predicates`
+/// These used to live on `StringX` and `StringDateX`. `gmana_predicates`
 /// declares members with the same names on [String], and two extensions
 /// declaring the same member on the same type make every call ambiguous once
 /// both are imported. They are kept here, unchanged, in an extension of their

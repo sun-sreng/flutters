@@ -4,19 +4,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:gmana_flutter/gmana_flutter.dart';
 
 void main() {
-  group('fromLocale', () {
+  group('formatLocale', () {
     test('returns only language code when country and script are absent', () {
-      expect(fromLocale(const Locale('ja')), 'ja');
+      expect(formatLocale(const Locale('ja')), 'ja');
     });
 
     test('returns language and country code', () {
-      expect(fromLocale(const Locale('en', 'US')), 'en_US');
+      expect(formatLocale(const Locale('en', 'US')), 'en_US');
     });
 
     test('returns language and script code', () {
       const locale = Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans');
 
-      expect(fromLocale(locale), 'zh_Hans');
+      expect(formatLocale(locale), 'zh_Hans');
     });
 
     test('returns language, script, and country code', () {
@@ -26,25 +26,25 @@ void main() {
         countryCode: 'CN',
       );
 
-      expect(fromLocale(locale), 'zh_Hans_CN');
+      expect(formatLocale(locale), 'zh_Hans_CN');
     });
   });
 
-  group('toLocale', () {
+  group('parseLocale', () {
     test('returns default locale when value is null', () {
-      expect(toLocale(null), const Locale('en', 'US'));
+      expect(parseLocale(null), const Locale('en', 'US'));
     });
 
     test('returns default locale when value is empty', () {
-      expect(toLocale(''), const Locale('en', 'US'));
+      expect(parseLocale(''), const Locale('en', 'US'));
     });
 
     test('parses language code only', () {
-      expect(toLocale('ja'), const Locale('ja'));
+      expect(parseLocale('ja'), const Locale('ja'));
     });
 
     test('parses language and country code', () {
-      expect(toLocale('en_US'), const Locale('en', 'US'));
+      expect(parseLocale('en_US'), const Locale('en', 'US'));
     });
 
     test('parses language, script, and country code', () {
@@ -54,7 +54,7 @@ void main() {
         countryCode: 'CN',
       );
 
-      expect(toLocale('zh_Hans_CN'), expected);
+      expect(parseLocale('zh_Hans_CN'), expected);
     });
   });
 
@@ -65,6 +65,12 @@ void main() {
       countryCode: 'CN',
     );
 
-    expect(toLocale(fromLocale(locale)), locale);
+    expect(parseLocale(formatLocale(locale)), locale);
+  });
+  test('deprecated names still delegate', () {
+    const locale = Locale('en', 'US');
+
+    expect(fromLocale(locale), formatLocale(locale));
+    expect(toLocale('en_US'), parseLocale('en_US'));
   });
 }

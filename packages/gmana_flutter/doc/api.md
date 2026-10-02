@@ -76,7 +76,7 @@ final lighter = color.lighten(0.12);
 | -------------------------------------------------------------------------- | --------------------------------------------------------- |
 | `String.toColor()`                                                         | Parse `#RGB`, `#RRGGBB`, or `AARRGGBB`-style hex strings. |
 | `String.toColorWithOpacity(opacity)`                                       | Parse hex and apply opacity.                              |
-| `ColorExt.complementary`, `splitComplementary`, `triadic`, `analogous()`   | Generate color harmonies.                                 |
+| `ColorX.complementary`, `splitComplementary`, `triadic`, `analogous()`   | Generate color harmonies.                                 |
 | `contrastText`, `contrastRatio(other)`                                     | Choose readable foregrounds and measure contrast.         |
 | `isDark`, `isLight`, `meetsWcagAA(background)`, `meetsWcagAAA(background)` | Accessibility checks.                                     |
 | `greyscale`, `saturate(amount)`, `desaturate(amount)`                      | Adjust saturation.                                        |
@@ -85,7 +85,7 @@ final lighter = color.lighten(0.12);
 | `toHexRGB()`, `toHexARGB()`                                                | Serialize colors.                                         |
 | `toMaterialColor()`                                                        | Build a Material swatch.                                  |
 | `withAlphaOpacity(opacity)`                                                | Apply opacity through alpha.                              |
-| `ColorService.*`                                                           | Static versions of the same color operations.             |
+| `ColorMath.*`                                                           | Static versions of the same color operations.             |
 
 ## Responsive Layout
 
@@ -150,7 +150,7 @@ final label = ThemeMode.light.toLabel();
 
 | API                                                       | Use it for                                           |
 | --------------------------------------------------------- | ---------------------------------------------------- |
-| `ThemeModeService.fromKey(key)`                           | Convert `system`, `light`, or `dark` to `ThemeMode`. |
+| `ThemeModes.fromKey(key)`                           | Convert `system`, `light`, or `dark` to `ThemeMode`. |
 | `getKey(mode)`                                            | Convert `ThemeMode` to storage key.                  |
 | `getLabel(mode)`, `getLabelFromKey(key)`                  | Display labels.                                      |
 | `getIcon(mode)`, `getIconFromKey(key)`                    | Display icons.                                       |
@@ -196,7 +196,7 @@ Form(
 | `GPasswordField`                               | Password input with visibility toggle and `PasswordValidator`.              |
 | `GConfirmPasswordField`                        | Confirmation input that compares against a password controller.             |
 | `GNumberField`                                 | Numeric input with keyboard/input-formatters from `NumberValidationConfig`. |
-| `GTextField`                                   | Text input with `TextValidator`.                                            |
+| `GTextFormField`                               | Text input with `TextValidator`.                                            |
 | `GSubmitButton`                                | Elevated button that swaps its child for `GWaveDotSpinner` while loading.   |
 | `ConfirmPasswordValidationConfig`              | Configure required confirmation and whitespace trimming.                    |
 | `ConfirmPasswordValidator.validate(...)`       | Validate password/confirmation pairs.                                       |
@@ -284,18 +284,18 @@ GWaveSpinner(color: Colors.orange, child: const Icon(Icons.sync));
 
 ```dart
 final encoded = Icons.home.toJsonString();
-final icon = IconDataExt.parse(encoded);
+final icon = IconDataCodec.parse(encoded);
 
-final localeText = fromLocale(const Locale('en', 'US')); // en_US
-final locale = toLocale('km_KH');
+final localeText = formatLocale(const Locale('en', 'US')); // en_US
+final locale = parseLocale('km_KH');
 ```
 
 | API                                        | Use it for                                                     |
 | ------------------------------------------ | -------------------------------------------------------------- |
-| `IconDataExt.tryParse(source)`             | Parse serialized icon JSON or return `null`.                   |
-| `IconDataExt.parse(source, fallback: ...)` | Parse serialized icon JSON or return fallback.                 |
+| `IconDataCodec.tryParse(source)`             | Parse serialized icon JSON or return `null`.                   |
+| `IconDataCodec.parse(source, fallback: ...)` | Parse serialized icon JSON or return fallback.                 |
 | `IconData.toJsonString()`                  | Serialize icon data to JSON.                                   |
 | `IconData.isSerializable`                  | Check whether icon serialization round-trips.                  |
-| `fromLocale(locale)`                       | Convert a `Locale` to `language[_script][_country]` text.      |
-| `toLocale(text)`                           | Convert locale text back to a `Locale`, defaulting to `en_US`. |
+| `formatLocale(locale)`                     | Convert a `Locale` to `language[_script][_country]` text.      |
+| `parseLocale(text)`                        | Convert locale text back to a `Locale`, defaulting to `en_US`. |
 | `registerErrorHandlers()`                  | Install basic Flutter/platform error handlers and error UI.    |

@@ -2,7 +2,7 @@ import 'package:gmana_value_objects/gmana_value_objects.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('MoneyIterableExtension', () {
+  group('MoneyIterableX', () {
     test('sumOrNull sums one currency and returns null when empty', () {
       final amounts = [
         Money(minorUnits: 125, currency: Currency.usd),
@@ -52,10 +52,10 @@ void main() {
       ];
 
       expect(
-        MoneyIterableExtension(amounts).sumOrNull(),
+        MoneyIterableX(amounts).sumOrNull(),
         Money(minorUnits: 350, currency: Currency.usd),
       );
-      expect(MoneyIterableExtension(amounts).sumByCurrency(), {
+      expect(MoneyIterableX(amounts).sumByCurrency(), {
         Currency.usd: Money(minorUnits: 350, currency: Currency.usd),
       });
     });

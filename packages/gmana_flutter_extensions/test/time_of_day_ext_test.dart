@@ -7,38 +7,29 @@ const _noon = TimeOfDay(hour: 12, minute: 0);
 const _fivePm = TimeOfDay(hour: 17, minute: 0);
 
 void main() {
-  group('TimeOfDayExtensions.fromMinutes', () {
+  group('TimeOfDayX.fromMinutes', () {
     test('builds from minutes past midnight', () {
+      expect(TimeOfDayX.fromMinutes(0), const TimeOfDay(hour: 0, minute: 0));
+      expect(TimeOfDayX.fromMinutes(90), const TimeOfDay(hour: 1, minute: 30));
       expect(
-        TimeOfDayExtensions.fromMinutes(0),
-        const TimeOfDay(hour: 0, minute: 0),
-      );
-      expect(
-        TimeOfDayExtensions.fromMinutes(90),
-        const TimeOfDay(hour: 1, minute: 30),
-      );
-      expect(
-        TimeOfDayExtensions.fromMinutes(1439),
+        TimeOfDayX.fromMinutes(1439),
         const TimeOfDay(hour: 23, minute: 59),
       );
     });
 
     test('wraps past a full day', () {
-      expect(
-        TimeOfDayExtensions.fromMinutes(1500),
-        const TimeOfDay(hour: 1, minute: 0),
-      );
+      expect(TimeOfDayX.fromMinutes(1500), const TimeOfDay(hour: 1, minute: 0));
     });
 
     test('wraps negative minutes backwards into the day', () {
       expect(
-        TimeOfDayExtensions.fromMinutes(-30),
+        TimeOfDayX.fromMinutes(-30),
         const TimeOfDay(hour: 23, minute: 30),
       );
     });
   });
 
-  group('TimeOfDayExtensions conversions', () {
+  group('TimeOfDayX conversions', () {
     test('inMinutes and asFractionalHours', () {
       const time = TimeOfDay(hour: 13, minute: 30);
 
@@ -82,7 +73,7 @@ void main() {
     });
   });
 
-  group('TimeOfDayExtensions comparison', () {
+  group('TimeOfDayX comparison', () {
     test('compareTo orders within the day', () {
       expect(_nineAm.compareTo(_fivePm), lessThan(0));
       expect(_fivePm.compareTo(_nineAm), greaterThan(0));
@@ -131,7 +122,7 @@ void main() {
     });
   });
 
-  group('TimeOfDayExtensions spans', () {
+  group('TimeOfDayX spans', () {
     test('difference is signed and does not wrap', () {
       expect(
         const TimeOfDay(hour: 13, minute: 0).difference(_nineAm),
@@ -156,7 +147,7 @@ void main() {
     });
   });
 
-  group('TimeOfDayExtensions arithmetic', () {
+  group('TimeOfDayX arithmetic', () {
     test('addMinutes wraps past midnight', () {
       expect(
         const TimeOfDay(hour: 23, minute: 0).addMinutes(90),
@@ -190,7 +181,7 @@ void main() {
     });
   });
 
-  group('TimeOfDayExtensions rounding and clamping', () {
+  group('TimeOfDayX rounding and clamping', () {
     test('roundToNearest rounds both directions', () {
       expect(
         const TimeOfDay(hour: 9, minute: 22).roundToNearest(15),
@@ -230,5 +221,8 @@ void main() {
     test('clampTo rejects an inverted window', () {
       expect(() => _noon.clampTo(_fivePm, _nineAm), throwsArgumentError);
     });
+  });
+  test('TimeOfDayExtensions.fromMinutes still resolves', () {
+    expect(TimeOfDayExtensions.fromMinutes(90), TimeOfDayX.fromMinutes(90));
   });
 }

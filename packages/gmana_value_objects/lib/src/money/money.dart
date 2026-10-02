@@ -313,7 +313,7 @@ final class Money implements Comparable<Money> {
 }
 
 /// Helpers for summing collections of [Money].
-extension MoneyIterableExtension on Iterable<Money> {
+extension MoneyIterableX on Iterable<Money> {
   /// Sums the collection, returning zero in [emptyCurrency] for empty lists.
   ///
   /// Throws an [ArgumentError] when the collection mixes currencies.

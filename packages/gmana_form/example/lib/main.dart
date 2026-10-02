@@ -74,7 +74,7 @@ class _ExampleFormPageState extends State<ExampleFormPage> {
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
-                  const GTextField(
+                  const GTextFormField(
                     config: GTextFieldConfig(
                       name: 'name',
                       label: 'Name',

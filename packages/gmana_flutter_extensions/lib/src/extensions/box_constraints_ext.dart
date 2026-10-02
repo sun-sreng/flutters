@@ -58,7 +58,7 @@ abstract final class Breakpoints {
   static const double widescreen = 1600;
 }
 
-extension BreakpointUtils on BoxConstraints {
+extension BoxConstraintsX on BoxConstraints {
   Breakpoint get breakpoint => switch (maxWidth) {
     < Breakpoints.tablet => Breakpoint.mobile,
     < Breakpoints.desktop => Breakpoint.tablet,
@@ -123,7 +123,7 @@ extension BreakpointUtils on BoxConstraints {
   }
 }
 
-extension ResponsiveContext on BuildContext {
+extension BuildContextResponsiveX on BuildContext {
   Breakpoint get breakpoint => switch (MediaQuery.sizeOf(this).width) {
     < Breakpoints.tablet => Breakpoint.mobile,
     < Breakpoints.desktop => Breakpoint.tablet,

@@ -3,13 +3,13 @@
 
 import 'dart:ui';
 
-import '../services/color_service.dart';
+import '../color_math.dart';
 import 'color_ext.dart';
 
-extension StringColorExtension on String {
+extension StringColorX on String {
   /// Converts a hex string like `#F50`, `#FF5500`, or `CCFF5500` to a [Color].
   Color toColor() {
-    final color = ColorService.tryParseHex(this);
+    final color = ColorMath.tryParseHex(this);
     if (color == null) {
       throw FormatException(
         'Expected #RGB, #RRGGBB, or #AARRGGBB color text.',

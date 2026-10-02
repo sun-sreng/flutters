@@ -221,8 +221,8 @@ void main() {
 
       await tester.pumpWidget(
         hostForm(controller, [
-          GTextField.text(name: 'first'),
-          GTextField.text(name: 'second'),
+          GTextFormField.text(name: 'first'),
+          GTextFormField.text(name: 'second'),
         ]),
       );
 
@@ -237,7 +237,7 @@ void main() {
       final controller = newController();
 
       await tester.pumpWidget(
-        hostForm(controller, [GTextField.text(name: 'only')]),
+        hostForm(controller, [GTextFormField.text(name: 'only')]),
       );
 
       controller.requestFocus('only');
@@ -256,9 +256,9 @@ void main() {
 
       await tester.pumpWidget(
         hostForm(controller, [
-          GTextField.text(name: 'first', validator: (_) => null),
-          GTextField.email(name: 'second'),
-          GTextField.email(name: 'third'),
+          GTextFormField.text(name: 'first', validator: (_) => null),
+          GTextFormField.email(name: 'second'),
+          GTextFormField.email(name: 'third'),
         ]),
       );
 
@@ -277,7 +277,7 @@ void main() {
       final controller = newController();
 
       await tester.pumpWidget(
-        hostForm(controller, [GTextField.email(name: 'email')]),
+        hostForm(controller, [GTextFormField.email(name: 'email')]),
       );
 
       controller.setText('email', 'a@b.com');

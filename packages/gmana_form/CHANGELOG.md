@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Renamed the form field `GTextField` to `GTextFormField`, the name it already
+  had as an alias. `GTextField` remains as a deprecated alias; it clashed with
+  the plain-input `GTextField` in `gmana_flutter`.
 - Deprecated `GElevatedButton`; use `GSubmitButton.text`.
 - Removed the unused `gmana_functional` dependency.
 - Breaking: replaced `GFieldConfig` with `GTextFieldConfig`.

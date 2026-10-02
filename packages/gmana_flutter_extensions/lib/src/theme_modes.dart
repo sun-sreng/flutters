@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 
-abstract final class ThemeModeService {
+abstract final class ThemeModes {
   static const Map<ThemeMode, _ThemeModeConfig> _configs = {
     ThemeMode.system: _ThemeModeConfig(
       key: 'system',
@@ -85,3 +85,7 @@ class _ThemeModeConfig {
     required this.icon,
   });
 }
+
+/// Former name of [ThemeModes].
+@Deprecated('Use ThemeModes instead. This alias will be removed before 1.0.')
+typedef ThemeModeService = ThemeModes;

@@ -1,8 +1,8 @@
-import 'duration_ext.dart' show HumanizedDuration;
+import 'duration_ext.dart' show DurationX;
 
 /// Alternative duration formatting for human-readable UI copy.
 ///
-/// Complements [HumanizedDuration] with additional UI-friendly formats:
+/// Complements [DurationX] with additional UI-friendly formats:
 /// - [toNaturalString] - word-based, top-2 units: `"1 hour 2 minutes"`
 /// - [toCompactString] - abbreviated top-2 units: `"1h 2m"`
 /// - [toDetailedString] - abbreviated with milliseconds: `"1m 0s 500ms"`
@@ -32,7 +32,7 @@ extension DurationNaturalLanguageX on Duration {
 
   /// Abbreviated breakdown including milliseconds.
   ///
-  /// Unlike [HumanizedDuration.toVerboseString], always includes milliseconds
+  /// Unlike [DurationX.toVerboseString], always includes milliseconds
   /// when non-zero and always shows seconds.
   ///
   /// ```dart
@@ -56,7 +56,7 @@ extension DurationNaturalLanguageX on Duration {
 
   /// Natural-language description using the largest non-zero units.
   ///
-  /// Unlike [HumanizedDuration.toWordString], uses a space separator and
+  /// Unlike [DurationX.toWordString], uses a space separator and
   /// limits output to two units by default.
   ///
   /// ```dart

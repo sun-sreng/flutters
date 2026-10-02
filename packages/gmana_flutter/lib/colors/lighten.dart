@@ -8,5 +8,5 @@ import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
   'This duplicate will be removed before 1.0.',
 )
 Color lighten(Color color, [double amount = .1]) {
-  return ColorService.adjustLightness(color, amount: amount, darken: false);
+  return ColorMath.adjustLightness(color, amount: amount, darken: false);
 }

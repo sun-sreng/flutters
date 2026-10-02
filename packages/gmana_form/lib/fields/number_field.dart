@@ -41,7 +41,7 @@ class GNumberField extends StatelessWidget {
     TextStyle? style,
     Iterable<String>? autofillHints,
     InputDecoration? decoration,
-  }) : field = GTextField.number(
+  }) : field = GTextFormField.number(
          name: name,
          controller: controller,
          initialValue: initialValue,
@@ -70,7 +70,7 @@ class GNumberField extends StatelessWidget {
          decoration: decoration,
        );
 
-  final GTextField field;
+  final GTextFormField field;
 
   GTextFieldConfig get config => field.config;
 

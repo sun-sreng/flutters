@@ -1,16 +1,18 @@
 import 'dart:ui';
 
+/// Formats [locale] as underscore-separated text.
+///
 /// ```dart
 /// final locale1 = Locale('en', 'US');
-/// print(fromLocale(locale1));  // Outputs: en_US
+/// print(formatLocale(locale1));  // Outputs: en_US
 ///
 /// final locale2 = Locale('zh', 'CN', 'Hans');
-/// print(fromLocale(locale2));  // Outputs: zh_Hans_CN
+/// print(formatLocale(locale2));  // Outputs: zh_Hans_CN
 ///
 /// final locale3 = Locale('ja');
-/// print(fromLocale(locale3));  // Outputs: ja
+/// print(formatLocale(locale3));  // Outputs: ja
 /// ```
-String fromLocale(Locale locale) {
+String formatLocale(Locale locale) {
   final languageCode = locale.languageCode;
   final countryCode = locale.countryCode;
   final scriptCode = locale.scriptCode;
@@ -29,7 +31,7 @@ String fromLocale(Locale locale) {
 /// Parses an underscore-separated locale string (e.g. `en_US`, `zh_Hans_CN`)
 /// into a [Locale]. Returns `en_US` when [locale] is null, empty, or
 /// fails to parse.
-Locale toLocale(String? locale) {
+Locale parseLocale(String? locale) {
   const defaultLocale = Locale('en', 'US');
 
   if (locale == null || locale.isEmpty) {
@@ -54,3 +56,11 @@ Locale toLocale(String? locale) {
     return defaultLocale;
   }
 }
+
+/// Former name of [formatLocale].
+@Deprecated('Use formatLocale instead. This alias will be removed before 1.0.')
+String fromLocale(Locale locale) => formatLocale(locale);
+
+/// Former name of [parseLocale].
+@Deprecated('Use parseLocale instead. This alias will be removed before 1.0.')
+Locale toLocale(String? locale) => parseLocale(locale);

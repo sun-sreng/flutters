@@ -107,7 +107,7 @@ class ExampleHome extends StatelessWidget {
               const SizedBox(height: 24),
               DetailsPanel(
                 baseColor: color,
-                restoredIcon: IconDataExt.parse(Icons.home.toJsonString()),
+                restoredIcon: IconDataCodec.parse(Icons.home.toJsonString()),
               ),
               const SizedBox(height: 24),
               Wrap(

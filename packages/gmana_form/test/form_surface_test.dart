@@ -27,7 +27,10 @@ void main() {
               child: Column(
                 children: [
                   GEmailField(controller: emailController, label: 'Email'),
-                  GTextField.text(controller: textController, label: 'Name'),
+                  GTextFormField.text(
+                    controller: textController,
+                    label: 'Name',
+                  ),
                   GNumberField(controller: numberController, label: 'Age'),
                   GPasswordField(controller: passwordController),
                   GConfirmPasswordField(
@@ -49,7 +52,7 @@ void main() {
       );
 
       expect(find.byType(GEmailField), findsOneWidget);
-      expect(find.byType(GTextField), findsNWidgets(7));
+      expect(find.byType(GTextFormField), findsNWidgets(7));
       expect(find.byType(GNumberField), findsOneWidget);
       expect(find.byType(GPasswordField), findsOneWidget);
       expect(find.byType(GConfirmPasswordField), findsOneWidget);
@@ -94,7 +97,7 @@ void main() {
       void onSubmitted(String value) {}
       void onSaved(String? value) {}
 
-      final field = GTextField.text(
+      final field = GTextFormField.text(
         controller: controller,
         label: 'Notes',
         hint: 'Optional',
@@ -191,7 +194,7 @@ void main() {
               controller: controller,
               child: Column(
                 children: [
-                  GTextField(
+                  GTextFormField(
                     config: GTextFieldConfig(
                       controller: controller.textController('username'),
                       label: 'Username',
@@ -233,7 +236,7 @@ void main() {
           home: Scaffold(
             body: GForm(
               controller: controller,
-              child: GTextField.email(
+              child: GTextFormField.email(
                 name: 'email',
                 initialValue: 'draft@example.com',
               ),
@@ -299,7 +302,7 @@ void main() {
                 controller: controller,
                 child: Column(
                   children: [
-                    const GTextField(
+                    const GTextFormField(
                       config: GTextFieldConfig(
                         name: 'username',
                         label: 'Username',
@@ -356,7 +359,7 @@ void main() {
               controller: controller,
               child: Column(
                 children: [
-                  const GTextField(
+                  const GTextFormField(
                     config: GTextFieldConfig(
                       name: 'username',
                       label: 'Username',
@@ -447,7 +450,7 @@ void main() {
           home: Scaffold(
             body: GForm(
               controller: form,
-              child: GTextField.text(name: 'title', controller: text),
+              child: GTextFormField.text(name: 'title', controller: text),
             ),
           ),
         ),
@@ -461,5 +464,10 @@ void main() {
       expect(form.textValues(), {'title': 'published'});
       expect(form.value<String>('title'), 'published');
     });
+  });
+  test('GTextField remains an alias of GTextFormField', () {
+    final field = GTextField.text(label: 'Title');
+
+    expect(field, isA<GTextFormField>());
   });
 }

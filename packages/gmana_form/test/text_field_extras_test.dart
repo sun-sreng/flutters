@@ -17,9 +17,9 @@ Widget hostForm(GFormController controller, List<Widget> children) {
 }
 
 void main() {
-  group('GTextField.multiline', () {
+  group('GTextFormField.multiline', () {
     test('defaults to a growing multi-line box', () {
-      final field = GTextField.multiline();
+      final field = GTextFormField.multiline();
 
       expect(field.config.keyboardType, TextInputType.multiline);
       expect(field.config.textInputAction, TextInputAction.newline);
@@ -30,15 +30,15 @@ void main() {
     });
 
     test('has no prefix icon unless one is asked for', () {
-      expect(GTextField.multiline().config.prefixIcon, isNull);
+      expect(GTextFormField.multiline().config.prefixIcon, isNull);
       expect(
-        GTextField.multiline(prefixIcon: Icons.notes).config.prefixIcon,
+        GTextFormField.multiline(prefixIcon: Icons.notes).config.prefixIcon,
         Icons.notes,
       );
     });
 
     test('line bounds are configurable', () {
-      final field = GTextField.multiline(minLines: 1, maxLines: 20);
+      final field = GTextFormField.multiline(minLines: 1, maxLines: 20);
 
       expect(field.config.minLines, 1);
       expect(field.config.maxLines, 20);
@@ -48,7 +48,7 @@ void main() {
       final controller = newController();
 
       await tester.pumpWidget(
-        hostForm(controller, [GTextField.multiline(name: 'bio')]),
+        hostForm(controller, [GTextFormField.multiline(name: 'bio')]),
       );
 
       final field = tester.widget<TextField>(find.byType(TextField));
@@ -63,7 +63,7 @@ void main() {
       final controller = newController();
 
       await tester.pumpWidget(
-        hostForm(controller, [GTextField.multiline(name: 'bio')]),
+        hostForm(controller, [GTextFormField.multiline(name: 'bio')]),
       );
 
       await tester.enterText(find.byType(TextField), 'line one\nline two');
@@ -76,7 +76,7 @@ void main() {
 
       await tester.pumpWidget(
         hostForm(controller, [
-          GTextField.multiline(
+          GTextFormField.multiline(
             name: 'bio',
             validator: GValidators.minLength(10),
           ),
@@ -122,7 +122,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: Form(
-              child: GTextField(
+              child: GTextFormField(
                 config: GTextFieldConfig(
                   label: 'Pick something',
                   readOnly: true,
@@ -145,7 +145,7 @@ void main() {
         const MaterialApp(
           home: Scaffold(
             body: Form(
-              child: GTextField(
+              child: GTextFormField(
                 config: GTextFieldConfig(label: 'A', autofocus: true),
               ),
             ),
@@ -169,7 +169,7 @@ void main() {
 
       await tester.pumpWidget(
         hostForm(controller, [
-          GTextField.text(
+          GTextFormField.text(
             name: 'nickname',
             validator: GValidators.minLength(3),
           ),

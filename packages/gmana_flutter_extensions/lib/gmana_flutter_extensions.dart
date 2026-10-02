@@ -19,5 +19,5 @@ export 'src/extensions/time_of_day_ext.dart';
 export 'src/extensions/widget_ext.dart';
 export 'src/extensions/widget_list_ext.dart';
 
-export 'src/services/color_service.dart';
-export 'src/services/theme_mode_service.dart';
+export 'src/color_math.dart';
+export 'src/theme_modes.dart';

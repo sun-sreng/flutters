@@ -2,7 +2,7 @@ import 'package:gmana_extensions/gmana_extensions.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('NumDurationExtension', () {
+  group('NumDurationX', () {
     test('microseconds', () {
       expect(5.microseconds, equals(const Duration(microseconds: 5)));
       expect(5.5.microseconds, equals(const Duration(microseconds: 6)));

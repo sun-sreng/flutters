@@ -38,7 +38,7 @@ class GUrlField extends StatelessWidget {
     TextStyle? style,
     Iterable<String>? autofillHints = const [AutofillHints.url],
     InputDecoration? decoration,
-  }) : field = GTextField.url(
+  }) : field = GTextFormField.url(
          name: name,
          controller: controller,
          initialValue: initialValue,
@@ -67,7 +67,7 @@ class GUrlField extends StatelessWidget {
          decoration: decoration,
        );
 
-  final GTextField field;
+  final GTextFormField field;
 
   GTextFieldConfig get config => field.config;
 

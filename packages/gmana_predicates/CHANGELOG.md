@@ -1,3 +1,14 @@
+## Unreleased
+
+### Changed
+
+- **Extensions renamed to the `…X` convention.** `GmanaStringPredicatesExt` →
+  `GmanaStringPredicatesX`, `GmanaNullableStringPredicatesExt` →
+  `GmanaNullableStringPredicatesX`, `GmanaDateTimePredicatesExt` →
+  `GmanaDateTimePredicatesX`. Extension members are unaffected; only code that
+  names the extension in a `show`/`hide` clause or an explicit override needs
+  the new name.
+
 ## 0.0.2
 
 ### Fixed

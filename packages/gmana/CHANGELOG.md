@@ -1,5 +1,6 @@
 ## Unreleased
 
+- change: re-exported extensions follow their packages' renames to the `…X` convention (`HumanizedDuration` → `DurationX`, `StringDateExtension` → `StringDateX`, `NumDurationExtension` → `NumDurationX`, `GmanaStringPredicatesExt` → `GmanaStringPredicatesX`, `MoneyIterableExtension` → `MoneyIterableX`). Members are unaffected; only code that names an extension needs updating.
 - fix: `package:gmana/gmana.dart` no longer exports two declarations of `isEmail`, `isUrl`, `isAlpha`, `isNumeric`, `containsIgnoreCase`, `isNullOrEmpty`, `isDate`, `isToday`, `isPast`, `isFuture`, `isWeekend`, `isWeekday`, `isLeapYear`, `isAfter`, `isBefore`, and `isBetween` on `String`. Every call to one of them was an ambiguous-extension compile error. They now resolve to `gmana_predicates`; note that its `isUrl` is a method (`value.isUrl()`), its `isEmail` does not trim, and its `isNumeric` accepts digits only.
 - docs: the package description now lists `gmana_value_objects`, which the facade has re-exported since 0.2.0.
 

@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 
-extension ContextExt on BuildContext {
+extension BuildContextX on BuildContext {
   double get bottomSafeArea => safeAreaPadding.bottom;
 
   Brightness get brightness => theme.brightness;

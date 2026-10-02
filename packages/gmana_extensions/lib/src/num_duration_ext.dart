@@ -1,5 +1,5 @@
 /// Creates [Duration] values from numbers, such as `5.seconds`.
-extension NumDurationExtension on num {
+extension NumDurationX on num {
   /// Returns a duration in days.
   Duration get day => days;
 

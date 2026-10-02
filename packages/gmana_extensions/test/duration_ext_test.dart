@@ -2,7 +2,7 @@ import 'package:gmana_extensions/gmana_extensions.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('HumanizedDuration Extension', () {
+  group('DurationX Extension', () {
     group('Formatting', () {
       test('toHumanizedString formats correctly', () {
         expect(
@@ -110,14 +110,14 @@ void main() {
       });
 
       test('abs returns absolute value', () {
-        // HumanizedDuration.abs is a getter, but Duration.abs() is a method.
+        // DurationX.abs is a getter, but Duration.abs() is a method.
         // We test the extension getter by explicitly resolving it:
         expect(
-          HumanizedDuration(const Duration(minutes: -5)).abs,
+          DurationX(const Duration(minutes: -5)).abs,
           const Duration(minutes: 5),
         );
         expect(
-          HumanizedDuration(const Duration(minutes: 5)).abs,
+          DurationX(const Duration(minutes: 5)).abs,
           const Duration(minutes: 5),
         );
       });
@@ -395,12 +395,9 @@ void main() {
       });
 
       test('fromFrames reconstructs duration', () {
+        expect(DurationX.fromFrames(24, 24.0), const Duration(seconds: 1));
         expect(
-          HumanizedDuration.fromFrames(24, 24.0),
-          const Duration(seconds: 1),
-        );
-        expect(
-          HumanizedDuration.fromFrames(30, 60.0),
+          DurationX.fromFrames(30, 60.0),
           const Duration(milliseconds: 500),
         );
       });
@@ -416,5 +413,11 @@ void main() {
         expect(Duration.zero.toIso8601String(), 'PT0S');
       });
     });
+  });
+  test('HumanizedDuration.fromFrames still resolves', () {
+    expect(
+      HumanizedDuration.fromFrames(120, 24),
+      DurationX.fromFrames(120, 24),
+    );
   });
 }

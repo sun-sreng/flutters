@@ -2,7 +2,7 @@ import 'package:gmana_extensions/gmana_extensions.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('StringDateExtension', () {
+  group('StringDateX', () {
     group('isDate', () {
       test('returns true for parseable ISO 8601 date strings', () {
         expect('2024-03-15'.isDate, isTrue);

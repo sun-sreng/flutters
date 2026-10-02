@@ -1,5 +1,5 @@
 /// Formatting, arithmetic, and utility methods for [Duration].
-extension HumanizedDuration on Duration {
+extension DurationX on Duration {
   /// Returns the absolute non-negative value of this duration.
   Duration get abs => Duration(microseconds: inMicroseconds.abs());
 
@@ -348,6 +348,19 @@ extension HumanizedDuration on Duration {
   /// Reconstructs a duration from [frames] at [fps].
   static Duration fromFrames(int frames, double fps) =>
       Duration(milliseconds: (frames / fps * 1000).round());
+}
+
+/// Former name of [DurationX].
+///
+/// An extension cannot be aliased, so this keeps the one member that was
+/// called through the old name, `HumanizedDuration.fromFrames`, resolving.
+@Deprecated(
+  'Use DurationX.fromFrames instead. This shim will be removed before 1.0.',
+)
+abstract final class HumanizedDuration {
+  /// Reconstructs a duration from [frames] at [fps].
+  static Duration fromFrames(int frames, double fps) =>
+      DurationX.fromFrames(frames, fps);
 }
 
 int _positiveIntervalMicroseconds(Duration interval) {

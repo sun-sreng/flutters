@@ -40,7 +40,7 @@ class GPasswordField extends StatelessWidget {
     TextStyle? style,
     Iterable<String>? autofillHints = const [AutofillHints.password],
     InputDecoration? decoration,
-  }) : field = GTextField.password(
+  }) : field = GTextFormField.password(
          name: name,
          controller: controller,
          initialValue: initialValue,
@@ -69,7 +69,7 @@ class GPasswordField extends StatelessWidget {
          decoration: decoration,
        );
 
-  final GTextField field;
+  final GTextFormField field;
 
   GTextFieldConfig get config => field.config;
 

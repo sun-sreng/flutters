@@ -10,7 +10,7 @@ void main() {
       expect(color.toARGB32(), const Color(0xFFFF5500).toARGB32());
       expect(color.toHexRGB(), '#FF5500');
       expect(color.toHexARGB(), '#FFFF5500');
-      expect(ColorService.tryParseHex('#80FF5500')?.toARGB32(), 0x80FF5500);
+      expect(ColorMath.tryParseHex('#80FF5500')?.toARGB32(), 0x80FF5500);
     });
 
     test('validate color amounts', () {
@@ -61,8 +61,8 @@ void main() {
 
   group('theme mode extensions', () {
     test('convert between storage keys and theme modes', () {
-      expect(ThemeModeService.fromKey('dark'), ThemeMode.dark);
-      expect(ThemeModeService.getKey(ThemeMode.light), 'light');
+      expect(ThemeModes.fromKey('dark'), ThemeMode.dark);
+      expect(ThemeModes.getKey(ThemeMode.light), 'light');
       expect('system'.toThemeMode(), ThemeMode.system);
       expect(ThemeMode.dark.toLabel(), 'Dark Mode');
     });
@@ -71,7 +71,7 @@ void main() {
   group('icon serialization', () {
     test('round trips icon data', () {
       const source = Icons.home;
-      final restored = IconDataExt.parse(source.toJsonString());
+      final restored = IconDataCodec.parse(source.toJsonString());
 
       expect(restored.codePoint, source.codePoint);
       expect(restored.fontFamily, source.fontFamily);
@@ -125,5 +125,12 @@ void main() {
       expect(styled.decoration, TextDecoration.underline);
       expect(styled.color, Colors.blue);
     });
+  });
+  test('deprecated class names remain aliases', () {
+    const color = Color(0xFF336699);
+
+    expect(ColorService.isDark(color), ColorMath.isDark(color));
+    expect(ThemeModeService.fromKey('dark'), ThemeModes.fromKey('dark'));
+    expect(IconDataExt.tryParse(''), IconDataCodec.tryParse(''));
   });
 }

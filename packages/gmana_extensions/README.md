@@ -28,7 +28,7 @@ import 'package:gmana_extensions/gmana_extensions.dart';
 
 ## Duration
 
-### Construction from numbers (`NumDurationExtension` on `num`)
+### Construction from numbers (`NumDurationX` on `num`)
 
 ```dart
 5.seconds           // Duration(seconds: 5)
@@ -52,7 +52,7 @@ import 'package:gmana_extensions/gmana_extensions.dart';
 final eta = 1.hours + 30.minutes + 45.seconds;
 ```
 
-### Arithmetic & clamping (`HumanizedDuration`)
+### Arithmetic & clamping (`DurationX`)
 
 ```dart
 final d = 90.minutes;
@@ -132,7 +132,7 @@ const fps = 24.0;
 final d = Duration(seconds: 5);
 
 d.toFrames(fps)                 // 120
-HumanizedDuration.fromFrames(120, fps) // Duration(seconds: 5)
+DurationX.fromFrames(120, fps) // Duration(seconds: 5)
 ```
 
 ### Async helpers
@@ -499,7 +499,7 @@ ambiguous. Use the `gmana_predicates` extensions instead; three of them differ:
 | `value.isNumeric`     | `double.tryParse(value) != null` (theirs is digits-only) |
 | `value.isUrl`         | `value.isUrl(allowedSchemes: {'http', 'https'})`    |
 
-### Date strings (`StringDateExtension`)
+### Date strings (`StringDateX`)
 
 ```dart
 '2024-01-01'.isBetweenInclusive('2024-01-01', '2024-12-31') // true

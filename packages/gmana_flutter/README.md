@@ -112,12 +112,12 @@ class HomePage extends StatelessWidget {
 | ---------- | ---------------------------------------------------------------------------------------------------------- |
 | Widgets    | `GAppBar`, `GButton`, `GCard`, `GListTile`, `GGap`, `GStarRatingBar`, `GTextField`                          |
 | Status UI  | `GTag`, `GBanner`, `GAvatar`, `GEmptyState`                                                                |
-| Forms      | `GEmailField`, `GPasswordField`, `GNumberField`, `GTextField`, `GConfirmPasswordField`, `GSubmitButton`    |
+| Forms      | `GEmailField`, `GPasswordField`, `GNumberField`, `GTextFormField`, `GConfirmPasswordField`, `GSubmitButton` |
 | Loading    | `GCircularSpinner`, `GLinearSpinner`, `GDotSpinner`, `GWaveSpinner`, `GWaveDotSpinner`                     |
 | Tokens     | `GColors`, `GFontWeight`, `GSpacing`, `GRadius`, `GMotion`, `GTone`                                        |
-| Theme      | Re-exported `ThemeModeExt`, `ThemeModeService`                                                             |
-| Extensions | Re-exported `ColorExt`, `StringColorExtension`, `BreakpointUtils`, `ResponsiveContext`, `ContextExt`       |
-| Utilities  | Re-exported `IconDataExt`, `IconDataSerialization`, plus `fromLocale`, `toLocale`, `registerErrorHandlers` |
+| Theme      | Re-exported `ThemeModeX`, `ThemeModes`                                                             |
+| Extensions | Re-exported `ColorX`, `StringColorX`, `BoxConstraintsX`, `BuildContextResponsiveX`, `BuildContextX`       |
+| Utilities  | Re-exported `IconDataCodec`, `IconDataX`, plus `formatLocale`, `parseLocale`, `registerErrorHandlers` |
 
 ## Theme Setup
 
@@ -153,10 +153,10 @@ ThemeMode.dark.toKey();    // 'dark'
 ThemeMode.dark.toLabel();  // 'Dark Mode'
 ThemeMode.dark.toIcon();   // Icons.dark_mode
 
-// ThemeModeService — all methods are static
-ThemeModeService.fromKey('light');                                        // ThemeMode.light
-ThemeModeService.getThemeKeys();                                          // ['system', 'light', 'dark']
-ThemeModeService.getThemeKeys().map(ThemeModeService.getLabelFromKey).toList(); // ['System Mode', 'Light Mode', 'Dark Mode']
+// ThemeModes — all methods are static
+ThemeModes.fromKey('light');                                        // ThemeMode.light
+ThemeModes.getThemeKeys();                                          // ['system', 'light', 'dark']
+ThemeModes.getThemeKeys().map(ThemeModes.getLabelFromKey).toList(); // ['System Mode', 'Light Mode', 'Dark Mode']
 ```
 
 ## Forms
@@ -468,7 +468,7 @@ Parse colors from strings:
 ```dart
 final fromFullHex = '#F57224'.toColor();
 final fromShortHex = '#F50'.toColor();
-final optionalColor = ColorService.tryParseHex('#80F57224');
+final optionalColor = ColorMath.tryParseHex('#80F57224');
 ```
 
 Check contrast:
@@ -557,7 +557,7 @@ GDivider(label: 'OR')
 
 ## Snackbars, Navigation, And Dialogs
 
-`ContextExt` gives short helpers for common app actions:
+`BuildContextX` gives short helpers for common app actions:
 
 ```dart
 context.showSuccessSnackBar(message: 'Saved');
@@ -581,13 +581,13 @@ Store Flutter `IconData` values as JSON strings:
 
 ```dart
 final json = Icons.home.toJsonString();
-final icon = IconDataExt.tryParse(json) ?? Icons.broken_image;
+final icon = IconDataCodec.tryParse(json) ?? Icons.broken_image;
 ```
 
 Use a fallback when parsing required values:
 
 ```dart
-final icon = IconDataExt.parse(
+final icon = IconDataCodec.parse(
   savedIconJson,
   fallback: Icons.help_outline,
 );
@@ -598,8 +598,8 @@ final icon = IconDataExt.parse(
 Convert between `Locale` and underscore-separated locale tags:
 
 ```dart
-final tag = fromLocale(const Locale('en', 'US')); // 'en_US'
-final locale = toLocale('km_KH'); // Locale('km', 'KH')
+final tag = formatLocale(const Locale('en', 'US')); // 'en_US'
+final locale = parseLocale('km_KH'); // Locale('km', 'KH')
 ```
 
 ## Error Handler Setup

@@ -3,12 +3,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart'
-    show ColorService, ColorExt;
+    show ColorMath, ColorX;
 
 /// Brand color palette and theme factory.
 ///
 /// Utility methods (hex parsing, opacity) are intentionally omitted here —
-/// use [ColorService] and [ColorExt] instead.
+/// use [ColorMath] and [ColorX] instead.
 abstract final class GColors {
   // ── Brand ──────────────────────────────────────────────────────────────
 

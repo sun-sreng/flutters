@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 
-abstract final class ColorService {
+abstract final class ColorMath {
   static const double defaultAmount = 0.1;
 
   static Color adjustLightness(
@@ -252,3 +252,7 @@ abstract final class ColorService {
     }
   }
 }
+
+/// Former name of [ColorMath].
+@Deprecated('Use ColorMath instead. This alias will be removed before 1.0.')
+typedef ColorService = ColorMath;

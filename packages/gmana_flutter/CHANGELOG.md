@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Changed
+
+- `fromLocale` → `formatLocale` and `toLocale` → `parseLocale`. The old names
+  remain as deprecated aliases.
+- Re-exported names follow `gmana_flutter_extensions` and `gmana_form`:
+  `ColorMath`, `ThemeModes`, `IconDataCodec`, `GTextFormField`, and the
+  extensions renamed to the `…X` convention.
+
 ### Deprecated
 
 - `lighten()` and `darken()` top-level functions — use `color.lighten(amount)`

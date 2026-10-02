@@ -10,7 +10,7 @@
 ///   scheduleReminder(due);
 /// }
 /// ```
-extension StringDateExtension on String {
+extension StringDateX on String {
   /// Day of month, or `null` when this string is not a valid date.
   int? get day => toDateTimeOrNull?.day;
 

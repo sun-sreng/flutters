@@ -38,7 +38,7 @@ class GPhoneField extends StatelessWidget {
     TextStyle? style,
     Iterable<String>? autofillHints = const [AutofillHints.telephoneNumber],
     InputDecoration? decoration,
-  }) : field = GTextField.phone(
+  }) : field = GTextFormField.phone(
          name: name,
          controller: controller,
          initialValue: initialValue,
@@ -67,7 +67,7 @@ class GPhoneField extends StatelessWidget {
          decoration: decoration,
        );
 
-  final GTextField field;
+  final GTextFormField field;
 
   GTextFieldConfig get config => field.config;
 

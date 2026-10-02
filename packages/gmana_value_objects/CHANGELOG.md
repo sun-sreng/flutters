@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Changed
+
+- Renamed `MoneyIterableExtension` to `MoneyIterableX`. Its members are
+  unaffected; only code that names the extension needs the new name.
+
 ### Added
 
 - Added `GmanaValueObjectResultX` for inspecting `Either`-based validation

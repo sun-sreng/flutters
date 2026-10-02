@@ -9,7 +9,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 /// Scoped parser that avoids adding icon parsing behavior to every [String].
-abstract final class IconDataExt {
+abstract final class IconDataCodec {
   /// Returns [fallback] on any parse failure.
   static IconData parse(
     String source, {
@@ -41,7 +41,11 @@ abstract final class IconDataExt {
   }
 }
 
-extension IconDataSerialization on IconData {
+/// Former name of [IconDataCodec], which is a class and not an extension.
+@Deprecated('Use IconDataCodec instead. This alias will be removed before 1.0.')
+typedef IconDataExt = IconDataCodec;
+
+extension IconDataX on IconData {
   /// Serializes to a compact JSON string; null and default fields are omitted.
   String toJsonString() {
     final map = <String, dynamic>{'codePoint': codePoint};

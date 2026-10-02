@@ -63,7 +63,7 @@ export 'src/password/password_validation_config.dart';
 export 'src/password/password_validator.dart';
 
 // Phone
-export 'src/phone/phone.dart';
+export 'src/phone/phone_value.dart';
 export 'src/phone/phone_errors.dart';
 export 'src/phone/phone_validation_config.dart';
 export 'src/phone/phone_validator.dart';
@@ -75,7 +75,7 @@ export 'src/text/text_validator.dart';
 export 'src/text/text_value.dart';
 
 // URL
-export 'src/url/url.dart';
+export 'src/url/url_value.dart';
 export 'src/url/url_errors.dart';
 export 'src/url/url_validation_config.dart';
 export 'src/url/url_validator.dart';

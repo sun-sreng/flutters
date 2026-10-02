@@ -5,7 +5,7 @@ import 'numeric_predicates.dart' as num_p;
 import 'string_predicates.dart' as str_p;
 
 /// Convenient extension methods on nullable [String] values.
-extension GmanaNullableStringPredicatesExt on String? {
+extension GmanaNullableStringPredicatesX on String? {
   /// Returns `true` if this string is `null` or empty.
   bool get isNullOrEmpty => str_p.isNullOrEmpty(this);
 
@@ -27,7 +27,7 @@ extension GmanaNullableStringPredicatesExt on String? {
 }
 
 /// Convenient extension methods on non-null [String] values.
-extension GmanaStringPredicatesExt on String {
+extension GmanaStringPredicatesX on String {
   /// Returns `true` if this string contains only ASCII alphabetic characters.
   bool get isAlpha => str_p.isAlpha(this);
 
@@ -403,7 +403,7 @@ extension GmanaStringPredicatesExt on String {
 }
 
 /// Convenient extension methods on [DateTime] values.
-extension GmanaDateTimePredicatesExt on DateTime {
+extension GmanaDateTimePredicatesX on DateTime {
   /// Returns `true` if this DateTime falls on a Saturday or Sunday.
   bool get isWeekend =>
       weekday == DateTime.saturday || weekday == DateTime.sunday;

@@ -61,56 +61,56 @@ void main() {
     });
   });
 
-  group('ThemeModeService', () {
+  group('ThemeModes', () {
     test('key round-trip', () {
-      expect(ThemeModeService.fromKey('light'), ThemeMode.light);
-      expect(ThemeModeService.getKey(ThemeMode.dark), 'dark');
-      expect(ThemeModeService.fromKey('nonsense'), ThemeMode.system);
+      expect(ThemeModes.fromKey('light'), ThemeMode.light);
+      expect(ThemeModes.getKey(ThemeMode.dark), 'dark');
+      expect(ThemeModes.fromKey('nonsense'), ThemeMode.system);
     });
 
     test('labels and icons', () {
-      expect(ThemeModeService.getLabel(ThemeMode.dark), 'Dark Mode');
-      expect(ThemeModeService.getLabelFromKey('light'), 'Light Mode');
-      expect(ThemeModeService.getIcon(ThemeMode.dark), Icons.dark_mode);
-      expect(ThemeModeService.getIconFromKey('light'), Icons.light_mode);
+      expect(ThemeModes.getLabel(ThemeMode.dark), 'Dark Mode');
+      expect(ThemeModes.getLabelFromKey('light'), 'Light Mode');
+      expect(ThemeModes.getIcon(ThemeMode.dark), Icons.dark_mode);
+      expect(ThemeModes.getIconFromKey('light'), Icons.light_mode);
     });
 
     test('all and getThemeKeys agree on order', () {
-      expect(ThemeModeService.all, [
+      expect(ThemeModes.all, [
         ThemeMode.system,
         ThemeMode.light,
         ThemeMode.dark,
       ]);
-      expect(ThemeModeService.getThemeKeys(), ['system', 'light', 'dark']);
+      expect(ThemeModes.getThemeKeys(), ['system', 'light', 'dark']);
     });
 
     test('next cycles through every mode and wraps', () {
-      expect(ThemeModeService.next(ThemeMode.system), ThemeMode.light);
-      expect(ThemeModeService.next(ThemeMode.light), ThemeMode.dark);
-      expect(ThemeModeService.next(ThemeMode.dark), ThemeMode.system);
+      expect(ThemeModes.next(ThemeMode.system), ThemeMode.light);
+      expect(ThemeModes.next(ThemeMode.light), ThemeMode.dark);
+      expect(ThemeModes.next(ThemeMode.dark), ThemeMode.system);
     });
 
     test('nextKey mirrors next', () {
-      expect(ThemeModeService.nextKey('system'), 'light');
-      expect(ThemeModeService.nextKey('dark'), 'system');
+      expect(ThemeModes.nextKey('system'), 'light');
+      expect(ThemeModes.nextKey('dark'), 'system');
     });
 
     test('isKnownKey separates real keys from fallbacks', () {
-      expect(ThemeModeService.isKnownKey('dark'), isTrue);
-      expect(ThemeModeService.isKnownKey('Dark'), isFalse);
-      expect(ThemeModeService.isKnownKey('nonsense'), isFalse);
+      expect(ThemeModes.isKnownKey('dark'), isTrue);
+      expect(ThemeModes.isKnownKey('Dark'), isFalse);
+      expect(ThemeModes.isKnownKey('nonsense'), isFalse);
     });
 
     test('resolveBrightness only consults the platform for system', () {
       expect(
-        ThemeModeService.resolveBrightness(
+        ThemeModes.resolveBrightness(
           ThemeMode.light,
           platformBrightness: Brightness.dark,
         ),
         Brightness.light,
       );
       expect(
-        ThemeModeService.resolveBrightness(
+        ThemeModes.resolveBrightness(
           ThemeMode.system,
           platformBrightness: Brightness.dark,
         ),
@@ -119,7 +119,7 @@ void main() {
     });
   });
 
-  group('ThemeModeExt', () {
+  group('ThemeModeX', () {
     test('conversions', () {
       expect(ThemeMode.dark.toKey(), 'dark');
       expect(ThemeMode.dark.toLabel(), 'Dark Mode');
@@ -149,7 +149,7 @@ void main() {
     });
   });
 
-  group('ThemeModeStringExt', () {
+  group('StringThemeModeX', () {
     test('conversions', () {
       expect('dark'.toThemeMode(), ThemeMode.dark);
       expect('light'.toThemeLabel(), 'Light Mode');
@@ -163,7 +163,7 @@ void main() {
     });
   });
 
-  group('ContextExt theme queries', () {
+  group('BuildContextX theme queries', () {
     testWidgets('isDarkMode follows the ambient theme', (tester) async {
       var context = await captureContext(tester, theme: ThemeData.dark());
       expect(context.isDarkMode, isTrue);
@@ -202,7 +202,7 @@ void main() {
     });
   });
 
-  group('ContextExt media queries', () {
+  group('BuildContextX media queries', () {
     testWidgets('keyboardHeight reads the bottom view inset', (tester) async {
       var context = await captureContext(
         tester,
@@ -262,7 +262,7 @@ void main() {
     });
   });
 
-  group('ContextExt snack bars', () {
+  group('BuildContextX snack bars', () {
     Future<void> pumpWithButton(
       WidgetTester tester,
       void Function(BuildContext context) onPressed,
