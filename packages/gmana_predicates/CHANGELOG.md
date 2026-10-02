@@ -2,6 +2,8 @@
 
 ### Changed
 
+- **Source files moved under `lib/src`.** Import `package:gmana_predicates/gmana_predicates.dart`.
+  The old library paths (`package:gmana_predicates/predicates/string_predicates.dart` and the rest) still resolve but are deprecated.
 - **Extensions renamed to the `…X` convention.** `GmanaStringPredicatesExt` →
   `GmanaStringPredicatesX`, `GmanaNullableStringPredicatesExt` →
   `GmanaNullableStringPredicatesX`, `GmanaDateTimePredicatesExt` →

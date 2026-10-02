@@ -440,6 +440,28 @@ result.fold(
 );
 ```
 
+### `GResult<T, E>`
+
+A sealed two-track result for an arbitrary error type, with exhaustive
+pattern matching. It carries the `G` prefix because `Result<T>` above is
+already taken.
+
+```dart
+final GResult<int, String> parsed = GResult.captureWith(
+  () => int.parse(raw),
+  (error, stackTrace) => 'Bad number "$raw"',
+);
+
+final label = switch (parsed) {
+  GSuccess(:final value) => 'Got $value',
+  GFailure(:final error) => error,
+};
+
+// Convert to and from Either.
+final Either<String, int> either = parsed.toEither();
+final GResult<int, String> back = either.toResult();
+```
+
 ---
 
 ## Failure

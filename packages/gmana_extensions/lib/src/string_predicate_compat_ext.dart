@@ -1,5 +1,19 @@
-import 'package:gmana_predicates/predicates/date_predicates.dart' as dates;
-import 'package:gmana_predicates/predicates/string_predicates.dart' as preds;
+import 'package:gmana_predicates/gmana_predicates.dart'
+    as dates
+    show
+        isAfter,
+        isBefore,
+        isBetween,
+        isDate,
+        isFuture,
+        isLeapYear,
+        isPast,
+        isToday,
+        isWeekday,
+        isWeekend;
+import 'package:gmana_predicates/gmana_predicates.dart'
+    as preds
+    show isAlpha, isEmail;
 
 /// String classification members that duplicate `gmana_predicates`.
 ///

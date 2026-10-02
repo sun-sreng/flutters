@@ -11,11 +11,11 @@
 /// Regex constants live under `lib/src/` and are not part of the public API.
 library;
 
-export 'annotations.dart';
-export 'predicates/combinators.dart';
-export 'predicates/date_predicates.dart';
-export 'predicates/extensions.dart';
-export 'predicates/identifier_predicates.dart';
-export 'predicates/network_predicates.dart';
-export 'predicates/numeric_predicates.dart';
-export 'predicates/string_predicates.dart';
+export 'src/annotations.dart';
+export 'src/predicates/combinators.dart';
+export 'src/predicates/date_predicates.dart';
+export 'src/predicates/extensions.dart';
+export 'src/predicates/identifier_predicates.dart';
+export 'src/predicates/network_predicates.dart';
+export 'src/predicates/numeric_predicates.dart';
+export 'src/predicates/string_predicates.dart';

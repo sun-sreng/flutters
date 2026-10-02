@@ -9,7 +9,6 @@ library;
 export 'extensions.dart'
     hide StringNullablePredicateCompatX, StringPredicateCompatX;
 export 'functional.dart';
-export 'src/result_bridge.dart';
 export 'utilities.dart';
 export 'validation.dart';
 // gmana_value_objects still declares its own validators, and its own email,

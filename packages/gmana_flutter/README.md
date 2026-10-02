@@ -526,6 +526,10 @@ GResponsiveBuilder(
 )
 ```
 
+It switches at the same thresholds as `context.breakpoint`: tablet from
+`Breakpoints.tablet` (730) and desktop from `Breakpoints.desktop` (1200). Pass
+`mobileBreakpoint` and `tabletBreakpoint` to use others.
+
 ### GGrid
 
 ```dart

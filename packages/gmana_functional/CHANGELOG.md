@@ -1,3 +1,15 @@
+## Unreleased
+
+### Added
+
+- `GResult<T, E>`, `GSuccess`, and `GFailure`, with their combinators
+  (`GmanaResultX`, `GmanaFutureToResultX`, `GmanaFutureResultX`,
+  `GmanaIterableResultX`). The type moved here from `gmana_utils`, where it was
+  named `Result`; it keeps the `G` prefix because this package already has
+  `Result<T>` and `Failure`.
+- `toResult`, `toEither`, `toResultAsync`, and `toEitherAsync` for converting
+  between `Either` and `GResult`. They moved here from `gmana`.
+
 ## 0.0.2
 
 Additive release — no existing member changed signature or behaviour.

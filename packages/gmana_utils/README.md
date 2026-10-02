@@ -902,6 +902,11 @@ final remote = await tryOrElseAsync(
 
 Type-safe success or failure monad:
 
+> The type is declared in [`gmana_functional`](../gmana_functional) as
+> `GResult`, `GSuccess`, and `GFailure`, and re-exported here. `Result`,
+> `Success`, and `Failure` are deprecated aliases of those names; the
+> examples below work with either spelling.
+
 ```dart
 final result = Result.capture(() => parseData());
 

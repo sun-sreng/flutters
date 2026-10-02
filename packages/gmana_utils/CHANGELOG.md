@@ -1,3 +1,17 @@
+## Unreleased
+
+### Changed
+
+- `Result<T, E>` and its combinators are now declared in `gmana_functional`
+  as `GResult`, `GSuccess`, and `GFailure`, and re-exported from this package.
+  Behaviour, including `toString`, is unchanged.
+- Added a dependency on `gmana_functional`.
+
+### Deprecated
+
+- `Result`, `Success`, and `Failure` — now aliases of `GResult`, `GSuccess`,
+  and `GFailure`.
+
 ## 0.0.2 - 2026-09-23
 
 ### Fixed

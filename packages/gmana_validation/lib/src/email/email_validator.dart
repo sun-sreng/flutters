@@ -1,5 +1,5 @@
 import 'package:gmana_functional/gmana_functional.dart';
-import 'package:gmana_predicates/predicates/string_predicates.dart';
+import 'package:gmana_predicates/gmana_predicates.dart' show isEmail;
 
 import '../core/validation_issue.dart';
 import 'email_validation_config.dart';

@@ -42,6 +42,8 @@
 
 ### Changed
 
+- **Source files moved under `lib/src`.** Import `package:gmana_form/gmana_form.dart`.
+  The old library paths (`package:gmana_form/fields/text_field.dart` and the rest) still resolve but are deprecated.
 - **Breaking:** replaced `GFieldConfig` with `GTextFieldConfig`.
 - **Breaking:** renamed field constructor labels from `labelText`/`hintText`
   to `label`/`hint`.

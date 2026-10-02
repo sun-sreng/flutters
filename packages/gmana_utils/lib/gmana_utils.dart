@@ -10,7 +10,6 @@ export 'src/id_generator.dart';
 export 'src/lazy.dart';
 export 'src/rate_limiter.dart';
 export 'src/result.dart';
-export 'src/result_extensions.dart';
 export 'src/retry.dart';
 export 'src/retry_extensions.dart';
 export 'src/semaphore.dart';

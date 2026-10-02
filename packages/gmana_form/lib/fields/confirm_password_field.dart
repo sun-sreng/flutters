@@ -1,82 +1,8 @@
-// Passthrough widget mirroring TextFormField props.
-// ignore_for_file: public_member_api_docs
+/// Moved under `lib/src`. Import `package:gmana_form/gmana_form.dart` instead.
+@Deprecated(
+  'Import package:gmana_form/gmana_form.dart instead. '
+  'This library will be removed before 1.0.',
+)
+library;
 
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:gmana_validation/gmana_validation.dart';
-
-import '../controllers/form_controller.dart';
-import '../models/field_config.dart';
-import 'text_field.dart';
-
-/// Confirm-password preset kept for discoverability.
-class GConfirmPasswordField extends StatelessWidget {
-  GConfirmPasswordField({
-    super.key,
-    String? name,
-    TextEditingController? controller,
-    String? initialValue,
-    TextEditingController? passwordController,
-    String? passwordName,
-    String label = 'Confirm password',
-    String hint = 'Re-enter your password',
-    TextInputAction textInputAction = TextInputAction.done,
-    List<TextInputFormatter>? inputFormatters,
-    GFormValueParser? valueParser,
-    ConfirmPasswordValidationConfig validationConfig =
-        const ConfirmPasswordValidationConfig(),
-    ValidationMessageResolver<ConfirmPasswordValidationIssue>?
-    validationMessageResolver,
-    GFormValidator? validator,
-    GTextFieldConfig Function(GTextFieldConfig config)? configure,
-    void Function(String)? onChanged,
-    void Function(String)? onFieldSubmitted,
-    void Function(String?)? onSaved,
-    IconData? prefixIcon,
-    FocusNode? focusNode,
-    AutovalidateMode? autovalidateMode,
-    bool? enabled,
-    bool readOnly = false,
-    int? maxLength,
-    TextAlign textAlign = TextAlign.start,
-    TextStyle? style,
-    Iterable<String>? autofillHints = const [AutofillHints.password],
-    InputDecoration? decoration,
-  }) : field = GTextFormField.confirmPassword(
-         name: name,
-         controller: controller,
-         initialValue: initialValue,
-         passwordController: passwordController,
-         passwordName: passwordName,
-         label: label,
-         hint: hint,
-         textInputAction: textInputAction,
-         inputFormatters: inputFormatters,
-         valueParser: valueParser,
-         validationConfig: validationConfig,
-         validationMessageResolver:
-             validationMessageResolver ?? resolveConfirmPasswordValidationIssue,
-         validator: validator,
-         configure: configure,
-         onChanged: onChanged,
-         onFieldSubmitted: onFieldSubmitted,
-         onSaved: onSaved,
-         prefixIcon: prefixIcon,
-         focusNode: focusNode,
-         autovalidateMode: autovalidateMode,
-         enabled: enabled,
-         readOnly: readOnly,
-         maxLength: maxLength,
-         textAlign: textAlign,
-         style: style,
-         autofillHints: autofillHints,
-         decoration: decoration,
-       );
-
-  final GTextFormField field;
-
-  GTextFieldConfig get config => field.config;
-
-  @override
-  Widget build(BuildContext context) => field;
-}
+export '../src/fields/confirm_password_field.dart';

@@ -1,8 +1,8 @@
-/// Marks a predicate as experimental — subject to change or removal.
-const Experimental experimental = Experimental();
+/// Moved under `lib/src`. Import `package:gmana_predicates/gmana_predicates.dart` instead.
+@Deprecated(
+  'Import package:gmana_predicates/gmana_predicates.dart instead. '
+  'This library will be removed before 1.0.',
+)
+library;
 
-/// Annotation for predicates not yet stable enough for production use.
-final class Experimental {
-  /// Creates an [Experimental] annotation.
-  const Experimental();
-}
+export 'src/annotations.dart';

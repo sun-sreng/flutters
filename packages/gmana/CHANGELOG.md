@@ -2,6 +2,9 @@
 
 ### Changed
 
+- The `Either` ↔ `GResult` conversions (`toResult`, `toEither`, `toResultAsync`,
+  `toEitherAsync`) are now declared in `gmana_functional`. The facade exports
+  the same extensions as before and no longer contains code of its own.
 - `IdentifierValidationConfig`, `NetworkValidationConfig`,
   `NumberValidationConfig`, `PhoneValidationConfig`, `UrlValidationConfig`,
   `IdentifierType`, and `NetworkAddressType` are now one class each, shared by

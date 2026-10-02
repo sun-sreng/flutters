@@ -1,6 +1,8 @@
 import 'dart:convert';
 
-import 'package:gmana_predicates/predicates/string_predicates.dart' as preds;
+import 'package:gmana_predicates/gmana_predicates.dart'
+    as preds
+    show isAlphaNumeric, isBlank, isNotBlank;
 
 final RegExp _camelBoundaryRegExp = RegExp(r'([a-z])([A-Z])');
 final RegExp _slugHyphenRegExp = RegExp(r'-+');

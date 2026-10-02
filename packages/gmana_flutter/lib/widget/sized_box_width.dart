@@ -1,19 +1,8 @@
-import 'package:flutter/material.dart';
-import '../design_system/spacing.dart';
-
-/// A widget that adds horizontal spacing using a SizedBox with a specified width.
+/// Moved under `lib/src`. Import `package:gmana_flutter/gmana_flutter.dart` instead.
 @Deprecated(
-  'Use GGap.horizontal instead. This duplicate will be removed before 1.0.',
+  'Import package:gmana_flutter/gmana_flutter.dart instead. '
+  'This library will be removed before 1.0.',
 )
-class SizedBoxWidth extends StatelessWidget {
-  /// The width of the SizedBox, defined by [GSpacing].
-  final double spacing;
+library;
 
-  /// Creates a SizedBox with the specified [spacing] width.
-  const SizedBoxWidth({super.key, this.spacing = GSpacing.md});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(width: spacing);
-  }
-}
+export '../src/widgets/sized_box_width.dart';

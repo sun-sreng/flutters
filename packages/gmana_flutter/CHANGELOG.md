@@ -2,6 +2,16 @@
 
 ### Changed
 
+- **Breaking:** `GResponsiveBuilder` now defaults to the shared breakpoints,
+  `Breakpoints.tablet` (730) and `Breakpoints.desktop` (1200), instead of 600
+  and 1024, so it agrees with `context.breakpoint`. Pass `mobileBreakpoint: 600,
+  tabletBreakpoint: 1024` to keep the previous behaviour.
+- **Source files moved under `lib/src`.** Import
+  `package:gmana_flutter/gmana_flutter.dart`. The old library paths
+  (`package:gmana_flutter/widget/button.dart` and the rest) still resolve but
+  are deprecated.
+- Removed the dependency on `gmana`. Nothing from it was re-exported; if you
+  relied on it arriving transitively, depend on `gmana` directly.
 - `fromLocale` → `formatLocale` and `toLocale` → `parseLocale`. The old names
   remain as deprecated aliases.
 - Re-exported names follow `gmana_flutter_extensions` and `gmana_form`:
