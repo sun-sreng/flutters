@@ -12,23 +12,21 @@ export 'functional.dart';
 export 'src/result_bridge.dart';
 export 'utilities.dart';
 export 'validation.dart';
+// gmana_value_objects still declares its own validators, and its own email,
+// password and text configs, under the names gmana_validation uses. Those are
+// hidden so the gmana_validation declarations win. The identifier, network,
+// number, phone and URL configs are no longer listed: both packages now export
+// the same class.
 export 'value_objects.dart'
     hide
         EmailValidationConfig,
         EmailValidator,
-        IdentifierType,
-        IdentifierValidationConfig,
         IdentifierValidator,
-        NetworkAddressType,
-        NetworkValidationConfig,
         NetworkValidator,
-        NumberValidationConfig,
         NumberValidator,
         PasswordValidationConfig,
         PasswordValidator,
-        PhoneValidationConfig,
         PhoneValidator,
         TextValidationConfig,
         TextValidator,
-        UrlValidationConfig,
         UrlValidator;

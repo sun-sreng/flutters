@@ -15,12 +15,8 @@ final class UrlValidator {
 
   /// Validates [input] and returns parsed [Uri] on success.
   Either<UrlError, Uri> validate(String input) {
-    final vConfig = v.UrlValidationConfig(
-      allowedSchemes: config.allowedSchemes,
-      requireHost: config.requireHost,
-    );
     return v.UrlValidator(
-      vConfig,
+      config,
     ).validate(input).fold((issue) => Left(issue.toUrlError()), Right.new);
   }
 }

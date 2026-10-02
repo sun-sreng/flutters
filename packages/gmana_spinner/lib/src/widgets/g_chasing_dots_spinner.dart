@@ -1,8 +1,8 @@
-import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../animation/spinner_controller_mixin.dart';
 import '../theme/g_spinner_theme.dart';
 
 /// A loading spinner with two chasing dots rotating and scaling around a center.
@@ -40,54 +40,13 @@ class GChasingDotsSpinner extends StatefulWidget {
 }
 
 class _GChasingDotsSpinnerState extends State<GChasingDotsSpinner>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  bool _ownsController = false;
+    with SingleTickerProviderStateMixin, SpinnerControllerMixin {
+  @override
+  AnimationController? controllerOf(GChasingDotsSpinner widget) =>
+      widget.controller;
 
   @override
-  void initState() {
-    super.initState();
-    _initController();
-  }
-
-  void _initController() {
-    if (widget.controller != null) {
-      _controller = widget.controller!;
-      _ownsController = false;
-    } else {
-      _controller = AnimationController(vsync: this, duration: widget.duration);
-      _ownsController = true;
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant GChasingDotsSpinner oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.controller != oldWidget.controller) {
-      if (_ownsController) _controller.dispose();
-      _initController();
-    } else if (_ownsController && widget.duration != oldWidget.duration) {
-      _controller.duration = widget.duration;
-    }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_ownsController) return;
-    if (!TickerMode.valuesOf(context).enabled) {
-      _controller.stop();
-    } else if (!_controller.isAnimating) {
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void dispose() {
-    if (_ownsController) _controller.dispose();
-    super.dispose();
-  }
+  Duration durationOf(GChasingDotsSpinner widget) => widget.duration;
 
   @override
   Widget build(BuildContext context) => wrapSpinnerSemantics(
@@ -105,10 +64,10 @@ class _GChasingDotsSpinnerState extends State<GChasingDotsSpinner>
         width: widget.size,
         height: widget.size,
         child: AnimatedBuilder(
-          animation: _controller,
+          animation: controller,
           builder: (context, child) {
             return Transform.rotate(
-              angle: _controller.value * 2 * math.pi,
+              angle: controller.value * 2 * math.pi,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -118,7 +77,7 @@ class _GChasingDotsSpinnerState extends State<GChasingDotsSpinner>
                     child: Transform.scale(
                       scale:
                           0.4 +
-                          0.6 * math.sin(_controller.value * math.pi).abs(),
+                          0.6 * math.sin(controller.value * math.pi).abs(),
                       child: Container(
                         width: dotSize,
                         height: dotSize,
@@ -135,7 +94,7 @@ class _GChasingDotsSpinnerState extends State<GChasingDotsSpinner>
                     child: Transform.scale(
                       scale:
                           0.4 +
-                          0.6 * math.cos(_controller.value * math.pi).abs(),
+                          0.6 * math.cos(controller.value * math.pi).abs(),
                       child: Container(
                         width: dotSize,
                         height: dotSize,

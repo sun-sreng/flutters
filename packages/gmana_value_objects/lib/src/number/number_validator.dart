@@ -15,15 +15,8 @@ final class NumberValidator {
 
   /// Validates the given [input] string as a number.
   Either<NumberError, num> validate(String input) {
-    final vConfig = v.NumberValidationConfig(
-      min: config.min,
-      max: config.max,
-      allowNegative: config.allowNegative,
-      integerOnly: config.integerOnly,
-      maxDecimalPlaces: config.maxDecimalPlaces,
-    );
     return v.NumberValidator(
-      vConfig,
+      config,
     ).validate(input).fold((issue) => Left(issue.toNumberError()), Right.new);
   }
 }

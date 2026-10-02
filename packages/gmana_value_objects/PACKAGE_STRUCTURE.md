@@ -10,8 +10,8 @@ the package's internal layout at a high level.
 - Value objects are **always valid by construction**.
 - `Either`-based smart constructors (`tryParse`) for untrusted input; throwing
   constructors for trusted literals.
-- Structural equality (`==` / `hashCode`) on every value object and most
-  configs. Identifier and network configs currently retain identity equality.
+- Structural equality (`==` / `hashCode`) on every value object and every
+  config.
 
 ## File structure
 

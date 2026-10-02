@@ -1,11 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import '../animation/dot_animation_config.dart';
-import 'g_wave_dot_spinner_dot.dart';
-
+import '../animation/spinner_controller_mixin.dart';
 import '../theme/g_spinner_theme.dart';
+import 'g_wave_dot_spinner_dot.dart';
 
 /// A customizable loading spinner with a wave-like animation of scaling dots.
 ///
@@ -59,54 +57,13 @@ class GWaveDotSpinner extends StatefulWidget {
 }
 
 class _GWaveDotSpinnerState extends State<GWaveDotSpinner>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  bool _ownsController = false;
+    with SingleTickerProviderStateMixin, SpinnerControllerMixin {
+  @override
+  AnimationController? controllerOf(GWaveDotSpinner widget) =>
+      widget.controller;
 
   @override
-  void initState() {
-    super.initState();
-    _initController();
-  }
-
-  void _initController() {
-    if (widget.controller != null) {
-      _controller = widget.controller!;
-      _ownsController = false;
-    } else {
-      _controller = AnimationController(vsync: this, duration: widget.duration);
-      _ownsController = true;
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant GWaveDotSpinner oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.controller != oldWidget.controller) {
-      if (_ownsController) _controller.dispose();
-      _initController();
-    } else if (_ownsController && widget.duration != oldWidget.duration) {
-      _controller.duration = widget.duration;
-    }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_ownsController) return;
-    if (!TickerMode.valuesOf(context).enabled) {
-      _controller.stop();
-    } else if (!_controller.isAnimating) {
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void dispose() {
-    if (_ownsController) _controller.dispose();
-    super.dispose();
-  }
+  Duration durationOf(GWaveDotSpinner widget) => widget.duration;
 
   @override
   Widget build(BuildContext context) => wrapSpinnerSemantics(
@@ -131,7 +88,7 @@ class _GWaveDotSpinnerState extends State<GWaveDotSpinner>
             ),
             size: widget.size,
             color: GSpinnerTheme.resolveColor(context, widget.color),
-            controller: _controller,
+            controller: controller,
           );
         }),
       ),

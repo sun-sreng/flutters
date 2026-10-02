@@ -102,7 +102,7 @@ void main() {
     test('blocks disposable domains if not allowed', () {
       const strictValidator = EmailValidator(
         EmailValidationConfig(
-          allowDisposable: false,
+          rejectDisposable: true,
           disposableDomains: {' TempMail.com '},
         ),
       );
@@ -114,7 +114,7 @@ void main() {
           );
 
       const lenientValidator = EmailValidator(
-        EmailValidationConfig(allowDisposable: true),
+        EmailValidationConfig(rejectDisposable: false),
       );
       expect(lenientValidator.validate('test@tempmail.com').isRight(), true);
     });

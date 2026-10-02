@@ -15,13 +15,7 @@ final class NetworkValidator {
 
   /// Validates the given [input] string as a network address.
   Either<NetworkAddressError, String> validate(String input) {
-    final vConfig = v.NetworkValidationConfig(
-      allowEmpty: config.allowEmpty,
-      trimWhitespace: config.trimWhitespace,
-      requiredType: config.requiredType,
-      ipVersion: config.ipVersion,
-    );
-    return v.NetworkValidator(vConfig)
+    return v.NetworkValidator(config)
         .validate(input)
         .fold((issue) => Left(issue.toNetworkAddressError()), Right.new);
   }

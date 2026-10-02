@@ -6,6 +6,10 @@ import '../url/url_validation_config.dart';
 const Object _unsetConfigValue = Object();
 
 /// Copy helpers for [PhoneValidationConfig].
+@Deprecated(
+  'copyWith is now a method on the config class. '
+  'This extension will be removed before 1.0.',
+)
 extension GmanaPhoneValidationConfigX on PhoneValidationConfig {
   /// Returns a copy with the supplied fields replaced.
   ///
@@ -24,6 +28,10 @@ extension GmanaPhoneValidationConfigX on PhoneValidationConfig {
 }
 
 /// Copy helpers for [UrlValidationConfig].
+@Deprecated(
+  'copyWith is now a method on the config class. '
+  'This extension will be removed before 1.0.',
+)
 extension GmanaUrlValidationConfigX on UrlValidationConfig {
   /// Returns a copy with the supplied fields replaced.
   ///
@@ -40,6 +48,10 @@ extension GmanaUrlValidationConfigX on UrlValidationConfig {
 }
 
 /// Copy helpers for [IdentifierValidationConfig].
+@Deprecated(
+  'copyWith is now a method on the config class. '
+  'This extension will be removed before 1.0.',
+)
 extension GmanaIdentifierValidationConfigX on IdentifierValidationConfig {
   /// Returns a copy with the supplied fields replaced.
   ///
@@ -72,6 +84,10 @@ extension GmanaIdentifierValidationConfigX on IdentifierValidationConfig {
 }
 
 /// Copy helpers for [NetworkValidationConfig].
+@Deprecated(
+  'copyWith is now a method on the config class. '
+  'This extension will be removed before 1.0.',
+)
 extension GmanaNetworkValidationConfigX on NetworkValidationConfig {
   /// Returns a copy with the supplied fields replaced.
   ///

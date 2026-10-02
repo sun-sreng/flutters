@@ -1,10 +1,9 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../animation/spinner_controller_mixin.dart';
 import '../painters/wave_spinner_painter.dart';
-
 import '../theme/g_spinner_theme.dart';
 
 /// A circular spinner with an optional animated wave fill.
@@ -61,54 +60,12 @@ class GWaveSpinner extends StatefulWidget {
 }
 
 class _GWaveSpinnerState extends State<GWaveSpinner>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  bool _ownsController = false;
+    with SingleTickerProviderStateMixin, SpinnerControllerMixin {
+  @override
+  AnimationController? controllerOf(GWaveSpinner widget) => widget.controller;
 
   @override
-  void initState() {
-    super.initState();
-    _initController();
-  }
-
-  void _initController() {
-    if (widget.controller != null) {
-      _controller = widget.controller!;
-      _ownsController = false;
-    } else {
-      _controller = AnimationController(vsync: this, duration: widget.duration);
-      _ownsController = true;
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant GWaveSpinner oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.controller != oldWidget.controller) {
-      if (_ownsController) _controller.dispose();
-      _initController();
-    } else if (_ownsController && widget.duration != oldWidget.duration) {
-      _controller.duration = widget.duration;
-    }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_ownsController) return;
-    if (!TickerMode.valuesOf(context).enabled) {
-      _controller.stop();
-    } else if (!_controller.isAnimating) {
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void dispose() {
-    if (_ownsController) _controller.dispose();
-    super.dispose();
-  }
+  Duration durationOf(GWaveSpinner widget) => widget.duration;
 
   @override
   Widget build(BuildContext context) => wrapSpinnerSemantics(
@@ -138,7 +95,7 @@ class _GWaveSpinnerState extends State<GWaveSpinner>
                   waveColor: widget.waveColor,
                   curve: widget.curve,
                   hasChild: widget.child != null,
-                  controller: _controller,
+                  controller: controller,
                 ),
               ),
               if (widget.child != null)

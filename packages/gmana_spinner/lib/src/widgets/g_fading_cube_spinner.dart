@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
+import '../animation/spinner_controller_mixin.dart';
 import '../theme/g_spinner_theme.dart';
 
 /// A 2x2 grid of fading and scaling cubes loading spinner widget.
@@ -39,54 +38,13 @@ class GFadingCubeSpinner extends StatefulWidget {
 }
 
 class _GFadingCubeSpinnerState extends State<GFadingCubeSpinner>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  bool _ownsController = false;
+    with SingleTickerProviderStateMixin, SpinnerControllerMixin {
+  @override
+  AnimationController? controllerOf(GFadingCubeSpinner widget) =>
+      widget.controller;
 
   @override
-  void initState() {
-    super.initState();
-    _initController();
-  }
-
-  void _initController() {
-    if (widget.controller != null) {
-      _controller = widget.controller!;
-      _ownsController = false;
-    } else {
-      _controller = AnimationController(vsync: this, duration: widget.duration);
-      _ownsController = true;
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant GFadingCubeSpinner oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.controller != oldWidget.controller) {
-      if (_ownsController) _controller.dispose();
-      _initController();
-    } else if (_ownsController && widget.duration != oldWidget.duration) {
-      _controller.duration = widget.duration;
-    }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_ownsController) return;
-    if (!TickerMode.valuesOf(context).enabled) {
-      _controller.stop();
-    } else if (!_controller.isAnimating) {
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void dispose() {
-    if (_ownsController) _controller.dispose();
-    super.dispose();
-  }
+  Duration durationOf(GFadingCubeSpinner widget) => widget.duration;
 
   double _getCubeOpacity(double progress, double delay) {
     final v = (progress - delay) % 1.0;
@@ -120,7 +78,7 @@ class _GFadingCubeSpinnerState extends State<GFadingCubeSpinner>
         width: widget.size,
         height: widget.size,
         child: AnimatedBuilder(
-          animation: _controller,
+          animation: controller,
           builder: (context, child) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -131,12 +89,12 @@ class _GFadingCubeSpinnerState extends State<GFadingCubeSpinner>
                     _buildCube(
                       cubeSize,
                       cubeColor,
-                      _getCubeOpacity(_controller.value, delays[0]),
+                      _getCubeOpacity(controller.value, delays[0]),
                     ),
                     _buildCube(
                       cubeSize,
                       cubeColor,
-                      _getCubeOpacity(_controller.value, delays[1]),
+                      _getCubeOpacity(controller.value, delays[1]),
                     ),
                   ],
                 ),
@@ -146,12 +104,12 @@ class _GFadingCubeSpinnerState extends State<GFadingCubeSpinner>
                     _buildCube(
                       cubeSize,
                       cubeColor,
-                      _getCubeOpacity(_controller.value, delays[2]),
+                      _getCubeOpacity(controller.value, delays[2]),
                     ),
                     _buildCube(
                       cubeSize,
                       cubeColor,
-                      _getCubeOpacity(_controller.value, delays[3]),
+                      _getCubeOpacity(controller.value, delays[3]),
                     ),
                   ],
                 ),

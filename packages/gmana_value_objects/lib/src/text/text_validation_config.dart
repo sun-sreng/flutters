@@ -32,6 +32,12 @@ final class TextValidationConfig {
   /// Additional specification of characters that are allowed, often paired with `pattern`.
   final String? allowedCharacters;
 
+  /// Whether [blacklistedWords] must match whole words only.
+  ///
+  /// Defaults to `false`: a blacklisted word is rejected anywhere it appears,
+  /// including inside a longer word.
+  final bool wholeWordBlacklist;
+
   /// Creates a new [TextValidationConfig] with customizable rules.
   ///
   /// By default, trims whitespace and does not allow empty text.
@@ -44,6 +50,7 @@ final class TextValidationConfig {
     this.pattern,
     this.blacklistedWords = const {},
     this.allowedCharacters,
+    this.wholeWordBlacklist = false,
   });
 
   /// Username validation
@@ -115,6 +122,7 @@ final class TextValidationConfig {
     Object? pattern = _unset,
     Set<String>? blacklistedWords,
     Object? allowedCharacters = _unset,
+    bool? wholeWordBlacklist,
   }) {
     return TextValidationConfig(
       minLength:
@@ -130,6 +138,7 @@ final class TextValidationConfig {
           identical(allowedCharacters, _unset)
               ? this.allowedCharacters
               : allowedCharacters as String?,
+      wholeWordBlacklist: wholeWordBlacklist ?? this.wholeWordBlacklist,
     );
   }
 
@@ -146,6 +155,7 @@ final class TextValidationConfig {
           other.trimWhitespace == trimWhitespace &&
           other.pattern == pattern &&
           other.allowedCharacters == allowedCharacters &&
+          other.wholeWordBlacklist == wholeWordBlacklist &&
           setEquals(other.blacklistedWords, blacklistedWords);
 
   @override
@@ -157,6 +167,7 @@ final class TextValidationConfig {
     trimWhitespace,
     pattern,
     allowedCharacters,
+    wholeWordBlacklist,
     Object.hashAllUnordered(blacklistedWords),
   );
 }

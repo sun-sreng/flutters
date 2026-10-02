@@ -149,12 +149,10 @@ always valid.
 
 ## Updating validation configs
 
-Every validation config supports copy-style `copyWith` updates. In addition to
-the existing email, password, text, number, and money methods, extensions add
-`copyWith` to phone, URL, identifier, and network configs.
-`GmanaPhoneValidationConfigX`, `GmanaUrlValidationConfigX`,
-`GmanaIdentifierValidationConfigX`, and `GmanaNetworkValidationConfigX` provide
-these additions:
+Every validation config supports copy-style `copyWith` updates. The phone,
+URL, identifier, network, and number configs are the `gmana_validation` classes,
+re-exported here, so a config built for a validator works for the value object
+too:
 
 ```dart
 final phoneRules = const PhoneValidationConfig().copyWith(
@@ -189,9 +187,8 @@ final anyIpVersion = ipv4CidrRules.copyWith(ipVersion: null);
 
 Each `copyWith` call returns a new config instance. Collection-valued fields
 retain the supplied `Set` or `List` rather than defensively copying it, so avoid
-mutating those collections after construction. Most config types implement
-structural equality; `IdentifierValidationConfig` and
-`NetworkValidationConfig` currently retain identity equality.
+mutating those collections after construction. Every config type implements
+structural equality.
 
 ## Email
 

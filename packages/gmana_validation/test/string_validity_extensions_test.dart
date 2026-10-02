@@ -1,5 +1,5 @@
+import 'package:gmana_validation/gmana_validation.dart';
 import 'package:test/test.dart';
-import 'package:gmana_extensions/gmana_extensions.dart';
 
 void main() {
   group('StringValidation Extension', () {
@@ -113,33 +113,6 @@ void main() {
         expect('eyJhbGciOiJIUzI1NiJ9'.isValidBase64, isTrue);
         expect('not base64!'.isValidBase64, isFalse);
         expect(''.isValidBase64, isFalse);
-      });
-
-      test('isBlank returns true for empty or whitespace strings', () {
-        expect(''.isBlank, isTrue);
-        expect('   '.isBlank, isTrue);
-        expect(' a '.isBlank, isFalse);
-      });
-
-      test('isNotBlank returns true for non-whitespace strings', () {
-        expect('a'.isNotBlank, isTrue);
-        expect(' a '.isNotBlank, isTrue);
-        expect('   '.isNotBlank, isFalse);
-      });
-
-      test('isNumeric returns true for numeric strings', () {
-        expect('12345'.isNumeric, isTrue);
-        expect('123a'.isNumeric, isFalse);
-      });
-
-      test('isAlpha returns true for alphabetic strings', () {
-        expect('abc'.isAlpha, isTrue);
-        expect('abc1'.isAlpha, isFalse);
-      });
-
-      test('isAlphanumeric returns true for alphanumeric strings', () {
-        expect('abc123'.isAlphanumeric, isTrue);
-        expect('abc123!'.isAlphanumeric, isFalse);
       });
 
       test('isValidUrl returns true for valid HTTP/HTTPS URLs', () {

@@ -1,8 +1,8 @@
-import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../animation/spinner_controller_mixin.dart';
 import '../theme/g_spinner_theme.dart';
 
 /// A dual-ring spinning loading indicator widget.
@@ -49,54 +49,12 @@ class GRingSpinner extends StatefulWidget {
 }
 
 class _GRingSpinnerState extends State<GRingSpinner>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  bool _ownsController = false;
+    with SingleTickerProviderStateMixin, SpinnerControllerMixin {
+  @override
+  AnimationController? controllerOf(GRingSpinner widget) => widget.controller;
 
   @override
-  void initState() {
-    super.initState();
-    _initController();
-  }
-
-  void _initController() {
-    if (widget.controller != null) {
-      _controller = widget.controller!;
-      _ownsController = false;
-    } else {
-      _controller = AnimationController(vsync: this, duration: widget.duration);
-      _ownsController = true;
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant GRingSpinner oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.controller != oldWidget.controller) {
-      if (_ownsController) _controller.dispose();
-      _initController();
-    } else if (_ownsController && widget.duration != oldWidget.duration) {
-      _controller.duration = widget.duration;
-    }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_ownsController) return;
-    if (!TickerMode.valuesOf(context).enabled) {
-      _controller.stop();
-    } else if (!_controller.isAnimating) {
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void dispose() {
-    if (_ownsController) _controller.dispose();
-    super.dispose();
-  }
+  Duration durationOf(GRingSpinner widget) => widget.duration;
 
   @override
   Widget build(BuildContext context) => wrapSpinnerSemantics(
@@ -118,10 +76,10 @@ class _GRingSpinnerState extends State<GRingSpinner>
         width: widget.size,
         height: widget.size,
         child: AnimatedBuilder(
-          animation: _controller,
+          animation: controller,
           builder: (context, child) {
             return Transform.rotate(
-              angle: _controller.value * 2 * math.pi,
+              angle: controller.value * 2 * math.pi,
               child: CustomPaint(
                 painter: _RingSpinnerPainter(
                   primaryColor: primary,

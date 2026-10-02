@@ -1,8 +1,8 @@
-import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../animation/spinner_controller_mixin.dart';
 import '../theme/g_spinner_theme.dart';
 
 /// An orbiting satellite loading spinner with a central core and revolving dots.
@@ -49,54 +49,12 @@ class GOrbitSpinner extends StatefulWidget {
 }
 
 class _GOrbitSpinnerState extends State<GOrbitSpinner>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  bool _ownsController = false;
+    with SingleTickerProviderStateMixin, SpinnerControllerMixin {
+  @override
+  AnimationController? controllerOf(GOrbitSpinner widget) => widget.controller;
 
   @override
-  void initState() {
-    super.initState();
-    _initController();
-  }
-
-  void _initController() {
-    if (widget.controller != null) {
-      _controller = widget.controller!;
-      _ownsController = false;
-    } else {
-      _controller = AnimationController(vsync: this, duration: widget.duration);
-      _ownsController = true;
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant GOrbitSpinner oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.controller != oldWidget.controller) {
-      if (_ownsController) _controller.dispose();
-      _initController();
-    } else if (_ownsController && widget.duration != oldWidget.duration) {
-      _controller.duration = widget.duration;
-    }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_ownsController) return;
-    if (!TickerMode.valuesOf(context).enabled) {
-      _controller.stop();
-    } else if (!_controller.isAnimating) {
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void dispose() {
-    if (_ownsController) _controller.dispose();
-    super.dispose();
-  }
+  Duration durationOf(GOrbitSpinner widget) => widget.duration;
 
   @override
   Widget build(BuildContext context) => wrapSpinnerSemantics(
@@ -121,7 +79,7 @@ class _GOrbitSpinnerState extends State<GOrbitSpinner>
         width: widget.size,
         height: widget.size,
         child: AnimatedBuilder(
-          animation: _controller,
+          animation: controller,
           builder: (context, child) {
             return Stack(
               alignment: Alignment.center,
@@ -140,7 +98,7 @@ class _GOrbitSpinnerState extends State<GOrbitSpinner>
                   final angleOffset =
                       (2 * math.pi / widget.satelliteCount) * index;
                   final currentAngle =
-                      (_controller.value * 2 * math.pi) + angleOffset;
+                      (controller.value * 2 * math.pi) + angleOffset;
                   final dx = radius * math.cos(currentAngle);
                   final dy = radius * math.sin(currentAngle);
                   final dotColor = index.isEven ? primary : secondary;

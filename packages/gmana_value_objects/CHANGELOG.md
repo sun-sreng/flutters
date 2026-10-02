@@ -4,6 +4,28 @@
 
 ### Changed
 
+- **`IdentifierValidationConfig`, `NetworkValidationConfig`,
+  `NumberValidationConfig`, `PhoneValidationConfig`, and `UrlValidationConfig`
+  are now the `gmana_validation` classes**, re-exported from this package.
+  Constructors, fields, presets, and `copyWith` are unchanged, and the
+  identifier and network configs gain structural equality. The
+  `Gmana*ValidationConfigX` extensions that supplied `copyWith` are deprecated.
+- **`EmailValidationConfig` uses the `gmana_validation` disposable-domain
+  list.** The default grew from 6 domains to the full list, so
+  `EmailValidationConfig.strict()` and `rejectDisposable: true` now reject
+  every address `gmana_validation` rejects. Pass `disposableDomains` to keep a
+  shorter list.
+- **`EmailValidationConfig.allowDisposable` is deprecated** in favour of
+  `rejectDisposable`, its inverse and the name `gmana_validation` uses. The
+  old constructor parameter, getter, and `copyWith` parameter still work.
+
+### Added
+
+- `EmailValidationConfig.matchSubdomains`, default `true`, which is how blocked
+  and disposable domains were already matched.
+- `TextValidationConfig.wholeWordBlacklist`, default `false`, which is how
+  blacklisted words were already matched.
+
 - Renamed `MoneyIterableExtension` to `MoneyIterableX`. Its members are
   unaffected; only code that names the extension needs the new name.
 

@@ -21,7 +21,8 @@ final class EmailValidator {
       maxDomainLength: config.maxDomainLength,
       disposableDomains: config.disposableDomains,
       blockedDomains: config.blockedDomains,
-      rejectDisposable: !config.allowDisposable,
+      rejectDisposable: config.rejectDisposable,
+      matchSubdomains: config.matchSubdomains,
     );
     return v.EmailValidator(
       vConfig,

@@ -1,11 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import '../animation/delayed_animation_tween.dart';
-import 'g_scale_y.dart';
-
+import '../animation/spinner_controller_mixin.dart';
 import '../theme/g_spinner_theme.dart';
+import 'g_scale_y.dart';
 
 /// A bar-style wave spinner.
 ///
@@ -74,54 +72,13 @@ enum GBarWaveSpinnerType {
 }
 
 class _GBarWaveSpinnerState extends State<GBarWaveSpinner>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  bool _ownsController = false;
+    with SingleTickerProviderStateMixin, SpinnerControllerMixin {
+  @override
+  AnimationController? controllerOf(GBarWaveSpinner widget) =>
+      widget.controller;
 
   @override
-  void initState() {
-    super.initState();
-    _initController();
-  }
-
-  void _initController() {
-    if (widget.controller != null) {
-      _controller = widget.controller!;
-      _ownsController = false;
-    } else {
-      _controller = AnimationController(vsync: this, duration: widget.duration);
-      _ownsController = true;
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant GBarWaveSpinner oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.controller != oldWidget.controller) {
-      if (_ownsController) _controller.dispose();
-      _initController();
-    } else if (_ownsController && widget.duration != oldWidget.duration) {
-      _controller.duration = widget.duration;
-    }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_ownsController) return;
-    if (!TickerMode.valuesOf(context).enabled) {
-      _controller.stop();
-    } else if (!_controller.isAnimating) {
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void dispose() {
-    if (_ownsController) _controller.dispose();
-    super.dispose();
-  }
+  Duration durationOf(GBarWaveSpinner widget) => widget.duration;
 
   @override
   Widget build(BuildContext context) => wrapSpinnerSemantics(
@@ -143,7 +100,7 @@ class _GBarWaveSpinnerState extends State<GBarWaveSpinner>
                 begin: .4,
                 end: 1.0,
                 delay: bars[i],
-              ).animate(_controller),
+              ).animate(controller),
               child: SizedBox.fromSize(
                 size: Size(widget.size / widget.itemCount, widget.size),
                 child: _itemBuilder(i),

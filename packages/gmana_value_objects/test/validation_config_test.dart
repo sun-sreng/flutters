@@ -41,10 +41,10 @@ void main() {
   group('config copyWith', () {
     test('replaces only the provided fields (non-nullable)', () {
       const base = EmailValidationConfig();
-      final updated = base.copyWith(maxLength: 100, allowDisposable: false);
+      final updated = base.copyWith(maxLength: 100, rejectDisposable: true);
 
       expect(updated.maxLength, 100);
-      expect(updated.allowDisposable, false);
+      expect(updated.rejectDisposable, true);
       expect(updated.maxLocalPartLength, base.maxLocalPartLength);
       expect(updated.disposableDomains, base.disposableDomains);
     });

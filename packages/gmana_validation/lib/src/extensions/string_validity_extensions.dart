@@ -1,15 +1,10 @@
 import 'dart:convert';
 
-import 'package:gmana_predicates/predicates/date_predicates.dart' as date_preds;
-import 'package:gmana_predicates/predicates/identifier_predicates.dart'
-    as id_preds;
-import 'package:gmana_predicates/predicates/network_predicates.dart'
-    as net_preds;
-import 'package:gmana_predicates/predicates/string_predicates.dart' as preds;
-import 'package:gmana_validation/gmana_validation.dart';
+import 'package:gmana_predicates/gmana_predicates.dart' as preds;
 
-export 'package:gmana_validation/gmana_validation.dart'
-    show PasswordStrength, PasswordValidationConfig, PasswordValidator;
+import '../email/email_validator.dart';
+import '../password/password_strength.dart';
+import '../password/password_validator.dart';
 
 final RegExp _base64RegExp = RegExp(r'^[A-Za-z0-9+/_-]*={0,2}$');
 final RegExp _e164PhoneRegExp = RegExp(r'^\+\d{7,15}$');
@@ -52,7 +47,7 @@ extension StringValidation on String {
   }
 
   /// Checks if the string is a valid credit card number using the Luhn algorithm.
-  bool get isValidCreditCard => id_preds.isCreditCard(this);
+  bool get isValidCreditCard => preds.isCreditCard(this);
 
   /// Validates against E.164 format: `+` followed by 7–15 digits, no spaces.
   bool get isValidE164Phone => _e164PhoneRegExp.hasMatch(this);
@@ -65,17 +60,17 @@ extension StringValidation on String {
   bool get isValidHexColor => preds.isHexColor(this);
 
   /// Checks if the string is a valid IPv4 address.
-  bool get isValidIpv4 => net_preds.isIpv4(this);
+  bool get isValidIpv4 => preds.isIpv4(this);
 
   /// Checks if the string is a valid IPv6 address.
-  bool get isValidIpv6 => net_preds.isIpv6(this);
+  bool get isValidIpv6 => preds.isIpv6(this);
 
   /// Checks if the string is a valid IPv4 or IPv6 address.
   bool get isValidIpAddress => isValidIpv4 || isValidIpv6;
 
   /// ISO 8601 date only: `2024-01-31`
   bool get isValidIsoDate =>
-      _isoDateRegExp.hasMatch(this) && date_preds.isIso8601(this);
+      _isoDateRegExp.hasMatch(this) && preds.isIso8601(this);
 
   /// Checks if the string looks like a JSON Web Token (`header.payload.signature`).
   ///
@@ -92,7 +87,7 @@ extension StringValidation on String {
   /// Checks if the string is a valid MAC address.
   ///
   /// Accepts colon, hyphen, and dotted Cisco-style notation.
-  bool get isValidMacAddress => net_preds.isMacAddress(this);
+  bool get isValidMacAddress => preds.isMacAddress(this);
 
   /// Accepts Unicode letters, spaces, hyphens, apostrophes, periods.
   /// Single names (mononyms) are valid. Max 100 chars guards against abuse.
@@ -125,10 +120,10 @@ extension StringValidation on String {
   /// Valid URL (http/https). Intentionally simple — use `Uri.tryParse`
   /// for structural checks; this validates the common displayed format.
   bool get isValidUrl =>
-      net_preds.isUrl(this, allowedSchemes: const {'http', 'https'});
+      preds.isUrl(this, allowedSchemes: const {'http', 'https'});
 
   /// Checks if the string is a valid UUID (v4).
-  bool get isValidUuid => id_preds.isUuid(this, '4');
+  bool get isValidUuid => preds.isUuid(this, '4');
 
   /// Checks if the string is any valid UUID version 1 through 5.
   bool get isValidUuidAny => _uuidAnyRegExp.hasMatch(trim());

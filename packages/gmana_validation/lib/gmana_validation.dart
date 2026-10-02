@@ -21,6 +21,7 @@ export 'src/email/email_validator.dart';
 
 // Extensions
 export 'src/extensions/string_validation_extensions.dart';
+export 'src/extensions/string_validity_extensions.dart';
 export 'src/extensions/validation_result_extensions.dart';
 
 // Identifier

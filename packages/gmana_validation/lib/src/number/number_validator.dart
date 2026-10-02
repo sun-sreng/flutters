@@ -1,5 +1,7 @@
 import 'package:gmana_functional/gmana_functional.dart';
+import 'package:meta/meta.dart';
 
+import '../core/set_equality.dart';
 import '../core/validation_issue.dart';
 
 /// Default English messages for number validation issues.
@@ -119,6 +121,7 @@ final class NumberDecimalPlacesExceededIssue extends NumberValidationIssue {
 }
 
 /// Configuration for number validation.
+@immutable
 final class NumberValidationConfig {
   /// Minimum allowed value.
   final num? min;
@@ -144,8 +147,8 @@ final class NumberValidationConfig {
     this.maxDecimalPlaces,
   });
 
-  /// Preset for positive integers.
-  factory NumberValidationConfig.positiveInteger({num? min, num? max}) {
+  /// Preset for non-negative integers (0, 1, 2, ...).
+  factory NumberValidationConfig.positiveInteger({num? min = 0, num? max}) {
     return NumberValidationConfig(
       min: min,
       max: max,
@@ -153,6 +156,86 @@ final class NumberValidationConfig {
       integerOnly: true,
     );
   }
+
+  /// Preset for natural numbers (1, 2, 3, ...).
+  factory NumberValidationConfig.naturalNumber() {
+    return const NumberValidationConfig(
+      min: 1,
+      allowNegative: false,
+      integerOnly: true,
+    );
+  }
+
+  /// Preset for a percentage (0-100).
+  factory NumberValidationConfig.percentage() {
+    return const NumberValidationConfig(min: 0, max: 100, allowNegative: false);
+  }
+
+  /// Preset for a price: non-negative with at most two decimal places.
+  factory NumberValidationConfig.price() {
+    return const NumberValidationConfig(
+      min: 0,
+      allowNegative: false,
+      maxDecimalPlaces: 2,
+    );
+  }
+
+  /// Preset for an age in whole years (0-150).
+  factory NumberValidationConfig.age() {
+    return const NumberValidationConfig(
+      min: 0,
+      max: 150,
+      allowNegative: false,
+      integerOnly: true,
+    );
+  }
+
+  /// Preset for a whole-number rating (1-5).
+  factory NumberValidationConfig.rating() {
+    return const NumberValidationConfig(
+      min: 1,
+      max: 5,
+      allowNegative: false,
+      integerOnly: true,
+    );
+  }
+
+  /// Returns a copy with the supplied fields replaced.
+  ///
+  /// Pass `null` explicitly to clear [min], [max], or [maxDecimalPlaces].
+  /// Omitted fields retain their current values.
+  NumberValidationConfig copyWith({
+    Object? min = unsetConfigValue,
+    Object? max = unsetConfigValue,
+    bool? allowNegative,
+    bool? integerOnly,
+    Object? maxDecimalPlaces = unsetConfigValue,
+  }) {
+    return NumberValidationConfig(
+      min: identical(min, unsetConfigValue) ? this.min : min as num?,
+      max: identical(max, unsetConfigValue) ? this.max : max as num?,
+      allowNegative: allowNegative ?? this.allowNegative,
+      integerOnly: integerOnly ?? this.integerOnly,
+      maxDecimalPlaces:
+          identical(maxDecimalPlaces, unsetConfigValue)
+              ? this.maxDecimalPlaces
+              : maxDecimalPlaces as int?,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NumberValidationConfig &&
+          other.min == min &&
+          other.max == max &&
+          other.allowNegative == allowNegative &&
+          other.integerOnly == integerOnly &&
+          other.maxDecimalPlaces == maxDecimalPlaces;
+
+  @override
+  int get hashCode =>
+      Object.hash(min, max, allowNegative, integerOnly, maxDecimalPlaces);
 }
 
 /// Canonical validator for number inputs.

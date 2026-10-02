@@ -15,15 +15,7 @@ final class IdentifierValidator {
 
   /// Validates the given [input] string as an identifier.
   Either<IdentifierError, String> validate(String input) {
-    final vConfig = v.IdentifierValidationConfig(
-      allowEmpty: config.allowEmpty,
-      trimWhitespace: config.trimWhitespace,
-      requiredType: config.requiredType,
-      uuidVersion: config.uuidVersion,
-      eanVersion: config.eanVersion,
-      nanoIdLength: config.nanoIdLength,
-    );
-    return v.IdentifierValidator(vConfig)
+    return v.IdentifierValidator(config)
         .validate(input)
         .fold((issue) => Left(issue.toIdentifierError()), Right.new);
   }

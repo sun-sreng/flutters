@@ -1,3 +1,7 @@
+import 'package:meta/meta.dart';
+
+import '../core/set_equality.dart';
+
 /// Required network address type.
 enum NetworkAddressType {
   /// Accepts any valid IP, IPv4, IPv6, CIDR, MAC, Port, Data URI, or Magnet URI based on flags.
@@ -29,6 +33,7 @@ enum NetworkAddressType {
 }
 
 /// Configuration options for network address validation.
+@immutable
 final class NetworkValidationConfig {
   /// Whether an empty string is considered valid.
   final bool allowEmpty;
@@ -49,4 +54,38 @@ final class NetworkValidationConfig {
     this.requiredType = NetworkAddressType.any,
     this.ipVersion,
   });
+
+  /// Returns a copy with the supplied fields replaced.
+  ///
+  /// Pass `null` explicitly to clear [ipVersion]. Omitted fields retain their
+  /// current values.
+  NetworkValidationConfig copyWith({
+    bool? allowEmpty,
+    bool? trimWhitespace,
+    NetworkAddressType? requiredType,
+    Object? ipVersion = unsetConfigValue,
+  }) {
+    return NetworkValidationConfig(
+      allowEmpty: allowEmpty ?? this.allowEmpty,
+      trimWhitespace: trimWhitespace ?? this.trimWhitespace,
+      requiredType: requiredType ?? this.requiredType,
+      ipVersion:
+          identical(ipVersion, unsetConfigValue)
+              ? this.ipVersion
+              : ipVersion as int?,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NetworkValidationConfig &&
+          other.allowEmpty == allowEmpty &&
+          other.trimWhitespace == trimWhitespace &&
+          other.requiredType == requiredType &&
+          other.ipVersion == ipVersion;
+
+  @override
+  int get hashCode =>
+      Object.hash(allowEmpty, trimWhitespace, requiredType, ipVersion);
 }

@@ -5,6 +5,7 @@ const Set<String> kDefaultDisposableDomains = {
   'tempmail.com',
   'guerrillamail.com',
   'mailinator.com',
+  'throwaway.email',
   'yopmail.com',
   'throwawaymail.com',
   'getairmail.com',

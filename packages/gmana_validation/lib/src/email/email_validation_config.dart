@@ -1,6 +1,10 @@
+import 'package:meta/meta.dart';
+
+import '../core/set_equality.dart';
 import 'email_disposable.dart';
 
 /// Configuration rules for email validation.
+@immutable
 final class EmailValidationConfig {
   /// Maximum allowed length for the entire normalized email address.
   final int maxLength;
@@ -46,6 +50,29 @@ final class EmailValidationConfig {
     return const EmailValidationConfig(rejectDisposable: true);
   }
 
+  /// Returns a copy with the supplied fields replaced.
+  ///
+  /// Omitted fields retain their current values.
+  EmailValidationConfig copyWith({
+    int? maxLength,
+    int? maxLocalPartLength,
+    int? maxDomainLength,
+    Set<String>? disposableDomains,
+    Set<String>? blockedDomains,
+    bool? rejectDisposable,
+    bool? matchSubdomains,
+  }) {
+    return EmailValidationConfig(
+      maxLength: maxLength ?? this.maxLength,
+      maxLocalPartLength: maxLocalPartLength ?? this.maxLocalPartLength,
+      maxDomainLength: maxDomainLength ?? this.maxDomainLength,
+      disposableDomains: disposableDomains ?? this.disposableDomains,
+      blockedDomains: blockedDomains ?? this.blockedDomains,
+      rejectDisposable: rejectDisposable ?? this.rejectDisposable,
+      matchSubdomains: matchSubdomains ?? this.matchSubdomains,
+    );
+  }
+
   /// Normalizes a domain for policy matching.
   String normalizeDomain(String domain) {
     return domain.trim().toLowerCase();
@@ -77,4 +104,27 @@ final class EmailValidationConfig {
 
     return false;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EmailValidationConfig &&
+          other.maxLength == maxLength &&
+          other.maxLocalPartLength == maxLocalPartLength &&
+          other.maxDomainLength == maxDomainLength &&
+          other.rejectDisposable == rejectDisposable &&
+          other.matchSubdomains == matchSubdomains &&
+          setEquals(other.disposableDomains, disposableDomains) &&
+          setEquals(other.blockedDomains, blockedDomains);
+
+  @override
+  int get hashCode => Object.hash(
+    maxLength,
+    maxLocalPartLength,
+    maxDomainLength,
+    rejectDisposable,
+    matchSubdomains,
+    Object.hashAllUnordered(disposableDomains),
+    Object.hashAllUnordered(blockedDomains),
+  );
 }

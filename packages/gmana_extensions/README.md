@@ -456,6 +456,9 @@ nickname.ifBlank('Anonymous')  // 'Anonymous'
 
 ### Validation (`StringValidation`)
 
+Declared in `gmana_validation`, next to the validators it calls, and
+re-exported from this package.
+
 ```dart
 'user@example.com'.isValidEmail       // true
 '+12025551234'.isValidE164Phone       // true
@@ -1029,9 +1032,6 @@ await ids.mapSequential(fetchUser);
 
 // All at once
 await urls.mapParallel(fetch);
-
-// At most N in flight, results still in source order
-await urls.mapConcurrent(fetch, concurrency: 4);
 
 // Async filter
 await files.whereAsync((f) => f.exists());

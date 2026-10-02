@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
+import '../animation/spinner_controller_mixin.dart';
 import '../theme/g_spinner_theme.dart';
 
 /// A ripple loading spinner widget with expanding concentric rings.
@@ -49,54 +48,12 @@ class GRippleSpinner extends StatefulWidget {
 }
 
 class _GRippleSpinnerState extends State<GRippleSpinner>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  bool _ownsController = false;
+    with SingleTickerProviderStateMixin, SpinnerControllerMixin {
+  @override
+  AnimationController? controllerOf(GRippleSpinner widget) => widget.controller;
 
   @override
-  void initState() {
-    super.initState();
-    _initController();
-  }
-
-  void _initController() {
-    if (widget.controller != null) {
-      _controller = widget.controller!;
-      _ownsController = false;
-    } else {
-      _controller = AnimationController(vsync: this, duration: widget.duration);
-      _ownsController = true;
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant GRippleSpinner oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.controller != oldWidget.controller) {
-      if (_ownsController) _controller.dispose();
-      _initController();
-    } else if (_ownsController && widget.duration != oldWidget.duration) {
-      _controller.duration = widget.duration;
-    }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_ownsController) return;
-    if (!TickerMode.valuesOf(context).enabled) {
-      _controller.stop();
-    } else if (!_controller.isAnimating) {
-      unawaited(_controller.repeat());
-    }
-  }
-
-  @override
-  void dispose() {
-    if (_ownsController) _controller.dispose();
-    super.dispose();
-  }
+  Duration durationOf(GRippleSpinner widget) => widget.duration;
 
   @override
   Widget build(BuildContext context) => wrapSpinnerSemantics(
@@ -113,12 +70,12 @@ class _GRippleSpinnerState extends State<GRippleSpinner>
         width: widget.size,
         height: widget.size,
         child: AnimatedBuilder(
-          animation: _controller,
+          animation: controller,
           builder: (context, child) {
             return Stack(
               children: List.generate(widget.rippleCount, (index) {
                 final delay = index / widget.rippleCount;
-                final progress = (_controller.value + delay) % 1.0;
+                final progress = (controller.value + delay) % 1.0;
                 final opacity = (1.0 - progress).clamp(0.0, 1.0);
                 final currentSize = widget.size * progress;
 

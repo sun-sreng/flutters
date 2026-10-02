@@ -1,3 +1,7 @@
+import 'package:meta/meta.dart';
+
+import '../core/set_equality.dart';
+
 /// Supported identifier validation types.
 enum IdentifierType {
   /// Accepts any string non-empty.
@@ -29,6 +33,7 @@ enum IdentifierType {
 }
 
 /// Configuration options for identifier validation.
+@immutable
 final class IdentifierValidationConfig {
   /// Whether an empty or whitespace-only string is considered valid.
   final bool allowEmpty;
@@ -57,4 +62,53 @@ final class IdentifierValidationConfig {
     this.eanVersion,
     this.nanoIdLength = 21,
   });
+
+  /// Returns a copy with the supplied fields replaced.
+  ///
+  /// Pass `null` explicitly to clear [uuidVersion] or [eanVersion]. Omitted
+  /// fields retain their current values.
+  IdentifierValidationConfig copyWith({
+    bool? allowEmpty,
+    bool? trimWhitespace,
+    IdentifierType? requiredType,
+    Object? uuidVersion = unsetConfigValue,
+    Object? eanVersion = unsetConfigValue,
+    int? nanoIdLength,
+  }) {
+    return IdentifierValidationConfig(
+      allowEmpty: allowEmpty ?? this.allowEmpty,
+      trimWhitespace: trimWhitespace ?? this.trimWhitespace,
+      requiredType: requiredType ?? this.requiredType,
+      uuidVersion:
+          identical(uuidVersion, unsetConfigValue)
+              ? this.uuidVersion
+              : uuidVersion as String?,
+      eanVersion:
+          identical(eanVersion, unsetConfigValue)
+              ? this.eanVersion
+              : eanVersion as String?,
+      nanoIdLength: nanoIdLength ?? this.nanoIdLength,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is IdentifierValidationConfig &&
+          other.allowEmpty == allowEmpty &&
+          other.trimWhitespace == trimWhitespace &&
+          other.requiredType == requiredType &&
+          other.uuidVersion == uuidVersion &&
+          other.eanVersion == eanVersion &&
+          other.nanoIdLength == nanoIdLength;
+
+  @override
+  int get hashCode => Object.hash(
+    allowEmpty,
+    trimWhitespace,
+    requiredType,
+    uuidVersion,
+    eanVersion,
+    nanoIdLength,
+  );
 }

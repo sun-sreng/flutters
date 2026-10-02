@@ -24,7 +24,7 @@ final class TextValidator {
       pattern: config.pattern != null ? RegExp(config.pattern!) : null,
       allowedCharacters: config.allowedCharacters,
       blacklistedWords: config.blacklistedWords,
-      wholeWordBlacklist: false,
+      wholeWordBlacklist: config.wholeWordBlacklist,
     );
 
     return v.TextValidator(vConfig)

@@ -15,13 +15,8 @@ final class PhoneValidator {
 
   /// Validates the given [input] string as a phone number.
   Either<PhoneError, String> validate(String input) {
-    final vConfig = v.PhoneValidationConfig(
-      requirePlusPrefix: config.requirePlusPrefix,
-      minDigits: config.minDigits,
-      maxDigits: config.maxDigits,
-    );
     return v.PhoneValidator(
-      vConfig,
+      config,
     ).validate(input).fold((issue) => Left(issue.toPhoneError()), Right.new);
   }
 }

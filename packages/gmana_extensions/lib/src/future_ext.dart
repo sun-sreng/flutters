@@ -117,6 +117,13 @@ extension IterableFutureX<T> on Iterable<T> {
   }) => Future.wait(map(transform), eagerError: eagerError);
 
   /// Applies [transform] concurrently, at most [concurrency] futures in flight.
+  ///
+  /// After a failure the remaining elements are still started; the
+  /// `gmana_utils` function stops starting new work instead.
+  @Deprecated(
+    'Use mapConcurrent from package:gmana_utils instead. '
+    'This duplicate will be removed before 1.0.',
+  )
   Future<List<R>> mapConcurrent<R>(
     Future<R> Function(T element) transform, {
     required int concurrency,

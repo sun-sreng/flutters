@@ -1,36 +1,4 @@
-import 'package:gmana_validation/gmana_validation.dart' show IdentifierType;
-import 'package:meta/meta.dart';
-
-export 'package:gmana_validation/gmana_validation.dart' show IdentifierType;
-
-/// Configuration options for identifier validation.
-@immutable
-final class IdentifierValidationConfig {
-  /// Whether an empty or whitespace-only string is considered valid.
-  final bool allowEmpty;
-
-  /// Whether whitespace around the input should be trimmed before validation.
-  final bool trimWhitespace;
-
-  /// The required identifier type.
-  final IdentifierType requiredType;
-
-  /// Specific UUID version to require ('3', '4', '5', or null for any).
-  final String? uuidVersion;
-
-  /// Specific EAN version to require ('8', '13', or null for any).
-  final String? eanVersion;
-
-  /// Expected length for Nano ID (defaults to 21).
-  final int nanoIdLength;
-
-  /// Creates an [IdentifierValidationConfig].
-  const IdentifierValidationConfig({
-    this.allowEmpty = false,
-    this.trimWhitespace = true,
-    this.requiredType = IdentifierType.any,
-    this.uuidVersion,
-    this.eanVersion,
-    this.nanoIdLength = 21,
-  });
-}
+// The config type is defined once, in gmana_validation. Re-exported here so
+// the value object and its configuration come from one import.
+export 'package:gmana_validation/gmana_validation.dart'
+    show IdentifierType, IdentifierValidationConfig;

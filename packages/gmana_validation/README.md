@@ -75,7 +75,10 @@ result.fold(
 
 The named extensions `GmanaValidationStringX` and
 `GmanaValidationResultX` provide concise entry points without changing the
-validators or their typed `Either` results.
+validators or their typed `Either` results. `StringValidation` adds boolean
+shortcuts — `isValidEmail`, `isValidPassword`, `isValidPhone`, `isValidUrl`,
+`isValidUsername()`, `passwordStrength`, and the rest — for call sites that only
+need a yes or no.
 
 ### Validate strings directly
 
@@ -406,9 +409,14 @@ validator.validate('42').fold(
 ### `NumberValidationConfig`
 
 ```dart
-// Positive integer preset
-NumberValidationConfig.positiveInteger()
+// Presets
+NumberValidationConfig.positiveInteger()                  // 0, 1, 2, ...
 NumberValidationConfig.positiveInteger(min: 1, max: 100)
+NumberValidationConfig.naturalNumber()                    // 1, 2, 3, ...
+NumberValidationConfig.percentage()                       // 0-100
+NumberValidationConfig.price()                            // >= 0, two decimals
+NumberValidationConfig.age()                              // 0-150, whole years
+NumberValidationConfig.rating()                           // 1-5, whole numbers
 
 // Custom
 NumberValidationConfig(

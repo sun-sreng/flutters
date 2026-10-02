@@ -2,6 +2,9 @@
 
 ### Changed
 
+- **`StringValidation` moved to `gmana_validation`** and is re-exported from
+  this package, so `isValidEmail`, `isValidPhone`, `passwordStrength`, and the
+  rest resolve exactly as before.
 - **Extensions renamed to the `…X` convention.** `HumanizedDuration` →
   `DurationX`, `StringDateExtension` → `StringDateX`, `NumDurationExtension` →
   `NumDurationX`. Extension members are unaffected; only code that names the
@@ -11,6 +14,8 @@
 
 ### Deprecated
 
+- `Iterable.mapConcurrent` — use `mapConcurrent` from `gmana_utils`, which
+  stops starting new work after the first failure.
 - **String classification members that duplicate `gmana_predicates`.**
   `isAlpha`, `isEmail`, `isNumeric`, `isUrl`, `containsIgnoreCase`,
   `isNullOrEmpty`, `isDate`, `isToday`, `isPast`, `isFuture`, `isWeekend`,
