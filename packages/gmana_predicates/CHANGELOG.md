@@ -1,5 +1,10 @@
 ## Unreleased
 
+### Removed
+
+- **Breaking:** removed the deprecated `isNull` predicate (use
+  `isNullOrEmpty`).
+
 ### Changed
 
 - **Source files moved under `lib/src`.** Import `package:gmana_predicates/gmana_predicates.dart`.

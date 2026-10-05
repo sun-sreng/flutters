@@ -1,5 +1,11 @@
 ## Unreleased
 
+### Removed
+
+- **Breaking:** removed the deprecated `Result`, `Success`, and `Failure`
+  aliases (use `GResult`, `GSuccess`, and `GFailure`) and `IdGenerator.uuidV1`
+  (use `IdGenerator.uuidV4Like`).
+
 ### Changed
 
 - `Result<T, E>` and its combinators are now declared in `gmana_functional`

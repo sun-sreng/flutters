@@ -8,14 +8,14 @@ void main() {
   group('Result combinators', () {
     test('fold collapses both branches to one type', () {
       expect(
-        const Result<int, String>.success(2).fold(
+        const GResult<int, String>.success(2).fold(
           onSuccess: (value) => 'ok:$value',
           onFailure: (error) => 'err:$error',
         ),
         'ok:2',
       );
       expect(
-        const Result<int, String>.failure('bad').fold(
+        const GResult<int, String>.failure('bad').fold(
           onSuccess: (value) => 'ok:$value',
           onFailure: (error) => 'err:$error',
         ),
@@ -25,75 +25,75 @@ void main() {
 
     test('swap exchanges the success and failure branches', () {
       expect(
-        const Result<int, String>.success(1).swap(),
-        const Result<String, int>.failure(1),
+        const GResult<int, String>.success(1).swap(),
+        const GResult<String, int>.failure(1),
       );
       expect(
-        const Result<int, String>.failure('e').swap(),
-        const Result<String, int>.success('e'),
+        const GResult<int, String>.failure('e').swap(),
+        const GResult<String, int>.success('e'),
       );
     });
 
     test('filter turns a success failing the predicate into a failure', () {
-      final kept = const Result<int, String>.success(
+      final kept = const GResult<int, String>.success(
         4,
       ).filter((v) => v.isEven, orElse: (v) => 'odd');
-      final rejected = const Result<int, String>.success(
+      final rejected = const GResult<int, String>.success(
         3,
       ).filter((v) => v.isEven, orElse: (v) => 'odd');
 
-      expect(kept, const Result<int, String>.success(4));
-      expect(rejected, const Result<int, String>.failure('odd'));
+      expect(kept, const GResult<int, String>.success(4));
+      expect(rejected, const GResult<int, String>.failure('odd'));
     });
 
     test('filter leaves an existing failure untouched', () {
-      const original = Result<int, String>.failure('boom');
+      const original = GResult<int, String>.failure('boom');
       expect(original.filter((v) => v.isEven, orElse: (v) => 'odd'), original);
     });
 
     test('getOrThrow returns a success value', () {
-      expect(const Result<int, String>.success(5).getOrThrow(), 5);
+      expect(const GResult<int, String>.success(5).getOrThrow(), 5);
     });
 
     test('getOrThrow throws the error when it is throwable', () {
-      final result = Result<int, Object>.failure(StateError('boom'));
+      final result = GResult<int, Object>.failure(StateError('boom'));
       expect(result.getOrThrow, throwsStateError);
     });
 
     test('getOrThrow wraps a non-throwable error', () {
-      const result = Result<int, String>.failure('plain message');
+      const result = GResult<int, String>.failure('plain message');
       expect(result.getOrThrow, throwsA(isA<StateError>()));
     });
 
     test('mapBoth transforms whichever branch is present', () {
       expect(
-        const Result<int, String>.success(
+        const GResult<int, String>.success(
           2,
         ).mapBoth(onSuccess: (v) => v * 2, onFailure: (e) => e.length),
-        const Result<int, int>.success(4),
+        const GResult<int, int>.success(4),
       );
       expect(
-        const Result<int, String>.failure(
+        const GResult<int, String>.failure(
           'abc',
         ).mapBoth(onSuccess: (v) => v * 2, onFailure: (e) => e.length),
-        const Result<int, int>.failure(3),
+        const GResult<int, int>.failure(3),
       );
     });
 
     test('fromNullable maps null to a failure', () {
       expect(
-        Result.fromNullable<int, String>(7, () => 'missing'),
-        const Result<int, String>.success(7),
+        GResult.fromNullable<int, String>(7, () => 'missing'),
+        const GResult<int, String>.success(7),
       );
       expect(
-        Result.fromNullable<int, String>(null, () => 'missing'),
-        const Result<int, String>.failure('missing'),
+        GResult.fromNullable<int, String>(null, () => 'missing'),
+        const GResult<int, String>.failure('missing'),
       );
     });
 
     test('captureWith preserves the stack trace that capture drops', () {
       StackTrace? seen;
-      final result = Result.captureWith<int, String>(
+      final result = GResult.captureWith<int, String>(
         () => throw StateError('boom'),
         (error, stackTrace) {
           seen = stackTrace;
@@ -107,7 +107,7 @@ void main() {
 
     test('captureAsyncWith preserves the stack trace', () async {
       StackTrace? seen;
-      final result = await Result.captureAsyncWith<int, String>(
+      final result = await GResult.captureAsyncWith<int, String>(
         () async => throw StateError('boom'),
         (error, stackTrace) {
           seen = stackTrace;

@@ -62,41 +62,6 @@ class GSubmitButton extends StatelessWidget {
   }
 }
 
-/// Backward-compatible alias for the original loading elevated button.
-@Deprecated(
-  'Use GSubmitButton.text instead. This alias will be removed before 1.0.',
-)
-class GElevatedButton extends StatelessWidget {
-  final bool isLoading;
-  final VoidCallback? onPressed;
-  final String text;
-  final TextStyle? textStyle;
-  final Color loadingColor;
-  final double loadingSize;
-
-  const GElevatedButton({
-    super.key,
-    required this.isLoading,
-    required this.onPressed,
-    required this.text,
-    this.textStyle,
-    this.loadingColor = Colors.white,
-    this.loadingSize = 24.0,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GSubmitButton.text(
-      loading: isLoading,
-      onPressed: onPressed,
-      label: text,
-      textStyle: textStyle,
-      loadingColor: loadingColor,
-      loadingSize: loadingSize,
-    );
-  }
-}
-
 /// Submit button wired to a [GFormController].
 class GFormSubmitButton extends StatelessWidget {
   final GFormController? controller;

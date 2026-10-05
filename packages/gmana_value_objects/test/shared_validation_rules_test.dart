@@ -49,24 +49,18 @@ void main() {
       );
     });
 
-    test('allowDisposable remains as the inverse of rejectDisposable', () {
-      const rejecting = EmailValidationConfig(allowDisposable: false);
-      const allowing = EmailValidationConfig(allowDisposable: true);
+    test('rejectDisposable defaults to false and survives copyWith', () {
+      const allowing = EmailValidationConfig();
 
-      expect(rejecting.rejectDisposable, isTrue);
-      expect(rejecting.allowDisposable, isFalse);
-      expect(rejecting, const EmailValidationConfig(rejectDisposable: true));
       expect(allowing.rejectDisposable, isFalse);
-      expect(const EmailValidationConfig().rejectDisposable, isFalse);
       expect(
-        allowing.copyWith(allowDisposable: false).rejectDisposable,
-        isTrue,
+        allowing.copyWith(rejectDisposable: true),
+        EmailValidationConfig.strict(),
       );
       expect(
-        const EmailValidationConfig(
-          rejectDisposable: true,
-          allowDisposable: true,
-        ).rejectDisposable,
+        EmailValidationConfig.strict()
+            .copyWith(maxLength: 100)
+            .rejectDisposable,
         isTrue,
       );
     });

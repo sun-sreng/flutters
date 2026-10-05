@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('Result', () {
     test('Success holds value and checks properties', () {
-      const res = Result<int, String>.success(42);
+      const res = GResult<int, String>.success(42);
 
       expect(res.isSuccess, isTrue);
       expect(res.isFailure, isFalse);
@@ -14,7 +14,7 @@ void main() {
     });
 
     test('Failure holds error and checks properties', () {
-      const res = Result<int, String>.failure('error message');
+      const res = GResult<int, String>.failure('error message');
 
       expect(res.isSuccess, isFalse);
       expect(res.isFailure, isTrue);
@@ -24,8 +24,8 @@ void main() {
     });
 
     test('map and mapError transform results correctly', () {
-      const success = Result<int, String>.success(10);
-      const failure = Result<int, String>.failure('fail');
+      const success = GResult<int, String>.success(10);
+      const failure = GResult<int, String>.failure('fail');
 
       expect(success.map((v) => v * 2).valueOrNull, equals(20));
       expect(failure.map((v) => v * 2).isFailure, isTrue);
@@ -38,13 +38,13 @@ void main() {
     });
 
     test('flatMap binds results', () {
-      const success = Result<int, String>.success(5);
-      final bound = success.flatMap((v) => Result.success(v * 3));
+      const success = GResult<int, String>.success(5);
+      final bound = success.flatMap((v) => GResult.success(v * 3));
       expect(bound.valueOrNull, equals(15));
     });
 
     test('when matches branches', () {
-      const success = Result<int, String>.success(100);
+      const success = GResult<int, String>.success(100);
       final text = success.when(
         onSuccess: (v) => 'Success: $v',
         onFailure: (e) => 'Failure: $e',
@@ -53,8 +53,8 @@ void main() {
     });
 
     test('capture wraps sync exceptions', () {
-      final success = Result.capture(() => 123);
-      final failure = Result.capture(
+      final success = GResult.capture(() => 123);
+      final failure = GResult.capture(
         () => throw const FormatException('invalid'),
       );
 
@@ -64,8 +64,8 @@ void main() {
     });
 
     test('captureAsync wraps async exceptions', () async {
-      final success = await Result.captureAsync(() async => 'hello');
-      final failure = await Result.captureAsync(
+      final success = await GResult.captureAsync(() async => 'hello');
+      final failure = await GResult.captureAsync(
         () async => throw StateError('err'),
       );
 

@@ -132,25 +132,3 @@ class GStarRatingBar extends StatelessWidget {
     return Icon(starIcon, color: starColor, size: starSize);
   }
 }
-
-@Deprecated(
-  'Use GStarRatingBar instead. This alias will be removed before 1.0.',
-)
-/// Deprecated alias for [GStarRatingBar].
-class StarRatingBar extends GStarRatingBar {
-  /// Creates a deprecated star rating bar. Prefer [GStarRatingBar].
-  const StarRatingBar({
-    super.key,
-    required super.ratingValue,
-    super.starSize,
-    super.activeStarColor,
-    super.inactiveStarColor,
-    super.maxStars,
-    super.starSpacing,
-    super.enableHalfStar,
-    super.activeStarIcon,
-    super.halfStarIcon,
-    super.inactiveStarIcon,
-    super.semanticsLabel,
-  });
-}

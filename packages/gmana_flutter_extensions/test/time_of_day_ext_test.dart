@@ -222,7 +222,4 @@ void main() {
       expect(() => _noon.clampTo(_fivePm, _nineAm), throwsArgumentError);
     });
   });
-  test('TimeOfDayExtensions.fromMinutes still resolves', () {
-    expect(TimeOfDayExtensions.fromMinutes(90), TimeOfDayX.fromMinutes(90));
-  });
 }

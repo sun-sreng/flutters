@@ -59,12 +59,6 @@ bool isMultiByte(String str) => multiByteReg.hasMatch(str);
 bool isNumeric(String str) => numericReg.hasMatch(str);
 
 /// Returns `true` if [str] is `null` or empty.
-///
-/// Deprecated: prefer `str == null || str.isEmpty` or the `isBlank` extension.
-@Deprecated('Use str == null || str.isEmpty instead.')
-bool isNull(String? str) => str == null || str.isEmpty;
-
-/// Returns `true` if [str] is `null` or empty.
 bool isNullOrEmpty(String? str) => str == null || str.isEmpty;
 
 /// Returns `true` if [str] is entirely uppercase (or has no cased characters).

@@ -9,7 +9,7 @@ export 'src/design_system/radius.dart';
 export 'src/design_system/spacing.dart';
 export 'src/design_system/tone.dart';
 export 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
-export 'package:gmana_form/gmana_form.dart' hide GTextField;
+export 'package:gmana_form/gmana_form.dart';
 export 'package:gmana_spinner/gmana_spinner.dart';
 export 'src/utils/locale.dart';
 export 'src/utils/register_error_handler.dart';

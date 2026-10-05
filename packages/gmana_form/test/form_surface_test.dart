@@ -39,10 +39,10 @@ void main() {
                   ),
                   GUrlField(label: 'Website'),
                   GPhoneField(label: 'Phone'),
-                  GElevatedButton(
-                    isLoading: false,
+                  GSubmitButton.text(
+                    label: 'Submit',
+                    loading: false,
                     onPressed: () {},
-                    text: 'Submit',
                   ),
                 ],
               ),
@@ -58,7 +58,7 @@ void main() {
       expect(find.byType(GConfirmPasswordField), findsOneWidget);
       expect(find.byType(GUrlField), findsOneWidget);
       expect(find.byType(GPhoneField), findsOneWidget);
-      expect(find.byType(GElevatedButton), findsOneWidget);
+      expect(find.byType(GSubmitButton), findsOneWidget);
     });
 
     test('asFormValidator maps validation issues into form messages', () {
@@ -464,10 +464,5 @@ void main() {
       expect(form.textValues(), {'title': 'published'});
       expect(form.value<String>('title'), 'published');
     });
-  });
-  test('GTextField remains an alias of GTextFormField', () {
-    final field = GTextField.text(label: 'Title');
-
-    expect(field, isA<GTextFormField>());
   });
 }

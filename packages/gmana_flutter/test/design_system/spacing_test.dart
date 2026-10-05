@@ -25,13 +25,5 @@ void main() {
         equals(const EdgeInsets.symmetric(horizontal: 10, vertical: 20)),
       );
     });
-
-    test('vSpace and hSpace return correct SizedBox dimensions', () {
-      final v = GSpacing.vSpace(GSpacing.lg);
-      final h = GSpacing.hSpace(GSpacing.sm);
-
-      expect(v.height, equals(16.0));
-      expect(h.width, equals(8.0));
-    });
   });
 }

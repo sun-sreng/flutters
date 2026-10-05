@@ -247,7 +247,7 @@ Future<void> _cachingAndBatching() async {
 void _fallibleWorkflows() {
   print('\n== Result ==');
 
-  final parsed = Result.captureWith<int, String>(
+  final parsed = GResult.captureWith<int, String>(
     () => int.parse('8080'),
     (error, stackTrace) => 'Not a number: $error',
   );
@@ -261,7 +261,7 @@ void _fallibleWorkflows() {
       .getOrElse(80);
   print('  port: $port');
 
-  final bad = Result.captureWith<int, String>(
+  final bad = GResult.captureWith<int, String>(
     () => int.parse('not-a-port'),
     (error, stackTrace) => 'Not a number',
   );
@@ -270,10 +270,10 @@ void _fallibleWorkflows() {
   );
   print('  recovered: ${bad.recover((_) => 8080).getOrThrow()}');
 
-  final results = <Result<int, String>>[
-    const Result<int, String>.success(10),
-    const Result<int, String>.failure('bad row'),
-    const Result<int, String>.success(30),
+  final results = <GResult<int, String>>[
+    const GResult<int, String>.success(10),
+    const GResult<int, String>.failure('bad row'),
+    const GResult<int, String>.success(30),
   ];
   final partition = results.partitionResults();
   print('  successes: ${partition.successes}, failures: ${partition.failures}');

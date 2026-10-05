@@ -5,8 +5,8 @@ void main() {
   group('GmanaResultX', () {
     test('getOrElseGet computes a fallback only for a failure', () {
       var calls = 0;
-      const success = Result<int, String>.success(7);
-      const failure = Result<int, String>.failure('missing');
+      const success = GResult<int, String>.success(7);
+      const failure = GResult<int, String>.failure('missing');
 
       expect(
         success.getOrElseGet((error) {
@@ -29,8 +29,8 @@ void main() {
 
     test('recover transforms only a failure into a success', () {
       var calls = 0;
-      const success = Result<int, String>.success(4);
-      const failure = Result<int, String>.failure('failed');
+      const success = GResult<int, String>.success(4);
+      const failure = GResult<int, String>.failure('failed');
 
       final untouched = success.recover((error) {
         calls++;
@@ -42,33 +42,33 @@ void main() {
       });
 
       expect(identical(untouched, success), isTrue);
-      expect(recovered, const Result<int, String>.success(6));
+      expect(recovered, const GResult<int, String>.success(6));
       expect(calls, 1);
     });
 
     test('recoverWith can replace a failure with either result branch', () {
       var calls = 0;
-      const success = Result<int, String>.success(4);
-      const failure = Result<int, String>.failure('failed');
+      const success = GResult<int, String>.success(4);
+      const failure = GResult<int, String>.failure('failed');
 
       final untouched = success.recoverWith((error) {
         calls++;
-        return Result<int, String>.success(error.length);
+        return GResult<int, String>.success(error.length);
       });
       final stillFailed = failure.recoverWith((error) {
         calls++;
-        return Result<int, String>.failure(error.toUpperCase());
+        return GResult<int, String>.failure(error.toUpperCase());
       });
 
       expect(identical(untouched, success), isTrue);
-      expect(stillFailed, const Result<int, String>.failure('FAILED'));
+      expect(stillFailed, const GResult<int, String>.failure('FAILED'));
       expect(calls, 1);
     });
 
     test('inspectSuccess observes its branch and returns the same result', () {
       var seen = 0;
-      const success = Result<int, String>.success(9);
-      const failure = Result<int, String>.failure('no');
+      const success = GResult<int, String>.success(9);
+      const failure = GResult<int, String>.failure('no');
 
       final returnedSuccess = success.inspectSuccess((value) => seen = value);
       final returnedFailure = failure.inspectSuccess((_) => fail('not called'));
@@ -80,8 +80,8 @@ void main() {
 
     test('inspectFailure observes its branch and returns the same result', () {
       String? seen;
-      const success = Result<int, String>.success(9);
-      const failure = Result<int, String>.failure('no');
+      const success = GResult<int, String>.success(9);
+      const failure = GResult<int, String>.failure('no');
 
       final returnedSuccess = success.inspectFailure((_) => fail('not called'));
       final returnedFailure = failure.inspectFailure((error) => seen = error);
@@ -92,7 +92,7 @@ void main() {
     });
 
     test('inspect callback errors propagate', () {
-      const result = Result<int, String>.success(1);
+      const result = GResult<int, String>.success(1);
 
       expect(
         () => result.inspectSuccess((_) => throw StateError('observer')),
@@ -101,19 +101,19 @@ void main() {
     });
 
     test('mapAsync accepts synchronous and asynchronous transforms', () async {
-      const result = Result<int, String>.success(3);
+      const result = GResult<int, String>.success(3);
 
       final syncMapped = await result.mapAsync((value) => value * 2);
       final asyncMapped = await result.mapAsync(
         (value) async => value.toString(),
       );
 
-      expect(syncMapped, const Result<int, String>.success(6));
-      expect(asyncMapped, const Result<String, String>.success('3'));
+      expect(syncMapped, const GResult<int, String>.success(6));
+      expect(asyncMapped, const GResult<String, String>.success('3'));
     });
 
     test('mapAsync skips a failure and propagates transform errors', () async {
-      const failure = Result<int, String>.failure('no');
+      const failure = GResult<int, String>.failure('no');
       var calls = 0;
 
       final unchanged = await failure.mapAsync((value) {
@@ -121,10 +121,10 @@ void main() {
         return value * 2;
       });
 
-      expect(unchanged, const Result<int, String>.failure('no'));
+      expect(unchanged, const GResult<int, String>.failure('no'));
       expect(calls, 0);
       await expectLater(
-        const Result<int, String>.success(
+        const GResult<int, String>.success(
           1,
         ).mapAsync((_) => throw StateError('transform')),
         throwsStateError,
@@ -134,35 +134,35 @@ void main() {
     test(
       'flatMapAsync accepts synchronous and asynchronous transforms',
       () async {
-        const result = Result<int, String>.success(3);
+        const result = GResult<int, String>.success(3);
 
         final syncMapped = await result.flatMapAsync(
-          (value) => Result<String, String>.success('$value!'),
+          (value) => GResult<String, String>.success('$value!'),
         );
         final asyncMapped = await result.flatMapAsync(
-          (value) async => Result<double, String>.success(value / 2),
+          (value) async => GResult<double, String>.success(value / 2),
         );
 
-        expect(syncMapped, const Result<String, String>.success('3!'));
-        expect(asyncMapped, const Result<double, String>.success(1.5));
+        expect(syncMapped, const GResult<String, String>.success('3!'));
+        expect(asyncMapped, const GResult<double, String>.success(1.5));
       },
     );
 
     test(
       'flatMapAsync skips a failure and propagates transform errors',
       () async {
-        const failure = Result<int, String>.failure('no');
+        const failure = GResult<int, String>.failure('no');
         var calls = 0;
 
         final unchanged = await failure.flatMapAsync((value) {
           calls++;
-          return Result<int, String>.success(value * 2);
+          return GResult<int, String>.success(value * 2);
         });
 
-        expect(unchanged, const Result<int, String>.failure('no'));
+        expect(unchanged, const GResult<int, String>.failure('no'));
         expect(calls, 0);
         await expectLater(
-          const Result<int, String>.success(
+          const GResult<int, String>.success(
             1,
           ).flatMapAsync<int>((_) => throw StateError('transform')),
           throwsStateError,
@@ -180,7 +180,7 @@ void main() {
         final success = await Future.value(5).toResult();
         final failure = await Future<int>.error(error).toResult();
 
-        expect(success, const Result<int, Object>.success(5));
+        expect(success, const GResult<int, Object>.success(5));
         expect(failure.isFailure, isTrue);
         expect(identical(failure.errorOrNull, error), isTrue);
       },
@@ -201,7 +201,7 @@ void main() {
       });
 
       expect(seenStack.toString(), sourceStack.toString());
-      expect(result, Result<int, String>.failure('mapped: $error'));
+      expect(result, GResult<int, String>.failure('mapped: $error'));
     });
 
     test('toResultWith does not call the mapper for a value', () async {
@@ -209,7 +209,7 @@ void main() {
         5,
       ).toResultWith<String>((_, _) => fail('not called'));
 
-      expect(result, const Result<int, String>.success(5));
+      expect(result, const GResult<int, String>.success(5));
     });
 
     test('toResultWith propagates mapper errors', () async {
@@ -225,53 +225,53 @@ void main() {
   group('GmanaFutureResultX', () {
     test('mapResult accepts sync and async transforms', () async {
       final syncMapped = await Future.value(
-        const Result<int, String>.success(2),
+        const GResult<int, String>.success(2),
       ).mapResult((value) => value * 3);
       final asyncMapped = await Future.value(
-        const Result<int, String>.success(2),
+        const GResult<int, String>.success(2),
       ).mapResult((value) async => '$value!');
 
-      expect(syncMapped, const Result<int, String>.success(6));
-      expect(asyncMapped, const Result<String, String>.success('2!'));
+      expect(syncMapped, const GResult<int, String>.success(6));
+      expect(asyncMapped, const GResult<String, String>.success('2!'));
     });
 
     test('mapResult skips a Result failure', () async {
       var calls = 0;
       final result = await Future.value(
-        const Result<int, String>.failure('failed'),
+        const GResult<int, String>.failure('failed'),
       ).mapResult((value) {
         calls++;
         return value * 2;
       });
 
-      expect(result, const Result<int, String>.failure('failed'));
+      expect(result, const GResult<int, String>.failure('failed'));
       expect(calls, 0);
     });
 
     test('flatMapResult accepts sync and async transforms', () async {
       final syncMapped = await Future.value(
-        const Result<int, String>.success(2),
-      ).flatMapResult((value) => Result<String, String>.success('$value!'));
+        const GResult<int, String>.success(2),
+      ).flatMapResult((value) => GResult<String, String>.success('$value!'));
       final asyncMapped = await Future.value(
-        const Result<int, String>.success(2),
+        const GResult<int, String>.success(2),
       ).flatMapResult(
-        (value) async => Result<double, String>.success(value / 2),
+        (value) async => GResult<double, String>.success(value / 2),
       );
 
-      expect(syncMapped, const Result<String, String>.success('2!'));
-      expect(asyncMapped, const Result<double, String>.success(1));
+      expect(syncMapped, const GResult<String, String>.success('2!'));
+      expect(asyncMapped, const GResult<double, String>.success(1));
     });
 
     test('flatMapResult skips a Result failure', () async {
       var calls = 0;
       final result = await Future.value(
-        const Result<int, String>.failure('failed'),
+        const GResult<int, String>.failure('failed'),
       ).flatMapResult((value) {
         calls++;
-        return Result<int, String>.success(value * 2);
+        return GResult<int, String>.success(value * 2);
       });
 
-      expect(result, const Result<int, String>.failure('failed'));
+      expect(result, const GResult<int, String>.failure('failed'));
       expect(calls, 0);
     });
 
@@ -282,7 +282,7 @@ void main() {
         var failureCalls = 0;
 
         final success = await Future.value(
-          const Result<int, String>.success(2),
+          const GResult<int, String>.success(2),
         ).whenResult(
           onSuccess: (value) async {
             successCalls++;
@@ -294,7 +294,7 @@ void main() {
           },
         );
         final failure = await Future.value(
-          const Result<int, String>.failure('no'),
+          const GResult<int, String>.failure('no'),
         ).whenResult(
           onSuccess: (value) {
             successCalls++;
@@ -315,14 +315,14 @@ void main() {
 
     test('source future and transform errors propagate', () async {
       await expectLater(
-        Future<Result<int, String>>.error(
+        Future<GResult<int, String>>.error(
           StateError('source'),
         ).mapResult((value) => value * 2),
         throwsStateError,
       );
       await expectLater(
         Future.value(
-          const Result<int, String>.success(1),
+          const GResult<int, String>.success(1),
         ).flatMapResult<int>((_) => throw ArgumentError('transform')),
         throwsArgumentError,
       );
@@ -332,16 +332,16 @@ void main() {
   group('GmanaIterableResultX', () {
     test('sequenceResults preserves success order and handles empty input', () {
       final result =
-          <Result<int, String>>[
-            const Result<int, String>.success(3),
-            const Result<int, String>.success(1),
-            const Result<int, String>.success(2),
+          <GResult<int, String>>[
+            const GResult<int, String>.success(3),
+            const GResult<int, String>.success(1),
+            const GResult<int, String>.success(2),
           ].sequenceResults();
 
       expect(result.isSuccess, isTrue);
       expect(result.valueOrNull, [3, 1, 2]);
 
-      final empty = <Result<int, String>>[].sequenceResults();
+      final empty = <GResult<int, String>>[].sequenceResults();
       expect(empty.isSuccess, isTrue);
       expect(empty.valueOrNull, isEmpty);
     });
@@ -349,18 +349,18 @@ void main() {
     test('sequenceResults stops consuming at the first failure', () {
       var visited = 0;
 
-      Iterable<Result<int, String>> results() sync* {
+      Iterable<GResult<int, String>> results() sync* {
         visited++;
-        yield const Result<int, String>.success(1);
+        yield const GResult<int, String>.success(1);
         visited++;
-        yield const Result<int, String>.failure('first');
+        yield const GResult<int, String>.failure('first');
         visited++;
-        yield const Result<int, String>.failure('second');
+        yield const GResult<int, String>.failure('second');
       }
 
       expect(
         results().sequenceResults(),
-        const Result<List<int>, String>.failure('first'),
+        const GResult<List<int>, String>.failure('first'),
       );
       expect(visited, 2);
     });
@@ -369,13 +369,13 @@ void main() {
       var iterations = 0;
       var visited = 0;
 
-      Iterable<Result<int, String>> results() sync* {
+      Iterable<GResult<int, String>> results() sync* {
         iterations++;
-        for (final result in <Result<int, String>>[
-          const Result<int, String>.failure('a'),
-          const Result<int, String>.success(3),
-          const Result<int, String>.failure('b'),
-          const Result<int, String>.success(1),
+        for (final result in <GResult<int, String>>[
+          const GResult<int, String>.failure('a'),
+          const GResult<int, String>.success(3),
+          const GResult<int, String>.failure('b'),
+          const GResult<int, String>.success(1),
         ]) {
           visited++;
           yield result;
@@ -391,7 +391,7 @@ void main() {
     });
 
     test('partitionResults returns two empty lists for empty input', () {
-      final partition = <Result<int, String>>[].partitionResults();
+      final partition = <GResult<int, String>>[].partitionResults();
 
       expect(partition.successes, isEmpty);
       expect(partition.failures, isEmpty);

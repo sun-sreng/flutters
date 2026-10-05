@@ -1,5 +1,10 @@
 ## Unreleased
 
+### Removed
+
+- **Breaking:** removed the deprecated `GElevatedButton` (use
+  `GSubmitButton.text`) and the `GTextField` alias (use `GTextFormField`).
+
 ### Added
 
 - `GTextFormField` preset constructors for text, email, number, password, and

@@ -160,14 +160,3 @@ extension DateTimeTimeOfDayX on DateTime {
   /// The hour and minute of this moment, discarding the date.
   TimeOfDay get timeOfDay => TimeOfDay(hour: hour, minute: minute);
 }
-
-/// Former name of [TimeOfDayX].
-///
-/// An extension cannot be aliased, so this keeps the one member that was
-/// called through the old name, `TimeOfDayExtensions.fromMinutes`, resolving.
-@Deprecated(
-  'Use TimeOfDayX.fromMinutes instead. This shim will be removed before 1.0.',
-)
-abstract final class TimeOfDayExtensions {
-  static TimeOfDay fromMinutes(int minutes) => TimeOfDayX.fromMinutes(minutes);
-}

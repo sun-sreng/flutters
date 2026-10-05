@@ -85,7 +85,3 @@ class _ThemeModeConfig {
     required this.icon,
   });
 }
-
-/// Former name of [ThemeModes].
-@Deprecated('Use ThemeModes instead. This alias will be removed before 1.0.')
-typedef ThemeModeService = ThemeModes;

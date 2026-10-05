@@ -36,40 +36,22 @@ final class EmailValidationConfig {
   final bool matchSubdomains;
 
   /// Creates a new [EmailValidationConfig] with optional overrides.
-  ///
-  /// [allowDisposable] is the former, inverted spelling of [rejectDisposable]
-  /// and is ignored when [rejectDisposable] is given.
   const EmailValidationConfig({
     this.maxLength = 254,
     this.maxLocalPartLength = 64,
     this.maxDomainLength = 253,
     this.disposableDomains = kDefaultDisposableDomains,
     this.blockedDomains = const {},
-    bool? rejectDisposable,
+    this.rejectDisposable = false,
     this.matchSubdomains = true,
-    @Deprecated(
-      'Use rejectDisposable (inverted) instead. '
-      'This parameter will be removed before 1.0.',
-    )
-    bool? allowDisposable,
-  }) : rejectDisposable = rejectDisposable ?? !(allowDisposable ?? true);
+  });
 
   /// Creates a strict [EmailValidationConfig] that disallows disposable emails.
   factory EmailValidationConfig.strict() {
     return const EmailValidationConfig(rejectDisposable: true);
   }
 
-  /// Whether disposable email domains are permitted.
-  @Deprecated(
-    'Use rejectDisposable (inverted) instead. '
-    'This getter will be removed before 1.0.',
-  )
-  bool get allowDisposable => !rejectDisposable;
-
   /// Returns a copy of this config with the given fields replaced.
-  ///
-  /// [allowDisposable] is the former, inverted spelling of [rejectDisposable]
-  /// and is ignored when [rejectDisposable] is given.
   EmailValidationConfig copyWith({
     int? maxLength,
     int? maxLocalPartLength,
@@ -78,11 +60,6 @@ final class EmailValidationConfig {
     Set<String>? blockedDomains,
     bool? rejectDisposable,
     bool? matchSubdomains,
-    @Deprecated(
-      'Use rejectDisposable (inverted) instead. '
-      'This parameter will be removed before 1.0.',
-    )
-    bool? allowDisposable,
   }) {
     return EmailValidationConfig(
       maxLength: maxLength ?? this.maxLength,
@@ -90,9 +67,7 @@ final class EmailValidationConfig {
       maxDomainLength: maxDomainLength ?? this.maxDomainLength,
       disposableDomains: disposableDomains ?? this.disposableDomains,
       blockedDomains: blockedDomains ?? this.blockedDomains,
-      rejectDisposable:
-          rejectDisposable ??
-          (allowDisposable == null ? this.rejectDisposable : !allowDisposable),
+      rejectDisposable: rejectDisposable ?? this.rejectDisposable,
       matchSubdomains: matchSubdomains ?? this.matchSubdomains,
     );
   }

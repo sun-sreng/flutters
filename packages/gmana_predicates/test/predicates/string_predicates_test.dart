@@ -105,10 +105,7 @@ void main() {
   });
 
   group('null and length predicates', () {
-    test('isNull and isNullOrEmpty match null and empty strings', () {
-      expect(predicates.isNull(null), isTrue);
-      expect(predicates.isNull(''), isTrue);
-      expect(predicates.isNull('value'), isFalse);
+    test('isNullOrEmpty matches null and empty strings', () {
       expect(predicates.isNullOrEmpty(null), isTrue);
       expect(predicates.isNullOrEmpty(''), isTrue);
       expect(predicates.isNullOrEmpty('value'), isFalse);

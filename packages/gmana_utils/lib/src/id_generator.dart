@@ -108,17 +108,6 @@ class IdGenerator {
   static String uuidV4Like() {
     return _service.generateUuidV4Like();
   }
-
-  /// Deprecated: delegates to [uuidV4Like].
-  ///
-  /// The name was misleading — this never generated a standards-compliant
-  /// UUID v1 value.
-  @Deprecated(
-    'Use uuidV4Like() instead. This method will be removed before 1.0.',
-  )
-  static String uuidV1() {
-    return uuidV4Like();
-  }
 }
 
 // ---------------------------------------------------------------------------

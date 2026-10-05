@@ -67,10 +67,4 @@ void main() {
 
     expect(parseLocale(formatLocale(locale)), locale);
   });
-  test('deprecated names still delegate', () {
-    const locale = Locale('en', 'US');
-
-    expect(fromLocale(locale), formatLocale(locale));
-    expect(toLocale('en_US'), parseLocale('en_US'));
-  });
 }

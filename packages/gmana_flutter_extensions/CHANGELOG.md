@@ -1,5 +1,12 @@
 ## Unreleased
 
+### Removed
+
+- **Breaking:** removed the deprecated aliases `ColorService`,
+  `ThemeModeService`, and `IconDataExt` (use `ColorMath`, `ThemeModes`, and
+  `IconDataCodec`) and the `TimeOfDayExtensions` shim (use
+  `TimeOfDayX.fromMinutes`).
+
 ### Changed
 
 - **`ColorService` → `ColorMath`, `ThemeModeService` → `ThemeModes`,

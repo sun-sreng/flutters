@@ -1,5 +1,11 @@
 ## Unreleased
 
+### Removed
+
+- **Breaking:** removed the deprecated `allowDisposable` constructor parameter,
+  getter, and `copyWith` parameter of `EmailValidationConfig`. Use
+  `rejectDisposable` (inverted).
+
 ### Changed
 
 - **`IdentifierValidationConfig`, `NetworkValidationConfig`,

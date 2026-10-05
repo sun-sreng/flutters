@@ -41,10 +41,6 @@ abstract final class IconDataCodec {
   }
 }
 
-/// Former name of [IconDataCodec], which is a class and not an extension.
-@Deprecated('Use IconDataCodec instead. This alias will be removed before 1.0.')
-typedef IconDataExt = IconDataCodec;
-
 extension IconDataX on IconData {
   /// Serializes to a compact JSON string; null and default fields are omitted.
   String toJsonString() {

@@ -623,13 +623,3 @@ class GTextFormField extends StatelessWidget {
     return config.integerOnly ? int.tryParse : double.tryParse;
   }
 }
-
-/// Former name of [GTextFormField].
-///
-/// `package:gmana_flutter/gmana_flutter.dart` declares a plain-input widget
-/// with the same name, so the form field is named after the `TextFormField` it
-/// wraps.
-@Deprecated(
-  'Use GTextFormField instead. This alias will be removed before 1.0.',
-)
-typedef GTextField = GTextFormField;

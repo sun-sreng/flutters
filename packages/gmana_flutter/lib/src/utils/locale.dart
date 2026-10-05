@@ -56,11 +56,3 @@ Locale parseLocale(String? locale) {
     return defaultLocale;
   }
 }
-
-/// Former name of [formatLocale].
-@Deprecated('Use formatLocale instead. This alias will be removed before 1.0.')
-String fromLocale(Locale locale) => formatLocale(locale);
-
-/// Former name of [parseLocale].
-@Deprecated('Use parseLocale instead. This alias will be removed before 1.0.')
-Locale toLocale(String? locale) => parseLocale(locale);

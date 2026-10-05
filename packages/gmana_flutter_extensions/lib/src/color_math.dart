@@ -252,7 +252,3 @@ abstract final class ColorMath {
     }
   }
 }
-
-/// Former name of [ColorMath].
-@Deprecated('Use ColorMath instead. This alias will be removed before 1.0.')
-typedef ColorService = ColorMath;

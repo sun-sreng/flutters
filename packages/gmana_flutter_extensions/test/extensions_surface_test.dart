@@ -126,11 +126,4 @@ void main() {
       expect(styled.color, Colors.blue);
     });
   });
-  test('deprecated class names remain aliases', () {
-    const color = Color(0xFF336699);
-
-    expect(ColorService.isDark(color), ColorMath.isDark(color));
-    expect(ThemeModeService.fromKey('dark'), ThemeModes.fromKey('dark'));
-    expect(IconDataExt.tryParse(''), IconDataCodec.tryParse(''));
-  });
 }

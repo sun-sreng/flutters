@@ -1,5 +1,11 @@
 ## Unreleased
 
+### Removed
+
+- **Breaking:** removed the deprecated `GSpacing.vSpace` and `GSpacing.hSpace`
+  (use `GGap.vertical` / `GGap.horizontal`), `fromLocale` and `toLocale` (use
+  `formatLocale` / `parseLocale`), and `StarRatingBar` (use `GStarRatingBar`).
+
 ### Changed
 
 - **Breaking:** `GResponsiveBuilder` now defaults to the shared breakpoints,
