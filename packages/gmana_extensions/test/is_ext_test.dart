@@ -23,16 +23,6 @@ void main() {
       expect('   '.isNotBlank, isFalse);
     });
 
-    test('isNumeric returns true for numeric strings', () {
-      expect('12345'.isNumeric, isTrue);
-      expect('123a'.isNumeric, isFalse);
-    });
-
-    test('isAlpha returns true for alphabetic strings', () {
-      expect('abc'.isAlpha, isTrue);
-      expect('abc1'.isAlpha, isFalse);
-    });
-
     test('isAlphanumeric returns true for alphanumeric strings', () {
       expect('abc123'.isAlphanumeric, isTrue);
       expect('abc123!'.isAlphanumeric, isFalse);

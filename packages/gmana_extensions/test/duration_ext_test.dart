@@ -414,10 +414,4 @@ void main() {
       });
     });
   });
-  test('HumanizedDuration.fromFrames still resolves', () {
-    expect(
-      HumanizedDuration.fromFrames(120, 24),
-      DurationX.fromFrames(120, 24),
-    );
-  });
 }

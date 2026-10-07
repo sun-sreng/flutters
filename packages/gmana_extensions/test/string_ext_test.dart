@@ -181,32 +181,6 @@ void main() {
   });
 
   group('StringX Validation', () {
-    test('isEmail', () {
-      expect('test@example.com'.isEmail, isTrue);
-      expect('invalid-email'.isEmail, isFalse);
-    });
-
-    test('isUrl', () {
-      expect('https://google.com/'.isUrl, isTrue);
-      expect('https://google.com'.isUrl, isTrue);
-      expect('http://localhost/'.isUrl, isTrue);
-      expect(' ftp://example.com '.isUrl, isFalse);
-      expect('example.com'.isUrl, isFalse);
-    });
-
-    test('isNumeric', () {
-      expect('123'.isNumeric, isTrue);
-      expect('12.3'.isNumeric, isTrue);
-      expect('-12.3'.isNumeric, isTrue);
-      expect('abc'.isNumeric, isFalse);
-    });
-
-    test('isAlpha', () {
-      expect('abcABC'.isAlpha, isTrue);
-      expect('abc123'.isAlpha, isFalse);
-      expect('abc-def'.isAlpha, isFalse);
-    });
-
     test('isAlphanumeric', () {
       expect('abc123'.isAlphanumeric, isTrue);
       expect('abc-123'.isAlphanumeric, isFalse);
@@ -287,13 +261,6 @@ void main() {
     test('orEmpty', () {
       expect((null as String?).orEmpty, equals(''));
       expect('a'.orEmpty, equals('a'));
-    });
-
-    test('isNullOrEmpty', () {
-      expect((null as String?).isNullOrEmpty, isTrue);
-      expect(''.isNullOrEmpty, isTrue);
-      expect('a'.isNullOrEmpty, isFalse);
-      expect(' '.isNullOrEmpty, isFalse);
     });
 
     test('isNullOrBlank', () {

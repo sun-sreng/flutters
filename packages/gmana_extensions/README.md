@@ -487,21 +487,6 @@ re-exported from this package.
 'hello'.isWithinLength(min: 3, max: 10)  // true
 ```
 
-### Deprecated classification members (`StringPredicateCompatX`)
-
-`isAlpha`, `isEmail`, `isNumeric`, `isUrl`, `containsIgnoreCase`,
-`isNullOrEmpty`, and the date-string checks `isDate`, `isToday`, `isPast`,
-`isFuture`, `isWeekend`, `isWeekday`, `isLeapYear`, `isAfter`, `isBefore`,
-`isBetween` still work but are deprecated. `gmana_predicates` declares members
-with the same names on `String`, and importing both packages made every call
-ambiguous. Use the `gmana_predicates` extensions instead; three of them differ:
-
-| Deprecated here       | Replacement                                         |
-| --------------------- | --------------------------------------------------- |
-| `value.isEmail`       | `value.trim().isEmail` (no implicit trim)           |
-| `value.isNumeric`     | `double.tryParse(value) != null` (theirs is digits-only) |
-| `value.isUrl`         | `value.isUrl(allowedSchemes: {'http', 'https'})`    |
-
 ### Date strings (`StringDateX`)
 
 ```dart
@@ -1110,10 +1095,6 @@ date.isInRange(start, end);
 'a'.coerceMax('b');   // 'b'
 'a'.coerceMin('b');   // 'a'
 ```
-
-> Named `isInRange` rather than `isBetween`: `StringPredicateCompatX.isBetween`
-> already owns that name on `String` with date-parsing semantics, and the
-> more specific extension always wins.
 
 ---
 

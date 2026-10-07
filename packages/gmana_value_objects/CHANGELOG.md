@@ -5,6 +5,10 @@
 - **Breaking:** removed the deprecated `allowDisposable` constructor parameter,
   getter, and `copyWith` parameter of `EmailValidationConfig`. Use
   `rejectDisposable` (inverted).
+- **Breaking:** removed the deprecated `Gmana*ValidationConfigX` extensions
+  (`GmanaPhoneValidationConfigX`, `GmanaUrlValidationConfigX`,
+  `GmanaIdentifierValidationConfigX`, and `GmanaNetworkValidationConfigX`).
+  Use `copyWith` directly on the config classes.
 
 ### Changed
 
@@ -12,16 +16,12 @@
   `NumberValidationConfig`, `PhoneValidationConfig`, and `UrlValidationConfig`
   are now the `gmana_validation` classes**, re-exported from this package.
   Constructors, fields, presets, and `copyWith` are unchanged, and the
-  identifier and network configs gain structural equality. The
-  `Gmana*ValidationConfigX` extensions that supplied `copyWith` are deprecated.
+  identifier and network configs gain structural equality.
 - **`EmailValidationConfig` uses the `gmana_validation` disposable-domain
   list.** The default grew from 6 domains to the full list, so
   `EmailValidationConfig.strict()` and `rejectDisposable: true` now reject
   every address `gmana_validation` rejects. Pass `disposableDomains` to keep a
   shorter list.
-- **`EmailValidationConfig.allowDisposable` is deprecated** in favour of
-  `rejectDisposable`, its inverse and the name `gmana_validation` uses. The
-  old constructor parameter, getter, and `copyWith` parameter still work.
 
 ### Added
 

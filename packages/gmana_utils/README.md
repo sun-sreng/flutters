@@ -443,9 +443,6 @@ final id = IdGenerator.uuidV4Like();
 
 For a cryptographically random UUID-shaped token use `SecureIdGenerator.uuidV4Like()`.
 
-> **Deprecated**: `uuidV1()` remains as a compatibility alias for
-> `uuidV4Like()`. New code should call `uuidV4Like()` directly.
-
 ---
 
 ### `encodeToBase64` / `decodeFromBase64`
@@ -903,17 +900,15 @@ final remote = await tryOrElseAsync(
 Type-safe success or failure monad:
 
 > The type is declared in [`gmana_functional`](../gmana_functional) as
-> `GResult`, `GSuccess`, and `GFailure`, and re-exported here. `Result`,
-> `Success`, and `Failure` are deprecated aliases of those names; the
-> examples below work with either spelling.
+> `GResult`, `GSuccess`, and `GFailure`, and re-exported here.
 
 ```dart
-final result = Result.capture(() => parseData());
+final result = GResult.capture(() => parseData());
 
 switch (result) {
-  case Success(:final value):
+  case GSuccess(:final value):
     print('Value: $value');
-  case Failure(:final error):
+  case GFailure(:final error):
     print('Error: $error');
 }
 

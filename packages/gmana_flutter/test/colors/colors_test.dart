@@ -6,7 +6,7 @@ void main() {
   group('Color Utilities', () {
     test('darken produces a darker color', () {
       const color = Colors.blue;
-      final darker = darken(color, 0.2);
+      final darker = color.darken(0.2);
 
       final originalHsl = HSLColor.fromColor(color);
       final darkerHsl = HSLColor.fromColor(darker);
@@ -16,7 +16,7 @@ void main() {
 
     test('lighten produces a lighter color', () {
       const color = Colors.blue;
-      final lighter = lighten(color, 0.2);
+      final lighter = color.lighten(0.2);
 
       final originalHsl = HSLColor.fromColor(color);
       final lighterHsl = HSLColor.fromColor(lighter);

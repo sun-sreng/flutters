@@ -117,7 +117,7 @@ Future<void> main() async {
     'a',
     'bb',
     'ccc',
-  ].mapConcurrent((word) async => word.length, concurrency: 2);
+  ].mapParallel((word) async => word.length);
 
   print('\nAsync');
   print('  lengths: $fetched');

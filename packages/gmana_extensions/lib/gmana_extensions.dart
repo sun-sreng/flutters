@@ -26,5 +26,4 @@ export 'src/stopwatch_ext.dart';
 export 'src/stream_ext.dart';
 export 'src/string_date_ext.dart';
 export 'src/string_ext.dart';
-export 'src/string_predicate_compat_ext.dart';
 export 'src/uri_ext.dart';

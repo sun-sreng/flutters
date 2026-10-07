@@ -3,12 +3,12 @@
 ### Removed
 
 - **Breaking:** removed the deprecated `isNull` predicate (use
-  `isNullOrEmpty`).
+  `isNullOrEmpty`) and legacy library paths (`lib/annotations.dart`,
+  `lib/predicates/*`).
 
 ### Changed
 
 - **Source files moved under `lib/src`.** Import `package:gmana_predicates/gmana_predicates.dart`.
-  The old library paths (`package:gmana_predicates/predicates/string_predicates.dart` and the rest) still resolve but are deprecated.
 - **Extensions renamed to the `…X` convention.** `GmanaStringPredicatesExt` →
   `GmanaStringPredicatesX`, `GmanaNullableStringPredicatesExt` →
   `GmanaNullableStringPredicatesX`, `GmanaDateTimePredicatesExt` →

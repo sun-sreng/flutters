@@ -2,9 +2,12 @@
 
 ### Removed
 
-- **Breaking:** removed the deprecated `GSpacing.vSpace` and `GSpacing.hSpace`
-  (use `GGap.vertical` / `GGap.horizontal`), `fromLocale` and `toLocale` (use
-  `formatLocale` / `parseLocale`), and `StarRatingBar` (use `GStarRatingBar`).
+- **Breaking:** removed the deprecated `GSpacing.vSpace`, `GSpacing.hSpace`,
+  `SizedBoxHeight`, and `SizedBoxWidth` (use `GGap.vertical` / `GGap.horizontal`),
+  `fromLocale` and `toLocale` (use `formatLocale` / `parseLocale`),
+  `lighten` and `darken` (use `color.lighten()` / `color.darken()`),
+  `StarRatingBar` (use `GStarRatingBar`), and legacy library paths under
+  `lib/colors/`, `lib/design_system/`, `lib/utils/`, and `lib/widget/`.
 
 ### Changed
 
@@ -13,9 +16,7 @@
   and 1024, so it agrees with `context.breakpoint`. Pass `mobileBreakpoint: 600,
   tabletBreakpoint: 1024` to keep the previous behaviour.
 - **Source files moved under `lib/src`.** Import
-  `package:gmana_flutter/gmana_flutter.dart`. The old library paths
-  (`package:gmana_flutter/widget/button.dart` and the rest) still resolve but
-  are deprecated.
+  `package:gmana_flutter/gmana_flutter.dart`.
 - Removed the dependency on `gmana`. Nothing from it was re-exported; if you
   relied on it arriving transitively, depend on `gmana` directly.
 - `fromLocale` → `formatLocale` and `toLocale` → `parseLocale`. The old names

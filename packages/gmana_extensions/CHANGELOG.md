@@ -1,5 +1,12 @@
 ## Unreleased
 
+### Removed
+
+- **Breaking:** removed the deprecated `HumanizedDuration` shim (use
+  `DurationX.fromFrames`), `Iterable.mapConcurrent` (use `mapConcurrent` from
+  `gmana_utils`), and `StringPredicateCompatX` /
+  `StringNullablePredicateCompatX` extensions (use `gmana_predicates`).
+
 ### Changed
 
 - **`StringValidation` moved to `gmana_validation`** and is re-exported from
@@ -10,23 +17,6 @@
   `NumDurationX`. Extension members are unaffected; only code that names the
   extension — a `show`/`hide` clause or an explicit override such as
   `HumanizedDuration(value).humanized` — needs the new name.
-  `HumanizedDuration.fromFrames` keeps working through a deprecated shim.
-
-### Deprecated
-
-- `Iterable.mapConcurrent` — use `mapConcurrent` from `gmana_utils`, which
-  stops starting new work after the first failure.
-- **String classification members that duplicate `gmana_predicates`.**
-  `isAlpha`, `isEmail`, `isNumeric`, `isUrl`, `containsIgnoreCase`,
-  `isNullOrEmpty`, `isDate`, `isToday`, `isPast`, `isFuture`, `isWeekend`,
-  `isWeekday`, `isLeapYear`, `isAfter`, `isBefore`, and `isBetween` moved from
-  `StringX`, `StringNullableX`, and `StringDateX` into
-  `StringPredicateCompatX` / `StringNullablePredicateCompatX` and are
-  deprecated. `gmana_predicates` declares the same names on `String`, so
-  importing both packages — as `package:gmana/gmana.dart` does — made every
-  call ambiguous. Behaviour is unchanged and implicit calls such as
-  `'a@b.c'.isEmail` keep working; only explicit overrides like
-  `StringX(value).isEmail` need the new extension name.
 
 ### Internal
 

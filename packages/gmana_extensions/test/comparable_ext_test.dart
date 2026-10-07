@@ -35,11 +35,6 @@ void main() {
       expect('b'.isInRangeExclusive('a', 'c'), isTrue);
     });
 
-    test('isBetween still resolves to the date-string extension', () {
-      // StringDateX is more specific than ComparableX on String.
-      expect('2024-06-15'.isBetween('2024-01-01', '2024-12-31'), isTrue);
-    });
-
     test('coerceMin and coerceMax pick an extreme', () {
       expect('a'.coerceMax('b'), 'b');
       expect('a'.coerceMin('b'), 'a');

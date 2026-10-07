@@ -1,7 +1,5 @@
 library;
 
-export 'src/colors/darken.dart';
-export 'src/colors/lighten.dart';
 export 'src/design_system/colors.dart';
 export 'src/design_system/font_weight.dart';
 export 'src/design_system/motion.dart';
@@ -24,8 +22,6 @@ export 'src/widgets/gap.dart';
 export 'src/widgets/grid.dart';
 export 'src/widgets/list_tile.dart';
 export 'src/widgets/responsive_builder.dart';
-export 'src/widgets/sized_box_height.dart';
-export 'src/widgets/sized_box_width.dart';
 export 'src/widgets/star_rating_bar.dart';
 export 'src/widgets/tag.dart';
 export 'src/widgets/text_field.dart';

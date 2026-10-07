@@ -426,8 +426,6 @@ GSubmitButton(
 )
 ```
 
-`GElevatedButton` remains available as a deprecated compatibility wrapper.
-
 ## Validator Adapter
 
 `asFormValidator` adapts any `gmana_validation` validator to Flutter's

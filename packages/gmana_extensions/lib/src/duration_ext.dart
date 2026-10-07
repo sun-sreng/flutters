@@ -350,19 +350,6 @@ extension DurationX on Duration {
       Duration(milliseconds: (frames / fps * 1000).round());
 }
 
-/// Former name of [DurationX].
-///
-/// An extension cannot be aliased, so this keeps the one member that was
-/// called through the old name, `HumanizedDuration.fromFrames`, resolving.
-@Deprecated(
-  'Use DurationX.fromFrames instead. This shim will be removed before 1.0.',
-)
-abstract final class HumanizedDuration {
-  /// Reconstructs a duration from [frames] at [fps].
-  static Duration fromFrames(int frames, double fps) =>
-      DurationX.fromFrames(frames, fps);
-}
-
 int _positiveIntervalMicroseconds(Duration interval) {
   final step = interval.inMicroseconds.abs();
   if (step == 0) {

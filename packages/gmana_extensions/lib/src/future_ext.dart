@@ -116,44 +116,6 @@ extension IterableFutureX<T> on Iterable<T> {
     bool eagerError = false,
   }) => Future.wait(map(transform), eagerError: eagerError);
 
-  /// Applies [transform] concurrently, at most [concurrency] futures in flight.
-  ///
-  /// After a failure the remaining elements are still started; the
-  /// `gmana_utils` function stops starting new work instead.
-  @Deprecated(
-    'Use mapConcurrent from package:gmana_utils instead. '
-    'This duplicate will be removed before 1.0.',
-  )
-  Future<List<R>> mapConcurrent<R>(
-    Future<R> Function(T element) transform, {
-    required int concurrency,
-  }) async {
-    if (concurrency <= 0) {
-      throw ArgumentError.value(
-        concurrency,
-        'concurrency',
-        'must be greater than zero',
-      );
-    }
-
-    final elements = toList();
-    final results = List<R?>.filled(elements.length, null);
-    var next = 0;
-
-    Future<void> worker() async {
-      while (true) {
-        final index = next++;
-        if (index >= elements.length) return;
-        results[index] = await transform(elements[index]);
-      }
-    }
-
-    final workerCount =
-        concurrency < elements.length ? concurrency : elements.length;
-    await Future.wait(List.generate(workerCount, (_) => worker()));
-    return results.cast<R>();
-  }
-
   /// Keeps only the elements for which [test] resolves to `true`.
   Future<List<T>> whereAsync(Future<bool> Function(T element) test) async {
     final results = <T>[];

@@ -40,11 +40,6 @@ void main() {
       expect('Hello'.equalsIgnoreCase('Hell'), isFalse);
     });
 
-    test('containsIgnoreCase', () {
-      expect('Hello World'.containsIgnoreCase('LO WO'), isTrue);
-      expect('Hello'.containsIgnoreCase('xyz'), isFalse);
-    });
-
     test('startsWithIgnoreCase and endsWithIgnoreCase', () {
       expect('Hello'.startsWithIgnoreCase('HE'), isTrue);
       expect('Hello'.endsWithIgnoreCase('LO'), isTrue);

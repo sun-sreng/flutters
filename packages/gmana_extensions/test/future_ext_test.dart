@@ -135,36 +135,6 @@ void main() {
       expect(maxInFlight, 3);
     });
 
-    test('mapConcurrent caps the number of in-flight futures', () async {
-      var inFlight = 0;
-      var maxInFlight = 0;
-
-      final result = await [1, 2, 3, 4, 5, 6].mapConcurrent((n) async {
-        inFlight++;
-        maxInFlight = inFlight > maxInFlight ? inFlight : maxInFlight;
-        await Future<void>.delayed(const Duration(milliseconds: 10));
-        inFlight--;
-        return n;
-      }, concurrency: 2);
-
-      expect(result, [1, 2, 3, 4, 5, 6]);
-      expect(maxInFlight, 2);
-    });
-
-    test('mapConcurrent handles an empty source', () async {
-      expect(
-        await <int>[].mapConcurrent((n) async => n, concurrency: 4),
-        isEmpty,
-      );
-    });
-
-    test('mapConcurrent validates concurrency', () {
-      expect(
-        () => [1].mapConcurrent((n) async => n, concurrency: 0),
-        throwsArgumentError,
-      );
-    });
-
     test('whereAsync keeps the matching elements in order', () async {
       final result = await [1, 2, 3, 4].whereAsync((n) async => n.isEven);
       expect(result, [2, 4]);
