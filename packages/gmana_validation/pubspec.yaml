@@ -1,6 +1,6 @@
 name: gmana_validation
 description: Pure Dart typed validators and extensions for common input, identifier, network, and date formats.
-version: 0.0.1
+version: 0.0.2
 repository: https://github.com/sun-sreng/flutters/tree/main/packages/gmana_validation
 issue_tracker: https://github.com/sun-sreng/flutters/issues
 
@@ -15,7 +15,7 @@ environment:
 
 dependencies:
   gmana_functional: ^0.0.1
-  gmana_predicates: ^0.0.1
+  gmana_predicates: ^0.0.3
   meta: ^1.17.0
 
 dev_dependencies:

@@ -21,7 +21,7 @@ dependencies:
   flutter:
     sdk: flutter
   gmana_spinner: ^0.0.2
-  gmana_validation: ^0.0.1
+  gmana_validation: ^0.0.2
 
 dev_dependencies:
   flutter_test:

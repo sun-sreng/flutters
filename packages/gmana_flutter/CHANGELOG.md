@@ -1,4 +1,4 @@
-## Unreleased
+## 0.0.11 - 2026-10-13
 
 ### Removed
 
