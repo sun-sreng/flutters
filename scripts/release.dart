@@ -3,7 +3,7 @@
 //
 //   dart run scripts/release.dart gmana_utils:minor gmana:patch
 //   dart run scripts/release.dart gmana:0.3.0 --dry-run
-// dart run scripts/release.dart gmana_utils:patch gmana:patch gmana_extensions:patch gmana_flutter:patch gmana_flutter_extensions:patch gmana_flutter_validation:patch gmana_flutter_predicates:patch gmana_validation:patch gmana_predicates:patch
+// dart run scripts/release.dart gmana_utils:patch gmana:patch gmana_extensions:patch gmana_flutter:patch gmana_flutter_extensions:patch gmana_validation:patch gmana_predicates:patch
 //
 // For each package it sets the new version in pubspec.yaml, turns the
 // `## Unreleased` heading of its CHANGELOG.md into `## <version> - <date>`, and
