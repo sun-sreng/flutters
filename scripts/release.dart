@@ -3,6 +3,7 @@
 //
 //   dart run scripts/release.dart gmana_utils:minor gmana:patch
 //   dart run scripts/release.dart gmana:0.3.0 --dry-run
+// dart run scripts/release.dart gmana_utils:patch gmana:patch gmana_extensions:patch gmana_flutter:patch gmana_flutter_extensions:patch gmana_flutter_validation:patch gmana_flutter_predicates:patch gmana_validation:patch gmana_predicates:patch
 //
 // For each package it sets the new version in pubspec.yaml, turns the
 // `## Unreleased` heading of its CHANGELOG.md into `## <version> - <date>`, and
@@ -17,10 +18,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'src/workspace.dart';
-
-final _version = RegExp(r'^(\d+)\.(\d+)\.(\d+)([-+].*)?$');
-final _versionLine = RegExp(r'^version:[ \t]*(\S+)[ \t]*$', multiLine: true);
-final _unreleased = RegExp(r'^## Unreleased[ \t]*$', multiLine: true);
 
 Future<void> main(List<String> args) async {
   final members = workspaceMembers();
@@ -132,6 +129,63 @@ Future<void> main(List<String> args) async {
   );
 }
 
+final _unreleased = RegExp(r'^## Unreleased[ \t]*$', multiLine: true);
+final _version = RegExp(r'^(\d+)\.(\d+)\.(\d+)([-+].*)?$');
+
+final _versionLine = RegExp(r'^version:[ \t]*(\S+)[ \t]*$', multiLine: true);
+
+/// Whether `^base` allows [version], following pub's rules: below 1.0.0 the
+/// first non-zero part is the one that may not change.
+bool _caretAllows(String base, String version) {
+  if (!_version.hasMatch(base) || _compare(version, base) < 0) return false;
+  final b = _parts(base), v = _parts(version);
+  if (b[0] > 0) return v[0] == b[0];
+  if (b[1] > 0) return v[0] == 0 && v[1] == b[1];
+  return v[0] == 0 && v[1] == 0 && v[2] == b[2];
+}
+
+int _compare(String a, String b) {
+  final x = _parts(a), y = _parts(b);
+  for (var i = 0; i < 3; i++) {
+    if (x[i] != y[i]) return x[i].compareTo(y[i]);
+  }
+  return 0;
+}
+
+Never _fail(String message) {
+  stderr.writeln(message);
+  exit(1);
+}
+
+String _git(List<String> args) {
+  final result = Process.runSync('git', args);
+  if (result.exitCode != 0) _fail('git ${args.join(' ')}:\n${result.stderr}');
+  return result.stdout as String;
+}
+
+/// The version after [current] for a bump of [kind], or [kind] itself when it
+/// is an exact version.
+String _next(String current, String kind) {
+  if (_version.hasMatch(kind)) return kind;
+  final m = _version.firstMatch(current) ?? _fail('Cannot parse $current.');
+  final [major, minor, patch] = [
+    1,
+    2,
+    3,
+  ].map((i) => int.parse(m.group(i)!)).toList();
+  return switch (kind) {
+    'major' => '${major + 1}.0.0',
+    'minor' => '$major.${minor + 1}.0',
+    'patch' => '$major.$minor.${patch + 1}',
+    _ => _fail('Unknown bump "$kind": use major, minor, patch, or x.y.z.'),
+  };
+}
+
+List<int> _parts(String version) {
+  final m = _version.firstMatch(version) ?? _fail('Cannot parse $version.');
+  return [for (var i = 1; i <= 3; i++) int.parse(m.group(i)!)];
+}
+
 Future<void> _status(Map<String, String> members) async {
   final client = HttpClient();
   for (final MapEntry(key: name, value: dir) in members.entries) {
@@ -165,56 +219,4 @@ Future<void> _status(Map<String, String> members) async {
     );
   }
   client.close();
-}
-
-/// The version after [current] for a bump of [kind], or [kind] itself when it
-/// is an exact version.
-String _next(String current, String kind) {
-  if (_version.hasMatch(kind)) return kind;
-  final m = _version.firstMatch(current) ?? _fail('Cannot parse $current.');
-  final [major, minor, patch] = [
-    1,
-    2,
-    3,
-  ].map((i) => int.parse(m.group(i)!)).toList();
-  return switch (kind) {
-    'major' => '${major + 1}.0.0',
-    'minor' => '$major.${minor + 1}.0',
-    'patch' => '$major.$minor.${patch + 1}',
-    _ => _fail('Unknown bump "$kind": use major, minor, patch, or x.y.z.'),
-  };
-}
-
-/// Whether `^base` allows [version], following pub's rules: below 1.0.0 the
-/// first non-zero part is the one that may not change.
-bool _caretAllows(String base, String version) {
-  if (!_version.hasMatch(base) || _compare(version, base) < 0) return false;
-  final b = _parts(base), v = _parts(version);
-  if (b[0] > 0) return v[0] == b[0];
-  if (b[1] > 0) return v[0] == 0 && v[1] == b[1];
-  return v[0] == 0 && v[1] == 0 && v[2] == b[2];
-}
-
-int _compare(String a, String b) {
-  final x = _parts(a), y = _parts(b);
-  for (var i = 0; i < 3; i++) {
-    if (x[i] != y[i]) return x[i].compareTo(y[i]);
-  }
-  return 0;
-}
-
-List<int> _parts(String version) {
-  final m = _version.firstMatch(version) ?? _fail('Cannot parse $version.');
-  return [for (var i = 1; i <= 3; i++) int.parse(m.group(i)!)];
-}
-
-String _git(List<String> args) {
-  final result = Process.runSync('git', args);
-  if (result.exitCode != 0) _fail('git ${args.join(' ')}:\n${result.stderr}');
-  return result.stdout as String;
-}
-
-Never _fail(String message) {
-  stderr.writeln(message);
-  exit(1);
 }
