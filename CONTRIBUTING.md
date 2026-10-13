@@ -57,14 +57,19 @@ Gmana is a Dart & Flutter monorepo organized into three layers:
    ```bash
    just test
    # or without just:
-   dart run melos run test
+   dart run scripts/test.dart
    ```
 
 ### Tooling
 
-[Melos](https://melos.invertase.dev) is a dev dependency of the workspace root and is configured in
-the root `pubspec.yaml` under `melos:`. Its scripts — `lint`, `format`, `test:dart`, `test:flutter`,
-`publish:dry-run` — are what CI, the publish workflow, and the `just` recipes run.
+The repo is a plain [pub workspace](https://dart.dev/tools/pub/workspaces); there is no other
+monorepo tool. The `just` recipes, CI, and the publish workflow use the SDK directly, plus a few
+scripts:
+
+- [`scripts/test.dart`](scripts/test.dart) runs `flutter test` or `dart test` in each package
+  with a `test/` directory (`--dart` / `--flutter` to pick one kind).
+- [`publish.sh`](publish.sh) checks and publishes packages in dependency order.
+- [`scripts/release.dart`](scripts/release.dart) versions packages (see [Releasing](#releasing)).
 
 To add a package, create it under `packages/` and add it to `workspace:` in the root `pubspec.yaml`.
 Nothing else lists packages: the scripts pick Dart or Flutter packages by their dependencies, and
@@ -80,6 +85,27 @@ Each package's `CHANGELOG.md`:
 - Groups entries under `### Added`, `### Changed`, `### Deprecated`, `### Removed`, and
   `### Fixed`, in that order, leaving out the empty ones. Prefix a breaking entry with
   `**Breaking:**`.
+
+### Releasing
+
+Never edit a `version:` line by hand. On a clean `main`:
+
+```bash
+just release gmana_utils:minor gmana:patch   # <package>:<major|minor|patch|x.y.z>, --dry-run to preview
+just release-push
+```
+
+`just release` runs [`scripts/release.dart`](scripts/release.dart), which bumps each
+named package, turns its `## Unreleased` heading into `## <version> - <YYYY-MM-DD>`,
+rewrites the `^` constraint in every workspace member whose old constraint no longer
+allows the new version, runs `dart pub get`, commits, and tags `<package>-v<version>`.
+It refuses to run with uncommitted changes or without an `## Unreleased` section.
+`just release-push` pushes the commit and each tag; every tag starts the publish
+workflow for that one package. `just versions` shows local versus pub.dev versions.
+
+Bumps follow plain semver (`minor`: 0.1.2 → 0.2.0, `patch`: 0.1.2 → 0.1.3). Below
+1.0.0 a `minor` bump breaks `^` constraints, so dependents get new constraints; they
+are not released for you, so name them too if they should ship.
 
 ---
 

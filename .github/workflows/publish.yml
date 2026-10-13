@@ -1,8 +1,12 @@
 name: Publish to Pub.dev
 
 on:
-  release:
-    types: [published]
+  # `just release` tags each package as <package>-v<version>; pushing the tag
+  # publishes that one package. pub.dev only trusts tag pushes (and, if enabled
+  # on the package's admin page, workflow_dispatch), not release events.
+  push:
+    tags:
+      - '*-v[0-9]+.[0-9]+.[0-9]+*'
   workflow_dispatch:
     inputs:
       package:
@@ -35,35 +39,43 @@ jobs:
         run: flutter pub get
 
       - name: Verify analysis
-        run: dart run melos run lint
+        run: dart analyze --fatal-infos --fatal-warnings .
 
       - name: Run Dart tests
-        run: dart run melos run test:dart
+        run: dart run scripts/test.dart --dart
 
       - name: Run Flutter tests
-        run: dart run melos run test:flutter
+        run: dart run scripts/test.dart --flutter
 
       - name: Publish Packages (Trusted Publishing)
         run: |
           DRY_RUN="${{ github.event.inputs.dry_run }}"
           TARGET="${{ github.event.inputs.package }}"
 
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            # gmana_utils-v0.1.0 -> gmana_utils, 0.1.0
+            TARGET="${GITHUB_REF_NAME%-v*}"
+            TAG_VERSION="${GITHUB_REF_NAME##*-v}"
+            PUBSPEC_VERSION="$(sed -n 's/^version:[[:space:]]*//p' "packages/$TARGET/pubspec.yaml")"
+            if [ "$TAG_VERSION" != "$PUBSPEC_VERSION" ]; then
+              echo "Tag $GITHUB_REF_NAME does not match packages/$TARGET/pubspec.yaml ($PUBSPEC_VERSION)"
+              exit 1
+            fi
+          fi
+
           if [ -z "$DRY_RUN" ]; then
             DRY_RUN="false"
           fi
 
-          # Melos takes the packages from the workspace, leaves out the ones
-          # marked `publish_to: none`, and runs them dependencies first, so no
-          # package list or order is kept here.
-          FILTERS=(--no-private --order-dependents --concurrency=1 --fail-fast)
-
+          # publish.sh takes every package under packages/, skips the ones
+          # marked `publish_to: none`, and runs them dependencies first.
+          ARGS=()
+          if [ "$DRY_RUN" = "true" ]; then
+            ARGS+=(--dry-run)
+          fi
           if [ "$TARGET" != "all" ] && [ -n "$TARGET" ]; then
             # Accept the former "packages/<name>" form as well as a bare name.
-            FILTERS+=(--scope="${TARGET#packages/}")
+            ARGS+=("${TARGET#packages/}")
           fi
 
-          if [ "$DRY_RUN" = "true" ]; then
-            dart run melos exec "${FILTERS[@]}" -- dart pub publish --dry-run
-          else
-            dart run melos exec "${FILTERS[@]}" -- dart pub publish --force
-          fi
+          ./publish.sh "${ARGS[@]}"

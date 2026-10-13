@@ -1,6 +1,6 @@
 name: gmana
 description: Convenience facade re-exporting gmana_functional, gmana_predicates, gmana_validation, gmana_value_objects, gmana_utils, and gmana_extensions.
-version: 0.2.0
+version: 0.2.1
 repository: https://github.com/sun-sreng/flutters/tree/main/packages/gmana
 homepage: https://github.com/sun-sreng/flutters/tree/main/packages/gmana
 issue_tracker: https://github.com/sun-sreng/flutters/issues
@@ -23,8 +23,6 @@ dependencies:
   gmana_utils: ^0.0.2
   gmana_validation: ^0.0.1
   gmana_value_objects: ^0.1.0
-
-
 
 dev_dependencies:
   gmana_lints: ^0.1.0

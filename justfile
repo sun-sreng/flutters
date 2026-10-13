@@ -1,14 +1,14 @@
 set dotenv-load := true
 
-# Package selection lives in the root pubspec.yaml: the `workspace` list, and
-# the melos scripts that filter it. No recipe here names a set of packages.
+# Package selection lives in the `workspace` list of the root pubspec.yaml.
+# No recipe here names a set of packages.
 
 default:
     @just --list
 
 # Show workspace packages.
 packages:
-    @dart run melos list
+    @dart pub workspace list
 
 # Install workspace dependencies.
 get:
@@ -16,23 +16,23 @@ get:
 
 # Format Dart code in the workspace.
 format:
-    dart run melos run format:fix
+    dart format .
 
 # Check formatting without modifying files.
 format-check:
-    dart run melos run format
+    dart format --output=none --set-exit-if-changed .
 
 # Analyze every package in the workspace.
 analyze:
-    dart run melos run lint
+    dart analyze --fatal-infos --fatal-warnings .
 
 # Run tests for all pure Dart packages.
 test-dart:
-    dart run melos run test:dart
+    dart run scripts/test.dart --dart
 
 # Run Flutter tests for all Flutter packages.
 test-flutter:
-    dart run melos run test:flutter
+    dart run scripts/test.dart --flutter
 
 test: test-dart test-flutter
 
@@ -76,12 +76,21 @@ gmana-check:
     dart test packages/gmana
     cd packages/gmana && dart pub publish --dry-run
 
-# Melos monorepo helpers
-melos-bootstrap:
-    dart run melos bootstrap
+# Each argument is <package>:<major|minor|patch|x.y.z>, for example
+# `just release gmana_utils:minor gmana:patch`. Add --dry-run to preview.
+# Bump versions and dependents' constraints, date CHANGELOGs, commit and tag.
+release +args:
+    dart run scripts/release.dart {{args}}
 
-melos-version:
-    dart run melos version
+# GitHub starts no workflow for tags pushed more than three at a time, so each
+# tag goes on its own.
+# Push the release commit, then each of its tags (which publishes them).
+release-push:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    git push origin HEAD
+    for tag in $(git tag --points-at HEAD); do git push origin "refs/tags/$tag"; done
 
-melos-list:
-    dart run melos list
+# Local version of every package next to the latest on pub.dev.
+versions:
+    @dart run scripts/release.dart --status
