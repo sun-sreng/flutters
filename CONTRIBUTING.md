@@ -93,19 +93,32 @@ Never edit a `version:` line by hand. On a clean `main`:
 ```bash
 just release gmana_utils:minor gmana:patch   # <package>:<major|minor|patch|x.y.z>, --dry-run to preview
 just release-push
+
+just publish-patch-all                       # every publishable package, patch bump, pushed
 ```
 
-`just release` runs [`scripts/release.dart`](scripts/release.dart), which bumps each
-named package, turns its `## Unreleased` heading into `## <version> - <YYYY-MM-DD>`,
-rewrites the `^` constraint in every workspace member whose old constraint no longer
-allows the new version, runs `dart pub get`, commits, and tags `<package>-v<version>`.
-It refuses to run with uncommitted changes or without an `## Unreleased` section.
-`just release-push` pushes the commit and each tag; every tag starts the publish
-workflow for that one package. `just versions` shows local versus pub.dev versions.
+`just release` runs [`scripts/release.dart`](scripts/release.dart), which for each
+named package (`all:<bump>` names every package not marked `publish_to: none`):
+
+- sets the new `version:` in its pubspec;
+- turns its `## Unreleased` heading into `## <version> - <YYYY-MM-DD>`, or, when there
+  is none, writes that section from the commits that touched the package since its
+  last tag (`- Updated dependencies.` when there are none);
+- moves every `^` constraint on it in a workspace pubspec, examples included, to the
+  new version;
+- moves every `<package>: ^x.y.z` snippet in a tracked Markdown file (CHANGELOGs
+  excepted) to the new version;
+
+then runs `dart pub get`, commits, and tags `<package>-v<version>`. It refuses to run
+with uncommitted changes. `just release-push` pushes the commit, then each tag on its
+own with dependencies first; every tag starts the publish workflow for that one
+package. `just versions` shows local versus pub.dev versions.
 
 Bumps follow plain semver (`minor`: 0.1.2 → 0.2.0, `patch`: 0.1.2 → 0.1.3). Below
-1.0.0 a `minor` bump breaks `^` constraints, so dependents get new constraints; they
-are not released for you, so name them too if they should ship.
+1.0.0, `^0.x.y` only allows `0.x.*` and `^0.0.y` only allows `0.0.y`, so a breaking
+change is a `minor` bump on `0.x` and any change to a `0.0.x` package changes what
+its dependents can use. Dependents get the new constraint in the repo but are not
+released for you; name them too (or use `all:patch`) so pub.dev gets it.
 
 ---
 
