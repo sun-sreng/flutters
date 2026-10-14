@@ -82,27 +82,19 @@ gmana-check:
 release +args:
     dart run scripts/release.dart {{args}}
 
-# Packages with `publish_to: none` (the examples) are skipped. Add --dry-run to
+# Packages with `publish_to: none` (the examples) are skipped. Bumps versions,
+# dependents' constraints and README snippets, dates or writes CHANGELOGs,
+# commits, tags, then pushes the tags dependencies first. Add --dry-run to
 # preview.
-# Release every publishable workspace package with a patch bump.
-release-patch-all *flags:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    args=()
-    for dir in $(sed -n '/^workspace:/,/^[^ ]/s/^ *- *//p' pubspec.yaml); do
-        grep -q '^publish_to:' "$dir/pubspec.yaml" && continue
-        args+=("$(sed -n 's/^name: *//p' "$dir/pubspec.yaml"):patch")
-    done
-    dart run scripts/release.dart "${args[@]}" {{flags}}
+# Patch-release every publishable package and publish it via CI.
+publish-patch-all *flags:
+    dart run scripts/release.dart all:patch --push {{flags}}
 
 # GitHub starts no workflow for tags pushed more than three at a time, so each
-# tag goes on its own.
+# tag goes on its own, dependencies first.
 # Push the release commit, then each of its tags (which publishes them).
 release-push:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    git push origin HEAD
-    for tag in $(git tag --points-at HEAD); do git push origin "refs/tags/$tag"; done
+    dart run scripts/release.dart --push
 
 # Local version of every package next to the latest on pub.dev.
 versions:
