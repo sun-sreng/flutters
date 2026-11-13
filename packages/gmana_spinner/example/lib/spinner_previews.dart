@@ -1,36 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:gmana_spinner/gmana_spinner.dart';
 // The single-dot preview renders a widget the package does not export.
 // ignore: implementation_imports
 import 'package:gmana_spinner/src/widgets/g_wave_dot_spinner_dot.dart';
-
-/// Theme data implementation for spinner widget previews.
-final class GSpinnerPreviewThemeData extends PreviewThemeData {
-  /// Creates a preview theme with optional [light] and [dark] themes.
-  const GSpinnerPreviewThemeData({this.light, this.dark});
-
-  /// The theme to apply in light mode.
-  final ThemeData? light;
-
-  /// The theme to apply in dark mode.
-  final ThemeData? dark;
-
-  @override
-  Widget apply(BuildContext context, Widget child) {
-    final Brightness brightness = MediaQuery.platformBrightnessOf(context);
-    final ThemeData? theme = switch (brightness) {
-      Brightness.dark => dark ?? light,
-      Brightness.light => light ?? dark,
-    };
-    if (theme != null) {
-      return Theme(data: theme, child: child);
-    }
-    return child;
-  }
-}
+import 'package:material_ui/material_ui.dart';
 
 /// Builds the shared theme used by the spinner widget previews.
 PreviewThemeData buildGSpinnerPreviewTheme() {
@@ -49,14 +24,33 @@ PreviewThemeData buildGSpinnerPreviewTheme() {
   );
 }
 
-/// Applies consistent spacing and centering around spinner previews.
-Widget wrapGSpinnerPreview(Widget child) {
-  return Material(
-    type: MaterialType.transparency,
-    child: Center(
-      child: Padding(padding: const EdgeInsets.all(16), child: child),
-    ),
+/// Previews the bar wave spinner.
+@Preview(
+  name: 'Bar Wave',
+  group: 'gmana_spinner/widgets',
+  size: Size(180, 120),
+  theme: buildGSpinnerPreviewTheme,
+  wrapper: wrapGSpinnerPreview,
+)
+Widget gBarWaveSpinnerPreview() {
+  return const GBarWaveSpinner(
+    color: Color(0xFFEA580C),
+    type: GBarWaveSpinnerType.center,
+    size: 54,
+    itemCount: 5,
   );
+}
+
+/// Previews the chasing dots spinner.
+@Preview(
+  name: 'Chasing Dots',
+  group: 'gmana_spinner/widgets',
+  size: Size(160, 120),
+  theme: buildGSpinnerPreviewTheme,
+  wrapper: wrapGSpinnerPreview,
+)
+Widget gChasingDotsSpinnerPreview() {
+  return const GChasingDotsSpinner();
 }
 
 /// Previews the default circular spinner.
@@ -73,6 +67,42 @@ Widget gCircularSpinnerPreview() {
     strokeWidth: 3,
     padding: EdgeInsets.zero,
   );
+}
+
+/// Previews the pulsing dot spinner.
+@Preview(
+  name: 'Dots',
+  group: 'gmana_spinner/widgets',
+  size: Size(180, 120),
+  theme: buildGSpinnerPreviewTheme,
+  wrapper: wrapGSpinnerPreview,
+)
+Widget gDotSpinnerPreview() {
+  return const GDotSpinner(color: Color(0xFF0F766E), size: 42, dotCount: 4);
+}
+
+/// Previews the dual ring spinner.
+@Preview(
+  name: 'Dual Ring',
+  group: 'gmana_spinner/widgets',
+  size: Size(160, 120),
+  theme: buildGSpinnerPreviewTheme,
+  wrapper: wrapGSpinnerPreview,
+)
+Widget gDualRingSpinnerPreview() {
+  return const GDualRingSpinner();
+}
+
+/// Previews the fading cube spinner.
+@Preview(
+  name: 'Fading Cube',
+  group: 'gmana_spinner/widgets',
+  size: Size(160, 120),
+  theme: buildGSpinnerPreviewTheme,
+  wrapper: wrapGSpinnerPreview,
+)
+Widget gFadingCubeSpinnerPreview() {
+  return const GFadingCubeSpinner();
 }
 
 /// Previews the default linear spinner.
@@ -94,63 +124,28 @@ Widget gLinearSpinnerPreview() {
   );
 }
 
-/// Previews the pulsing dot spinner.
+/// Previews the orbit spinner.
 @Preview(
-  name: 'Dots',
+  name: 'Orbit',
   group: 'gmana_spinner/widgets',
-  size: Size(180, 120),
+  size: Size(160, 120),
   theme: buildGSpinnerPreviewTheme,
   wrapper: wrapGSpinnerPreview,
 )
-Widget gDotSpinnerPreview() {
-  return const GDotSpinner(color: Color(0xFF0F766E), size: 42, dotCount: 4);
+Widget gOrbitSpinnerPreview() {
+  return const GOrbitSpinner();
 }
 
-/// Previews the wave dot spinner.
+/// Previews the ripple spinner.
 @Preview(
-  name: 'Wave Dots',
+  name: 'Ripple',
   group: 'gmana_spinner/widgets',
-  size: Size(180, 120),
+  size: Size(160, 120),
   theme: buildGSpinnerPreviewTheme,
   wrapper: wrapGSpinnerPreview,
 )
-Widget gWaveDotSpinnerPreview() {
-  return const GWaveDotSpinner(color: Color(0xFF7C3AED), size: 64, dotCount: 5);
-}
-
-/// Previews the bar wave spinner.
-@Preview(
-  name: 'Bar Wave',
-  group: 'gmana_spinner/widgets',
-  size: Size(180, 120),
-  theme: buildGSpinnerPreviewTheme,
-  wrapper: wrapGSpinnerPreview,
-)
-Widget gBarWaveSpinnerPreview() {
-  return const GBarWaveSpinner(
-    color: Color(0xFFEA580C),
-    type: GBarWaveSpinnerType.center,
-    size: 54,
-    itemCount: 5,
-  );
-}
-
-/// Previews the circular wave spinner.
-@Preview(
-  name: 'Wave',
-  group: 'gmana_spinner/widgets',
-  size: Size(180, 140),
-  theme: buildGSpinnerPreviewTheme,
-  wrapper: wrapGSpinnerPreview,
-)
-Widget gWaveSpinnerPreview() {
-  return const GWaveSpinner(
-    color: Color(0xFF2563EB),
-    trackColor: Color(0xFFD6E4FF),
-    waveColor: Color(0xFFBFDBFE),
-    size: 72,
-    child: Icon(Icons.hourglass_bottom, color: Color(0xFF2563EB)),
-  );
+Widget gRippleSpinnerPreview() {
+  return const GRippleSpinner();
 }
 
 /// Previews the vertical scaling helper widget.
@@ -209,73 +204,78 @@ Widget gWaveDotSpinnerDotPreview() {
   );
 }
 
-/// Previews the dual ring spinner.
+/// Previews the wave dot spinner.
 @Preview(
-  name: 'Dual Ring',
+  name: 'Wave Dots',
   group: 'gmana_spinner/widgets',
-  size: Size(160, 120),
+  size: Size(180, 120),
   theme: buildGSpinnerPreviewTheme,
   wrapper: wrapGSpinnerPreview,
 )
-Widget gDualRingSpinnerPreview() {
-  return const GDualRingSpinner();
+Widget gWaveDotSpinnerPreview() {
+  return const GWaveDotSpinner(color: Color(0xFF7C3AED), size: 64, dotCount: 5);
 }
 
-/// Previews the chasing dots spinner.
+/// Previews the circular wave spinner.
 @Preview(
-  name: 'Chasing Dots',
+  name: 'Wave',
   group: 'gmana_spinner/widgets',
-  size: Size(160, 120),
+  size: Size(180, 140),
   theme: buildGSpinnerPreviewTheme,
   wrapper: wrapGSpinnerPreview,
 )
-Widget gChasingDotsSpinnerPreview() {
-  return const GChasingDotsSpinner();
+Widget gWaveSpinnerPreview() {
+  return const GWaveSpinner(
+    color: Color(0xFF2563EB),
+    trackColor: Color(0xFFD6E4FF),
+    waveColor: Color(0xFFBFDBFE),
+    size: 72,
+    child: Icon(Icons.hourglass_bottom, color: Color(0xFF2563EB)),
+  );
 }
 
-/// Previews the fading cube spinner.
-@Preview(
-  name: 'Fading Cube',
-  group: 'gmana_spinner/widgets',
-  size: Size(160, 120),
-  theme: buildGSpinnerPreviewTheme,
-  wrapper: wrapGSpinnerPreview,
-)
-Widget gFadingCubeSpinnerPreview() {
-  return const GFadingCubeSpinner();
-}
-
-/// Previews the ripple spinner.
-@Preview(
-  name: 'Ripple',
-  group: 'gmana_spinner/widgets',
-  size: Size(160, 120),
-  theme: buildGSpinnerPreviewTheme,
-  wrapper: wrapGSpinnerPreview,
-)
-Widget gRippleSpinnerPreview() {
-  return const GRippleSpinner();
-}
-
-/// Previews the orbit spinner.
-@Preview(
-  name: 'Orbit',
-  group: 'gmana_spinner/widgets',
-  size: Size(160, 120),
-  theme: buildGSpinnerPreviewTheme,
-  wrapper: wrapGSpinnerPreview,
-)
-Widget gOrbitSpinnerPreview() {
-  return const GOrbitSpinner();
+/// Applies consistent spacing and centering around spinner previews.
+Widget wrapGSpinnerPreview(Widget child) {
+  return Material(
+    type: MaterialType.transparency,
+    child: Center(
+      child: Padding(padding: const EdgeInsets.all(16), child: child),
+    ),
+  );
 }
 
 typedef _AnimatedSpinnerBuilder =
     Widget Function(BuildContext context, AnimationController controller);
 
-class _LoopingAnimationPreview extends StatefulWidget {
-  const _LoopingAnimationPreview({required this.builder});
+/// Theme data implementation for spinner widget previews.
+final class GSpinnerPreviewThemeData extends PreviewThemeData {
+  /// The theme to apply in light mode.
+  final ThemeData? light;
 
+  /// The theme to apply in dark mode.
+  final ThemeData? dark;
+
+  /// Creates a preview theme with optional [light] and [dark] themes.
+  const GSpinnerPreviewThemeData({this.light, this.dark});
+
+  @override
+  Widget apply(BuildContext context, Widget child) {
+    final Brightness brightness = MediaQuery.platformBrightnessOf(context);
+    final ThemeData? theme = switch (brightness) {
+      Brightness.dark => dark ?? light,
+      Brightness.light => light ?? dark,
+    };
+    if (theme != null) {
+      return Theme(data: theme, child: child);
+    }
+    return child;
+  }
+}
+
+class _LoopingAnimationPreview extends StatefulWidget {
   final _AnimatedSpinnerBuilder builder;
+
+  const _LoopingAnimationPreview({required this.builder});
 
   @override
   State<_LoopingAnimationPreview> createState() =>
@@ -290,9 +290,8 @@ class _LoopingAnimationPreviewState extends State<_LoopingAnimationPreview>
   );
 
   @override
-  void initState() {
-    super.initState();
-    unawaited(_controller.repeat());
+  Widget build(BuildContext context) {
+    return widget.builder(context, _controller);
   }
 
   @override
@@ -302,7 +301,8 @@ class _LoopingAnimationPreviewState extends State<_LoopingAnimationPreview>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return widget.builder(context, _controller);
+  void initState() {
+    super.initState();
+    unawaited(_controller.repeat());
   }
 }

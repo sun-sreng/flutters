@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Text inspection and cursor management on [TextEditingController].
 extension TextEditingControllerX on TextEditingController {
@@ -17,25 +17,9 @@ extension TextEditingControllerX on TextEditingController {
   /// should not be the same thing.
   String? get trimmedTextOrNull => isBlank ? null : trimmedText;
 
-  /// Replaces the content and parks the cursor at the end.
-  ///
-  /// Plain `controller.text = value` resets the selection to offset 0, which
-  /// makes the caret jump to the start when the user keeps typing.
-  void setTextAndCursorToEnd(String newText) {
-    value = TextEditingValue(
-      text: newText,
-      selection: TextSelection.collapsed(offset: newText.length),
-    );
-  }
-
-  /// Moves the cursor to the end without changing the text.
-  void moveCursorToEnd() {
-    selection = TextSelection.collapsed(offset: text.length);
-  }
-
-  /// Selects the entire content.
-  void selectAll() {
-    selection = TextSelection(baseOffset: 0, extentOffset: text.length);
+  /// Clears the text and collapses the selection.
+  void clearAndReset() {
+    value = TextEditingValue.empty;
   }
 
   /// Inserts [insertion] at the cursor, replacing the selection if there is
@@ -63,8 +47,24 @@ extension TextEditingControllerX on TextEditingController {
     );
   }
 
-  /// Clears the text and collapses the selection.
-  void clearAndReset() {
-    value = TextEditingValue.empty;
+  /// Moves the cursor to the end without changing the text.
+  void moveCursorToEnd() {
+    selection = TextSelection.collapsed(offset: text.length);
+  }
+
+  /// Selects the entire content.
+  void selectAll() {
+    selection = TextSelection(baseOffset: 0, extentOffset: text.length);
+  }
+
+  /// Replaces the content and parks the cursor at the end.
+  ///
+  /// Plain `controller.text = value` resets the selection to offset 0, which
+  /// makes the caret jump to the start when the user keeps typing.
+  void setTextAndCursorToEnd(String newText) {
+    value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
   }
 }

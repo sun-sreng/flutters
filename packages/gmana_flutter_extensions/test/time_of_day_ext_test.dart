@@ -1,10 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
-
-const _nineAm = TimeOfDay(hour: 9, minute: 0);
-const _noon = TimeOfDay(hour: 12, minute: 0);
-const _fivePm = TimeOfDay(hour: 17, minute: 0);
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   group('TimeOfDayX.fromMinutes', () {
@@ -223,3 +219,8 @@ void main() {
     });
   });
 }
+
+const _fivePm = TimeOfDay(hour: 17, minute: 0);
+const _nineAm = TimeOfDay(hour: 9, minute: 0);
+
+const _noon = TimeOfDay(hour: 12, minute: 0);

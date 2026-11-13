@@ -23,6 +23,7 @@ dependencies:
   gmana_spinner: ^0.0.2
   gmana_validation: ^0.0.2
 
+  material_ui: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

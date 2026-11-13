@@ -1,9 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:gmana_flutter/gmana_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'color_lab_widgets.dart';
 
 class StatsPanel extends StatelessWidget {
+  final Color adjustedColor;
+
+  final Color contrastText;
+  final double contrastRatio;
+  final double opacity;
   const StatsPanel({
     super.key,
     required this.adjustedColor,
@@ -11,11 +16,6 @@ class StatsPanel extends StatelessWidget {
     required this.contrastRatio,
     required this.opacity,
   });
-
-  final Color adjustedColor;
-  final Color contrastText;
-  final double contrastRatio;
-  final double opacity;
 
   @override
   Widget build(BuildContext context) {

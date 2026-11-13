@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Discrete digit box PIN / OTP code entry field widget.
 class GPinCodeField extends StatefulWidget {
@@ -56,57 +56,7 @@ class _GPinCodeFieldState extends State<GPinCodeField> {
   late final List<TextEditingController> _controllers;
   late final List<FocusNode> _focusNodes;
 
-  @override
-  void initState() {
-    super.initState();
-    final init = widget.initialValue ?? '';
-    _controllers = List.generate(widget.length, (i) {
-      final char = i < init.length ? init[i] : '';
-      return TextEditingController(text: char);
-    });
-    _focusNodes = List.generate(widget.length, (_) => FocusNode());
-  }
-
-  @override
-  void dispose() {
-    for (final c in _controllers) {
-      c.dispose();
-    }
-    for (final f in _focusNodes) {
-      f.dispose();
-    }
-    super.dispose();
-  }
-
   String get _currentPin => _controllers.map((c) => c.text).join();
-
-  void _onDigitChanged(int index, String value) {
-    if (value.length > 1) {
-      // Paste handling
-      final clean = value.replaceAll(RegExp(r'\D'), '');
-      for (var i = 0; i < widget.length; i++) {
-        _controllers[i].text = i < clean.length ? clean[i] : '';
-      }
-      if (clean.length >= widget.length) {
-        _focusNodes[widget.length - 1].unfocus();
-      } else {
-        _focusNodes[clean.length].requestFocus();
-      }
-    } else if (value.isNotEmpty) {
-      if (index < widget.length - 1) {
-        _focusNodes[index + 1].requestFocus();
-      } else {
-        _focusNodes[index].unfocus();
-      }
-    }
-
-    final pin = _currentPin;
-    widget.onChanged?.call(pin);
-
-    if (pin.length == widget.length) {
-      widget.onCompleted?.call(pin);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -145,5 +95,55 @@ class _GPinCodeFieldState extends State<GPinCodeField> {
         );
       }),
     );
+  }
+
+  @override
+  void dispose() {
+    for (final c in _controllers) {
+      c.dispose();
+    }
+    for (final f in _focusNodes) {
+      f.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final init = widget.initialValue ?? '';
+    _controllers = List.generate(widget.length, (i) {
+      final char = i < init.length ? init[i] : '';
+      return TextEditingController(text: char);
+    });
+    _focusNodes = List.generate(widget.length, (_) => FocusNode());
+  }
+
+  void _onDigitChanged(int index, String value) {
+    if (value.length > 1) {
+      // Paste handling
+      final clean = value.replaceAll(RegExp(r'\D'), '');
+      for (var i = 0; i < widget.length; i++) {
+        _controllers[i].text = i < clean.length ? clean[i] : '';
+      }
+      if (clean.length >= widget.length) {
+        _focusNodes[widget.length - 1].unfocus();
+      } else {
+        _focusNodes[clean.length].requestFocus();
+      }
+    } else if (value.isNotEmpty) {
+      if (index < widget.length - 1) {
+        _focusNodes[index + 1].requestFocus();
+      } else {
+        _focusNodes[index].unfocus();
+      }
+    }
+
+    final pin = _currentPin;
+    widget.onChanged?.call(pin);
+
+    if (pin.length == widget.length) {
+      widget.onCompleted?.call(pin);
+    }
   }
 }

@@ -1,16 +1,16 @@
 // Passthrough wrapper around TextFormField.
 // ignore_for_file: public_member_api_docs
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../models/field_config.dart';
 import 'configured_text_form_field.dart';
 import 'visibility_toggle.dart';
 
 class GObscurableTextFormField extends StatefulWidget {
-  const GObscurableTextFormField({super.key, required this.config});
-
   final GTextFieldConfig config;
+
+  const GObscurableTextFormField({super.key, required this.config});
 
   @override
   State<GObscurableTextFormField> createState() =>

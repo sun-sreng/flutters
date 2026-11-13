@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../animation/delayed_animation_tween.dart';
 import '../animation/spinner_controller_mixin.dart';
@@ -74,18 +74,29 @@ enum GBarWaveSpinnerType {
 class _GBarWaveSpinnerState extends State<GBarWaveSpinner>
     with SingleTickerProviderStateMixin, SpinnerControllerMixin {
   @override
+  Widget build(BuildContext context) => wrapSpinnerSemantics(
+    context: context,
+    semanticsLabel: widget.semanticsLabel,
+    child: _buildSpinner(context),
+  );
+
+  @override
   AnimationController? controllerOf(GBarWaveSpinner widget) =>
       widget.controller;
 
   @override
   Duration durationOf(GBarWaveSpinner widget) => widget.duration;
 
-  @override
-  Widget build(BuildContext context) => wrapSpinnerSemantics(
-    context: context,
-    semanticsLabel: widget.semanticsLabel,
-    child: _buildSpinner(context),
-  );
+  List<double> getAnimationDelay(int itemCount) {
+    switch (widget.type) {
+      case GBarWaveSpinnerType.start:
+        return _startAnimationDelay(itemCount);
+      case GBarWaveSpinnerType.end:
+        return _endAnimationDelay(itemCount);
+      case GBarWaveSpinnerType.center:
+        return _centerAnimationDelay(itemCount);
+    }
+  }
 
   Widget _buildSpinner(BuildContext context) {
     final List<double> bars = getAnimationDelay(widget.itemCount);
@@ -110,17 +121,6 @@ class _GBarWaveSpinnerState extends State<GBarWaveSpinner>
         ),
       ),
     );
-  }
-
-  List<double> getAnimationDelay(int itemCount) {
-    switch (widget.type) {
-      case GBarWaveSpinnerType.start:
-        return _startAnimationDelay(itemCount);
-      case GBarWaveSpinnerType.end:
-        return _endAnimationDelay(itemCount);
-      case GBarWaveSpinnerType.center:
-        return _centerAnimationDelay(itemCount);
-    }
   }
 
   List<double> _centerAnimationDelay(int count) {

@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../animation/spinner_controller_mixin.dart';
 import '../theme/g_spinner_theme.dart';
@@ -46,53 +46,6 @@ class GDualRingSpinner extends StatefulWidget {
 
   @override
   State<GDualRingSpinner> createState() => _GDualRingSpinnerState();
-}
-
-class _GDualRingSpinnerState extends State<GDualRingSpinner>
-    with SingleTickerProviderStateMixin, SpinnerControllerMixin {
-  @override
-  AnimationController? controllerOf(GDualRingSpinner widget) =>
-      widget.controller;
-
-  @override
-  Duration durationOf(GDualRingSpinner widget) => widget.duration;
-
-  @override
-  Widget build(BuildContext context) => wrapSpinnerSemantics(
-    context: context,
-    semanticsLabel: widget.semanticsLabel,
-    child: _buildSpinner(context),
-  );
-
-  Widget _buildSpinner(BuildContext context) {
-    final primary = GSpinnerTheme.resolveColor(context, widget.color);
-    final secondary = GSpinnerTheme.resolveSecondaryColor(
-      context,
-      widget.secondaryColor,
-      widget.color?.withValues(alpha: 0.6) ??
-          Theme.of(context).colorScheme.secondary,
-    );
-
-    return Center(
-      child: SizedBox(
-        width: widget.size,
-        height: widget.size,
-        child: AnimatedBuilder(
-          animation: controller,
-          builder: (context, child) {
-            return CustomPaint(
-              painter: _DualRingSpinnerPainter(
-                progress: controller.value,
-                primaryColor: primary,
-                secondaryColor: secondary,
-                strokeWidth: widget.strokeWidth,
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
 }
 
 class _DualRingSpinnerPainter extends CustomPainter {
@@ -147,5 +100,52 @@ class _DualRingSpinnerPainter extends CustomPainter {
         oldDelegate.primaryColor != primaryColor ||
         oldDelegate.secondaryColor != secondaryColor ||
         oldDelegate.strokeWidth != strokeWidth;
+  }
+}
+
+class _GDualRingSpinnerState extends State<GDualRingSpinner>
+    with SingleTickerProviderStateMixin, SpinnerControllerMixin {
+  @override
+  Widget build(BuildContext context) => wrapSpinnerSemantics(
+    context: context,
+    semanticsLabel: widget.semanticsLabel,
+    child: _buildSpinner(context),
+  );
+
+  @override
+  AnimationController? controllerOf(GDualRingSpinner widget) =>
+      widget.controller;
+
+  @override
+  Duration durationOf(GDualRingSpinner widget) => widget.duration;
+
+  Widget _buildSpinner(BuildContext context) {
+    final primary = GSpinnerTheme.resolveColor(context, widget.color);
+    final secondary = GSpinnerTheme.resolveSecondaryColor(
+      context,
+      widget.secondaryColor,
+      widget.color?.withValues(alpha: 0.6) ??
+          Theme.of(context).colorScheme.secondary,
+    );
+
+    return Center(
+      child: SizedBox(
+        width: widget.size,
+        height: widget.size,
+        child: AnimatedBuilder(
+          animation: controller,
+          builder: (context, child) {
+            return CustomPaint(
+              painter: _DualRingSpinnerPainter(
+                progress: controller.value,
+                primaryColor: primary,
+                secondaryColor: secondary,
+                strokeWidth: widget.strokeWidth,
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 }

@@ -6,7 +6,7 @@
 
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Scoped parser that avoids adding icon parsing behavior to every [String].
 abstract final class IconDataCodec {

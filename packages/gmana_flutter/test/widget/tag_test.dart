@@ -1,13 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gmana_flutter/gmana_flutter.dart';
-
-Widget host(Widget child) =>
-    MaterialApp(theme: GColors.lightTheme, home: Scaffold(body: child));
-
-Material tagMaterial(WidgetTester tester) => tester.widget<Material>(
-  find.descendant(of: find.byType(GTag), matching: find.byType(Material)).first,
-);
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   group('GTag', () {
@@ -78,3 +71,10 @@ void main() {
     });
   });
 }
+
+Widget host(Widget child) =>
+    MaterialApp(theme: GColors.lightTheme, home: Scaffold(body: child));
+
+Material tagMaterial(WidgetTester tester) => tester.widget<Material>(
+  find.descendant(of: find.byType(GTag), matching: find.byType(Material)).first,
+);

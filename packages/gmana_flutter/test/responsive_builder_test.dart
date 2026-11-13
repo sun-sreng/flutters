@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gmana_flutter/gmana_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   testWidgets('GResponsiveBuilder renders mobile layout by default', (

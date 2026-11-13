@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart' show TextFormField, FormField;
 import 'package:gmana_validation/gmana_validation.dart';
+import 'package:material_ui/material_ui.dart' show TextFormField, FormField;
 
 /// Converts a canonical validator into a Flutter-style form validator.
 ///

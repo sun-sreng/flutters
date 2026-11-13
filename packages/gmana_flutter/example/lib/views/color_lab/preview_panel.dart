@@ -1,9 +1,17 @@
-import 'package:flutter/material.dart';
 import 'package:gmana_flutter/gmana_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'color_lab_widgets.dart';
 
 class PreviewPanel extends StatelessWidget {
+  final Color adjustedColor;
+
+  final Color baseColor;
+  final Color contrastText;
+  final Color complementary;
+  final List<Color> analogous;
+  final (Color, Color) splitComplementary;
+  final (Color, Color) triadic;
   const PreviewPanel({
     super.key,
     required this.adjustedColor,
@@ -14,14 +22,6 @@ class PreviewPanel extends StatelessWidget {
     required this.splitComplementary,
     required this.triadic,
   });
-
-  final Color adjustedColor;
-  final Color baseColor;
-  final Color contrastText;
-  final Color complementary;
-  final List<Color> analogous;
-  final (Color, Color) splitComplementary;
-  final (Color, Color) triadic;
 
   @override
   Widget build(BuildContext context) {

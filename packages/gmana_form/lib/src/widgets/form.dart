@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../controllers/form_controller.dart';
 
@@ -51,13 +51,6 @@ class GForm extends StatelessWidget {
     );
   }
 
-  /// Looks up the nearest enclosing [GFormController], or `null` if none.
-  static GFormController? maybeControllerOf(BuildContext context) {
-    return context
-        .dependOnInheritedWidgetOfExactType<_GFormScope>()
-        ?.controller;
-  }
-
   /// Like [maybeControllerOf] but throws a [FlutterError] when no [GForm]
   /// is found above [context]. Use this from widgets that require a form.
   static GFormController controllerOf(BuildContext context) {
@@ -69,6 +62,13 @@ class GForm extends StatelessWidget {
       );
     }
     return controller;
+  }
+
+  /// Looks up the nearest enclosing [GFormController], or `null` if none.
+  static GFormController? maybeControllerOf(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<_GFormScope>()
+        ?.controller;
   }
 }
 

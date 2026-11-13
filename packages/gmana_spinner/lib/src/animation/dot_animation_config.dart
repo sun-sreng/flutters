@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Configuration for animating a single dot in the GWaveDotSpinner widget.
 class DotAnimationConfig {

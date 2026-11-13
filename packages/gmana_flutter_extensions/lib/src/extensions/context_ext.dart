@@ -1,56 +1,12 @@
 // BuildContext extension getters — method names ARE the doc.
 // ignore_for_file: public_member_api_docs
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 extension BuildContextX on BuildContext {
   double get bottomSafeArea => safeAreaPadding.bottom;
 
   Brightness get brightness => theme.brightness;
-
-  /// True when the ambient theme is dark.
-  bool get isDarkMode => theme.brightness == Brightness.dark;
-
-  /// True when the ambient theme is light.
-  bool get isLightMode => !isDarkMode;
-
-  /// Height the on-screen keyboard is currently covering.
-  double get keyboardHeight => viewInsets.bottom;
-
-  /// True while the on-screen keyboard is showing.
-  bool get isKeyboardVisible => keyboardHeight > 0;
-
-  Orientation get orientation => MediaQuery.orientationOf(this);
-
-  /// Shorter of the two screen dimensions — the usual basis for "is this a
-  /// tablet" style checks that should survive rotation.
-  double get shortestSide => screenSize.shortestSide;
-
-  double get longestSide => screenSize.longestSide;
-
-  TargetPlatform get platform => theme.platform;
-
-  bool get isAndroid => platform == TargetPlatform.android;
-
-  bool get isIOS => platform == TargetPlatform.iOS;
-
-  /// True on iOS and macOS, where Cupertino conventions usually apply.
-  bool get isApplePlatform =>
-      platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
-
-  /// True for the desktop target platforms.
-  bool get isDesktopPlatform =>
-      platform == TargetPlatform.linux ||
-      platform == TargetPlatform.macOS ||
-      platform == TargetPlatform.windows;
-
-  /// Returns [dark] under a dark theme, otherwise [light].
-  ///
-  /// ```dart
-  /// final divider = context.byBrightness(light: Colors.black12, dark: Colors.white24);
-  /// ```
-  T byBrightness<T>({required T light, required T dark}) =>
-      isDarkMode ? dark : light;
 
   bool get canPop => navigator.canPop();
 
@@ -60,14 +16,46 @@ extension BuildContextX on BuildContext {
 
   bool get hasFocus => FocusScope.of(this).hasFocus;
 
+  bool get isAndroid => platform == TargetPlatform.android;
+
+  /// True on iOS and macOS, where Cupertino conventions usually apply.
+  bool get isApplePlatform =>
+      platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
+
+  /// True when the ambient theme is dark.
+  bool get isDarkMode => theme.brightness == Brightness.dark;
+
+  /// True for the desktop target platforms.
+  bool get isDesktopPlatform =>
+      platform == TargetPlatform.linux ||
+      platform == TargetPlatform.macOS ||
+      platform == TargetPlatform.windows;
+
+  bool get isIOS => platform == TargetPlatform.iOS;
+
+  /// True while the on-screen keyboard is showing.
+  bool get isKeyboardVisible => keyboardHeight > 0;
+
   bool get isLandscape =>
       MediaQuery.orientationOf(this) == Orientation.landscape;
 
+  /// True when the ambient theme is light.
+  bool get isLightMode => !isDarkMode;
+
   bool get isPortrait => !isLandscape;
+
+  /// Height the on-screen keyboard is currently covering.
+  double get keyboardHeight => viewInsets.bottom;
+
+  double get longestSide => screenSize.longestSide;
 
   MediaQueryData get mediaQuery => MediaQuery.of(this);
 
   NavigatorState get navigator => Navigator.of(this);
+
+  Orientation get orientation => MediaQuery.orientationOf(this);
+
+  TargetPlatform get platform => theme.platform;
 
   /// Safe area padding such as notch and home indicator insets.
   EdgeInsets get safeAreaPadding => MediaQuery.paddingOf(this);
@@ -80,6 +68,10 @@ extension BuildContextX on BuildContext {
 
   double get screenWidth => screenSize.width;
 
+  /// Shorter of the two screen dimensions — the usual basis for "is this a
+  /// tablet" style checks that should survive rotation.
+  double get shortestSide => screenSize.shortestSide;
+
   double get textScaleFactor => MediaQuery.textScalerOf(this).scale(1.0);
 
   TextTheme get textTheme => theme.textTheme;
@@ -91,6 +83,14 @@ extension BuildContextX on BuildContext {
   EdgeInsets get viewInsets => MediaQuery.viewInsetsOf(this);
 
   EdgeInsets get viewPadding => MediaQuery.viewPaddingOf(this);
+
+  /// Returns [dark] under a dark theme, otherwise [light].
+  ///
+  /// ```dart
+  /// final divider = context.byBrightness(light: Colors.black12, dark: Colors.white24);
+  /// ```
+  T byBrightness<T>({required T light, required T dark}) =>
+      isDarkMode ? dark : light;
 
   void hideSnackBar() => scaffoldMessenger.hideCurrentSnackBar();
 
@@ -183,6 +183,19 @@ extension BuildContextX on BuildContext {
     action: action,
   );
 
+  /// Neutral informational snack bar using the theme's secondary container.
+  void showInfoSnackBar({
+    required String message,
+    Duration duration = const Duration(seconds: 3),
+    SnackBarAction? action,
+  }) => showSnackBar(
+    message: message,
+    textColor: colorScheme.onSecondaryContainer,
+    backgroundColor: colorScheme.secondaryContainer,
+    duration: duration,
+    action: action,
+  );
+
   void showSnackBar({
     required String message,
     Color? textColor,
@@ -207,19 +220,6 @@ extension BuildContextX on BuildContext {
         ),
       );
   }
-
-  /// Neutral informational snack bar using the theme's secondary container.
-  void showInfoSnackBar({
-    required String message,
-    Duration duration = const Duration(seconds: 3),
-    SnackBarAction? action,
-  }) => showSnackBar(
-    message: message,
-    textColor: colorScheme.onSecondaryContainer,
-    backgroundColor: colorScheme.secondaryContainer,
-    duration: duration,
-    action: action,
-  );
 
   void showSuccessSnackBar({
     required String message,

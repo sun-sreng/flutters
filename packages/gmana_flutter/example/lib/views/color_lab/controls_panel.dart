@@ -1,9 +1,19 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'color_lab_widgets.dart';
 import 'tone_mode.dart';
 
 class ControlsPanel extends StatelessWidget {
+  final String selectedColorKey;
+
+  final Map<String, Color> colors;
+  final double lightnessAmount;
+  final double opacity;
+  final ToneMode toneMode;
+  final ValueChanged<String> onColorChanged;
+  final ValueChanged<double> onLightnessChanged;
+  final ValueChanged<double> onOpacityChanged;
+  final ValueChanged<ToneMode> onToneModeChanged;
   const ControlsPanel({
     super.key,
     required this.selectedColorKey,
@@ -16,16 +26,6 @@ class ControlsPanel extends StatelessWidget {
     required this.onOpacityChanged,
     required this.onToneModeChanged,
   });
-
-  final String selectedColorKey;
-  final Map<String, Color> colors;
-  final double lightnessAmount;
-  final double opacity;
-  final ToneMode toneMode;
-  final ValueChanged<String> onColorChanged;
-  final ValueChanged<double> onLightnessChanged;
-  final ValueChanged<double> onOpacityChanged;
-  final ValueChanged<ToneMode> onToneModeChanged;
 
   @override
   Widget build(BuildContext context) {

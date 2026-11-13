@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../animation/spinner_controller_mixin.dart';
 import '../theme/g_spinner_theme.dart';
@@ -51,17 +51,17 @@ class GRingSpinner extends StatefulWidget {
 class _GRingSpinnerState extends State<GRingSpinner>
     with SingleTickerProviderStateMixin, SpinnerControllerMixin {
   @override
-  AnimationController? controllerOf(GRingSpinner widget) => widget.controller;
-
-  @override
-  Duration durationOf(GRingSpinner widget) => widget.duration;
-
-  @override
   Widget build(BuildContext context) => wrapSpinnerSemantics(
     context: context,
     semanticsLabel: widget.semanticsLabel,
     child: _buildSpinner(context),
   );
+
+  @override
+  AnimationController? controllerOf(GRingSpinner widget) => widget.controller;
+
+  @override
+  Duration durationOf(GRingSpinner widget) => widget.duration;
 
   Widget _buildSpinner(BuildContext context) {
     final primary = GSpinnerTheme.resolveColor(context, widget.color);

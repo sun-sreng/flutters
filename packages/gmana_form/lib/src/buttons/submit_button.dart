@@ -3,64 +3,11 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:gmana_spinner/gmana_spinner.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../controllers/form_controller.dart';
 import '../widgets/form.dart';
-
-/// Production-friendly submit button with a loading state.
-class GSubmitButton extends StatelessWidget {
-  final bool loading;
-  final VoidCallback? onPressed;
-  final Widget child;
-  final ButtonStyle? style;
-  final Color loadingColor;
-  final double loadingSize;
-
-  const GSubmitButton({
-    super.key,
-    required this.loading,
-    required this.onPressed,
-    required this.child,
-    this.style,
-    this.loadingColor = Colors.white,
-    this.loadingSize = 24.0,
-  });
-
-  factory GSubmitButton.text({
-    Key? key,
-    required String label,
-    required bool loading,
-    required VoidCallback? onPressed,
-    TextStyle? textStyle,
-    ButtonStyle? style,
-    Color loadingColor = Colors.white,
-    double loadingSize = 24.0,
-  }) {
-    return GSubmitButton(
-      key: key,
-      loading: loading,
-      onPressed: onPressed,
-      style: style,
-      loadingColor: loadingColor,
-      loadingSize: loadingSize,
-      child: Text(label, style: textStyle),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: style,
-      onPressed: loading ? null : onPressed,
-      child:
-          loading
-              ? GWaveDotSpinner(size: loadingSize, color: loadingColor)
-              : child,
-    );
-  }
-}
 
 /// Submit button wired to a [GFormController].
 class GFormSubmitButton extends StatelessWidget {
@@ -126,6 +73,59 @@ class GFormSubmitButton extends StatelessWidget {
           child: child,
         );
       },
+    );
+  }
+}
+
+/// Production-friendly submit button with a loading state.
+class GSubmitButton extends StatelessWidget {
+  final bool loading;
+  final VoidCallback? onPressed;
+  final Widget child;
+  final ButtonStyle? style;
+  final Color loadingColor;
+  final double loadingSize;
+
+  const GSubmitButton({
+    super.key,
+    required this.loading,
+    required this.onPressed,
+    required this.child,
+    this.style,
+    this.loadingColor = Colors.white,
+    this.loadingSize = 24.0,
+  });
+
+  factory GSubmitButton.text({
+    Key? key,
+    required String label,
+    required bool loading,
+    required VoidCallback? onPressed,
+    TextStyle? textStyle,
+    ButtonStyle? style,
+    Color loadingColor = Colors.white,
+    double loadingSize = 24.0,
+  }) {
+    return GSubmitButton(
+      key: key,
+      loading: loading,
+      onPressed: onPressed,
+      style: style,
+      loadingColor: loadingColor,
+      loadingSize: loadingSize,
+      child: Text(label, style: textStyle),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: style,
+      onPressed: loading ? null : onPressed,
+      child:
+          loading
+              ? GWaveDotSpinner(size: loadingSize, color: loadingColor)
+              : child,
     );
   }
 }

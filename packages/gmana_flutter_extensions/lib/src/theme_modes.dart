@@ -1,7 +1,7 @@
 // Thin static utility around ThemeMode.
 // ignore_for_file: public_member_api_docs
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 abstract final class ThemeModes {
   static const Map<ThemeMode, _ThemeModeConfig> _configs = {
@@ -28,6 +28,9 @@ abstract final class ThemeModes {
     'dark': ThemeMode.dark,
   };
 
+  /// All modes in presentation order: system, light, dark.
+  static List<ThemeMode> get all => _configs.keys.toList();
+
   static ThemeMode fromKey(String key) => _keyMap[key] ?? ThemeMode.system;
 
   static IconData getIcon(ThemeMode mode) => _configs[mode]!.icon;
@@ -42,8 +45,8 @@ abstract final class ThemeModes {
 
   static List<String> getThemeKeys() => _keyMap.keys.toList();
 
-  /// All modes in presentation order: system, light, dark.
-  static List<ThemeMode> get all => _configs.keys.toList();
+  /// Whether [key] maps to a known mode rather than falling back to system.
+  static bool isKnownKey(String key) => _keyMap.containsKey(key);
 
   /// The next mode in the cycle, wrapping back to the first.
   ///
@@ -58,9 +61,6 @@ abstract final class ThemeModes {
 
   /// The next mode's key, wrapping back to the first.
   static String nextKey(String key) => getKey(next(fromKey(key)));
-
-  /// Whether [key] maps to a known mode rather than falling back to system.
-  static bool isKnownKey(String key) => _keyMap.containsKey(key);
 
   /// Resolves [mode] to a concrete [Brightness], consulting [platformBrightness]
   /// only for [ThemeMode.system].

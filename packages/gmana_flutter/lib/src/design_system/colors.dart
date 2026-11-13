@@ -1,9 +1,9 @@
 // Design-system color tokens — file-level dartdoc above describes the palette.
 // ignore_for_file: public_member_api_docs
 
-import 'package:flutter/material.dart';
 import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart'
     show ColorMath, ColorX;
+import 'package:material_ui/material_ui.dart';
 
 /// Brand color palette and theme factory.
 ///

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../animation/spinner_controller_mixin.dart';
 import '../theme/g_spinner_theme.dart';
@@ -40,27 +40,33 @@ class GFadingCubeSpinner extends StatefulWidget {
 class _GFadingCubeSpinnerState extends State<GFadingCubeSpinner>
     with SingleTickerProviderStateMixin, SpinnerControllerMixin {
   @override
+  Widget build(BuildContext context) => wrapSpinnerSemantics(
+    context: context,
+    semanticsLabel: widget.semanticsLabel,
+    child: _buildSpinner(context),
+  );
+
+  @override
   AnimationController? controllerOf(GFadingCubeSpinner widget) =>
       widget.controller;
 
   @override
   Duration durationOf(GFadingCubeSpinner widget) => widget.duration;
 
-  double _getCubeOpacity(double progress, double delay) {
-    final v = (progress - delay) % 1.0;
-    if (v < 0.5) {
-      return v * 2.0;
-    } else {
-      return (1.0 - v) * 2.0;
-    }
+  Widget _buildCube(double size, Color color, double opacity) {
+    final clampedOpacity = opacity.clamp(0.1, 1.0);
+    return Opacity(
+      opacity: clampedOpacity,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(size * 0.15),
+        ),
+      ),
+    );
   }
-
-  @override
-  Widget build(BuildContext context) => wrapSpinnerSemantics(
-    context: context,
-    semanticsLabel: widget.semanticsLabel,
-    child: _buildSpinner(context),
-  );
 
   Widget _buildSpinner(BuildContext context) {
     final cubeColor = GSpinnerTheme.resolveColor(context, widget.color);
@@ -121,18 +127,12 @@ class _GFadingCubeSpinnerState extends State<GFadingCubeSpinner>
     );
   }
 
-  Widget _buildCube(double size, Color color, double opacity) {
-    final clampedOpacity = opacity.clamp(0.1, 1.0);
-    return Opacity(
-      opacity: clampedOpacity,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(size * 0.15),
-        ),
-      ),
-    );
+  double _getCubeOpacity(double progress, double delay) {
+    final v = (progress - delay) % 1.0;
+    if (v < 0.5) {
+      return v * 2.0;
+    } else {
+      return (1.0 - v) * 2.0;
+    }
   }
 }

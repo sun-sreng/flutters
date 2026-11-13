@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../animation/delayed_animation_tween.dart';
 import '../animation/spinner_controller_mixin.dart';
@@ -50,17 +50,17 @@ class GPulseSpinner extends StatefulWidget {
 class _GPulseSpinnerState extends State<GPulseSpinner>
     with SingleTickerProviderStateMixin, SpinnerControllerMixin {
   @override
-  AnimationController? controllerOf(GPulseSpinner widget) => widget.controller;
-
-  @override
-  Duration durationOf(GPulseSpinner widget) => widget.duration;
-
-  @override
   Widget build(BuildContext context) => wrapSpinnerSemantics(
     context: context,
     semanticsLabel: widget.semanticsLabel,
     child: _buildSpinner(context),
   );
+
+  @override
+  AnimationController? controllerOf(GPulseSpinner widget) => widget.controller;
+
+  @override
+  Duration durationOf(GPulseSpinner widget) => widget.duration;
 
   Widget _buildSpinner(BuildContext context) {
     final effectiveColor = GSpinnerTheme.resolveColor(context, widget.color);

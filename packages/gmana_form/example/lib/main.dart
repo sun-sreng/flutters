@@ -1,8 +1,8 @@
 // Example code.
 // ignore_for_file: public_member_api_docs
 
-import 'package:flutter/material.dart';
 import 'package:gmana_form/gmana_form.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   runApp(const GmanaFormExampleApp());

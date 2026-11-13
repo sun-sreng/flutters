@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Scales a child vertically using an animation.
 class GScaleY extends AnimatedWidget {

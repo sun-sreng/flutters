@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../animation/dot_animation_config.dart';
 import '../animation/spinner_controller_mixin.dart';
@@ -59,18 +59,18 @@ class GWaveDotSpinner extends StatefulWidget {
 class _GWaveDotSpinnerState extends State<GWaveDotSpinner>
     with SingleTickerProviderStateMixin, SpinnerControllerMixin {
   @override
-  AnimationController? controllerOf(GWaveDotSpinner widget) =>
-      widget.controller;
-
-  @override
-  Duration durationOf(GWaveDotSpinner widget) => widget.duration;
-
-  @override
   Widget build(BuildContext context) => wrapSpinnerSemantics(
     context: context,
     semanticsLabel: widget.semanticsLabel,
     child: _buildSpinner(context),
   );
+
+  @override
+  AnimationController? controllerOf(GWaveDotSpinner widget) =>
+      widget.controller;
+
+  @override
+  Duration durationOf(GWaveDotSpinner widget) => widget.duration;
 
   Widget _buildSpinner(BuildContext context) {
     return SizedBox(

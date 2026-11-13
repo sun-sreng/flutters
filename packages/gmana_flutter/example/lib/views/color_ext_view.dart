@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:gmana_flutter/gmana_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'color_lab/color_lab_widgets.dart';
 import 'color_lab/controls_panel.dart';
@@ -28,8 +28,6 @@ class _ColorExtensionLabPageState extends State<ColorExtensionLabPage> {
   double _opacity = 1.0;
   ToneMode _toneMode = ToneMode.lighten;
 
-  Color get _baseColor => _baseColors[_selectedColorKey]!;
-
   Color get _adjustedColor {
     final transformed =
         _toneMode == ToneMode.lighten
@@ -37,6 +35,8 @@ class _ColorExtensionLabPageState extends State<ColorExtensionLabPage> {
             : _baseColor.darken(_lightnessAmount);
     return transformed.withAlphaOpacity(_opacity);
   }
+
+  Color get _baseColor => _baseColors[_selectedColorKey]!;
 
   @override
   Widget build(BuildContext context) {
@@ -142,15 +142,15 @@ class _ColorExtensionLabPageState extends State<ColorExtensionLabPage> {
 }
 
 class _ContentLayout extends StatelessWidget {
+  final bool isWide;
+
+  final Widget previewPanel;
+  final Widget controlsPanel;
   const _ContentLayout({
     required this.isWide,
     required this.previewPanel,
     required this.controlsPanel,
   });
-
-  final bool isWide;
-  final Widget previewPanel;
-  final Widget controlsPanel;
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../animation/spinner_controller_mixin.dart';
 import '../painters/wave_spinner_painter.dart';
@@ -62,17 +62,17 @@ class GWaveSpinner extends StatefulWidget {
 class _GWaveSpinnerState extends State<GWaveSpinner>
     with SingleTickerProviderStateMixin, SpinnerControllerMixin {
   @override
-  AnimationController? controllerOf(GWaveSpinner widget) => widget.controller;
-
-  @override
-  Duration durationOf(GWaveSpinner widget) => widget.duration;
-
-  @override
   Widget build(BuildContext context) => wrapSpinnerSemantics(
     context: context,
     semanticsLabel: widget.semanticsLabel,
     child: _buildSpinner(context),
   );
+
+  @override
+  AnimationController? controllerOf(GWaveSpinner widget) => widget.controller;
+
+  @override
+  Duration durationOf(GWaveSpinner widget) => widget.duration;
 
   Widget _buildSpinner(BuildContext context) {
     return LayoutBuilder(

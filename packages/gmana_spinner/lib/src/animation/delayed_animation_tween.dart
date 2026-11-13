@@ -1,6 +1,6 @@
 import 'dart:math' show sin, pi;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A tween that applies a delay to a repeating staggered animation.
 class DelayedAnimationTween extends Tween<double> {

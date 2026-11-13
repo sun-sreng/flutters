@@ -1,4 +1,23 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
+/// Wraps [child] so assistive technology announces the spinner.
+///
+/// Returns [child] untouched when no label resolves, so a spinner without a
+/// label stays exactly as it was.
+Widget wrapSpinnerSemantics({
+  required BuildContext context,
+  required String? semanticsLabel,
+  required Widget child,
+}) {
+  final label = GSpinnerTheme.resolveSemanticsLabel(context, semanticsLabel);
+  if (label == null) return child;
+  return Semantics(
+    container: true,
+    liveRegion: true,
+    label: label,
+    child: ExcludeSemantics(child: child),
+  );
+}
 
 /// Application-wide defaults for every spinner in this package.
 ///
@@ -40,6 +59,45 @@ class GSpinnerTheme extends ThemeExtension<GSpinnerTheme> {
   /// to the widget's own default.
   const GSpinnerTheme({this.color, this.secondaryColor, this.semanticsLabel});
 
+  @override
+  int get hashCode => Object.hash(color, secondaryColor, semanticsLabel);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GSpinnerTheme &&
+          other.color == color &&
+          other.secondaryColor == secondaryColor &&
+          other.semanticsLabel == semanticsLabel;
+
+  @override
+  GSpinnerTheme copyWith({
+    Color? color,
+    Color? secondaryColor,
+    String? semanticsLabel,
+  }) => GSpinnerTheme(
+    color: color ?? this.color,
+    secondaryColor: secondaryColor ?? this.secondaryColor,
+    semanticsLabel: semanticsLabel ?? this.semanticsLabel,
+  );
+
+  @override
+  GSpinnerTheme lerp(covariant GSpinnerTheme? other, double t) {
+    if (other == null) return this;
+    return GSpinnerTheme(
+      color: Color.lerp(color, other.color, t),
+      secondaryColor: Color.lerp(secondaryColor, other.secondaryColor, t),
+      // A label is not a continuous quantity, so it switches at the
+      // midpoint rather than interpolating.
+      semanticsLabel: t < 0.5 ? semanticsLabel : other.semanticsLabel,
+    );
+  }
+
+  @override
+  String toString() =>
+      'GSpinnerTheme(color: $color, secondaryColor: $secondaryColor, '
+      'semanticsLabel: $semanticsLabel)';
+
   /// The nearest [GSpinnerTheme], or `null` when none is installed.
   static GSpinnerTheme? maybeOf(BuildContext context) =>
       Theme.of(context).extension<GSpinnerTheme>();
@@ -73,62 +131,4 @@ class GSpinnerTheme extends ThemeExtension<GSpinnerTheme> {
     BuildContext context,
     String? explicit,
   ) => explicit ?? maybeOf(context)?.semanticsLabel;
-
-  @override
-  GSpinnerTheme copyWith({
-    Color? color,
-    Color? secondaryColor,
-    String? semanticsLabel,
-  }) => GSpinnerTheme(
-    color: color ?? this.color,
-    secondaryColor: secondaryColor ?? this.secondaryColor,
-    semanticsLabel: semanticsLabel ?? this.semanticsLabel,
-  );
-
-  @override
-  GSpinnerTheme lerp(covariant GSpinnerTheme? other, double t) {
-    if (other == null) return this;
-    return GSpinnerTheme(
-      color: Color.lerp(color, other.color, t),
-      secondaryColor: Color.lerp(secondaryColor, other.secondaryColor, t),
-      // A label is not a continuous quantity, so it switches at the
-      // midpoint rather than interpolating.
-      semanticsLabel: t < 0.5 ? semanticsLabel : other.semanticsLabel,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is GSpinnerTheme &&
-          other.color == color &&
-          other.secondaryColor == secondaryColor &&
-          other.semanticsLabel == semanticsLabel;
-
-  @override
-  int get hashCode => Object.hash(color, secondaryColor, semanticsLabel);
-
-  @override
-  String toString() =>
-      'GSpinnerTheme(color: $color, secondaryColor: $secondaryColor, '
-      'semanticsLabel: $semanticsLabel)';
-}
-
-/// Wraps [child] so assistive technology announces the spinner.
-///
-/// Returns [child] untouched when no label resolves, so a spinner without a
-/// label stays exactly as it was.
-Widget wrapSpinnerSemantics({
-  required BuildContext context,
-  required String? semanticsLabel,
-  required Widget child,
-}) {
-  final label = GSpinnerTheme.resolveSemanticsLabel(context, semanticsLabel);
-  if (label == null) return child;
-  return Semantics(
-    container: true,
-    liveRegion: true,
-    label: label,
-    child: ExcludeSemantics(child: child),
-  );
 }

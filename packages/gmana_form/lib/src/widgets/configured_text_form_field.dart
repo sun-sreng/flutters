@@ -1,20 +1,20 @@
 // Passthrough widget mirroring TextFormField props.
 // ignore_for_file: public_member_api_docs
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../models/field_config.dart';
 import 'form.dart';
 
 class GConfiguredTextFormField extends StatelessWidget {
+  final GTextFieldConfig config;
+
+  final Widget? suffixIcon;
   const GConfiguredTextFormField({
     super.key,
     required this.config,
     this.suffixIcon,
   });
-
-  final GTextFieldConfig config;
-  final Widget? suffixIcon;
 
   @override
   Widget build(BuildContext context) {

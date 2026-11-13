@@ -1,9 +1,9 @@
 // Passthrough widget mirroring TextFormField props.
 // ignore_for_file: public_member_api_docs
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gmana_validation/gmana_validation.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../controllers/form_controller.dart';
 import '../models/field_config.dart';
@@ -11,6 +11,8 @@ import 'text_field.dart';
 
 /// Phone number preset kept for discoverability.
 class GPhoneField extends StatelessWidget {
+  final GTextFormField field;
+
   GPhoneField({
     super.key,
     String? name,
@@ -66,8 +68,6 @@ class GPhoneField extends StatelessWidget {
          autofillHints: autofillHints,
          decoration: decoration,
        );
-
-  final GTextFormField field;
 
   GTextFieldConfig get config => field.config;
 

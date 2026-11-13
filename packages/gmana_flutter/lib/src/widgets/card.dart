@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../design_system/spacing.dart';
 
 /// A surface card container widget with customizable background, border, elevation, and optional ink response.

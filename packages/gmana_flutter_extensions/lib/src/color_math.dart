@@ -1,7 +1,7 @@
 // Thin static utility around dart:ui Color.
 // ignore_for_file: public_member_api_docs
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 abstract final class ColorMath {
   static const double defaultAmount = 0.1;
@@ -139,52 +139,6 @@ abstract final class ColorMath {
     return Color.lerp(a, b, t)!;
   }
 
-  /// Mixes [color] with black.
-  static Color shade(Color color, [double amount = 0.5]) =>
-      mix(color, Colors.black, amount);
-
-  static (Color, Color) splitComplementary(Color color) {
-    final hsl = HSLColor.fromColor(color);
-
-    return (
-      hsl.withHue((hsl.hue + 150) % 360).toColor(),
-      hsl.withHue((hsl.hue + 210) % 360).toColor(),
-    );
-  }
-
-  /// Mixes [color] with white.
-  static Color tint(Color color, [double amount = 0.5]) =>
-      mix(color, Colors.white, amount);
-
-  /// Outputs 8-char ARGB hex including alpha, for example `#CCFF5500`.
-  static String toHexARGB(Color color, {bool withHashSign = true}) {
-    final hex =
-        color.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase();
-
-    return withHashSign ? '#$hex' : hex;
-  }
-
-  /// Outputs 6-char RGB hex, ignoring alpha, for example `#FF5500`.
-  static String toHexRGB(Color color, {bool withHashSign = true}) {
-    final r = (color.r * 255).round().toRadixString(16).padLeft(2, '0');
-    final g = (color.g * 255).round().toRadixString(16).padLeft(2, '0');
-    final b = (color.b * 255).round().toRadixString(16).padLeft(2, '0');
-    final hex = '$r$g$b'.toUpperCase();
-
-    return withHashSign ? '#$hex' : hex;
-  }
-
-  /// Four colors evenly spaced around the hue wheel, starting at [color].
-  static (Color, Color, Color) tetradic(Color color) {
-    final hsl = HSLColor.fromColor(color);
-
-    return (
-      hsl.withHue((hsl.hue + 90) % 360).toColor(),
-      hsl.withHue((hsl.hue + 180) % 360).toColor(),
-      hsl.withHue((hsl.hue + 270) % 360).toColor(),
-    );
-  }
-
   /// A same-hue ramp of [count] colors from near-black to near-white.
   ///
   /// Unlike [createMaterialColor] the steps are evenly spaced in lightness
@@ -203,6 +157,34 @@ abstract final class ColorMath {
     ];
   }
 
+  /// Mixes [color] with black.
+  static Color shade(Color color, [double amount = 0.5]) =>
+      mix(color, Colors.black, amount);
+
+  static (Color, Color) splitComplementary(Color color) {
+    final hsl = HSLColor.fromColor(color);
+
+    return (
+      hsl.withHue((hsl.hue + 150) % 360).toColor(),
+      hsl.withHue((hsl.hue + 210) % 360).toColor(),
+    );
+  }
+
+  /// Four colors evenly spaced around the hue wheel, starting at [color].
+  static (Color, Color, Color) tetradic(Color color) {
+    final hsl = HSLColor.fromColor(color);
+
+    return (
+      hsl.withHue((hsl.hue + 90) % 360).toColor(),
+      hsl.withHue((hsl.hue + 180) % 360).toColor(),
+      hsl.withHue((hsl.hue + 270) % 360).toColor(),
+    );
+  }
+
+  /// Mixes [color] with white.
+  static Color tint(Color color, [double amount = 0.5]) =>
+      mix(color, Colors.white, amount);
+
   /// CSS `rgba(255, 85, 0, 1.00)` notation.
   static String toCssRgba(Color color, {int alphaPrecision = 2}) {
     if (alphaPrecision < 0) {
@@ -218,6 +200,24 @@ abstract final class ColorMath {
     final b = (color.b * 255).round();
 
     return 'rgba($r, $g, $b, ${color.a.toStringAsFixed(alphaPrecision)})';
+  }
+
+  /// Outputs 8-char ARGB hex including alpha, for example `#CCFF5500`.
+  static String toHexARGB(Color color, {bool withHashSign = true}) {
+    final hex =
+        color.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase();
+
+    return withHashSign ? '#$hex' : hex;
+  }
+
+  /// Outputs 6-char RGB hex, ignoring alpha, for example `#FF5500`.
+  static String toHexRGB(Color color, {bool withHashSign = true}) {
+    final r = (color.r * 255).round().toRadixString(16).padLeft(2, '0');
+    final g = (color.g * 255).round().toRadixString(16).padLeft(2, '0');
+    final b = (color.b * 255).round().toRadixString(16).padLeft(2, '0');
+    final hex = '$r$g$b'.toUpperCase();
+
+    return withHashSign ? '#$hex' : hex;
   }
 
   static (Color, Color) triadic(Color color) {

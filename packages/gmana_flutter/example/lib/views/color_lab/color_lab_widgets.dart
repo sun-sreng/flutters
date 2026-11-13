@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:gmana_flutter/gmana_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 
 class BackgroundGlow extends StatelessWidget {
-  const BackgroundGlow({super.key, required this.color, required this.size});
-
   final Color color;
+
   final double size;
+  const BackgroundGlow({super.key, required this.color, required this.size});
 
   @override
   Widget build(BuildContext context) {
@@ -22,50 +22,11 @@ class BackgroundGlow extends StatelessWidget {
   }
 }
 
-class SliderField extends StatelessWidget {
-  const SliderField({
-    super.key,
-    required this.title,
-    required this.valueLabel,
-    required this.value,
-    required this.onChanged,
-  });
-
-  final String title;
-  final String valueLabel;
-  final double value;
-  final ValueChanged<double> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(child: Text(title, style: theme.textTheme.labelLarge)),
-            Text(valueLabel, style: theme.textTheme.bodySmall),
-          ],
-        ),
-        Slider(
-          value: value,
-          onChanged: onChanged,
-          min: 0,
-          max: 1,
-          divisions: 100,
-        ),
-      ],
-    );
-  }
-}
-
 class PaletteChip extends StatelessWidget {
-  const PaletteChip({super.key, required this.label, required this.color});
-
   final String label;
+
   final Color color;
+  const PaletteChip({super.key, required this.label, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -99,11 +60,50 @@ class PaletteChip extends StatelessWidget {
   }
 }
 
-class StatTile extends StatelessWidget {
-  const StatTile({super.key, required this.label, required this.value});
+class SliderField extends StatelessWidget {
+  final String title;
 
+  final String valueLabel;
+  final double value;
+  final ValueChanged<double> onChanged;
+  const SliderField({
+    super.key,
+    required this.title,
+    required this.valueLabel,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(child: Text(title, style: theme.textTheme.labelLarge)),
+            Text(valueLabel, style: theme.textTheme.bodySmall),
+          ],
+        ),
+        Slider(
+          value: value,
+          onChanged: onChanged,
+          min: 0,
+          max: 1,
+          divisions: 100,
+        ),
+      ],
+    );
+  }
+}
+
+class StatTile extends StatelessWidget {
   final String label;
+
   final String value;
+  const StatTile({super.key, required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {

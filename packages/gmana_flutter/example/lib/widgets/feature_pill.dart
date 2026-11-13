@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class FeaturePill extends StatelessWidget {
   const FeaturePill({super.key, required this.label});

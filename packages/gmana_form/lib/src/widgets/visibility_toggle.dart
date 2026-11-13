@@ -1,7 +1,7 @@
 // Internal IconButton wrapper.
 // ignore_for_file: public_member_api_docs
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Reusable widget for toggling password visibility.
 class VisibilityToggle extends StatefulWidget {
@@ -22,14 +22,6 @@ class _VisibilityToggleState extends State<VisibilityToggle> {
   late bool _obscureText = widget.obscureText;
 
   @override
-  void didUpdateWidget(covariant VisibilityToggle oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.obscureText != widget.obscureText) {
-      _obscureText = widget.obscureText;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return IconButton(
       tooltip: _obscureText ? 'Show password' : 'Hide password',
@@ -41,5 +33,13 @@ class _VisibilityToggleState extends State<VisibilityToggle> {
         });
       },
     );
+  }
+
+  @override
+  void didUpdateWidget(covariant VisibilityToggle oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.obscureText != widget.obscureText) {
+      _obscureText = widget.obscureText;
+    }
   }
 }

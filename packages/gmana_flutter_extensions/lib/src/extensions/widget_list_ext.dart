@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Turns a `List<Widget>` into a laid-out widget without the usual
 /// `Column(children: ...)` ceremony, and inserts separators between items.
@@ -40,6 +40,24 @@ extension WidgetListX on List<Widget> {
     crossAxisAlignment: crossAxisAlignment,
     mainAxisSize: mainAxisSize,
     spacing: spacing,
+    children: this,
+  );
+
+  /// Wraps these widgets in a scrollable [ListView].
+  Widget toListView({
+    Axis scrollDirection = Axis.vertical,
+    EdgeInsetsGeometry? padding,
+    bool shrinkWrap = false,
+    ScrollPhysics? physics,
+    ScrollController? controller,
+    Key? key,
+  }) => ListView(
+    key: key,
+    scrollDirection: scrollDirection,
+    padding: padding,
+    shrinkWrap: shrinkWrap,
+    physics: physics,
+    controller: controller,
     children: this,
   );
 
@@ -86,24 +104,6 @@ extension WidgetListX on List<Widget> {
     runSpacing: runSpacing,
     alignment: alignment,
     direction: direction,
-    children: this,
-  );
-
-  /// Wraps these widgets in a scrollable [ListView].
-  Widget toListView({
-    Axis scrollDirection = Axis.vertical,
-    EdgeInsetsGeometry? padding,
-    bool shrinkWrap = false,
-    ScrollPhysics? physics,
-    ScrollController? controller,
-    Key? key,
-  }) => ListView(
-    key: key,
-    scrollDirection: scrollDirection,
-    padding: padding,
-    shrinkWrap: shrinkWrap,
-    physics: physics,
-    controller: controller,
     children: this,
   );
 }

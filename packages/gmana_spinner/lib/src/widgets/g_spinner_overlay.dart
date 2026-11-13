@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../theme/g_spinner_theme.dart';
 import 'g_circular_spinner.dart';

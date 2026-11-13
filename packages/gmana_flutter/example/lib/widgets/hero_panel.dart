@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:gmana_flutter/gmana_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'feature_pill.dart';
 

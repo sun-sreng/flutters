@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../animation/delayed_animation_tween.dart';
 import '../animation/spinner_controller_mixin.dart';
@@ -67,17 +67,28 @@ class GDotSpinner extends StatefulWidget {
 class _GDotSpinnerState extends State<GDotSpinner>
     with SingleTickerProviderStateMixin, SpinnerControllerMixin {
   @override
-  AnimationController? controllerOf(GDotSpinner widget) => widget.controller;
-
-  @override
-  Duration durationOf(GDotSpinner widget) => widget.duration;
-
-  @override
   Widget build(BuildContext context) => wrapSpinnerSemantics(
     context: context,
     semanticsLabel: widget.semanticsLabel,
     child: _buildSpinner(context),
   );
+
+  @override
+  AnimationController? controllerOf(GDotSpinner widget) => widget.controller;
+
+  @override
+  Duration durationOf(GDotSpinner widget) => widget.duration;
+
+  Widget _buildDot(int index) {
+    return widget.itemBuilder != null
+        ? widget.itemBuilder!(context, index)
+        : DecoratedBox(
+          decoration: BoxDecoration(
+            color: GSpinnerTheme.resolveColor(context, widget.color),
+            shape: BoxShape.circle,
+          ),
+        );
+  }
 
   Widget _buildSpinner(BuildContext context) {
     return Center(
@@ -101,16 +112,5 @@ class _GDotSpinnerState extends State<GDotSpinner>
         ),
       ),
     );
-  }
-
-  Widget _buildDot(int index) {
-    return widget.itemBuilder != null
-        ? widget.itemBuilder!(context, index)
-        : DecoratedBox(
-          decoration: BoxDecoration(
-            color: GSpinnerTheme.resolveColor(context, widget.color),
-            shape: BoxShape.circle,
-          ),
-        );
   }
 }

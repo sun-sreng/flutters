@@ -1,10 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
-
-const _child = Text('child');
-
-Widget host(Widget child) => MaterialApp(home: Scaffold(body: child));
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   group('WidgetX existing wrappers', () {
@@ -255,3 +251,7 @@ void main() {
     expect(find.text('child'), findsOneWidget);
   });
 }
+
+const _child = Text('child');
+
+Widget host(Widget child) => MaterialApp(home: Scaffold(body: child));

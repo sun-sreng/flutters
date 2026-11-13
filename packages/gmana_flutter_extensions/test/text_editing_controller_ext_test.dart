@@ -1,12 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
-
-TextEditingController controllerWith(String text) {
-  final controller = TextEditingController(text: text);
-  addTearDown(controller.dispose);
-  return controller;
-}
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   group('TextEditingControllerX inspection', () {
@@ -130,4 +124,10 @@ void main() {
       expect(controller.selection.baseOffset, 3);
     });
   });
+}
+
+TextEditingController controllerWith(String text) {
+  final controller = TextEditingController(text: text);
+  addTearDown(controller.dispose);
+  return controller;
 }

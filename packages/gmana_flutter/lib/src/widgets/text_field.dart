@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A theme-aware text field widget supporting clear button, obscure password toggle, and prefix/suffix icons.
 class GTextField extends StatefulWidget {

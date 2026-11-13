@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
-
-const _pureRed = Color(0xFFFF0000);
-const _brand = Color(0xFFF57224);
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   group('ColorMath.tryParseHex', () {
@@ -245,3 +242,7 @@ void main() {
     });
   });
 }
+
+const _brand = Color(0xFFF57224);
+
+const _pureRed = Color(0xFFFF0000);

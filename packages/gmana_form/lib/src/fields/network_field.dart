@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gmana_validation/gmana_validation.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../controllers/form_controller.dart';
 import '../models/field_config.dart';
@@ -9,6 +9,9 @@ import '../widgets/configured_text_form_field.dart';
 
 /// Form field widget for network address inputs (IP, IPv4, IPv6, CIDR, MAC, Port).
 class GNetworkField extends StatelessWidget {
+  /// Field configuration.
+  late final GTextFieldConfig config;
+
   /// Creates a [GNetworkField].
   GNetworkField({
     super.key,
@@ -79,9 +82,6 @@ class GNetworkField extends StatelessWidget {
 
     config = fieldConfig;
   }
-
-  /// Field configuration.
-  late final GTextFieldConfig config;
 
   @override
   Widget build(BuildContext context) {

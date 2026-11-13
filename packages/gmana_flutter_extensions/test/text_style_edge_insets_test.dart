@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
-
-/// Keeps the static type nullable so the nullable extension is exercised.
-TextStyle? maybeStyle(TextStyle? style) => style;
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   group('TextStyleX weights', () {
@@ -214,3 +211,6 @@ void main() {
     });
   });
 }
+
+/// Keeps the static type nullable so the nullable extension is exercised.
+TextStyle? maybeStyle(TextStyle? style) => style;

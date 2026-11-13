@@ -1,32 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
-
-/// Pumps a probe widget and hands back the BuildContext it was built with.
-Future<BuildContext> captureContext(
-  WidgetTester tester, {
-  ThemeData? theme,
-  MediaQueryData? mediaQuery,
-}) async {
-  late BuildContext captured;
-
-  Widget body = Builder(
-    builder: (context) {
-      captured = context;
-      return const SizedBox.shrink();
-    },
-  );
-
-  if (mediaQuery != null) {
-    body = MediaQuery(data: mediaQuery, child: body);
-  }
-
-  await tester.pumpWidget(MaterialApp(theme: theme, home: body));
-  // MaterialApp lerps between themes over kThemeAnimationDuration, so a
-  // single frame still reports the previous theme when one test pumps twice.
-  await tester.pumpAndSettle();
-  return captured;
-}
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   group('BrightnessX', () {
@@ -335,4 +309,30 @@ void main() {
       expect(find.text('temporary'), findsNothing);
     });
   });
+}
+
+/// Pumps a probe widget and hands back the BuildContext it was built with.
+Future<BuildContext> captureContext(
+  WidgetTester tester, {
+  ThemeData? theme,
+  MediaQueryData? mediaQuery,
+}) async {
+  late BuildContext captured;
+
+  Widget body = Builder(
+    builder: (context) {
+      captured = context;
+      return const SizedBox.shrink();
+    },
+  );
+
+  if (mediaQuery != null) {
+    body = MediaQuery(data: mediaQuery, child: body);
+  }
+
+  await tester.pumpWidget(MaterialApp(theme: theme, home: body));
+  // MaterialApp lerps between themes over kThemeAnimationDuration, so a
+  // single frame still reports the previous theme when one test pumps twice.
+  await tester.pumpAndSettle();
+  return captured;
 }

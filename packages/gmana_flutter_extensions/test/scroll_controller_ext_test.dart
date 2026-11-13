@@ -1,30 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
-
-/// Pumps a list tall enough to scroll and returns its attached controller.
-Future<ScrollController> pumpScrollable(
-  WidgetTester tester, {
-  int itemCount = 40,
-}) async {
-  final controller = ScrollController();
-  addTearDown(controller.dispose);
-
-  await tester.pumpWidget(
-    MaterialApp(
-      home: Scaffold(
-        body: ListView.builder(
-          controller: controller,
-          itemCount: itemCount,
-          itemExtent: 50,
-          itemBuilder: (_, i) => Text('item $i'),
-        ),
-      ),
-    ),
-  );
-
-  return controller;
-}
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   group('ScrollControllerX without clients', () {
@@ -165,4 +141,28 @@ void main() {
       expect(controller.offset, controller.minScroll);
     });
   });
+}
+
+/// Pumps a list tall enough to scroll and returns its attached controller.
+Future<ScrollController> pumpScrollable(
+  WidgetTester tester, {
+  int itemCount = 40,
+}) async {
+  final controller = ScrollController();
+  addTearDown(controller.dispose);
+
+  await tester.pumpWidget(
+    MaterialApp(
+      home: Scaffold(
+        body: ListView.builder(
+          controller: controller,
+          itemCount: itemCount,
+          itemExtent: 50,
+          itemBuilder: (_, i) => Text('item $i'),
+        ),
+      ),
+    ),
+  );
+
+  return controller;
 }

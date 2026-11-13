@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gmana_validation/gmana_validation.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../controllers/form_controller.dart';
 import '../models/field_config.dart';
@@ -9,6 +9,9 @@ import '../widgets/configured_text_form_field.dart';
 
 /// Form field widget for identifier inputs (UUID, ULID, IMEI, EAN, CreditCard, MongoId, SemVer, NanoId).
 class GIdentifierField extends StatelessWidget {
+  /// Field configuration.
+  late final GTextFieldConfig config;
+
   /// Creates a [GIdentifierField].
   GIdentifierField({
     super.key,
@@ -77,9 +80,6 @@ class GIdentifierField extends StatelessWidget {
 
     config = fieldConfig;
   }
-
-  /// Field configuration.
-  late final GTextFieldConfig config;
 
   @override
   Widget build(BuildContext context) {

@@ -1,3 +1,6 @@
+import 'package:gmana_flutter/gmana_flutter.dart';
+import 'package:material_ui/material_ui.dart';
+
 import 'theme/showcase_theme.dart';
 import 'views/color_ext_view.dart';
 import 'widgets/benefit_tile.dart';
@@ -7,8 +10,6 @@ import 'widgets/section_label.dart';
 import 'widgets/showcase_card.dart';
 import 'widgets/signal_panel.dart';
 import 'widgets/top_bar.dart';
-import 'package:flutter/material.dart';
-import 'package:gmana_flutter/gmana_flutter.dart';
 
 void main() {
   runApp(const ThemeModeExampleApp());

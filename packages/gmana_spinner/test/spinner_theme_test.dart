@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gmana_spinner/gmana_spinner.dart';
+import 'package:material_ui/material_ui.dart';
 
 Widget host(Widget child, {GSpinnerTheme? spinnerTheme}) => MaterialApp(
   theme: ThemeData(

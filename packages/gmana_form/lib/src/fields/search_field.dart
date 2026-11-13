@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../models/field_config.dart';
 import '../widgets/configured_text_form_field.dart';
@@ -75,51 +75,6 @@ class _GSearchFieldState extends State<GSearchField> {
   bool _hasText = false;
 
   @override
-  void initState() {
-    super.initState();
-    if (widget.controller != null) {
-      _controller = widget.controller!;
-    } else {
-      _controller = TextEditingController(text: widget.initialValue);
-      _ownsController = true;
-    }
-
-    _hasText = _controller.text.isNotEmpty;
-    _controller.addListener(_onTextChanged);
-  }
-
-  @override
-  void dispose() {
-    _debounceTimer?.cancel();
-    _controller.removeListener(_onTextChanged);
-    if (_ownsController) {
-      _controller.dispose();
-    }
-    super.dispose();
-  }
-
-  void _onTextChanged() {
-    final text = _controller.text;
-    if (_hasText != text.isNotEmpty) {
-      setState(() {
-        _hasText = text.isNotEmpty;
-      });
-    }
-
-    _debounceTimer?.cancel();
-    if (widget.onSearchChanged != null) {
-      _debounceTimer = Timer(widget.debounceDelay, () {
-        widget.onSearchChanged?.call(text);
-      });
-    }
-  }
-
-  void _clear() {
-    _controller.clear();
-    widget.onCleared?.call();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final suffixIcon =
         _hasText
@@ -145,5 +100,50 @@ class _GSearchFieldState extends State<GSearchField> {
     );
 
     return GConfiguredTextFormField(config: config, suffixIcon: suffixIcon);
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    _controller.removeListener(_onTextChanged);
+    if (_ownsController) {
+      _controller.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.controller != null) {
+      _controller = widget.controller!;
+    } else {
+      _controller = TextEditingController(text: widget.initialValue);
+      _ownsController = true;
+    }
+
+    _hasText = _controller.text.isNotEmpty;
+    _controller.addListener(_onTextChanged);
+  }
+
+  void _clear() {
+    _controller.clear();
+    widget.onCleared?.call();
+  }
+
+  void _onTextChanged() {
+    final text = _controller.text;
+    if (_hasText != text.isNotEmpty) {
+      setState(() {
+        _hasText = text.isNotEmpty;
+      });
+    }
+
+    _debounceTimer?.cancel();
+    if (widget.onSearchChanged != null) {
+      _debounceTimer = Timer(widget.debounceDelay, () {
+        widget.onSearchChanged?.call(text);
+      });
+    }
   }
 }

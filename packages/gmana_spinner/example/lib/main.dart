@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs
 
-import 'package:flutter/material.dart';
 import 'package:gmana_spinner/gmana_spinner.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   runApp(const SpinnerExampleApp());
@@ -35,12 +35,6 @@ class SpinnerGalleryPage extends StatefulWidget {
 
 class _SpinnerGalleryPageState extends State<SpinnerGalleryPage> {
   bool _saving = false;
-
-  Future<void> _simulateSave() async {
-    setState(() => _saving = true);
-    await Future<void>.delayed(const Duration(seconds: 2));
-    if (mounted) setState(() => _saving = false);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,13 +107,19 @@ class _SpinnerGalleryPageState extends State<SpinnerGalleryPage> {
       ),
     );
   }
+
+  Future<void> _simulateSave() async {
+    setState(() => _saving = true);
+    await Future<void>.delayed(const Duration(seconds: 2));
+    if (mounted) setState(() => _saving = false);
+  }
 }
 
 class _SpinnerTile extends StatelessWidget {
-  const _SpinnerTile({required this.label, required this.child});
-
   final String label;
+
   final Widget child;
+  const _SpinnerTile({required this.label, required this.child});
 
   @override
   Widget build(BuildContext context) {
