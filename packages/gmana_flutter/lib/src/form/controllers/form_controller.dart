@@ -25,7 +25,15 @@ final class GFormController extends ChangeNotifier {
   final Map<String, String? Function(String?)> _textValidators = {};
   final Map<String, FocusNode> _focusNodes = {};
   final Map<String, String> _pristineText = {};
-  final Map<String, Object?> _initialFieldValues = {};
+
+  /// Baseline values of typed fields that are not bound to text, used by
+  /// [isDirty] and [reset].
+  final Map<String, Object?> _pristineValues = {};
+
+  /// Owned controllers, fields, and nodes removed by [unregister]. Their
+  /// widget may still hold them until it unmounts, so they are disposed with
+  /// this controller rather than at once.
+  final List<ChangeNotifier> _retired = [];
   bool _submitting = false;
 
   /// Creates a controller. Pass an existing [key] to reuse a form key, or
@@ -36,10 +44,13 @@ final class GFormController extends ChangeNotifier {
   /// Whether any field currently fails validation.
   bool get hasErrors => errors().isNotEmpty;
 
-  /// Whether any named text field differs from its pristine value.
+  /// Whether any named field differs from its pristine value.
   ///
+  /// Covers text fields and typed fields such as checkboxes and dropdowns.
   /// Useful for "discard unsaved changes?" prompts.
-  bool get isDirty => _boundTextControllers.keys.any(isFieldDirty);
+  bool get isDirty =>
+      _boundTextControllers.keys.any(isFieldDirty) ||
+      _fields.keys.any(isFieldDirty);
 
   /// The current [FormState], or `null` if the form has not been mounted yet.
   FormState? get state => key.currentState;
@@ -134,6 +145,10 @@ final class GFormController extends ChangeNotifier {
     for (final node in _focusNodes.values) {
       node.dispose();
     }
+    for (final retired in _retired) {
+      retired.dispose();
+    }
+    _retired.clear();
     _fields.clear();
     _boundTextControllers.clear();
     _textControllerListeners.clear();
@@ -143,7 +158,7 @@ final class GFormController extends ChangeNotifier {
     _textValidators.clear();
     _focusNodes.clear();
     _pristineText.clear();
-    _initialFieldValues.clear();
+    _pristineValues.clear();
     super.dispose();
   }
 
@@ -151,24 +166,32 @@ final class GFormController extends ChangeNotifier {
   ///
   /// Unlike [validate] this does not paint error text into the UI, so it is
   /// safe to call from a `build` method or a listener.
-  String? errorOf(String name) {
-    final textValidator = _textValidators[name];
-    if (textValidator != null) {
-      final message = textValidator(_boundTextControllers[name]?.text);
-      if (message != null) return message;
-    }
-
-    return _fields[name]?._validate(values());
-  }
+  String? errorOf(String name) => _errorOf(name, values());
 
   /// Every current validation message, keyed by field name.
+  ///
+  /// Covers the validators this controller knows: typed field validators and
+  /// the text validators bound with [bindTextValidator], including those of
+  /// fields whose widget is not mounted.
   Map<String, String> errors() {
+    final formValues = values();
     final result = <String, String>{};
     for (final name in _fieldOrder) {
-      final message = errorOf(name);
+      final message = _errorOf(name, formValues);
       if (message != null) result[name] = message;
     }
     return result;
+  }
+
+  /// The text validator's message for [name], else the typed validator's.
+  ///
+  /// Always runs the typed validator, so its [GFormFieldController.errorText]
+  /// stays current.
+  String? _errorOf(String name, GFormValues formValues) {
+    final typedMessage = _fields[name]?._validate(formValues);
+    final textValidator = _textValidators[name];
+    final textMessage = textValidator?.call(_boundTextControllers[name]?.text);
+    return textMessage ?? typedMessage;
   }
 
   // --- Focus ---
@@ -214,15 +237,24 @@ final class GFormController extends ChangeNotifier {
       _focusNodes.putIfAbsent(name, () => FocusNode(debugLabel: name));
 
   /// Whether [name] differs from the value it was last marked pristine at.
+  ///
+  /// A text field compares its text; a typed field compares its value with
+  /// `==`. Returns `false` for an unknown name.
   bool isFieldDirty(String name) {
-    final pristine = _pristineText[name];
-    if (pristine == null) return false;
-    return _boundTextControllers[name]?.text != pristine;
+    final textController = _boundTextControllers[name];
+    if (textController != null) {
+      final pristine = _pristineText[name];
+      return pristine != null && textController.text != pristine;
+    }
+
+    final field = _fields[name];
+    return field != null && field.value != _pristineValues[name];
   }
 
   // --- Errors ---
 
-  /// Treats the current text values as the new baseline for [isDirty].
+  /// Treats the current values as the new baseline for [isDirty] and
+  /// [reset].
   ///
   /// Call this after a successful save so the form stops reporting unsaved
   /// changes.
@@ -230,6 +262,10 @@ final class GFormController extends ChangeNotifier {
     _pristineText
       ..clear()
       ..addAll(textValues());
+    for (final entry in _fields.entries) {
+      if (_boundTextControllers.containsKey(entry.key)) continue;
+      _pristineValues[entry.key] = entry.value.value;
+    }
   }
 
   /// Applies [values] to the matching named fields.
@@ -254,7 +290,7 @@ final class GFormController extends ChangeNotifier {
     }
 
     _fields[field.name] = field;
-    _initialFieldValues[field.name] = field.value;
+    _pristineValues[field.name] = field.value;
     field.addListener(notifyListeners);
     return field;
   }
@@ -264,21 +300,73 @@ final class GFormController extends ChangeNotifier {
   /// Moves focus to the field registered under [name].
   void requestFocus(String name) => focusNode(name).requestFocus();
 
-  /// Resets the form and clears every registered text controller.
+  /// Resets the form to its pristine baseline.
   ///
-  /// Non-text fields go back to the value they were registered with rather
-  /// than to `null`, matching what Flutter's own [FormState.reset] does.
+  /// Text fields go back to the text they were registered with, or that they
+  /// had at the last [markPristine]; typed fields go back to their
+  /// registered or last-pristine value. Error text is cleared. Afterwards
+  /// [isDirty] is `false`.
   void reset() {
     state?.reset();
-    for (final controller in _textControllers.values) {
-      controller.clear();
+    for (final entry in _boundTextControllers.entries) {
+      final pristine = _pristineText[entry.key] ?? '';
+      if (entry.value.text == pristine) continue;
+      entry.value.value = TextEditingValue(
+        text: pristine,
+        selection: TextSelection.collapsed(offset: pristine.length),
+      );
     }
     for (final entry in _fields.entries) {
-      if (_boundTextControllers.containsKey(entry.key)) {
-        continue;
-      }
-      entry.value.setValue(_initialFieldValues[entry.key]);
+      entry.value._errorText = null;
+      if (_boundTextControllers.containsKey(entry.key)) continue;
+      entry.value.setValue(_pristineValues[entry.key]);
     }
+  }
+
+  /// Removes the field registered under [name] from this controller.
+  ///
+  /// Fields stay registered when their widget leaves the tree, so a
+  /// multi-step form keeps the values and validators of steps that are not
+  /// shown. Call this when a field is gone for good, such as a conditional
+  /// field that was hidden, so it stops appearing in [values], [textValues],
+  /// [errors], [isDirty], and [validate].
+  ///
+  /// Call it once the field's widget has left the tree: a field widget that
+  /// builds again registers its name again. Controllers and focus nodes this
+  /// controller created for [name] are disposed along with this controller,
+  /// since the widget may hold them until it unmounts. Does nothing when
+  /// [name] is not registered.
+  void unregister(String name) {
+    var removed = false;
+
+    final bound = _boundTextControllers.remove(name);
+    final listener = _textControllerListeners.remove(name);
+    if (bound != null) {
+      removed = true;
+      if (listener != null) bound.removeListener(listener);
+    }
+    _textValueParsers.remove(name);
+    _pristineText.remove(name);
+
+    final owned = _textControllers.remove(name);
+    if (owned != null && _ownedTextControllerNames.remove(name)) {
+      _retired.add(owned);
+    }
+
+    if (_textValidators.remove(name) != null) removed = true;
+
+    final field = _fields.remove(name);
+    _pristineValues.remove(name);
+    if (field != null) {
+      removed = true;
+      field.removeListener(notifyListeners);
+      _retired.add(field);
+    }
+
+    final node = _focusNodes.remove(name);
+    if (node != null) _retired.add(node);
+
+    if (removed) notifyListeners();
   }
 
   /// Calls `onSaved` on every field.
@@ -382,14 +470,15 @@ final class GFormController extends ChangeNotifier {
     }
   }
 
-  /// Runs every registered validator. Returns `true` if the form is valid.
+  /// Runs every validator. Returns `true` if the form is valid.
+  ///
+  /// Validates the mounted [Form], which paints error text into its fields,
+  /// and every validator [errors] covers, including bound text validators of
+  /// fields that are not mounted. So a `true` result means [errors] is empty.
+  /// Without a mounted form only the controller's own validators run.
   bool validate() {
-    final formValid = state?.validate() ?? false;
-    final formValues = values();
-    final typedValid = _fields.values
-        .map((field) => field._validate(formValues))
-        .every((message) => message == null);
-    return formValid && typedValid;
+    final formValid = state?.validate() ?? true;
+    return errors().isEmpty && formValid;
   }
 
   /// Validates the form and, if valid, calls [save]. Returns whether the

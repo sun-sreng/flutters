@@ -31,6 +31,9 @@ Replace the old dependencies with `gmana_flutter` and update imports:
   `GDropdownField`, and `GDateField` widgets.
 - The example app has pages for the Flutter extensions, form fields, and
   loading spinners, replacing the three separate example apps.
+- `GFormController.unregister(name)` removes a field, such as a conditional
+  one that was hidden, from `values()`, `textValues()`, `errors()`, `isDirty`,
+  and `validate()`. Fields stay registered when their widget leaves the tree.
 
 ### Changed
 
@@ -48,6 +51,20 @@ Replace the old dependencies with `gmana_flutter` and update imports:
   `Password(...)` throw, or reject one `Password` accepts (three of the four
   character classes). Pass `validationConfig: PasswordValidationConfig.strong()`
   to keep the old policy.
+- **Breaking:** `GFormController.reset()` restores the pristine baseline: text
+  fields go back to their initial text (or the text at the last
+  `markPristine()`) instead of being cleared, typed fields go back to their
+  registered or last-pristine value, and stale error text is cleared.
+  Afterwards `isDirty` is `false`. Call `clearText` for each field to empty
+  it instead.
+- **Breaking:** `GFormController.validate()` returns `true` when no `Form` is
+  mounted and every validator passes; before, it always returned `false`
+  without a mounted form. It also runs the text validators bound with
+  `bindTextValidator`, so it agrees with `errors()` and `hasErrors`, including
+  for fields whose widget is not mounted.
+- `GFormController.isDirty` and `isFieldDirty` cover typed fields such as
+  checkboxes and dropdowns, not only text, and `markPristine()` rebaselines
+  them.
 - `GTextField`'s password toggle is the shared `VisibilityToggle`: it shows
   the "visibility" icon while the text is hidden, matching the form password
   fields, and has a tooltip. The clear button has a "Clear" tooltip.
