@@ -49,6 +49,7 @@ final discounted = lineTotal.applyDiscountPercent(15);
 | `MoneyInvalidCurrencyIssue`      | Currency is not a three-letter code.                                    |
 | `MoneyUnsupportedCurrencyIssue`  | Currency is outside the configured allowed set.                         |
 | `MoneyTooSmallIssue`, `MoneyTooLargeIssue`                             | Minor-unit amount is outside configured limits.                         |
+| `MoneyOutOfRangeIssue`           | Amount is above `Money.maxMinorUnits` (2^53 − 1), the most `Money` holds. |
 
 ## Why Minor Units
 
@@ -215,8 +216,10 @@ final discounted = price.applyDiscountPercent(15); // $85.00
 
 ## Allocation
 
-`allocate` splits an amount across ratios without losing minor units. Remainders
-are distributed one minor unit at a time from the front.
+`allocate` splits an amount across ratios without losing minor units. Each part
+gets its exact share rounded down, and the leftover minor units go one at a time
+to the parts with the largest fractional remainder (earlier parts win ties). A
+zero ratio always receives zero.
 
 Use it for split payments, line-item tax distribution, refunds, and installment
 plans.

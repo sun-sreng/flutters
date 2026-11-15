@@ -15,6 +15,14 @@ import 'currency.dart';
 /// `Either<MoneyValidationIssue, Money>`.
 @immutable
 final class Money implements Comparable<Money> {
+  /// The largest amount, in minor units, that [Money] holds.
+  ///
+  /// This is 2^53 − 1, the largest integer that is exact on every Dart
+  /// platform, including the web. Constructors and arithmetic that would
+  /// exceed it throw a [RangeError] instead of overflowing or losing
+  /// precision; `MoneyValidator` reports it as `MoneyOutOfRangeIssue`.
+  static const int maxMinorUnits = 9007199254740991;
+
   /// The exact, non-negative minor-unit amount.
   final int minorUnits;
 
@@ -23,10 +31,11 @@ final class Money implements Comparable<Money> {
 
   /// Creates a [Money] from exact minor units.
   ///
-  /// Throws a [RangeError] when [minorUnits] is negative.
+  /// Throws a [RangeError] when [minorUnits] is negative or above
+  /// [maxMinorUnits].
   factory Money({required int minorUnits, required Currency currency}) {
-    if (minorUnits < 0) {
-      throw RangeError.range(minorUnits, 0, null, 'minorUnits');
+    if (minorUnits < 0 || minorUnits > maxMinorUnits) {
+      throw RangeError.range(minorUnits, 0, maxMinorUnits, 'minorUnits');
     }
 
     return Money._(minorUnits: minorUnits, currency: currency);
@@ -64,25 +73,35 @@ final class Money implements Comparable<Money> {
 
   /// Creates a [Money] from a numeric decimal value using half-up rounding.
   ///
-  /// Throws an [ArgumentError] when [value] is negative.
+  /// Throws an [ArgumentError] when [value] is negative or not finite, and a
+  /// [RangeError] when the rounded amount is above [maxMinorUnits].
   factory Money.fromNum(num value, Currency currency) {
+    if (!value.isFinite) {
+      throw ArgumentError.value(value, 'value', 'Value must be finite');
+    }
     if (value < 0) {
       throw ArgumentError.value(value, 'value', 'Value cannot be negative');
     }
 
     return Money._(
-      minorUnits: _roundHalfUp(value * currency.subunitFactor),
+      minorUnits: _roundHalfUp(value * currency.subunitFactor, 'value'),
       currency: currency,
     );
   }
 
   /// Creates a [Money] from separate major and minor parts.
+  ///
+  /// Throws a [RangeError] when the combined amount is above [maxMinorUnits].
   factory Money.ofMajor(int major, int minor, Currency currency) {
     if (major < 0) {
       throw ArgumentError.value(major, 'major', 'Major cannot be negative');
     }
     if (minor < 0 || minor >= currency.subunitFactor) {
       throw RangeError.range(minor, 0, currency.subunitFactor - 1, 'minor');
+    }
+    final maxMajor = (maxMinorUnits - minor) ~/ currency.subunitFactor;
+    if (major > maxMajor) {
+      throw RangeError.range(major, 0, maxMajor, 'major');
     }
 
     return Money._(
@@ -142,8 +161,13 @@ final class Money implements Comparable<Money> {
   }
 
   /// Adds another same-currency [Money].
+  ///
+  /// Throws a [RangeError] when the sum is above [maxMinorUnits].
   Money add(Money other) {
     _assertSameCurrency(other);
+    if (other.minorUnits > maxMinorUnits - minorUnits) {
+      throw RangeError('Money addition exceeds maxMinorUnits ($maxMinorUnits)');
+    }
     return Money._(
       minorUnits: minorUnits + other.minorUnits,
       currency: currency,
@@ -176,13 +200,19 @@ final class Money implements Comparable<Money> {
   }
 
   /// Multiplies this amount by [factor] using half-up rounding.
+  ///
+  /// Throws an [ArgumentError] when [factor] is negative or not finite, and a
+  /// [RangeError] when the result is above [maxMinorUnits].
   Money multiply(num factor) {
+    if (!factor.isFinite) {
+      throw ArgumentError.value(factor, 'factor', 'Factor must be finite');
+    }
     if (factor < 0) {
       throw ArgumentError.value(factor, 'factor', 'Factor cannot be negative');
     }
 
     return Money._(
-      minorUnits: _roundHalfUp(minorUnits * factor),
+      minorUnits: _roundHalfUp(minorUnits * factor, 'factor'),
       currency: currency,
     );
   }
@@ -203,8 +233,10 @@ final class Money implements Comparable<Money> {
 
   /// Splits this amount across [ratios] without losing any minor units.
   ///
-  /// Any rounding remainder is distributed one minor unit at a time across the
-  /// leading allocations, so the parts always sum back to this amount.
+  /// Each part first gets its exact share rounded down. The minor units left
+  /// over then go one at a time to the parts with the largest fractional
+  /// remainder, earlier parts first on a tie, so the parts always sum back to
+  /// this amount and a zero ratio always receives zero.
   List<Money> allocate(List<int> ratios) {
     if (ratios.isEmpty) {
       throw ArgumentError.value(ratios, 'ratios', 'Ratios cannot be empty');
@@ -217,8 +249,13 @@ final class Money implements Comparable<Money> {
       );
     }
 
-    final total = ratios.fold<int>(0, (sum, ratio) => sum + ratio);
-    if (total <= 0) {
+    // BigInt keeps `amount * ratio` exact for any int inputs, on every
+    // platform.
+    final total = ratios.fold<BigInt>(
+      BigInt.zero,
+      (sum, ratio) => sum + BigInt.from(ratio),
+    );
+    if (total == BigInt.zero) {
       throw ArgumentError.value(
         ratios,
         'ratios',
@@ -226,23 +263,36 @@ final class Money implements Comparable<Money> {
       );
     }
 
-    var remainder = minorUnits;
-    final allocations = <Money>[];
+    final amount = BigInt.from(minorUnits);
+    final shares = List<int>.filled(ratios.length, 0);
+    final remainders = List<BigInt>.filled(ratios.length, BigInt.zero);
+    var leftover = minorUnits;
 
-    for (final ratio in ratios) {
-      final share = minorUnits * ratio ~/ total;
-      allocations.add(Money._(minorUnits: share, currency: currency));
-      remainder -= share;
+    for (var i = 0; i < ratios.length; i++) {
+      final exact = amount * BigInt.from(ratios[i]);
+      shares[i] = (exact ~/ total).toInt();
+      remainders[i] = exact.remainder(total);
+      leftover -= shares[i];
     }
 
-    for (var i = 0; remainder > 0; i++, remainder--) {
-      allocations[i] = Money._(
-        minorUnits: allocations[i].minorUnits + 1,
-        currency: currency,
-      );
+    // The leftover is the sum of the fractional parts, so it is smaller than
+    // the number of parts with a non-zero remainder, and every unit lands on
+    // a part whose ratio is positive.
+    final byRemainder = [
+      for (var i = 0; i < ratios.length; i++)
+        if (remainders[i] > BigInt.zero) i,
+    ]..sort((a, b) {
+      final order = remainders[b].compareTo(remainders[a]);
+      return order != 0 ? order : a.compareTo(b);
+    });
+    for (var k = 0; k < leftover; k++) {
+      shares[byRemainder[k]]++;
     }
 
-    return allocations;
+    return [
+      for (final share in shares)
+        Money._(minorUnits: share, currency: currency),
+    ];
   }
 
   /// Returns the smaller same-currency amount.
@@ -306,9 +356,16 @@ final class Money implements Comparable<Money> {
   }
 
   // Half-up rounding. Money is always non-negative, so the simple
-  // `(value + 0.5).floor()` form is correct here.
-  static int _roundHalfUp(num value) {
-    return (value + 0.5).floor();
+  // `(value + 0.5).floor()` form is correct here. The range check runs on the
+  // double first, because flooring a value beyond the int range is not exact.
+  static int _roundHalfUp(num value, String name) {
+    final shifted = value + 0.5;
+    if (shifted >= maxMinorUnits + 1) {
+      throw RangeError(
+        'Money amount from $name exceeds maxMinorUnits ($maxMinorUnits)',
+      );
+    }
+    return shifted.floor();
   }
 }
 

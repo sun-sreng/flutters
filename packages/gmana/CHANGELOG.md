@@ -39,6 +39,9 @@ Replace the old dependencies with `gmana` and update imports:
   passed.
 - `MoneyValidationIssue` and `DateRangeValidationIssue` hierarchies with
   `resolveMoneyValidationIssue` and `resolveDateRangeValidationIssue`.
+- `Money.maxMinorUnits` (2^53 − 1), the largest amount `Money` holds exactly on
+  every platform, and `MoneyOutOfRangeIssue` (`money.outOfRange`), which
+  `MoneyValidator` returns for amounts above it.
 
 ### Changed
 
@@ -80,6 +83,15 @@ Replace the old dependencies with `gmana` and update imports:
 
 ### Fixed
 
+- `MoneyValidator.validate` no longer throws a `FormatException` for an amount
+  with more digits than an `int` holds, and no longer lets a large amount
+  overflow into a wrong or negative value. Both now return
+  `MoneyOutOfRangeIssue`. `Money` constructors, `+`, `*`, and `fromNum` throw a
+  `RangeError` instead of overflowing, and `*`/`fromNum` reject non-finite
+  numbers with an `ArgumentError`.
+- `Money.allocate` no longer gives leftover minor units to a part whose ratio is
+  zero. Leftover units now go to the parts with the largest remainder, and the
+  arithmetic is exact for any amount and ratios.
 - `toDateTimeOrNull` (and so `toDateTime`, `year`, `daysUntil`, and the other
   `StringDateX` members) no longer returns `null` for a valid date-time whose
   zone offset moves it to another UTC day, such as

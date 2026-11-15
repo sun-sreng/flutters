@@ -153,6 +153,64 @@ void main() {
       expect(() => amount.allocate([0, 0]), throwsArgumentError);
     });
 
+    test('never allocates to a zero ratio', () {
+      final amount = Money(minorUnits: 3, currency: Currency.usd);
+
+      final parts = amount.allocate([0, 1, 1]);
+
+      expect(parts.first.minorUnits, 0);
+      expect(parts.map((part) => part.minorUnits), [0, 2, 1]);
+      expect(parts.sum(emptyCurrency: Currency.usd), amount);
+    });
+
+    test('gives leftover units to the largest remainders', () {
+      final amount = Money(minorUnits: 100, currency: Currency.usd);
+
+      // Exact shares are 16.67, 33.33 and 50.0, so the single leftover unit
+      // belongs to the first share (remainder .67), not the second (.33).
+      final parts = amount.allocate([1, 2, 3]);
+
+      expect(parts.map((part) => part.minorUnits), [17, 33, 50]);
+    });
+
+    test('allocates large amounts and ratios without overflow', () {
+      final amount = Money(
+        minorUnits: Money.maxMinorUnits,
+        currency: Currency.usd,
+      );
+
+      final parts = amount.allocate([1 << 40, 1 << 40]);
+
+      expect(parts.sum(emptyCurrency: Currency.usd), amount);
+      expect(
+        (parts[0].minorUnits - parts[1].minorUnits).abs(),
+        lessThanOrEqualTo(1),
+      );
+    });
+
+    test('rejects amounts beyond maxMinorUnits', () {
+      final max = Money(
+        minorUnits: Money.maxMinorUnits,
+        currency: Currency.usd,
+      );
+      final cent = Money(minorUnits: 1, currency: Currency.usd);
+
+      expect(
+        () =>
+            Money(minorUnits: Money.maxMinorUnits + 1, currency: Currency.usd),
+        throwsRangeError,
+      );
+      expect(() => max + cent, throwsRangeError);
+      expect(() => max * 2, throwsRangeError);
+      expect(
+        () => Money.ofMajor(Money.maxMinorUnits, 0, Currency.usd),
+        throwsRangeError,
+      );
+      expect(() => Money.fromNum(1e300, Currency.usd), throwsRangeError);
+      expect(() => cent * double.nan, throwsArgumentError);
+      expect(() => cent * double.infinity, throwsArgumentError);
+    });
+
     test('compares, min, max, and sorts same-currency amounts', () {
       final threshold = Money(minorUnits: 5000, currency: Currency.usd);
       final subtotal = Money(minorUnits: 7500, currency: Currency.usd);

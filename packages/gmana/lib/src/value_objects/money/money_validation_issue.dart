@@ -17,6 +17,8 @@ String resolveMoneyValidationIssue(MoneyValidationIssue issue) {
       'Money amount is too small (min minor units: $minMinorUnits, current: $currentMinorUnits)',
     MoneyTooLargeIssue(:final currentMinorUnits, :final maxMinorUnits) =>
       'Money amount is too large (max minor units: $maxMinorUnits, current: $currentMinorUnits)',
+    MoneyOutOfRangeIssue(:final maxMinorUnits) =>
+      'Money amount is too large to represent (max minor units: $maxMinorUnits)',
   };
 }
 
@@ -138,4 +140,20 @@ final class MoneyTooLargeIssue extends MoneyValidationIssue {
 
   @override
   String get code => 'money.tooLarge';
+}
+
+/// The amount exceeds the largest value `Money` can hold exactly.
+///
+/// Unlike [MoneyTooLargeIssue], which reports a configured business limit,
+/// this reports the hard limit `Money.maxMinorUnits`, so the input amount
+/// itself may not fit in an `int`.
+final class MoneyOutOfRangeIssue extends MoneyValidationIssue {
+  /// Creates an out-of-range issue.
+  const MoneyOutOfRangeIssue({required this.maxMinorUnits});
+
+  /// The largest representable amount in minor units.
+  final int maxMinorUnits;
+
+  @override
+  String get code => 'money.outOfRange';
 }
