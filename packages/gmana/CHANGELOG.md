@@ -1,4 +1,4 @@
-## Unreleased
+## 0.2.3 - 2026-11-15
 
 `gmana` now contains the code of `gmana_functional`, `gmana_utils`,
 `gmana_extensions`, `gmana_predicates`, `gmana_validation`, and

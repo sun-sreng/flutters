@@ -1,4 +1,4 @@
-## Unreleased
+## 0.0.12 - 2026-11-15
 
 `gmana_flutter` now contains the code of `gmana_flutter_extensions`,
 `gmana_form`, and `gmana_spinner` instead of depending on them. Those packages

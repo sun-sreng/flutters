@@ -1,6 +1,6 @@
 name: gmana
 description: Pure Dart toolkit — functional types (Either, Option, GResult), extensions, predicates, typed validators, value objects, and resilience utilities.
-version: 0.2.2
+version: 0.2.3
 repository: https://github.com/sun-sreng/flutters/tree/main/packages/gmana
 homepage: https://github.com/sun-sreng/flutters/tree/main/packages/gmana
 issue_tracker: https://github.com/sun-sreng/flutters/issues
