@@ -238,7 +238,9 @@ void main() {
         currency: Currency.usd,
       );
 
-      final parts = amount.allocate([1 << 40, 1 << 40]);
+      // 2^40 each; `1 << 40` would be 0 on the web.
+      const ratio = 1099511627776;
+      final parts = amount.allocate([ratio, ratio]);
 
       expect(parts.sum(emptyCurrency: Currency.usd), amount);
       expect(

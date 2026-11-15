@@ -86,9 +86,8 @@ Future<T> retry<T>(
 
 /// Computes the wait before the attempt following [attempt].
 ///
-/// Doubling saturates at the largest representable [Duration] instead of
-/// overflowing into a negative value, which would turn a long backoff into an
-/// immediate retry.
+/// Doubling saturates at about 285 years instead of overflowing into a
+/// negative value, which would turn a long backoff into an immediate retry.
 Duration _backoffDelay({
   required Duration base,
   required int attempt,
@@ -96,7 +95,9 @@ Duration _backoffDelay({
   required Duration? maxDelay,
   required bool jitter,
 }) {
-  const maxMicroseconds = 9223372036854775807;
+  // 2^53 − 1, the largest integer exact on every platform. A larger literal
+  // does not compile for the web.
+  const maxMicroseconds = 9007199254740991;
 
   var micros = base.inMicroseconds;
   if (micros < 0) micros = 0;

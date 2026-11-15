@@ -299,14 +299,7 @@ final class _IdGeneratorService {
   }
 
   String generateUlid() {
-    var ts = clock.now().millisecondsSinceEpoch;
-
-    // 10 Crockford-base32 chars encode 50 bits of timestamp (enough until ~10K AD).
-    final tsChars = List<String>.filled(10, '');
-    for (var i = 9; i >= 0; i--) {
-      tsChars[i] = _IdGeneratorUtils.crockford[ts & 0x1F];
-      ts >>= 5;
-    }
+    final ts = clock.now().millisecondsSinceEpoch;
 
     // 16 chars of randomness (80 bits).
     final randChars = List<String>.generate(
@@ -314,7 +307,7 @@ final class _IdGeneratorService {
       (_) => _IdGeneratorUtils.crockford[_random.nextInt(32)],
     );
 
-    return tsChars.join() + randChars.join();
+    return _encodeUlidTime(ts) + randChars.join();
   }
 
   /// Timestamp of the most recent monotonic ULID, in epoch milliseconds.
@@ -352,18 +345,26 @@ final class _IdGeneratorService {
 
     _lastUlidMs = ts;
 
-    final tsChars = List<String>.filled(10, '');
-    var remaining = ts;
-    for (var i = 9; i >= 0; i--) {
-      tsChars[i] = _IdGeneratorUtils.crockford[remaining & 0x1F];
-      remaining >>= 5;
-    }
-
-    final buffer = StringBuffer(tsChars.join());
+    final buffer = StringBuffer(_encodeUlidTime(ts));
     for (final digit in _lastUlidSuffix) {
       buffer.write(_IdGeneratorUtils.crockford[digit]);
     }
     return buffer.toString();
+  }
+
+  /// Encodes [ms] as the 10 Crockford base32 characters of a ULID time prefix.
+  ///
+  /// 10 characters hold 50 bits, enough until about the year 37,000. This uses
+  /// `%` and `~/` rather than `&` and `>>`, which truncate to 32 bits on the
+  /// web and would corrupt every timestamp after January 1970 + 49 days.
+  static String _encodeUlidTime(int ms) {
+    final chars = List<String>.filled(10, '');
+    var remaining = ms;
+    for (var i = 9; i >= 0; i--) {
+      chars[i] = _IdGeneratorUtils.crockford[remaining % 32];
+      remaining ~/= 32;
+    }
+    return chars.join();
   }
 
   void _randomiseSuffix() {

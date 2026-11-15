@@ -130,6 +130,13 @@ Replace the old dependencies with `gmana` and update imports:
   size; before, they all went out in one oversized batch. `flush()` now waits
   until the queue is empty instead of returning at once while a batch is
   running.
+- `package:gmana` compiles for the web with dart2js. The `retry` backoff cap was
+  a 64-bit integer literal that JavaScript cannot represent; the cap is now
+  2^53 − 1 microseconds (about 285 years).
+- `IdGenerator.ulid`, `ulidMonotonic`, and their `SecureIdGenerator`
+  counterparts encode the right timestamp on the web. The time prefix was
+  built with bitwise operators, which truncate to 32 bits there, so web ULIDs
+  carried a wrong time and did not sort by creation.
 - `toDateTimeOrNull` (and so `toDateTime`, `year`, `daysUntil`, and the other
   `StringDateX` members) no longer returns `null` for a valid date-time whose
   zone offset moves it to another UTC day, such as
