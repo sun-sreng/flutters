@@ -74,6 +74,65 @@ void main() {
       );
     });
 
+    test('fromDecimalString rejects a comma that is not a thousands group', () {
+      // A European decimal comma used to be stripped, making 1,50 into 150.00.
+      expect(
+        () => Money.fromDecimalString('1,50', Currency.usd),
+        throwsFormatException,
+      );
+      expect(
+        () => Money.fromDecimalString('1,234,56', Currency.usd),
+        throwsFormatException,
+      );
+    });
+
+    test('fromDecimalString throws RangeError above maxMinorUnits', () {
+      expect(
+        () => Money.fromDecimalString('9' * 25, Currency.usd),
+        throwsRangeError,
+      );
+    });
+
+    test('fromDecimalString accepts exactly what MoneyValidator accepts', () {
+      const inputs = [
+        '19.99',
+        ' 19.9 ',
+        '1,234.56',
+        '+5.00',
+        '1,50',
+        '12,34.5',
+        '-1.00',
+        '19.999',
+        '1e3',
+        '',
+        '90071992547409.91',
+        '90071992547409.92',
+      ];
+
+      for (final currency in [Currency.usd, Currency.jpy, Currency.kwd]) {
+        final validator = MoneyValidator(
+          MoneyValidationConfig(defaultCurrency: currency.code),
+        );
+        for (final input in inputs) {
+          final expected = validator.validate(input).rightOrNull();
+          Money? actual;
+          try {
+            actual = Money.fromDecimalString(input, currency);
+          } on FormatException {
+            actual = null;
+          } on RangeError {
+            actual = null;
+          }
+
+          expect(
+            actual,
+            expected,
+            reason: '"$input" in ${currency.code} must parse the same way',
+          );
+        }
+      }
+    });
+
     test('constructs from numeric decimal values', () {
       final price = Money.fromNum(19.99, Currency.usd);
       final rounded = Money.fromNum(10.005, Currency.usd);

@@ -143,8 +143,12 @@ Money.fromDecimalString('500', Currency.jpy); // 500
 Money.fromDecimalString('3.500', Currency.kwd); // 3500
 ```
 
-The parser pads missing minor digits and rejects extra minor digits beyond the
-currency precision. Invalid input throws `FormatException`.
+The parser follows the same rules as `MoneyValidator`: it pads missing minor
+digits, rejects extra minor digits beyond the currency precision, and accepts
+commas only as thousands separators in groups of three (`1,234.56`, but not
+`1,50`). Invalid input throws `FormatException`; an amount above
+`Money.maxMinorUnits` throws `RangeError`. Use `MoneyValidator` when you want
+an issue instead of an exception.
 
 ```dart
 try {

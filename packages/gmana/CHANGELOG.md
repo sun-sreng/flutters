@@ -94,6 +94,11 @@ Replace the old dependencies with `gmana` and update imports:
   (`12`, `-2.50`, `.5`). Exponent (`1e-5`) and hexadecimal (`0x1F`) input is
   now `NumberInvalidFormatIssue`; before, `1e-5` passed a two-decimal-place
   limit and `0x1F` was read as 31.
+- **Breaking:** `Money.fromDecimalString` parses with `MoneyValidator`, so the
+  two accept exactly the same text. A comma must start a group of three
+  digits: `'1,50'` now throws `FormatException` instead of becoming 150.00. A
+  leading `+` is accepted, and an amount above `Money.maxMinorUnits` throws
+  `RangeError`.
 - **Breaking:** `Stream.debounce` and `Stream.throttle` use the stricter
   implementation from the former `gmana_utils`: both throw `ArgumentError`
   for a non-positive duration, and `throttle` takes `trailing:`.

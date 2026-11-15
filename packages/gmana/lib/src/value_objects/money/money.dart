@@ -1,6 +1,9 @@
 import 'package:meta/meta.dart';
 
 import 'currency.dart';
+import 'money_validation_config.dart';
+import 'money_validation_issue.dart';
+import 'money_validator.dart';
 
 /// A value object representing a non-negative monetary amount.
 ///
@@ -41,34 +44,29 @@ final class Money implements Comparable<Money> {
     return Money._(minorUnits: minorUnits, currency: currency);
   }
 
-  /// Parses a decimal string into [Money].
+  /// Parses decimal text into [Money] with the rules `MoneyValidator` uses.
   ///
-  /// Pads minor digits to match [currency]'s decimal places and rejects input
-  /// with too many fractional digits, a negative sign, or non-numeric content.
+  /// Accepts digits with an optional `+` sign and `.` fraction, and comma
+  /// thousands separators in groups of three (`1,234.56`). The fraction may
+  /// have up to [currency]'s decimal places and is padded when shorter.
+  /// Surrounding whitespace is ignored.
+  ///
+  /// Throws a [FormatException] for empty, malformed or negative input, or too
+  /// many decimal places, and a [RangeError] when the amount is above
+  /// [maxMinorUnits]. Use `MoneyValidator` to get these as issues instead.
   factory Money.fromDecimalString(String value, Currency currency) {
-    final trimmed = value.trim().replaceAll(',', '');
-    if (!RegExp(r'^\d+(\.\d+)?$').hasMatch(trimmed)) {
-      throw FormatException('Invalid money amount', value);
-    }
-
-    final parts = trimmed.split('.');
-    final major = int.parse(parts.first);
-    final rawMinor = parts.length == 1 ? '' : parts.last;
-    if (rawMinor.length > currency.decimalPlaces) {
-      throw FormatException(
-        'Too many decimal places for ${currency.code}',
-        value,
-      );
-    }
-
-    final paddedMinor = rawMinor.padRight(currency.decimalPlaces, '0');
-    final normalizedMinor =
-        currency.decimalPlaces == 0
-            ? ''
-            : paddedMinor.substring(0, currency.decimalPlaces);
-    final minor = normalizedMinor.isEmpty ? 0 : int.parse(normalizedMinor);
-
-    return Money.ofMajor(major, minor, currency);
+    return MoneyValidator(MoneyValidationConfig(defaultCurrency: currency.code))
+        .validate(value)
+        .fold(
+          (issue) =>
+              issue is MoneyOutOfRangeIssue
+                  ? throw RangeError(resolveMoneyValidationIssue(issue))
+                  : throw FormatException(
+                    resolveMoneyValidationIssue(issue),
+                    value,
+                  ),
+          (money) => money,
+        );
   }
 
   /// Creates a [Money] from a numeric decimal value using half-up rounding.
