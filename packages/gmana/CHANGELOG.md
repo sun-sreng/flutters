@@ -121,6 +121,15 @@ Replace the old dependencies with `gmana` and update imports:
 - The whole-word blacklist in `TextValidator` checks every occurrence of a
   word, so `'class ass'` with `{'ass'}` is rejected. Before, it stopped after
   the first partial match.
+- `AsyncCache.invalidate`, `invalidateWhere`, `set`, and `clear` now supersede
+  a fetch in flight for the key. Before, the fetch stored its stale result when
+  it finished, and a fetch from before `clear()` removed the newer in-flight
+  entry, so the next `get` fetched a third time.
+- `Batcher` never sends more than `maxBatchSize` items in one batch. Items
+  added while a batch is being sent go out in further batches of at most that
+  size; before, they all went out in one oversized batch. `flush()` now waits
+  until the queue is empty instead of returning at once while a batch is
+  running.
 - `toDateTimeOrNull` (and so `toDateTime`, `year`, `daysUntil`, and the other
   `StringDateX` members) no longer returns `null` for a valid date-time whose
   zone offset moves it to another UTC day, such as

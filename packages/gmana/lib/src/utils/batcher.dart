@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 class _BatchItem<T, R> {
   final T input;
@@ -8,6 +9,11 @@ class _BatchItem<T, R> {
 }
 
 /// Batches individual calls into bulk requests based on size or time thresholds.
+///
+/// A batch is sent when [maxBatchSize] items are queued or [maxDelay] has
+/// passed since the first one. Batches are sent one at a time and never hold
+/// more than [maxBatchSize] items; items added while a batch is being sent
+/// go out in the following batches.
 class Batcher<T, R> {
   /// Maximum number of items in a single batch.
   final int maxBatchSize;
@@ -20,7 +26,7 @@ class Batcher<T, R> {
 
   final List<_BatchItem<T, R>> _queue = [];
   Timer? _timer;
-  bool _isProcessing = false;
+  Completer<void>? _draining;
   bool _disposed = false;
 
   /// Whether [dispose] has been called.
@@ -62,21 +68,53 @@ class Batcher<T, R> {
     return completer.future;
   }
 
-  /// Manually triggers an immediate flush of queued items.
-  Future<void> flush() async {
-    await _flush();
-  }
+  /// Sends every queued item now, in batches of at most [maxBatchSize].
+  ///
+  /// The returned future completes once the queue is empty, including items
+  /// added while it runs. If batches are already being sent, this waits for
+  /// them and for the rest of the queue.
+  Future<void> flush() => _flush();
 
-  Future<void> _flush() async {
+  Future<void> _flush() {
     _timer?.cancel();
     _timer = null;
 
-    if (_queue.isEmpty || _isProcessing) return;
+    final running = _draining;
+    if (running != null) return running.future;
+    if (_queue.isEmpty) return Future<void>.value();
 
-    final batch = List<_BatchItem<T, R>>.from(_queue);
-    _queue.clear();
+    final draining = _draining = Completer<void>();
+    unawaited(_drain(draining));
+    return draining.future;
+  }
 
-    _isProcessing = true;
+  /// Sends the queue one batch at a time until it is empty.
+  ///
+  /// Only one drain runs at a time. It clears [_draining] in the same
+  /// synchronous step that finds the queue empty, so an item added afterwards
+  /// always starts a new drain.
+  Future<void> _drain(Completer<void> draining) async {
+    try {
+      while (_queue.isNotEmpty) {
+        _timer?.cancel();
+        _timer = null;
+
+        final count = math.min(_queue.length, maxBatchSize);
+        final batch = _queue.sublist(0, count);
+        _queue.removeRange(0, count);
+        await _send(batch);
+      }
+    } finally {
+      _draining = null;
+      draining.complete();
+    }
+  }
+
+  /// Runs [handler] on [batch] and settles each item's future.
+  ///
+  /// Never throws: a handler error, or a result count that does not match,
+  /// fails every item in the batch instead.
+  Future<void> _send(List<_BatchItem<T, R>> batch) async {
     try {
       final inputs = batch.map((b) => b.input).toList();
       final results = await handler(inputs);
@@ -96,11 +134,6 @@ class Batcher<T, R> {
     } catch (e, st) {
       for (final item in batch) {
         item.completer.completeError(e, st);
-      }
-    } finally {
-      _isProcessing = false;
-      if (_queue.isNotEmpty) {
-        unawaited(_flush());
       }
     }
   }

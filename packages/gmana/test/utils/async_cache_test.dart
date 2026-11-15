@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:gmana/utilities.dart';
 import 'package:test/test.dart';
 
@@ -76,6 +78,89 @@ void main() {
 
       cache.invalidate('k1');
       expect(cache.containsKey('k1'), isFalse);
+    });
+  });
+
+  group('AsyncCache with a fetch in flight', () {
+    late AsyncCache<String, String> cache;
+    late List<Completer<String>> loads;
+
+    Future<String> load() {
+      final completer = Completer<String>();
+      loads.add(completer);
+      return completer.future;
+    }
+
+    setUp(() {
+      cache = AsyncCache<String, String>();
+      loads = [];
+    });
+
+    test('invalidate drops the fetch so its result is not stored', () async {
+      final stale = cache.get('k', ifAbsent: load);
+      cache.invalidate('k');
+      loads.single.complete('old');
+
+      // The caller that started the fetch still gets its result.
+      expect(await stale, 'old');
+      expect(cache.getIfPresent('k'), isNull);
+
+      final fresh = cache.get('k', ifAbsent: load);
+      expect(loads, hasLength(2), reason: 'a get after invalidate refetches');
+      loads.last.complete('new');
+      expect(await fresh, 'new');
+    });
+
+    test('invalidateWhere drops matching fetches', () async {
+      final stale = cache.get('k', ifAbsent: load);
+      expect(cache.invalidateWhere((key) => key == 'k'), 0);
+      loads.single.complete('old');
+
+      await stale;
+      expect(cache.getIfPresent('k'), isNull);
+    });
+
+    test('set wins over a fetch that finishes after it', () async {
+      final stale = cache.get('k', ifAbsent: load);
+      cache.set('k', 'explicit');
+      loads.single.complete('old');
+
+      await stale;
+      expect(cache.getIfPresent('k'), 'explicit');
+    });
+
+    test('a fetch from before clear does not disturb a newer one', () async {
+      final stale = cache.get('k', ifAbsent: load);
+      cache.clear();
+      final fresh = cache.get('k', ifAbsent: load);
+      expect(loads, hasLength(2));
+
+      loads.first.complete('old');
+      await stale;
+
+      // The newer fetch is still the one in flight, so this joins it.
+      final joined = cache.get('k', ifAbsent: load);
+      expect(loads, hasLength(2), reason: 'deduplication must survive');
+
+      loads.last.complete('new');
+      expect(await fresh, 'new');
+      expect(await joined, 'new');
+      expect(cache.getIfPresent('k'), 'new');
+    });
+
+    test('a failed stale fetch leaves the newer fetch in place', () async {
+      final stale = cache.get('k', ifAbsent: load);
+      cache.invalidate('k');
+      final fresh = cache.get('k', ifAbsent: load);
+
+      loads.first.completeError(StateError('boom'));
+      await expectLater(stale, throwsStateError);
+
+      final joined = cache.get('k', ifAbsent: load);
+      expect(loads, hasLength(2));
+      loads.last.complete('new');
+      expect(await fresh, 'new');
+      expect(await joined, 'new');
     });
   });
 }
