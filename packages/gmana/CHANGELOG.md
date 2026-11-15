@@ -142,6 +142,11 @@ Replace the old dependencies with `gmana` and update imports:
   finished in half-open counted as the trial: its success closed the circuit
   and its failure re-opened it, and a finished trial from an earlier half-open
   period could free the slot of the current one.
+- `Right.hashCode` agrees with `==`: two `Right`s holding equal lists compared
+  equal but hashed differently, so a `Set` or `Map` kept both. `Left` and
+  `Right` now share one rule: `==` ignores type arguments (it was asymmetric for
+  `Right`, and `Left<String, int>('e') != Left<String, Never>('e')`), and list
+  values compare element by element on both sides (before, only on `Right`).
 - `toDateTimeOrNull` (and so `toDateTime`, `year`, `daysUntil`, and the other
   `StringDateX` members) no longer returns `null` for a valid date-time whose
   zone offset moves it to another UTC day, such as

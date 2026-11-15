@@ -168,6 +168,49 @@ void main() {
       expect(const Right<String, int>(21).toString(), 'Right(21)');
     });
 
+    group('equality agrees with hashCode', () {
+      test('equal list values hash the same', () {
+        // Distinct, non-const lists, so equality cannot come from identity.
+        final a = Right<String, List<int>>(List.of(const [1, 2]));
+        final b = Right<String, List<int>>(List.of(const [1, 2]));
+
+        expect(a, b);
+        expect(a.hashCode, b.hashCode);
+        expect({a, b}, hasLength(1));
+        expect(a, isNot(Right<String, List<int>>(List.of(const [2, 1]))));
+      });
+
+      test('Left compares list values the same way as Right', () {
+        final a = Left<List<int>, String>(List.of(const [1, 2]));
+        final b = Left<List<int>, String>(List.of(const [1, 2]));
+
+        expect(a, b);
+        expect(a.hashCode, b.hashCode);
+      });
+
+      test('equality is symmetric across type arguments', () {
+        const Either<String, int> wide = Right(1);
+        const Right<Never, int> narrow = Right(1);
+        const Either<String, int> wideLeft = Left('e');
+        const Left<String, Never> narrowLeft = Left('e');
+
+        expect(wide == narrow, narrow == wide);
+        expect(wide == narrow, isTrue);
+        expect(wide.hashCode, narrow.hashCode);
+        expect(wideLeft == narrowLeft, narrowLeft == wideLeft);
+        expect(wideLeft == narrowLeft, isTrue);
+        expect(wideLeft.hashCode, narrowLeft.hashCode);
+      });
+
+      test('Left and Right never equal each other', () {
+        const Either<int, int> left = Left(1);
+        const Either<int, int> right = Right(1);
+
+        expect(left == right, isFalse);
+        expect(right == left, isFalse);
+      });
+    });
+
     test('Either.tryCatch handles exceptions safely', () {
       final success = Either.tryCatch<String, int>(
         () => 42,

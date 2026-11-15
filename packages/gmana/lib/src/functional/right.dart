@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 
 import 'either.dart';
+import 'either_value_equality.dart';
 import 'left.dart';
 
 /// A concrete implementation of [Either] that represents the successful value (`Right`) in a computation.
@@ -98,25 +99,17 @@ class Right<L, R> extends Either<L, R> {
   @override
   Either<R, L> swap() => Left<R, L>(value);
 
+  /// Whether [other] is a [Right] with an equal value.
+  ///
+  /// Type arguments are not compared, so the result is the same either way
+  /// round. Two list values are equal when their elements are, in order.
   @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! Right<L, R>) return false;
-    final otherVal = other.value;
-    if (value is List && otherVal is List) {
-      final listA = value as List;
-      final listB = otherVal as List;
-      if (listA.length != listB.length) return false;
-      for (var i = 0; i < listA.length; i++) {
-        if (listA[i] != listB[i]) return false;
-      }
-      return true;
-    }
-    return value == otherVal;
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Right && eitherValueEquals(value, other.value);
 
   @override
-  int get hashCode => Object.hash(runtimeType, value);
+  int get hashCode => Object.hash(Right, eitherValueHash(value));
 
   @override
   String toString() => 'Right($value)';
