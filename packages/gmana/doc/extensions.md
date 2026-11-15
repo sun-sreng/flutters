@@ -314,20 +314,21 @@ math.pi.toDegrees    // 180.0
 ```dart
 String? s;
 s.orEmpty            // ''
-s.isNullOrBlank      // true
+s.isBlank            // true  (predicate, see doc/predicates.md)
 s.orNull             // null (coerces blank '' to null)
 s.mapNotBlank((v) => v.toUpperCase())  // null if blank, else transformed
 ```
 
-### Predicates (`StringX`)
+### Predicates
+
+Blank and character-class checks such as `isBlank`, `isNotBlank`, and
+`isAlphaNumeric` are string predicates. See [Predicates](predicates.md).
 
 ```dart
-'hello'.isBlank          // false
 '  '.isBlank             // true
 'hello'.isNotBlank       // true
-'A1B2'.isAlphanumeric    // true
-'hello'.blankToNull      // 'hello'
-'  '.blankToNull         // null
+'A1B2'.isAlphaNumeric    // true
+'  '.orNull              // null
 ```
 
 ### Case conversion
@@ -382,7 +383,7 @@ s.mapNotBlank((v) => v.toUpperCase())  // null if blank, else transformed
 'hello world'.removeWhitespace        // 'helloworld'
 'héllo'.reversed                      // 'ollèh' (Unicode-safe)
 'hello world'.countOccurrences('l')   // 3
-'hello'.hasLengthBetween(3, 10)       // true
+' hello '.trim().isLength(3, 10)      // true  (predicate, counts emoji as one)
 'Hello World'.readingTimeMinutes      // 1  (225 wpm estimate)
 ```
 
@@ -456,24 +457,17 @@ nickname.ifBlank('Anonymous')  // 'Anonymous'
 
 ### Validation (`StringValidation`)
 
-Declared in `gmana_validation`, next to the validators it calls, and
-re-exported from this package.
+Declared next to the validators it calls. Format checks with no validator
+behind them (URL, UUID, IP, MAC, hex color, slug, credit card) are string
+predicates: use `isUrl()`, `isUuid()`, `isIP()`, `isMacAddress`,
+`isHexColor`, `isSlug`, and `isCreditCard` from [Predicates](predicates.md).
 
 ```dart
 'user@example.com'.isValidEmail       // true
 '+12025551234'.isValidE164Phone       // true
 '555-1234'.isValidPhone               // true  (7–15 digits after stripping)
-'https://example.com'.isValidUrl      // true
-'#FF5500'.isValidHexColor             // true
-'192.168.0.1'.isValidIpv4            // true
-'2001:db8::1'.isValidIpv6            // true
-'192.168.0.1'.isValidIpAddress       // true
 '2024-01-31'.isValidIsoDate          // true
-'550e8400-e29b-41d4-a716-446655440000'.isValidUuid // true
 '550e8400-e29b-11d4-a716-446655440000'.isValidUuidAny // true
-'4111111111111111'.isValidCreditCard // true  (Luhn check)
-'AA:BB:CC:DD:EE:FF'.isValidMacAddress // true
-'hello-world'.isValidSlug            // true
 'aGVsbG8='.isValidBase64             // true
 'header.payload.signature'.isValidJwt // structure only, no signature verification
 'John O\'Brien'.isValidName          // true
@@ -484,7 +478,7 @@ re-exported from this package.
 'weak'.passwordStrength   // {PasswordStrength.minLength, PasswordStrength.uppercase, ...}
 
 // Length guard (protects against huge inputs)
-'hello'.isWithinLength(min: 3, max: 10)  // true
+'hello'.isLength(3, 10)  // true  (predicate)
 ```
 
 ### Date strings (`StringDateX`)

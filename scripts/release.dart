@@ -1,7 +1,7 @@
 // Versions packages of this pub workspace. Nobody edits a `version:` line by
 // hand; this does it for every package named on the command line:
 //
-//   dart run scripts/release.dart gmana_utils:minor gmana:patch
+//   dart run scripts/release.dart gmana:minor gmana_flutter:patch
 //   dart run scripts/release.dart gmana:0.3.0 --dry-run
 //   dart run scripts/release.dart all:patch --push
 //

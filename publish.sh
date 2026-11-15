@@ -12,7 +12,7 @@ Usage:
 
 Examples:
   ./publish.sh --dry-run
-  ./publish.sh gmana gmana_value_objects gmana_flutter
+  ./publish.sh gmana gmana_flutter
 USAGE
 }
 

@@ -98,7 +98,7 @@ void _identifiers() {
   print('  secure api key: $token');
   print('  safeEqual(self): ${SecureIdGenerator.safeEqual(token, token)}');
 
-  final encoded = IdGenerator.encodeToBase64(['package', 'gmana_utils']);
+  final encoded = IdGenerator.encodeToBase64(['package', 'gmana']);
   print('  round-tripped payload: ${IdGenerator.decodeFromBase64(encoded)}');
 }
 

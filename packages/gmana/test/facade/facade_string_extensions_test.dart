@@ -1,9 +1,9 @@
 import 'package:gmana/gmana.dart';
 import 'package:test/test.dart';
 
-// gmana_extensions and gmana_predicates both declare these members on String.
-// This file fails to compile, rather than fails at runtime, if the facade ever
-// exports both declarations again.
+// These members used to be declared by two extensions on String. This file
+// fails to compile, rather than fails at runtime, if the facade ever exports
+// two declarations of them again.
 void main() {
   test('String classification members resolve through the facade', () {
     const text = 'user@example.com';

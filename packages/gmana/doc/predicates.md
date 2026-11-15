@@ -103,14 +103,9 @@ name.isNotBlank                    // false
 DateTime.now().isWeekend           // true/false
 ```
 
-> **Using this through `package:gmana`?** `gmana_extensions` declares some of
-> the same names on `String` — `isAlpha`, `isEmail`, `isNumeric`, `isUrl`,
-> `containsIgnoreCase`, and the date predicates `isDate`, `isAfter`,
-> `isBefore`, `isBetween`, `isToday`, `isPast`, `isFuture`, `isWeekday`,
-> `isWeekend`, `isLeapYear`. When both libraries are in scope Dart reports
-> those calls as ambiguous. Use the top-level function form
-> (`isEmail(value)`), which is never ambiguous, or an explicit extension
-> override: `GmanaStringPredicatesX(value).isEmail`.
+> On a non-null `String`, the `String`-typed predicate extension wins over the
+> `String?` one, so `value.isBlank` is never ambiguous. The top-level function
+> form (`isEmail(value)`) works too.
 
 ---
 

@@ -99,22 +99,6 @@ extension StringValidation on String {
   PasswordStrength get passwordStrength =>
       PasswordStrength.fromConfig(this, const PasswordValidationConfig());
 
-  /// Length bounded — prevents silent acceptance of huge inputs.
-  bool isWithinLength({required int min, required int max}) {
-    if (min < 0) {
-      throw ArgumentError.value(min, 'min', 'must not be negative');
-    }
-    if (max < min) {
-      throw ArgumentError.value(
-        max,
-        'max',
-        'must be greater than or equal to min',
-      );
-    }
-
-    return length >= min && length <= max;
-  }
-
   /// Checks if the string is a conventional username.
   ///
   /// Allows letters, numbers, underscores, and dots. The first and last

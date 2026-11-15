@@ -5,12 +5,12 @@ import '../controllers/form_controller.dart';
 /// Thin wrapper around Flutter's [Form] that uses a [GFormController].
 ///
 /// Provides the controller to descendants via [controllerOf] / [maybeControllerOf]
-/// so named gmana_form fields can resolve their text controllers automatically.
+/// so named form fields can resolve their text controllers automatically.
 class GForm extends StatelessWidget {
   /// Controller that owns the form key and named text controllers.
   final GFormController controller;
 
-  /// The child widget — usually a column of gmana_form fields.
+  /// The child widget — usually a column of form fields.
   final Widget child;
 
   /// See [Form.autovalidateMode].
@@ -58,7 +58,7 @@ class GForm extends StatelessWidget {
     if (controller == null) {
       throw FlutterError(
         'No GForm found in context. '
-        'Wrap named gmana_form fields with GForm or pass a controller directly.',
+        'Wrap named form fields with GForm or pass a controller directly.',
       );
     }
     return controller;

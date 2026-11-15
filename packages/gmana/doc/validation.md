@@ -31,7 +31,7 @@ import 'package:gmana/validation.dart';
 
 ## Core types
 
-Every validator returns a `ValidationResult`, which is an alias for `Either<TIssue, TValue>` from `gmana_functional`.
+Every validator returns a `ValidationResult`, which is an alias for `Either<TIssue, TValue>` from [functional](functional.md).
 
 ```dart
 // Aliases
@@ -76,7 +76,7 @@ result.fold(
 The named extensions `GmanaValidationStringX` and
 `GmanaValidationResultX` provide concise entry points without changing the
 validators or their typed `Either` results. `StringValidation` adds boolean
-shortcuts — `isValidEmail`, `isValidPassword`, `isValidPhone`, `isValidUrl`,
+shortcuts — `isValidEmail`, `isValidPassword`, `isValidPhone`,
 `isValidUsername()`, `passwordStrength`, and the rest — for call sites that only
 need a yes or no.
 
@@ -559,7 +559,7 @@ String myEmailMessages(EmailValidationIssue issue) => switch (issue) {
 
 ## Using with Flutter forms
 
-Wire any validator into a `TextFormField` using the `asFormValidator` adapter from `gmana_form`:
+Wire any validator into a `TextFormField` using the `asFormValidator` adapter from `package:gmana_flutter/form.dart`:
 
 ```dart
 import 'package:gmana_flutter/form.dart';
@@ -582,4 +582,4 @@ TextFormField(
 )
 ```
 
-Or use the pre-wired field widgets from `gmana_form` (`GEmailField`, `GPasswordField`, `GTextField`, `GNumberField`) which handle this internally.
+Or use the pre-wired field widgets from `gmana_flutter` (`GEmailField`, `GPasswordField`, `GTextField`, `GNumberField`) which handle this internally.

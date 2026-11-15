@@ -1,9 +1,8 @@
 import 'package:gmana/functional.dart';
 import 'package:test/test.dart';
 
-// The combinators are exercised in gmana_utils, which re-exports this type
-// under its former names. These cover the type and the bridge from the package
-// that declares them.
+// The async and collection combinators are exercised in test/utils. These cover
+// the type itself.
 void main() {
   group('GResult', () {
     test('is exhaustive over GSuccess and GFailure', () {

@@ -42,13 +42,13 @@ final discounted = lineTotal.applyDiscountPercent(15);
 | `Money.allocate(ratios)`                                     | Split payments/refunds/tax while preserving the original total exactly. |
 | `Iterable<Money>.sum(emptyCurrency: ...)`                    | Sum cart line totals.                                                   |
 | `formatted`, `formattedWithCode`, `decimalString`            | Deterministic display/API strings.                                      |
-| `MoneyEmpty`                                                 | Required money input is empty.                                          |
-| `MoneyInvalidFormat`                                         | Input is not a plain decimal amount.                                    |
-| `MoneyNegativeNotAllowed`                                    | Negative money is disallowed.                                           |
-| `MoneyDecimalPlacesExceeded`                                 | Decimal places exceed config.                                           |
-| `MoneyInvalidCurrency`                                       | Currency is not a three-letter code.                                    |
-| `MoneyUnsupportedCurrency`                                   | Currency is outside the configured allowed set.                         |
-| `MoneyTooSmall`, `MoneyTooLarge`                             | Minor-unit amount is outside configured limits.                         |
+| `MoneyEmptyIssue`                | Required money input is empty.                                          |
+| `MoneyInvalidFormatIssue`        | Input is not a plain decimal amount.                                    |
+| `MoneyNegativeNotAllowedIssue`   | Negative money is disallowed.                                           |
+| `MoneyDecimalPlacesExceededIssue`| Decimal places exceed config.                                           |
+| `MoneyInvalidCurrencyIssue`      | Currency is not a three-letter code.                                    |
+| `MoneyUnsupportedCurrencyIssue`  | Currency is outside the configured allowed set.                         |
+| `MoneyTooSmallIssue`, `MoneyTooLargeIssue`                             | Minor-unit amount is outside configured limits.                         |
 
 ## Why Minor Units
 
@@ -305,23 +305,23 @@ final result = MoneyValidator(MoneyValidationConfig.ecommerce())
     .validate('1,234.56', currency: 'USD');
 
 result.fold(
-  (error) => print(DefaultValidationErrorMessages().getMessage(error)),
+  (issue) => print(resolveValidationIssue(issue)),
   (amount) => print(amount.formattedWithCode),
 );
 ```
 
-Common validation errors:
+Common validation issues:
 
-| Error                        | Meaning                                            |
-| ---------------------------- | -------------------------------------------------- |
-| `MoneyEmpty`                 | Required money input is empty.                     |
-| `MoneyInvalidFormat`         | Input is not a plain decimal amount.               |
-| `MoneyNegativeNotAllowed`    | Negative money is disallowed.                      |
-| `MoneyDecimalPlacesExceeded` | Decimal places exceed currency precision.          |
-| `MoneyInvalidCurrency`       | Currency code is malformed or unsupported.         |
-| `MoneyUnsupportedCurrency`   | Currency is outside the configured allowed set.    |
-| `MoneyTooSmall`              | Minor-unit amount is below the configured minimum. |
-| `MoneyTooLarge`              | Minor-unit amount is above the configured maximum. |
+| Issue                             | Meaning                                            |
+| --------------------------------- | -------------------------------------------------- |
+| `MoneyEmptyIssue`                | Required money input is empty.                     |
+| `MoneyInvalidFormatIssue`        | Input is not a plain decimal amount.               |
+| `MoneyNegativeNotAllowedIssue`   | Negative money is disallowed.                      |
+| `MoneyDecimalPlacesExceededIssue`| Decimal places exceed currency precision.          |
+| `MoneyInvalidCurrencyIssue`      | Currency code is malformed or unsupported.         |
+| `MoneyUnsupportedCurrencyIssue`  | Currency is outside the configured allowed set.    |
+| `MoneyTooSmallIssue`             | Minor-unit amount is below the configured minimum. |
+| `MoneyTooLargeIssue`             | Minor-unit amount is above the configured maximum. |
 
 ## DTO Mapping
 

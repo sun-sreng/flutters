@@ -23,12 +23,12 @@ import 'package:gmana/utilities.dart';
 - [mapConcurrent & forEachConcurrent](#mapconcurrent--foreachconcurrent)
 - [Retry](#retry)
 - [tryOrNull & tryOrDefault](#tryornull--tryordefault)
-- [Result](#result)
-- [Result extensions](#result-extensions)
+- [GResult](#gresult)
+- [GResult extensions](#gresult-extensions)
 - [CircuitBreaker](#circuitbreaker)
 - [AsyncCache & AsyncMemoizer](#asynccache--asyncmemoizer)
 - [Batcher](#batcher)
-- [Choosing between Result and gmana_functional](#choosing-between-result-and-gmana_functional)
+- [Choosing between GResult and the functional types](#choosing-between-gresult-and-the-functional-types)
 
 
 ---
@@ -895,12 +895,12 @@ final remote = await tryOrElseAsync(
 
 ---
 
-## Result
+## GResult
 
 Type-safe success or failure monad:
 
-> The type is declared in [`gmana_functional`](../gmana_functional) as
-> `GResult`, `GSuccess`, and `GFailure`, and re-exported here.
+> The type is declared in [functional](functional.md) as `GResult`,
+> `GSuccess`, and `GFailure`.
 
 ```dart
 final result = GResult.capture(() => parseData());
@@ -925,7 +925,7 @@ final mapped = result.map((v) => v * 2);
 | `getOrElse(fallback)`           | Success value, or a fixed fallback                           |
 | `getOrThrow()`                  | Success value, or throws the error                           |
 | `map` / `mapError` / `mapBoth`  | Transform one branch, the other, or whichever is present     |
-| `flatMap(fn)`                   | Chain into another `Result`                                  |
+| `flatMap(fn)`                   | Chain into another `GResult`                                  |
 | `filter(predicate, orElse:)`    | Demote a success failing the predicate into a failure        |
 | `swap()`                        | Exchange the success and failure branches                    |
 | `when(...)` / `fold(...)`       | Collapse both branches into one value                        |
@@ -934,15 +934,15 @@ final mapped = result.map((v) => v * 2);
 
 ```dart
 // Discards the stack trace.
-final quick = Result.capture(() => parseData());
+final quick = GResult.capture(() => parseData());
 
 // Keeps it — the mapper receives both error and stack trace.
-final detailed = Result.captureWith<Config, String>(
+final detailed = GResult.captureWith<Config, String>(
   () => parseConfig(raw),
   (error, stackTrace) => 'Invalid config: $error',
 );
 
-final remote = await Result.captureAsyncWith<Data, String>(
+final remote = await GResult.captureAsyncWith<Data, String>(
   () => fetchData(),
   (error, stackTrace) => 'Fetch failed: $error',
 );
@@ -951,7 +951,7 @@ final remote = await Result.captureAsyncWith<Data, String>(
 ### Working with nullables
 
 ```dart
-final user = Result.fromNullable<User, String>(
+final user = GResult.fromNullable<User, String>(
   cache[id],
   () => 'No cached user for $id',
 );
@@ -964,8 +964,8 @@ clauses. Any other error type is wrapped in a `StateError` describing it,
 rather than throwing a bare value that callers would struggle to handle.
 
 ```dart
-Result<int, Object>.failure(StateError('boom')).getOrThrow(); // throws StateError
-Result<int, String>.failure('bad input').getOrThrow();        // throws StateError('Result was a failure: bad input')
+GResult<int, Object>.failure(StateError('boom')).getOrThrow(); // throws StateError
+GResult<int, String>.failure('bad input').getOrThrow();        // throws StateError('GResult was a failure: bad input')
 ```
 
 Prefer `getOrElse` or `when` where a throw is not wanted.
@@ -988,7 +988,7 @@ final port = parsed.filter(
 
 ---
 
-## Result extensions
+## GResult extensions
 
 The named extensions `GmanaResultX`, `GmanaFutureToResultX`,
 `GmanaFutureResultX`, and `GmanaIterableResultX` add lazy recovery,
@@ -996,10 +996,10 @@ branch-specific observation, asynchronous composition, Future conversion, and
 collection aggregation. They preserve the original error type unless an API
 explicitly maps it.
 
-### Recover and observe a Result
+### Recover and observe a GResult
 
 ```dart
-final parsed = Result<int, String>.failure('missing port');
+final parsed = GResult<int, String>.failure('missing port');
 
 // The fallback runs only for Failure.
 final port = parsed.getOrElseGet((error) => 8080);
@@ -1009,7 +1009,7 @@ final recovered = parsed
     .inspectSuccess((value) => print('Using port $value'));
 
 final recoveredFromBackup = parsed.recoverWith(
-  (error) => Result<int, String>.success(8081),
+  (error) => GResult<int, String>.success(8081),
 );
 
 parsed.inspectFailure((error) => print('Could not parse: $error'));
@@ -1019,11 +1019,11 @@ parsed.inspectFailure((error) => print('Could not parse: $error'));
 | ------------------------ | ------------------------------------------------------------------------- |
 | `getOrElseGet(fallback)` | Returns the success value; lazily calls `fallback` only for a failure     |
 | `recover(transform)`     | Converts a failure into a success; leaves an existing success unchanged  |
-| `recoverWith(transform)` | Replaces a failure with another `Result`; leaves a success unchanged      |
+| `recoverWith(transform)` | Replaces a failure with another `GResult`; leaves a success unchanged      |
 | `inspectSuccess(action)` | Runs `action` only for a success and returns the same result unchanged    |
 | `inspectFailure(action)` | Runs `action` only for a failure and returns the same result unchanged    |
 | `mapAsync(transform)`    | Maps a success with a sync or async callback and forwards a failure       |
-| `flatMapAsync(transform)` | Chains a success into a sync or async `Result` and forwards a failure   |
+| `flatMapAsync(transform)` | Chains a success into a sync or async `GResult` and forwards a failure   |
 
 Callbacks passed to these methods are not an error-catching boundary. If a
 recovery or inspection callback throws, that exception reaches the caller. If
@@ -1031,14 +1031,14 @@ an async transform throws or returns a failed Future, the returned Future
 completes with that error rather than producing a `Failure`.
 
 ```dart
-final normalized = await Result<String, String>.success(' 8080 ')
+final normalized = await GResult<String, String>.success(' 8080 ')
     .mapAsync((text) async => text.trim());
 
 final validated = await normalized.flatMapAsync<int>((text) async {
   final value = int.tryParse(text);
   return value == null
-      ? Result<int, String>.failure('Not an integer')
-      : Result<int, String>.success(value);
+      ? GResult<int, String>.failure('Not an integer')
+      : GResult<int, String>.success(value);
 });
 ```
 
@@ -1051,29 +1051,29 @@ map the error and its original stack trace into a domain error.
 Future<int> readCount() async => throw const FormatException('Bad count');
 
 final untyped = await readCount().toResult();
-// Result<int, Object> containing the FormatException as a Failure.
+// GResult<int, Object> containing the FormatException as a Failure.
 
 final typed = await readCount().toResultWith<String>(
   (error, stackTrace) => 'Unable to read count: $error',
 );
-// Result<int, String> containing the mapped message as a Failure.
+// GResult<int, String> containing the mapped message as a Failure.
 ```
 
 `toResult()` and `toResultWith()` observe an already-created Future. If an
 operation can throw before returning its Future, invoke it inside
-`Result.captureAsync(() => operation())` instead. If the `toResultWith()` error
+`GResult.captureAsync(() => operation())` instead. If the `toResultWith()` error
 mapper throws, its new error completes the returned Future.
 
-A `Future<Result<T, E>>` can be transformed without repeatedly awaiting and
+A `Future<GResult<T, E>>` can be transformed without repeatedly awaiting and
 unwrapping it:
 
 ```dart
-final message = await Future.value(Result<int, String>.success(21))
+final message = await Future.value(GResult<int, String>.success(21))
     .mapResult((value) async => value * 2)
     .flatMapResult<String>(
       (value) => value == 42
-          ? Result<String, String>.success('answer')
-          : Result<String, String>.failure('unexpected value'),
+          ? GResult<String, String>.success('answer')
+          : GResult<String, String>.failure('unexpected value'),
     )
     .whenResult(
       onSuccess: (value) => 'Success: $value',
@@ -1083,27 +1083,27 @@ final message = await Future.value(Result<int, String>.success(21))
 
 | Receiver               | Method                           | Semantics                                                        |
 | ---------------------- | -------------------------------- | ---------------------------------------------------------------- |
-| `Future<T>`            | `toResult()`                     | Converts completion or error to `Result<T, Object>`              |
-| `Future<T>`            | `toResultWith(mapError)`         | Maps an error and stack trace to `Result<T, E>`                   |
-| `Future<Result<T, E>>` | `mapResult(transform)`           | Maps a successful value with a sync or async callback            |
-| `Future<Result<T, E>>` | `flatMapResult(transform)`       | Chains a successful value into another sync or async `Result`    |
-| `Future<Result<T, E>>` | `whenResult(onSuccess, onFailure)` | Resolves the Future and invokes exactly one branch callback     |
+| `Future<T>`            | `toResult()`                     | Converts completion or error to `GResult<T, Object>`              |
+| `Future<T>`            | `toResultWith(mapError)`         | Maps an error and stack trace to `GResult<T, E>`                   |
+| `Future<GResult<T, E>>` | `mapResult(transform)`           | Maps a successful value with a sync or async callback            |
+| `Future<GResult<T, E>>` | `flatMapResult(transform)`       | Chains a successful value into another sync or async `GResult`    |
+| `Future<GResult<T, E>>` | `whenResult(onSuccess, onFailure)` | Resolves the Future and invokes exactly one branch callback     |
 
 A failed source Future or an error thrown by a `mapResult`, `flatMapResult`, or
 `whenResult` callback remains a Future error. Use `toResult()` or
 `toResultWith()` when that error should become a `Failure`.
 
-### Aggregate Result collections
+### Aggregate GResult collections
 
 ```dart
-final results = <Result<int, String>>[
-  Result<int, String>.success(10),
-  Result<int, String>.failure('bad row'),
-  Result<int, String>.success(30),
+final results = <GResult<int, String>>[
+  GResult<int, String>.success(10),
+  GResult<int, String>.failure('bad row'),
+  GResult<int, String>.success(30),
 ];
 
 final sequenced = results.sequenceResults();
-// Result.failure('bad row')
+// GResult.failure('bad row')
 
 final partition = results.partitionResults();
 print(partition.successes); // [10, 30]
@@ -1111,7 +1111,7 @@ print(partition.failures);  // [bad row]
 ```
 
 `sequenceResults()` consumes values in iteration order and stops at the first
-failure. An empty iterable produces `Result.success(<T>[])`.
+failure. An empty iterable produces `GResult.success(<T>[])`.
 `partitionResults()` consumes the entire iterable once and returns new,
 growable `successes` and `failures` lists that preserve the relative order of
 each branch. For an empty iterable, both lists are empty.
@@ -1261,19 +1261,19 @@ than a future that never completes.
 
 ---
 
-## Choosing between Result and gmana_functional
+## Choosing between GResult and the functional types
 
-This package's `Result` overlaps conceptually with `Either` and `Try` in
-[`gmana_functional`](../gmana_functional). They are not interchangeable, and
+`GResult` overlaps conceptually with `Either` and `Try` in
+[functional](functional.md). They are not interchangeable, and
 which one to reach for depends on what you are modelling:
 
 | Use                       | When                                                                 |
 | ------------------------- | -------------------------------------------------------------------- |
-| `Result<T, E>` (here)     | Success-or-failure where failure is an **expected outcome** you name — parse errors, validation, network failures. Pairs with `retry`, `CircuitBreaker`, and the async combinators in this package. |
+| `GResult<T, E>` (here)     | Success-or-failure where failure is an **expected outcome** you name — parse errors, validation, network failures. Pairs with `retry`, `CircuitBreaker`, and the async combinators in this package. |
 | `Either<L, R>`            | A genuine sum type where neither side is "the error" — two equally valid alternatives. |
 | `Try<T>`                  | Wrapping code that throws, where the error is always `Object` and you have no domain error type to map onto. |
 
-`Result` is the right default inside this package's async workflows because
+`GResult` is the right default inside this package's async workflows because
 every combinator here (`toResult`, `mapResult`, `sequenceResults`, and the rest)
-is built on it. Reach for `gmana_functional` when the algebra matters more than
+is built on it. Reach for `Either` and `Try` when the algebra matters more than
 the workflow.

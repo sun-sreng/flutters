@@ -180,16 +180,6 @@ void main() {
     });
   });
 
-  group('StringX Validation', () {
-    test('hasLengthBetween', () {
-      expect('abc'.hasLengthBetween(2, 4), isTrue);
-      expect('abc'.hasLengthBetween(4, 5), isFalse);
-      expect(' abc '.hasLengthBetween(1, 3), isTrue);
-      expect(() => 'abc'.hasLengthBetween(-1, 3), throwsArgumentError);
-      expect(() => 'abc'.hasLengthBetween(4, 3), throwsArgumentError);
-    });
-  });
-
   group('StringX Whitespace / Blank', () {
     test('blankToNull', () {
       expect('   '.orNull, isNull);

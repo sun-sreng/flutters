@@ -6,26 +6,16 @@ Import the full public API:
 import 'package:gmana_flutter/gmana_flutter.dart';
 ```
 
-Form APIs are re-exported for compatibility. New code can import the focused
-package directly:
-
-```dart
-import 'package:gmana_flutter/form.dart';
-```
-
-Flutter extension APIs are re-exported for compatibility. New code that only
-needs extensions can import the focused package directly:
+Or import one topic library:
 
 ```dart
 import 'package:gmana_flutter/extensions.dart';
+import 'package:gmana_flutter/form.dart';
+import 'package:gmana_flutter/spinner.dart';
 ```
 
-This package builds on `gmana`, so validator config classes such as
-`PasswordValidationConfig` come from:
-
-```dart
-import 'package:gmana/validation.dart';
-```
+This package builds on `gmana` and re-exports it, so validator configs such as
+`PasswordValidationConfig` are available from the same import.
 
 ## Themes And Design Tokens
 
@@ -170,14 +160,13 @@ Form(
   key: formKey,
   child: Column(
     children: [
-      GEmailField(controller: email, labelText: 'Email'),
+      GEmailField(controller: email, label: 'Email'),
       GPasswordField(controller: password),
       GConfirmPasswordField(
         controller: confirm,
         passwordController: password,
       ),
-      GSubmitButton.text(
-        loading: false,
+      GButton(
         label: 'Create account',
         onPressed: () => formKey.currentState?.validate(),
       ),
@@ -188,16 +177,16 @@ Form(
 
 | API                                            | Use it for                                                                  |
 | ---------------------------------------------- | --------------------------------------------------------------------------- |
-| `GFieldConfig`                                 | Shared configuration for text-form-field wrappers.                          |
-| `GConfiguredTextFormField`                     | Render a `TextFormField` from `GFieldConfig`.                               |
+| `GTextFieldConfig`                             | Shared configuration for text-form-field wrappers.                          |
+| `GConfiguredTextFormField`                     | Render a `TextFormField` from `GTextFieldConfig`.                           |
 | `GObscurableTextFormField`                     | Text field with password visibility toggle.                                 |
-| `VisibilityToggle`                             | Reusable show/hide icon button.                                             |
+| `VisibilityToggle`                             | Show/hide icon button shared by `GTextField` and the password fields.       |
 | `GEmailField`                                  | Email input with keyboard type, icon, and `EmailValidator`.                 |
 | `GPasswordField`                               | Password input with visibility toggle and `PasswordValidator`.              |
 | `GConfirmPasswordField`                        | Confirmation input that compares against a password controller.             |
 | `GNumberField`                                 | Numeric input with keyboard/input-formatters from `NumberValidationConfig`. |
 | `GTextFormField`                               | Text input with `TextValidator`.                                            |
-| `GSubmitButton`                                | Elevated button that swaps its child for `GWaveDotSpinner` while loading.   |
+| `GFormSubmitButton`                            | `GButton` that validates, saves, and submits a `GForm`, showing loading.    |
 | `ConfirmPasswordValidationConfig`              | Configure required confirmation and whitespace trimming.                    |
 | `ConfirmPasswordValidator.validate(...)`       | Validate password/confirmation pairs.                                       |
 | `resolveConfirmPasswordValidationIssue(issue)` | Convert confirm-password issues to English messages.                        |

@@ -13,9 +13,9 @@ import 'package:gmana_flutter/form.dart';
 - Non-text fields that validate too: checkbox, switch, dropdown, and date.
 
 - Named fields expose both text values and typed values.
-- Typed validation powered by `gmana_validation`, plus composable `GValidators`.
+- Typed validation powered by `gmana` validators, plus composable `GValidators`.
 - Focus management, dirty tracking, and UI-free error reporting on the controller.
-- A loading submit button that accepts either plain text or any custom child.
+- A form-aware submit button built on `GButton`, with loading and duplicate-submit protection.
 
 ## Quick Start
 
@@ -34,9 +34,9 @@ GForm(
         validationConfig: PasswordValidationConfig.strong(),
       ),
       const SizedBox(height: 20),
-      GSubmitButton.text(
+      GButton(
         label: 'Sign in',
-        loading: isSubmitting,
+        isLoading: isSubmitting,
         onPressed: () {
           if (form.validateAndSave()) {
             submit(form.textValues());
@@ -51,7 +51,7 @@ GForm(
 Or let the package handle validate/save/loading:
 
 ```dart
-GFormSubmitButton.text(
+GFormSubmitButton(
   label: 'Sign in',
   onSubmit: (values) async {
     await auth.signIn(
@@ -391,7 +391,7 @@ Use `GFormSubmitButton` inside a `GForm` when you want validation, saving,
 loading state, and duplicate-submit protection handled for you:
 
 ```dart
-GFormSubmitButton.text(
+GFormSubmitButton(
   label: 'Create account',
   onSubmit: (values) async {
     await repository.createAccount(values);
@@ -399,36 +399,20 @@ GFormSubmitButton.text(
 )
 ```
 
-For manual loading state, use `GSubmitButton`:
+`GFormSubmitButton` renders a `GButton`, so it accepts `variant`, `size`,
+`icon`, and `fullWidth`. For a manually driven loading state, use `GButton`:
 
 ```dart
-GSubmitButton.text(
+GButton(
   label: 'Create account',
-  loading: isSubmitting,
-  onPressed: isSubmitting ? null : submit,
-)
-```
-
-For richer button content:
-
-```dart
-GSubmitButton(
-  loading: isUploading,
-  onPressed: upload,
-  child: const Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Icon(Icons.cloud_upload),
-      SizedBox(width: 8),
-      Text('Upload'),
-    ],
-  ),
+  isLoading: isSubmitting,
+  onPressed: submit,
 )
 ```
 
 ## Validator Adapter
 
-`asFormValidator` adapts any `gmana_validation` validator to Flutter's
+`asFormValidator` adapts any `gmana` validator to Flutter's
 `FormField.validator` signature:
 
 ```dart
@@ -447,4 +431,4 @@ TextFormField(validator: validator)
 - `validatorOverride` has been renamed to `validator`.
 - `GTextFormField.text`, `.email`, `.number`, `.password`, and `.confirmPassword`
   are now the preferred high-level API.
-- `GSubmitButton` is the preferred submit button API.
+- `GSubmitButton` was removed; use `GButton(isLoading:)` or `GFormSubmitButton`.

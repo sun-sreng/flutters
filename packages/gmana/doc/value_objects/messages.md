@@ -1,22 +1,25 @@
-# Displaying Errors
+# Displaying Issues
 
 ```dart
-final messages = DefaultValidationErrorMessages();
-
 final errorText = Email.tryParse('bad').fold(
-  (error) => messages.getMessage(error),
+  resolveValidationIssue, // Invalid email format
   (email) => null,
 );
+
+// Or, with the validation result helpers:
+final sameText = Email.tryParse('bad').messageOrNull();
 ```
 
-For localization, switch on the sealed error hierarchy:
+For localization, switch on the sealed issue hierarchy:
 
 ```dart
-String localize(ValidationError error) {
-  return switch (error) {
-    EmailEmpty() => 'Email is required',
-    PasswordTooShort(:final minLength) => 'Use at least $minLength characters',
-    _ => DefaultValidationErrorMessages().getMessage(error),
+String localize(ValidationIssue issue) {
+  return switch (issue) {
+    EmailEmptyIssue() => 'Email is required',
+    EmailInvalidFormatIssue() => 'Enter a valid email',
+    PasswordTooShortIssue(:final minLength) =>
+      'Use at least $minLength characters',
+    _ => resolveValidationIssue(issue),
   };
 }
 ```

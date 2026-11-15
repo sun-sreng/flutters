@@ -210,23 +210,6 @@ extension StringX on String {
     return count;
   }
 
-  /// Passes if length falls within [[min], [max]] after trimming.
-  bool hasLengthBetween(int min, int max) {
-    if (min < 0) {
-      throw ArgumentError.value(min, 'min', 'must not be negative');
-    }
-    if (max < min) {
-      throw ArgumentError.value(
-        max,
-        'max',
-        'must be greater than or equal to min',
-      );
-    }
-
-    final l = trim().length;
-    return l >= min && l <= max;
-  }
-
   /// Repeats this string [count] times.
   /// ```dart
   /// '-'.repeat(10); // '----------'

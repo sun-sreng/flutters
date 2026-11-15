@@ -3,13 +3,13 @@
 Production-ready domain value objects with configurable validation for contact,
 text, numeric, money, identifier, network, URL, and date-range data.
 
-`gmana_value_objects` is pure Dart and framework independent. Use it in CLI
+Value objects are pure Dart and framework independent. Use it in CLI
 apps, Dart servers, Flutter apps, or shared domain packages when you want typed
 values, `Either`-based validation, and rich error models.
 
-The package depends on `gmana_functional` and re-exports `Either`, `Left`, and
-`Right` for composing validation results. It can be imported directly or
-through the `gmana` umbrella package.
+`value_objects.dart` re-exports `Either`, `Left`, and `Right` for composing
+validation results. Value objects validate with the same validators and configs
+as [Validation](validation.md) and fail with the same `*ValidationIssue` types.
 
 ```dart
 import 'package:gmana/value_objects.dart';
@@ -19,7 +19,6 @@ import 'package:gmana/value_objects.dart';
 
 ## Table of contents
 
-- [Installation](#installation)
 - [Features](#features)
 - [Always valid by construction](#always-valid-by-construction)
 - [Validation result extensions](#validation-result-extensions)
@@ -35,20 +34,7 @@ import 'package:gmana/value_objects.dart';
 - [Network address](#network-address)
 - [Date range](#date-range)
 - [Default messages](#default-messages)
-- [Composing with gmana_functional](#composing-with-gmana_functional)
-
-## Installation
-
-```yaml
-dependencies:
-  gmana_value_objects: ^0.1.0
-```
-
-Or install it from the command line:
-
-```bash
-dart pub add gmana_value_objects
-```
+- [Composing with your own failures](#composing-with-your-own-failures)
 
 ## Features
 
@@ -56,11 +42,12 @@ dart pub add gmana_value_objects
   `Money`, `UrlValue`, `PhoneValue`, `IdentifierValue`,
   `NetworkAddressValue`, and `DateRangeValue`.
 
-- Pure validators for each type when you want `Either<ValidationError, T>`
-  without constructing a value object.
-- Sealed error hierarchies for exhaustive `switch` handling.
-- Machine-readable `ValidationError.code` values for logs, analytics, and UI
-  keys, with explicit overrides available when codes must survive obfuscation.
+- The validators behind each type (`EmailValidator`, `PasswordValidator`, and
+  the rest) when you want `Either<XValidationIssue, T>` without constructing a
+  value object.
+- Sealed issue hierarchies for exhaustive `switch` handling.
+- Stable, machine-readable `ValidationIssue.code` values (`email.empty`,
+  `money.tooLarge`) for logs, analytics, and UI keys.
 - Configurable validation presets for common application constraints.
 - Default English validation messages with a small interface for i18n.
 - Currency-aware money stored as exact integer minor units.
@@ -75,7 +62,7 @@ one. There is no "invalid value object" to guard against.
 Most single-value families provide two construction paths:
 
 - `T.tryParse(input)` — validates untrusted input and returns
-  `Either<Error, T>`. Use this for user input, API payloads, and forms.
+  `Either<XValidationIssue, T>`. Use this for user input, API payloads, and forms.
 - `T(input)` — builds from a trusted literal and **throws**
   `ValueObjectException` if the input is invalid. Use this for hard-coded,
   known-good values.
@@ -83,7 +70,7 @@ Most single-value families provide two construction paths:
 ```dart
 import 'package:gmana/value_objects.dart';
 
-// Untrusted input → Either<EmailError, Email>.
+// Untrusted input → Either<EmailValidationIssue, Email>.
 Email.tryParse('user@example.com').fold(
   (error) => print('Invalid: ${error.code}'),
   (email) => print(email.value), // user@example.com
@@ -98,7 +85,7 @@ Types that extend `ValueObject<T>` expose:
 
 | API               | Meaning                                                      |
 | ----------------- | ------------------------------------------------------------ |
-| `T.tryParse(...)` | Validate untrusted input, returning `Either<Error, T>`.      |
+| `T.tryParse(...)` | Validate untrusted input, returning `Either<Issue, T>`.      |
 | `T(input)`        | Build from a trusted literal; throws `ValueObjectException`. |
 | `value`           | The validated underlying value (always present).             |
 | `isSensitive`     | `true` for sensitive objects such as `Password`.             |
@@ -111,8 +98,8 @@ below covers that API.
 ## Validation result extensions
 
 Every smart constructor returns an `Either<E, T>` where `E` extends
-`ValidationError`. `GmanaValueObjectResultX` makes the common inspection path
-concise without throwing or eagerly formatting an error:
+`ValidationIssue`, so the validation result helpers (`GmanaValidationResultX`)
+apply directly, without throwing or eagerly formatting an issue:
 
 ```dart
 final result = Email.tryParse('not-an-email');
@@ -120,26 +107,19 @@ final result = Email.tryParse('not-an-email');
 print(result.isValid); // false
 print(result.isInvalid); // true
 print(result.valueOrNull); // null
-print(result.errorOrNull?.code); // email_invalid_format
+print(result.issueOrNull?.code); // email.invalidFormat
 print(result.messageOrNull()); // Invalid email format
 ```
 
 `isValid` and `valueOrNull` inspect the success branch; `isInvalid`,
-`errorOrNull`, and `messageOrNull()` inspect the failure branch.
+`issueOrNull`, and `messageOrNull()` inspect the failure branch.
 `messageOrNull()` returns `null` for a valid result and uses
-`DefaultValidationErrorMessages` by default. Pass your own
-`ValidationErrorMessages` implementation to localize the failure:
+`resolveValidationIssue` by default. Pass your own resolver to localize the
+failure:
 
 ```dart
-final class AppValidationErrorMessages implements ValidationErrorMessages {
-  const AppValidationErrorMessages();
-
-  @override
-  String getMessage(ValidationError error) => 'Invalid: ${error.code}';
-}
-
 final message = Email.tryParse('bad').messageOrNull(
-  const AppValidationErrorMessages(),
+  (issue) => 'Invalid: ${issue.code}',
 );
 ```
 
@@ -150,9 +130,9 @@ always valid.
 ## Updating validation configs
 
 Every validation config supports copy-style `copyWith` updates. The phone,
-URL, identifier, network, and number configs are the `gmana_validation` classes,
-re-exported here, so a config built for a validator works for the value object
-too:
+URL, identifier, network, number, email, password, and text configs are the
+validation configs, so a config built for a validator works for the value
+object too:
 
 ```dart
 final phoneRules = const PhoneValidationConfig().copyWith(
@@ -203,7 +183,7 @@ Email.tryParse(
   config: EmailValidationConfig.strict(),
 ).fold(
   (error) => switch (error) {
-    EmailDisposableDomain(:final domain) => print('Disposable domain: $domain'),
+    EmailDisposableDomainIssue(:final domain) => print('Disposable domain: $domain'),
     _ => print('Invalid email: ${error.code}'),
   },
   (email) => print('Valid email: ${email.value}'),
@@ -218,7 +198,7 @@ custom blocked domains.
 ```dart
 final password = Password(
   'MyP@ssw0rd!2026',
-  config: PasswordValidationConfig.strict(),
+  config: PasswordValidationConfig.strong(),
 );
 
 print(password.isSensitive); // true
@@ -226,8 +206,10 @@ print(password.toString()); // Password(***) — value is masked
 print(password.value); // MyP@ssw0rd!2026
 ```
 
-Password validation supports min/max length, ASCII-only rules, common password
-checks, predictable sequence checks, and complexity scoring.
+Password validation supports min/max length, allowed code-unit ranges, common
+password checks, repeated and sequential pattern checks, and either per-class
+requirements or a minimum number of character classes. `Password` defaults to
+`PasswordValidationConfig.balanced`.
 
 ## Text
 
@@ -239,10 +221,10 @@ final username = TextValue(
 
 final title = TextValue(
   'Hello World',
-  config: TextValidationConfig(
+  config: TextValue.defaultConfig.copyWith(
     minLength: 5,
     maxLength: 50,
-    pattern: r'^[a-zA-Z\s]+$',
+    pattern: RegExp(r'^[a-zA-Z\s]+$'),
     blacklistedWords: {'spam', 'banned'},
   ),
 );
@@ -296,7 +278,7 @@ final result = MoneyValidator(MoneyValidationConfig.ecommerce())
     .validate('1,234.56', currency: 'USD');
 
 result.fold(
-  (error) => print(DefaultValidationErrorMessages().getMessage(error)),
+  (issue) => print(resolveValidationIssue(issue)),
   (amount) => print(amount.formattedWithCode), // USD 1234.56
 );
 ```
@@ -435,39 +417,33 @@ range. `span(other)` returns the smallest range containing both inputs.
 ## Default Messages
 
 ```dart
-final messages = DefaultValidationErrorMessages();
-
 Email.tryParse('invalid').fold(
-  (error) => print(messages.getMessage(error)), // Invalid email format
+  (issue) => print(resolveValidationIssue(issue)), // Invalid email format
   (email) => print(email.value),
 );
 ```
 
-For app-specific localization, switch on `ValidationError` subclasses directly:
+For app-specific localization, switch on the sealed issue types directly:
 
 ```dart
-String localize(ValidationError error) {
-  return switch (error) {
-    EmailEmpty() => 'Email is required',
-    EmailInvalidFormat() => 'Enter a valid email',
-    PasswordTooShort(:final minLength) =>
+String localize(ValidationIssue issue) {
+  return switch (issue) {
+    EmailEmptyIssue() => 'Email is required',
+    EmailInvalidFormatIssue() => 'Enter a valid email',
+    PasswordTooShortIssue(:final minLength) =>
       'Use at least $minLength characters',
-    _ => DefaultValidationErrorMessages().getMessage(error),
+    _ => resolveValidationIssue(issue),
   };
 }
 ```
 
-The default `ValidationError.code` is derived from the concrete error class
-name. It is convenient for ordinary logs, analytics, and UI keys, but
-`runtimeType` names can change in obfuscated builds. Override `code` with an
-explicit literal on custom errors when the value is persisted or exposed as a
-long-lived API contract.
+Every issue has an explicit `code` literal, so codes survive obfuscation and
+are safe to persist or expose as an API contract.
 
-## Composing with gmana_functional
+## Composing with your own failures
 
-This package re-exports `Either`, `Left`, and `Right` from
-`gmana_functional`, so value-object validation can compose with your own domain
-failures without a second import.
+`value_objects.dart` re-exports `Either`, `Left`, and `Right`, so value-object
+validation can compose with your own domain failures without a second import.
 
 ```dart
 import 'package:gmana/value_objects.dart' as vo;
@@ -475,9 +451,9 @@ import 'package:gmana/value_objects.dart' as vo;
 sealed class Failure {}
 
 final class ValidationFailure extends Failure {
-  ValidationFailure(this.error);
+  ValidationFailure(this.issue);
 
-  final vo.ValidationError error;
+  final vo.ValidationIssue issue;
 }
 
 final class AppEmail {

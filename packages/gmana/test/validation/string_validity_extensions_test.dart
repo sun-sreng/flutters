@@ -219,17 +219,6 @@ void main() {
         expect('invalid-uuid'.isValidUuidAny, isFalse);
       });
 
-      test('isWithinLength works correctly', () {
-        expect('abc'.isWithinLength(min: 2, max: 4), isTrue);
-        expect('a'.isWithinLength(min: 2, max: 4), isFalse);
-        expect('abcde'.isWithinLength(min: 2, max: 4), isFalse);
-        expect(
-          () => 'abc'.isWithinLength(min: -1, max: 4),
-          throwsArgumentError,
-        );
-        expect(() => 'abc'.isWithinLength(min: 4, max: 2), throwsArgumentError);
-      });
-
       test('isValidUsername validates conventional usernames', () {
         expect('sreng.sun'.isValidUsername(), isTrue);
         expect('user_123'.isValidUsername(), isTrue);

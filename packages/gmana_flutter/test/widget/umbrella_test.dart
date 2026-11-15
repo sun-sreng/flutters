@@ -15,10 +15,10 @@ void main() {
                   children: [
                     // Presentation widget from gmana_flutter
                     const GTextField(label: 'Presentation TextField'),
-                    // Form field from gmana_form
+                    // Form field
                     GTextFormField.text(label: 'Form TextFormField'),
                     GEmailField(label: 'Email Field'),
-                    // Spinner from gmana_spinner
+                    // Spinner
                     const GCircularSpinner(),
                     // Button using spinner
                     GButton(label: 'Submit', onPressed: () {}),
