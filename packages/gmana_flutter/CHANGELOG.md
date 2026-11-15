@@ -1,3 +1,62 @@
+## Unreleased
+
+`gmana_flutter` now contains the code of `gmana_flutter_extensions`,
+`gmana_form`, and `gmana_spinner` instead of depending on them. Those packages
+are discontinued. It depends on and re-exports `gmana`, so one import covers
+the whole toolkit.
+
+### Migration
+
+Replace the old dependencies with `gmana_flutter` and update imports:
+
+| Old import | New import |
+| --- | --- |
+| `package:gmana_flutter_extensions/gmana_flutter_extensions.dart` | `package:gmana_flutter/extensions.dart` |
+| `package:gmana_form/gmana_form.dart` | `package:gmana_flutter/form.dart` |
+| `package:gmana_spinner/gmana_spinner.dart` | `package:gmana_flutter/spinner.dart` |
+
+`package:gmana_flutter/gmana_flutter.dart` exports all three, plus `gmana`.
+
+### Added
+
+- Topic libraries `extensions.dart`, `form.dart`, and `spinner.dart`.
+- `package:gmana_flutter/gmana_flutter.dart` re-exports `package:gmana`, except
+  the functional `State` monad, which clashes with Flutter's `State`. Import
+  `package:gmana/functional.dart` with a prefix to use it.
+- The form toolkit from the unreleased `gmana_form` work: `GForm`,
+  `GFormController` (submit with loading and duplicate-submit protection,
+  focus management, `errorOf`/`errors`, dirty tracking, `setText`), named
+  field binding, `GTextFormField` presets, `GValidators` and
+  `combineValidators`, and the `GCheckboxField`, `GSwitchField`,
+  `GDropdownField`, and `GDateField` widgets.
+- The example app has pages for the Flutter extensions, form fields, and
+  loading spinners, replacing the three separate example apps.
+
+### Changed
+
+- **Breaking:** `GFormSubmitButton` renders a `GButton`. It takes `label`
+  instead of `child`, and accepts `variant`, `size`, `icon`, and `fullWidth`.
+  `GFormSubmitButton.text(...)` is now `GFormSubmitButton(...)`, and `style`,
+  `loadingColor`, and `loadingSize` are gone. The loading indicator is
+  `GButton`'s spinner.
+- **Breaking:** `GValidators.numeric` and `GValidators.range` parse with
+  `NumberValidator`, so `NaN` and `Infinity` are rejected.
+- `GTextField`'s password toggle is the shared `VisibilityToggle`: it shows
+  the "visibility" icon while the text is hidden, matching the form password
+  fields, and has a tooltip. The clear button has a "Clear" tooltip.
+- `GAvatar` derives initials with `String.initials`, and `GSearchField`
+  debounces with `Debouncer`, both from `gmana`. A `GSearchField` with a zero
+  `debounceDelay` now reports every change immediately. `GSearchField` no longer
+  re-runs a search when only the selection or focus changes.
+
+### Removed
+
+- **Breaking:** `GSubmitButton`. Use `GButton(label: ..., isLoading: ...)`, or
+  `GFormSubmitButton` inside a `GForm`.
+- **Breaking:** `form.dart` no longer re-exports the confirm-password
+  validator classes. They come from `gmana`, which `gmana_flutter.dart`
+  re-exports; with only `form.dart`, import `package:gmana/validation.dart`.
+
 ## 0.0.11 - 2026-10-13
 
 ### Removed

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gmana_flutter/gmana_flutter.dart';
+import 'package:gmana_flutter/gmana_flutter.dart' hide contains, equals;
 import 'package:material_ui/material_ui.dart';
 
 void main() {
@@ -53,11 +53,11 @@ void main() {
         ),
       );
 
-      expect(find.byIcon(Icons.visibility_off), findsOneWidget);
-      await tester.tap(find.byIcon(Icons.visibility_off));
+      expect(find.byIcon(Icons.visibility), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.visibility));
       await tester.pump();
 
-      expect(find.byIcon(Icons.visibility), findsOneWidget);
+      expect(find.byIcon(Icons.visibility_off), findsOneWidget);
     });
   });
 }

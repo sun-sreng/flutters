@@ -75,11 +75,9 @@ final title = 'hello world'.toTitleCase; // Hello World
 
 | API                                                     | Use it for                                            |
 | ------------------------------------------------------- | ----------------------------------------------------- |
-| `isNullOrBlank`                                         | Check nullable strings safely.                        |
 | `orEmpty`, `orNull`                                     | Normalize nullable or blank strings.                  |
 | `mapNotBlank(transform)`                                | Transform only non-null, non-blank strings.           |
-| `blankToNull`                                           | Convert a blank string to `null`.                     |
-| `isAlphanumeric`, `isBlank`, `isNotBlank`               | Common text checks.                                   |
+| `isAlphaNumeric`, `isBlank`, `isNotBlank` (predicates)  | Common text checks, also on `String?`.                |
 | `jsonDecodeOrNull`                                      | Decode JSON without throwing on invalid input.        |
 | `readingTimeMinutes`                                    | Estimate reading time at 225 words per minute.        |
 | `removeWhitespace`, `reversed`                          | Transform string content.                             |
@@ -92,7 +90,6 @@ final title = 'hello world'.toTitleCase; // Hello World
 | `toUriOrNull`                                           | Parse a URI safely.                                   |
 | `toDuration()`, `toDurationOrNull`                      | Parse `SS`, `MM:SS`, or `HH:MM:SS`.                   |
 | `countOccurrences(pattern)`                             | Count non-overlapping matches.                        |
-| `hasLengthBetween(min, max)`                            | Check trimmed length bounds.                          |
 | `repeat(count)`                                         | Repeat the string.                                    |
 | `truncate(maxLength)`                                   | Truncate with an ellipsis.                            |
 | `truncateWords(maxLength)`                              | Truncate at a word boundary.                          |

@@ -5,17 +5,8 @@
 ## Package(s) Affected
 
 - [ ] `gmana`
-- [ ] `gmana_extensions`
 - [ ] `gmana_flutter`
-- [ ] `gmana_flutter_extensions`
-- [ ] `gmana_form`
-- [ ] `gmana_functional`
 - [ ] `gmana_lints`
-- [ ] `gmana_predicates`
-- [ ] `gmana_spinner`
-- [ ] `gmana_utils`
-- [ ] `gmana_validation`
-- [ ] `gmana_value_objects`
 
 ## Type of Change
 

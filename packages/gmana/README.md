@@ -1,42 +1,13 @@
 # gmana
 
-Core Dart utilities for production apps: functional result types, focused
-extensions, validation primitives, ID generation, debounce/throttle helpers,
-and stream helpers.
+Pure Dart toolkit for production apps: functional types (`Either`, `Option`,
+`GResult`), extensions, predicates, typed validators, value objects, and
+resilience utilities such as debounce, throttle, retry, and circuit breakers.
 
-`gmana` is pure Dart, so it works in CLI tools, server apps, packages, and
-Flutter apps.
-
-For a function-by-function guide with examples, see [doc/api.md](doc/api.md).
-
-## Installation
-
-```bash
-dart pub add gmana
-```
-
-For Flutter projects:
-
-```bash
-flutter pub add gmana
-```
-
-Manual `pubspec.yaml` setup:
-
-```yaml
-dependencies:
-  gmana: ^0.2.0
-```
-
-## Imports
-
-Use the umbrella import when you want the curated public API:
-
-
-`gmana` is pure Dart, so it works in CLI tools, server apps, packages, and
-Flutter apps.
-
-For a function-by-function guide with examples, see [doc/api.md](doc/api.md).
+`gmana` has no Flutter dependency, so it works in CLI tools, servers, shared
+packages, and Flutter apps. For Flutter widgets, form fields, and spinners,
+use [`gmana_flutter`](https://pub.dev/packages/gmana_flutter), which depends on
+and re-exports `gmana`.
 
 ## Installation
 
@@ -44,22 +15,9 @@ For a function-by-function guide with examples, see [doc/api.md](doc/api.md).
 dart pub add gmana
 ```
 
-For Flutter projects:
-
-```bash
-flutter pub add gmana
-```
-
-Manual `pubspec.yaml` setup:
-
-```yaml
-dependencies:
-  gmana: ^0.2.0
-```
-
 ## Imports
 
-Use the umbrella import when you want the curated public API:
+Use the umbrella import for the whole API:
 
 ```dart
 import 'package:gmana/gmana.dart';
@@ -70,22 +28,39 @@ Or import only the area you need:
 ```dart
 import 'package:gmana/extensions.dart';
 import 'package:gmana/functional.dart';
+import 'package:gmana/predicates.dart';
 import 'package:gmana/utilities.dart';
-import 'package:gmana/validation.dart';
+import 'package:gmana/validation.dart';   // also exports predicates.dart
 import 'package:gmana/value_objects.dart';
 ```
+
+> `predicates.dart` exports top-level functions named `equals` and `contains`.
+> If a test file imports `package:test` as well, hide them:
+> `import 'package:gmana/gmana.dart' hide contains, equals;`
+
+## Guides
+
+| Area | Guide |
+| --- | --- |
+| Functional types | [doc/functional.md](doc/functional.md) |
+| Extensions | [doc/extensions.md](doc/extensions.md) |
+| Predicates | [doc/predicates.md](doc/predicates.md) |
+| Validation | [doc/validation.md](doc/validation.md) |
+| Value objects | [doc/value_objects.md](doc/value_objects.md), with per-type pages in [doc/value_objects/](doc/value_objects/) |
+| Utilities | [doc/utilities.md](doc/utilities.md) |
+| Function-by-function reference | [doc/api.md](doc/api.md) |
 
 ## What You Can Use
 
 | Area                           | APIs                                                                        |
 | ------------------------------ | --------------------------------------------------------------------------- |
-| Functional results             | `Either`, `Result`, `FutureResult`, `Failure`, `Unit`, `UseCase`, `State`, `Try`, `Reader` |
+| Functional results             | `Either`, `Option`, `GResult`, `Result`, `FutureResult`, `Failure`, `Unit`, `UseCase`, `State`, `Try`, `Reader` |
 | Value objects                  | `Email`, `Password`, `IdentifierValue`, `NetworkAddressValue`, `DateRangeValue`, `TextValue`, `NumberValue`, `Money` |
 | String extensions              | casing, parsing, blank handling, slugs, duration parsing, truncation        |
 | Number and duration extensions | `5.seconds`, `2.hours`, rounding, normalization, time formatting            |
 | Iterable and list extensions   | `sum`, `average`, `median`, `chunked`, `groupBy`, `flatten`, `whereNotNull` |
 | Stream extensions              | `debounce`, `throttle`, `scan`, `pairwise`, `whereNotNull`, `onErrorReturn` |
-| Validation                     | email, password, number, text validators, and predicate functions           |
+| Validation                     | typed validators with sealed `*ValidationIssue` results, and predicate functions |
 
 ```dart
 import 'package:gmana/functional.dart';
@@ -200,7 +175,7 @@ Nullable string helpers:
 String? name;
 
 final safe = name.orEmpty; // ''
-final normalized = '   '.blankToNull; // null
+final normalized = '   '.orNull; // null
 final displayName = name.mapNotBlank((value) => value.toTitleCase);
 ```
 
@@ -363,8 +338,8 @@ print(number.rightOrNull()); // 42
 print(text.rightOrNull()); // abc
 ```
 
-For Flutter `FormField.validator` adapters, use
-`package:gmana_form/gmana_form.dart`.
+For Flutter `FormField.validator` adapters, use `asFormValidator` from
+`package:gmana_flutter/form.dart`.
 
 ## Instant String Validation
 
@@ -375,8 +350,8 @@ import 'package:gmana/validation.dart';
 
 print('test@example.com'.isValidEmail); // true
 print('Jane Doe'.isValidName); // true
-print('550e8400-e29b-41d4-a716-446655440000'.isValidUuid); // true
-print('#F57224'.isValidHexColor); // true
+print('550e8400-e29b-41d4-a716-446655440000'.isUuid('4')); // true
+print('#F57224'.isHexColor); // true
 ```
 
 You can also call the lower-level functions directly:
@@ -422,12 +397,20 @@ throttler.run(() {
 });
 ```
 
-## Package Relationship
+## Migrating from the split packages
 
-- Use `gmana` for pure Dart extensions, validation, functional results, and
-  utilities.
-- Use `gmana_form` for Flutter form fields and validator adapters.
-- Use [`gmana_flutter`](https://pub.dev/packages/gmana_flutter) for Flutter
-  widgets, theme helpers, color helpers, and UI convenience APIs.
-- Use `gmana_value_objects` for typed domain values when that package is part
-  of your project.
+`gmana` 0.3.0 absorbs `gmana_functional`, `gmana_utils`, `gmana_extensions`,
+`gmana_predicates`, `gmana_validation`, and `gmana_value_objects`. Those
+packages are discontinued. Replace the dependency with `gmana` and update
+imports:
+
+| Old import | New import |
+| --- | --- |
+| `package:gmana_functional/gmana_functional.dart` | `package:gmana/functional.dart` |
+| `package:gmana_utils/gmana_utils.dart` | `package:gmana/utilities.dart` |
+| `package:gmana_extensions/gmana_extensions.dart` | `package:gmana/extensions.dart` |
+| `package:gmana_predicates/gmana_predicates.dart` | `package:gmana/predicates.dart` |
+| `package:gmana_validation/gmana_validation.dart` | `package:gmana/validation.dart` |
+| `package:gmana_value_objects/gmana_value_objects.dart` | `package:gmana/value_objects.dart` |
+
+API changes made while merging are listed in the [CHANGELOG](CHANGELOG.md).

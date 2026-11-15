@@ -1,8 +1,16 @@
-/// Re-exports runtime utilities from `gmana_utils`.
-///
-/// The two-track result type is `GResult`, `GSuccess`, and `GFailure`,
-/// declared in `gmana_functional` and re-exported by `gmana_utils`.
-/// `GmanaStreamTimingX` is hidden to prevent extension collision with `StreamX` from `gmana_extensions`.
+/// Pure Dart runtime utilities and fallible-workflow extensions.
 library;
 
-export 'package:gmana_utils/gmana_utils.dart' hide GmanaStreamTimingX;
+export 'src/utils/async_cache.dart';
+export 'src/utils/batcher.dart';
+export 'src/utils/circuit_breaker.dart';
+export 'src/utils/concurrency.dart';
+export 'src/utils/debouncer.dart';
+export 'src/utils/id_generator.dart';
+export 'src/utils/lazy.dart';
+export 'src/utils/rate_limiter.dart';
+export 'src/utils/retry.dart';
+export 'src/utils/retry_extensions.dart';
+export 'src/utils/semaphore.dart';
+export 'src/utils/throttler.dart';
+export 'src/utils/try_or_null.dart';

@@ -77,7 +77,7 @@ gmana-check:
     cd packages/gmana && dart pub publish --dry-run
 
 # Each argument is <package>:<major|minor|patch|x.y.z>, for example
-# `just release gmana_utils:minor gmana:patch`. Add --dry-run to preview.
+# `just release gmana:minor gmana_flutter:patch`. Add --dry-run to preview.
 # Bump versions and dependents' constraints, date CHANGELOGs, commit and tag.
 release +args:
     dart run scripts/release.dart {{args}}

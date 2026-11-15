@@ -1,0 +1,92 @@
+import 'package:gmana/gmana.dart' hide contains, equals;
+import 'package:test/test.dart';
+
+void main() {
+  group('Result', () {
+    test('Success holds value and checks properties', () {
+      const res = GResult<int, String>.success(42);
+
+      expect(res.isSuccess, isTrue);
+      expect(res.isFailure, isFalse);
+      expect(res.valueOrNull, equals(42));
+      expect(res.errorOrNull, isNull);
+      expect(res.getOrElse(0), equals(42));
+    });
+
+    test('Failure holds error and checks properties', () {
+      const res = GResult<int, String>.failure('error message');
+
+      expect(res.isSuccess, isFalse);
+      expect(res.isFailure, isTrue);
+      expect(res.valueOrNull, isNull);
+      expect(res.errorOrNull, equals('error message'));
+      expect(res.getOrElse(0), equals(0));
+    });
+
+    test('map and mapError transform results correctly', () {
+      const success = GResult<int, String>.success(10);
+      const failure = GResult<int, String>.failure('fail');
+
+      expect(success.map((v) => v * 2).valueOrNull, equals(20));
+      expect(failure.map((v) => v * 2).isFailure, isTrue);
+
+      expect(success.mapError((e) => e.toUpperCase()).valueOrNull, equals(10));
+      expect(
+        failure.mapError((e) => e.toUpperCase()).errorOrNull,
+        equals('FAIL'),
+      );
+    });
+
+    test('flatMap binds results', () {
+      const success = GResult<int, String>.success(5);
+      final bound = success.flatMap((v) => GResult.success(v * 3));
+      expect(bound.valueOrNull, equals(15));
+    });
+
+    test('when matches branches', () {
+      const success = GResult<int, String>.success(100);
+      final text = success.when(
+        onSuccess: (v) => 'Success: $v',
+        onFailure: (e) => 'Failure: $e',
+      );
+      expect(text, equals('Success: 100'));
+    });
+
+    test('capture wraps sync exceptions', () {
+      final success = GResult.capture(() => 123);
+      final failure = GResult.capture(
+        () => throw const FormatException('invalid'),
+      );
+
+      expect(success.isSuccess, isTrue);
+      expect(failure.isFailure, isTrue);
+      expect(failure.errorOrNull, isA<FormatException>());
+    });
+
+    test('captureAsync wraps async exceptions', () async {
+      final success = await GResult.captureAsync(() async => 'hello');
+      final failure = await GResult.captureAsync(
+        () async => throw StateError('err'),
+      );
+
+      expect(success.valueOrNull, equals('hello'));
+      expect(failure.errorOrNull, isA<StateError>());
+    });
+
+    test('GResult, GSuccess, and GFailure aliases function identically', () {
+      const GResult<int, String> ok = GSuccess(42);
+      const GResult<int, String> err = GFailure('oops');
+
+      expect(ok.isSuccess, isTrue);
+      expect(ok.valueOrNull, equals(42));
+      expect(err.isFailure, isTrue);
+      expect(err.errorOrNull, equals('oops'));
+
+      final matchedOk = switch (ok) {
+        GSuccess(:final value) => value,
+        GFailure() => -1,
+      };
+      expect(matchedOk, equals(42));
+    });
+  });
+}

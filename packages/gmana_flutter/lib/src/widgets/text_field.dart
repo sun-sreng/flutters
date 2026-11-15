@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../form/widgets/visibility_toggle.dart';
+
 /// A theme-aware text field widget supporting clear button, obscure password toggle, and prefix/suffix icons.
 class GTextField extends StatefulWidget {
   /// Controls the text being edited.
@@ -145,15 +147,16 @@ class _GTextFieldState extends State<GTextField> {
 
   Widget? _buildSuffixIcon() {
     if (widget.enablePasswordToggle) {
-      return IconButton(
-        icon: Icon(_obscured ? Icons.visibility_off : Icons.visibility),
-        onPressed: () => setState(() => _obscured = !_obscured),
+      return VisibilityToggle(
+        obscureText: _obscured,
+        onVisibilityChanged: (obscured) => setState(() => _obscured = obscured),
       );
     }
 
     if (widget.enableClearButton && _hasText && widget.enabled) {
       return IconButton(
         icon: const Icon(Icons.clear),
+        tooltip: 'Clear',
         onPressed: () {
           _effectiveController.clear();
           widget.onChanged?.call('');

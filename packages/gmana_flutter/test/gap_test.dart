@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gmana_flutter/gmana_flutter.dart';
+import 'package:gmana_flutter/gmana_flutter.dart' hide contains, equals;
 
 void main() {
   testWidgets('GGap.vertical renders SizedBox with height only', (

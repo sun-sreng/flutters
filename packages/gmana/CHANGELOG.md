@@ -1,3 +1,131 @@
+## Unreleased
+
+`gmana` now contains the code of `gmana_functional`, `gmana_utils`,
+`gmana_extensions`, `gmana_predicates`, `gmana_validation`, and
+`gmana_value_objects` instead of depending on them. Those packages are
+discontinued. Every behaviour now has one implementation and one public name,
+so several duplicate APIs were removed (listed below).
+
+### Migration
+
+Replace the old dependencies with `gmana` and update imports:
+
+| Old import | New import |
+| --- | --- |
+| `package:gmana_functional/gmana_functional.dart` | `package:gmana/functional.dart` |
+| `package:gmana_utils/gmana_utils.dart` | `package:gmana/utilities.dart` |
+| `package:gmana_extensions/gmana_extensions.dart` | `package:gmana/extensions.dart` |
+| `package:gmana_predicates/gmana_predicates.dart` | `package:gmana/predicates.dart` |
+| `package:gmana_validation/gmana_validation.dart` | `package:gmana/validation.dart` |
+| `package:gmana_value_objects/gmana_value_objects.dart` | `package:gmana/value_objects.dart` |
+
+### Added
+
+- `package:gmana/predicates.dart` topic library. `validation.dart` exports it
+  too.
+- `resolveValidationIssue(issue)`, which returns the default English message
+  for any built-in `ValidationIssue`. `messageOrNull()` uses it when no
+  resolver is passed.
+- `PasswordValidationConfig.minCharacterClasses`, `minCodeUnit`,
+  `maxCodeUnit`, and `sequentialRunFactor`, the
+  `PasswordValidationConfig.balanced` preset, `copyWith`, and value equality.
+  New issues: `PasswordDisallowedCharacterIssue` and
+  `PasswordTooFewCharacterClassesIssue`.
+- `TextValidationConfig` presets `username()`, `name()`, `shortText()`,
+  `mediumText()`, `longText()`, and `alphanumeric()`, moved from the value
+  objects. `copyWith` can now clear `minLength`, `maxLength`, `pattern`, and
+  `allowedCharacters`, and the config has value equality.
+- `TextValue.defaultConfig`, the policy `TextValue` uses when no config is
+  passed.
+- `MoneyValidationIssue` and `DateRangeValidationIssue` hierarchies with
+  `resolveMoneyValidationIssue` and `resolveDateRangeValidationIssue`.
+
+### Changed
+
+- **Breaking:** value objects fail with the validation issue types.
+  `Email.tryParse` returns `Either<EmailValidationIssue, Email>`, and likewise
+  for `Password`, `TextValue`, `NumberValue`, `PhoneValue`, `UrlValue`,
+  `IdentifierValue`, and `NetworkAddressValue`. Rename error classes by adding
+  `Issue` (`EmailEmpty` → `EmailEmptyIssue`, `MoneyTooLarge` →
+  `MoneyTooLargeIssue`, `DateRangeInvalidOrder` →
+  `DateRangeInvalidOrderIssue`), and the sealed bases from `XError` to
+  `XValidationIssue`.
+- **Breaking:** issue codes are dotted and stable: `email_empty` →
+  `email.empty`, `money_too_large` → `money.tooLarge`. Update any persisted or
+  logged codes.
+- **Breaking:** `ValueObjectException.error` is now `ValueObjectException.issue`.
+- **Breaking:** value objects take the validation configs. Password configs
+  map as `minComplexityScore` → `minCharacterClasses`, `minAsciiCode` /
+  `maxAsciiCode` → `minCodeUnit` / `maxCodeUnit`, and `.strict()` →
+  `.strong()`. `Password` still defaults to the previous policy, now named
+  `PasswordValidationConfig.balanced`. The old `PasswordNonAscii` is
+  `PasswordDisallowedCharacterIssue`; `PasswordTooWeak` and
+  `PasswordComplexityRequired` are `PasswordTooFewCharacterClassesIssue`;
+  `PasswordTooPredictable` is `PasswordRepeatedCharacterIssue` or
+  `PasswordSequentialPatternIssue`.
+- **Breaking:** `TextValidationConfig.pattern` is a `RegExp`, not a `String`.
+  A `TextValidationConfig()` passed to `TextValue` now has the validation
+  defaults (empty allowed, no trimming, whole-word blacklist). Use
+  `TextValue.defaultConfig.copyWith(...)` or `TextValidationConfig.required(...)`
+  to keep the previous value-object defaults.
+- **Breaking:** the date predicates and `StringDateX` share one parser that
+  rejects impossible calendar values instead of rolling them over.
+  `isDate('2024-13-01')`, `tryParseDate('2024-02-31')`, and every predicate
+  given such a date now return `false` or `null`. Previously only
+  `toDateTimeOrNull` and `isIso8601` rejected them.
+- **Breaking:** `Stream.debounce` and `Stream.throttle` use the stricter
+  implementation from the former `gmana_utils`: both throw `ArgumentError`
+  for a non-positive duration, and `throttle` takes `trailing:`.
+- `package:gmana/gmana.dart` exports every area with no `hide` clauses.
+
+### Fixed
+
+- `toDateTimeOrNull` (and so `toDateTime`, `year`, `daysUntil`, and the other
+  `StringDateX` members) no longer returns `null` for a valid date-time whose
+  zone offset moves it to another UTC day, such as
+  `2024-06-15T23:00:00-05:00`.
+
+### Removed
+
+- **Breaking:** the parallel value-object validation layer: `ValidationError`,
+  every `XError` hierarchy, `DefaultValidationErrorMessages`,
+  `ValidationErrorMessages`, the value-object copies of the validators and
+  configs, and the validation adapter extensions. Use the validators, configs,
+  and issues from `validation.dart`, and `resolveValidationIssue` for
+  messages.
+- **Breaking:** `GmanaValueObjectResultX`. `GmanaValidationResultX` covers the
+  same results; `errorOrNull` is `issueOrNull`.
+- **Breaking:** `NumberNotInRange`, which no validator produced.
+- **Breaking:** `GmanaStreamTimingX`. Its `debounce` and `throttle` are now the
+  `StreamX` members.
+- **Breaking:** `GmanaDateTimePredicatesX`. Use the `DateTimeX` members with
+  the same names. Note that `DateTimeX.isToday` compares in local time, where
+  the predicate version used UTC.
+- **Breaking:** duplicate string helpers:
+
+  | Removed | Use |
+  | --- | --- |
+  | `isNullOrBlank` | `isBlank` (also on `String?`) |
+  | `blankToNull` | `orNull` |
+  | `StringX.isAlphanumeric` | `isAlphaNumeric` |
+  | `hasLengthBetween(min, max)` | `trim().isLength(min, max)` |
+  | `isWithinLength(min:, max:)` | `isLength(min, max)` |
+  | `isValidUrl` | `isUrl(allowedSchemes: {'http', 'https'})` |
+  | `isValidUuid` | `isUuid('4')` |
+  | `isValidIpAddress` | `isIP()` |
+  | `isValidIpv4`, `isValidIpv6` | `isIpv4`, `isIpv6` |
+  | `isValidSlug` | `trim().isSlug` |
+  | `isValidCreditCard` | `isCreditCard` |
+  | `isValidHexColor` | `isHexColor` |
+  | `isValidMacAddress` | `isMacAddress` |
+
+  `isLength` counts a surrogate pair (an emoji) as one character and does not
+  check its arguments.
+- **Breaking:** `StringDateX.isSameDayAs` and `StringDateX.isBetweenInclusive`.
+  Use the predicate members `isSameDay` and `isBetweenInclusive`, which have
+  the same call syntax. They compare in UTC, so a string with a local time
+  near midnight can land on a different day than before.
+
 ## 0.2.2 - 2026-10-13
 
 ### Changed

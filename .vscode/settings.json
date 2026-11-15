@@ -13,7 +13,7 @@
     ".git/{index,*refs,*HEAD}",
     ".vscode",
     ".vscode-insiders",
-    "packages/gmana_validation/lib/src/email/email_disposable.dart"
+    "packages/gmana/lib/src/validation/email/email_disposable.dart"
   ],
   "cSpell.words": [
     "AARRGGBB",

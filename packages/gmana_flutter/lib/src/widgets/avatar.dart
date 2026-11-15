@@ -1,26 +1,7 @@
+import 'package:gmana/extensions.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../design_system/radius.dart';
-
-final RegExp _whitespace = RegExp(r'\s+');
-
-/// Up to [max] uppercase initials taken from the leading words of [name].
-///
-/// Kept local rather than imported from `gmana_extensions`: it is the only
-/// thing this package would use from the pure-Dart packages.
-String _initialsOf(String name, int max) {
-  if (max < 0) {
-    throw ArgumentError.value(max, 'max', 'must not be negative');
-  }
-
-  return name
-      .trim()
-      .split(_whitespace)
-      .where((word) => word.isNotEmpty)
-      .take(max)
-      .map((word) => word[0].toUpperCase())
-      .join();
-}
 
 /// A circular or rounded-square avatar with a graceful fallback chain.
 ///
@@ -112,7 +93,7 @@ class GAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final name = this.name;
-    final initials = name == null ? '' : _initialsOf(name, maxInitials);
+    final initials = name == null ? '' : name.initials(max: maxInitials);
     final background = backgroundColor ?? tintFor(name);
     final foreground =
         foregroundColor ??

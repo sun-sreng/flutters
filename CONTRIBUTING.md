@@ -6,12 +6,13 @@ Thank you for your interest in contributing to the Gmana ecosystem! We welcome c
 
 ## 🏛 Workspace Architecture
 
-Gmana is a Dart & Flutter monorepo organized into three layers:
+Gmana is a Dart & Flutter monorepo with two published packages and one internal one:
 
-- **Foundation (Pure Dart)**: `gmana_functional`, `gmana_predicates`, `gmana_utils`, `gmana_extensions`, `gmana_validation`, and `gmana_lints`.
-- **Domain (Pure Dart)**: `gmana_value_objects`.
-- **Presentation (Flutter)**: `gmana_flutter`, `gmana_flutter_extensions`, `gmana_form`, and `gmana_spinner`.
-- **Facade**: `gmana` re-exports all pure Dart packages from a single import.
+- **`gmana` (Pure Dart)**: functional types, extensions, predicates, validation, value objects, and utilities. Code lives in `lib/src/<area>/` and each area has a topic library (`lib/functional.dart`, `lib/validation.dart`, …) re-exported by `lib/gmana.dart`.
+- **`gmana_flutter` (Flutter)**: design system, widgets, form fields, spinners, and Flutter extensions under `lib/src/<area>/`. It depends on and re-exports `gmana`.
+- **`gmana_lints`**: the shared analysis options. Dev-only.
+
+Each behaviour has one implementation and one public name. Before adding a helper, search both packages for an existing one; an extension member must not repeat a name already declared on the same type.
 
 ---
 
@@ -91,7 +92,7 @@ Each package's `CHANGELOG.md`:
 Never edit a `version:` line by hand. On a clean `main`:
 
 ```bash
-just release gmana_utils:minor gmana:patch   # <package>:<major|minor|patch|x.y.z>, --dry-run to preview
+just release gmana:minor gmana_flutter:patch # <package>:<major|minor|patch|x.y.z>, --dry-run to preview
 just release-push
 
 just publish-patch-all                       # every publishable package, patch bump, pushed
@@ -132,4 +133,4 @@ Before submitting a pull request, ensure:
 - [ ] New features or bug fixes include corresponding tests in `test/`.
 - [ ] Public API methods and classes have descriptive doc comments (`///`).
 - [ ] Relevant package `CHANGELOG.md` files are updated under the `## Unreleased` section.
-- [ ] Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/) format (e.g. `feat(gmana_utils): ...`, `fix(gmana_form): ...`).
+- [ ] Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/) format (e.g. `feat(gmana): ...`, `fix(gmana_flutter): ...`).

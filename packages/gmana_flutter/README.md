@@ -1,11 +1,25 @@
 # gmana_flutter
 
-Flutter UI utilities for production apps: form-field compatibility exports,
-loading indicator compatibility exports, theme helpers, extension compatibility
-exports, and small design-system tokens.
+Flutter UI toolkit for production apps: design tokens, widgets, typed form
+fields, loading spinners, and Flutter extensions, built on the pure Dart
+[`gmana`](https://pub.dev/packages/gmana) package.
 
 ```dart
 import 'package:gmana_flutter/gmana_flutter.dart';
+```
+
+One import gives you this package and everything in `gmana` (functional types,
+extensions, predicates, validation, value objects, utilities). The one
+exception is the functional `State` monad, which is hidden because it clashes
+with Flutter's `State`. Import `package:gmana/functional.dart` with a prefix if
+you need it.
+
+Topic libraries are available when you want a narrower import:
+
+```dart
+import 'package:gmana_flutter/extensions.dart';
+import 'package:gmana_flutter/form.dart';
+import 'package:gmana_flutter/spinner.dart';
 ```
 
 ## Requirements
@@ -19,44 +33,15 @@ import 'package:gmana_flutter/gmana_flutter.dart';
 flutter pub add gmana_flutter
 ```
 
-Loading indicators now live in the focused `gmana_spinner` package and are
-re-exported from `gmana_flutter` for compatibility:
+## Guides
 
-```bash
-flutter pub add gmana_spinner
-```
-
-Form widgets now live in the focused `gmana_form` package and are re-exported
-from `gmana_flutter` for compatibility:
-
-```bash
-flutter pub add gmana_form
-```
-
-Flutter extension methods now live in the focused `gmana_flutter_extensions`
-package and are re-exported from `gmana_flutter` for compatibility:
-
-```bash
-flutter pub add gmana_flutter_extensions
-```
-
-If you use validator configuration classes such as
-`PasswordValidationConfig`, add the core package too:
-
-```bash
-flutter pub add gmana
-```
-
-Manual `pubspec.yaml` setup:
-
-```yaml
-dependencies:
-  gmana: ^0.2.0
-  gmana_flutter_extensions: ^0.0.1
-  gmana_form: ^0.0.1
-  gmana_flutter: ^0.0.8
-  gmana_spinner: ^0.0.1
-```
+| Area | Guide |
+| --- | --- |
+| Flutter extensions | [doc/extensions.md](doc/extensions.md) |
+| Form fields and validators | [doc/form.md](doc/form.md) |
+| Loading spinners | [doc/spinner.md](doc/spinner.md) |
+| Widgets and tokens reference | [doc/api.md](doc/api.md) |
+| Pure Dart APIs | [gmana guides](https://pub.dev/packages/gmana) |
 
 ## Quick Start
 
@@ -112,12 +97,12 @@ class HomePage extends StatelessWidget {
 | ---------- | ---------------------------------------------------------------------------------------------------------- |
 | Widgets    | `GAppBar`, `GButton`, `GCard`, `GListTile`, `GGap`, `GStarRatingBar`, `GTextField`                          |
 | Status UI  | `GTag`, `GBanner`, `GAvatar`, `GEmptyState`                                                                |
-| Forms      | `GEmailField`, `GPasswordField`, `GNumberField`, `GTextFormField`, `GConfirmPasswordField`, `GSubmitButton` |
+| Forms      | `GEmailField`, `GPasswordField`, `GNumberField`, `GTextFormField`, `GConfirmPasswordField`, `GFormSubmitButton` |
 | Loading    | `GCircularSpinner`, `GLinearSpinner`, `GDotSpinner`, `GWaveSpinner`, `GWaveDotSpinner`                     |
 | Tokens     | `GColors`, `GFontWeight`, `GSpacing`, `GRadius`, `GMotion`, `GTone`                                        |
-| Theme      | Re-exported `ThemeModeX`, `ThemeModes`                                                             |
-| Extensions | Re-exported `ColorX`, `StringColorX`, `BoxConstraintsX`, `BuildContextResponsiveX`, `BuildContextX`       |
-| Utilities  | Re-exported `IconDataCodec`, `IconDataX`, plus `formatLocale`, `parseLocale`, `registerErrorHandlers` |
+| Theme      | `ThemeModeX`, `ThemeModes`                                                                         |
+| Extensions | `ColorX`, `StringColorX`, `BoxConstraintsX`, `BuildContextResponsiveX`, `BuildContextX`                   |
+| Utilities  | `IconDataCodec`, `IconDataX`, `formatLocale`, `parseLocale`, `registerErrorHandlers`                  |
 
 ## Theme Setup
 
@@ -161,15 +146,12 @@ ThemeModes.getThemeKeys().map(ThemeModes.getLabelFromKey).toList(); // ['System 
 
 ## Forms
 
-The field widgets wrap `TextFormField` with consistent defaults and validators
-from the core `gmana` package.
-
-New code can import `package:gmana_form/gmana_form.dart` directly. The same
-APIs remain available through `gmana_flutter` for compatibility.
+The field widgets wrap `TextFormField` with consistent defaults and the typed
+validators from `gmana`. See [doc/form.md](doc/form.md) for every field,
+`GForm`, `GFormController`, and `GValidators`.
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:gmana/validation.dart';
 import 'package:gmana_flutter/gmana_flutter.dart';
 
 class AccountForm extends StatefulWidget {
@@ -201,7 +183,7 @@ class _AccountFormState extends State<AccountForm> {
         children: [
           GEmailField(
             controller: emailController,
-            labelText: 'Email',
+            label: 'Email',
           ),
           const GGap.vertical(GSpacing.md),
           GPasswordField(
@@ -214,9 +196,9 @@ class _AccountFormState extends State<AccountForm> {
             passwordController: passwordController,
           ),
           const GGap.vertical(GSpacing.xlg),
-          GSubmitButton.text(
+          GButton(
             label: 'Create account',
-            loading: false,
+            fullWidth: true,
             onPressed: () {
               if (formKey.currentState?.validate() ?? false) {
                 context.showSuccessSnackBar(message: 'Account form is valid');
@@ -234,10 +216,10 @@ For custom `TextFormField` configuration, use `GConfiguredTextFormField`:
 
 ```dart
 GConfiguredTextFormField(
-  config: GFieldConfig(
+  config: GTextFieldConfig(
     controller: controller,
-    labelText: 'Display name',
-    hintText: 'Enter your name',
+    label: 'Display name',
+    hint: 'Enter your name',
     prefixIcon: Icons.person,
     validator: (value) => value == null || value.isEmpty ? 'Required' : null,
   ),
@@ -436,14 +418,13 @@ const SizedBox(
 );
 ```
 
-`GSubmitButton` can show a spinner while work is running:
+`GButton` shows a spinner while work is running. Inside a `GForm`,
+`GFormSubmitButton` drives that state from the form controller:
 
 ```dart
-GSubmitButton.text(
-  label: 'Save',
-  loading: saving,
-  onPressed: saving ? null : save,
-);
+GButton(label: 'Save', isLoading: saving, onPressed: save);
+
+GFormSubmitButton(label: 'Save', onSubmit: (values) => repository.save(values));
 ```
 
 ## Color Utilities
@@ -628,5 +609,6 @@ flutter pub get
 flutter run
 ```
 
-The example demonstrates theme switching, color utilities, layout polish, and
-the package's UI components.
+The example demonstrates theme switching, color utilities, layout polish, the
+package's UI components, and dedicated pages for the Flutter extensions, form
+fields, and loading spinners.

@@ -1,5 +1,4 @@
-import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart'
-    show ColorX;
+import '../../extensions.dart' show ColorX;
 import 'package:material_ui/material_ui.dart';
 
 import 'colors.dart';

@@ -1,0 +1,122 @@
+import 'dart:convert';
+
+import '../../../predicates.dart' as preds;
+
+import '../email/email_validator.dart';
+import '../password/password_strength.dart';
+import '../password/password_validator.dart';
+
+final RegExp _base64RegExp = RegExp(r'^[A-Za-z0-9+/_-]*={0,2}$');
+final RegExp _e164PhoneRegExp = RegExp(r'^\+\d{7,15}$');
+final RegExp _isoDateRegExp = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+final RegExp _jwtSignatureRegExp = RegExp(r'^[A-Za-z0-9_-]*$');
+final RegExp _namePatternRegExp = RegExp(
+  r"^[\p{L}\p{M}' .\-]+$",
+  unicode: true,
+);
+final RegExp _nameLetterRegExp = RegExp(r'\p{L}', unicode: true);
+final RegExp _phoneStripRegExp = RegExp(r'[\s\-().+]');
+final RegExp _phoneDigitsRegExp = RegExp(r'^\d{7,15}$');
+final RegExp _uuidAnyRegExp = RegExp(
+  r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
+);
+final RegExp _usernameRegExp = RegExp(
+  r'^[A-Za-z0-9](?:[A-Za-z0-9._]*[A-Za-z0-9])?$',
+);
+
+/// A vast collection of validation utilities mapped as getters on [String].
+extension StringValidation on String {
+  /// Checks whether the string is valid Base64 or Base64URL text.
+  ///
+  /// Missing padding is accepted.
+  bool get isValidBase64 {
+    final s = trim();
+    if (s.isEmpty || !_base64RegExp.hasMatch(s)) {
+      return false;
+    }
+
+    try {
+      final normalized = base64.normalize(
+        s.replaceAll('-', '+').replaceAll('_', '/'),
+      );
+      base64Decode(normalized);
+      return true;
+    } on FormatException {
+      return false;
+    }
+  }
+
+  /// Validates against E.164 format: `+` followed by 7–15 digits, no spaces.
+  bool get isValidE164Phone => _e164PhoneRegExp.hasMatch(this);
+
+  /// RFC-5321-aligned. Handles subdomains, hyphens, multi-part TLDs.
+  /// Still a heuristic — true validation requires sending a mail.
+  bool get isValidEmail => const EmailValidator().validate(this).isRight();
+
+  /// ISO 8601 date only: `2024-01-31`
+  bool get isValidIsoDate =>
+      _isoDateRegExp.hasMatch(this) && preds.isIso8601(this);
+
+  /// Checks if the string looks like a JSON Web Token (`header.payload.signature`).
+  ///
+  /// This validates structure and Base64URL-encoded header/payload segments. It
+  /// does not verify the signature or claims.
+  bool get isValidJwt {
+    final parts = trim().split('.');
+    if (parts.length != 3 || parts.any((part) => part.isEmpty)) return false;
+    return parts[0].isValidBase64 &&
+        parts[1].isValidBase64 &&
+        _jwtSignatureRegExp.hasMatch(parts[2]);
+  }
+
+  /// Accepts Unicode letters, spaces, hyphens, apostrophes, periods.
+  /// Single names (mononyms) are valid. Max 100 chars guards against abuse.
+  bool get isValidName {
+    final s = trim();
+    if (s.isEmpty || s.length > 100) return false;
+    return _nameLetterRegExp.hasMatch(s) && _namePatternRegExp.hasMatch(s);
+  }
+
+  /// At least 8 chars, one uppercase, one lowercase, one digit,
+  /// one non-alphanumeric character (any — not a fixed whitelist).
+  bool get isValidPassword {
+    return const PasswordValidator().validate(this).isRight();
+  }
+
+  /// Strips formatting then checks for 7–15 digits (ITU-T E.164 range).
+  /// Does NOT enforce country-specific formats — use a package like
+  /// `phone_numbers_parser` when you need locale validation.
+  bool get isValidPhone {
+    final digits = replaceAll(_phoneStripRegExp, '');
+    if (digits.isEmpty) return false;
+    return _phoneDigitsRegExp.hasMatch(digits);
+  }
+
+  /// Checks if the string is any valid UUID version 1 through 5.
+  bool get isValidUuidAny => _uuidAnyRegExp.hasMatch(trim());
+
+  /// Returns which password requirements are unmet — useful for live UI feedback.
+  PasswordStrength get passwordStrength =>
+      PasswordStrength.fromConfig(this, const PasswordValidationConfig());
+
+  /// Checks if the string is a conventional username.
+  ///
+  /// Allows letters, numbers, underscores, and dots. The first and last
+  /// character must be alphanumeric.
+  bool isValidUsername({int min = 3, int max = 32}) {
+    if (min < 1) {
+      throw ArgumentError.value(min, 'min', 'must be greater than zero');
+    }
+    if (max < min) {
+      throw ArgumentError.value(
+        max,
+        'max',
+        'must be greater than or equal to min',
+      );
+    }
+
+    final s = trim();
+    if (s.length < min || s.length > max) return false;
+    return _usernameRegExp.hasMatch(s);
+  }
+}
