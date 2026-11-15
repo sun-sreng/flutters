@@ -65,6 +65,11 @@ Replace the old dependencies with `gmana_flutter` and update imports:
 - `GFormController.isDirty` and `isFieldDirty` cover typed fields such as
   checkboxes and dropdowns, not only text, and `markPristine()` rebaselines
   them.
+- Number fields (`GNumberField`, `GTextFormField.number`) ignore an edit that
+  would not leave a number or the start of one, keeping the previous text.
+  Before, a decimal or signed field was emptied by a second `.` or `-`, or by
+  pasting text such as `1,234`. An integer field without negatives also
+  rejects such an edit now, rather than dropping the stray characters.
 - `GTextField`'s password toggle is the shared `VisibilityToggle`: it shows
   the "visibility" icon while the text is hidden, matching the form password
   fields, and has a tooltip. The clear button has a "Clear" tooltip.
