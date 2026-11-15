@@ -92,6 +92,9 @@ Replace the old dependencies with `gmana` and update imports:
 - `Money.allocate` no longer gives leftover minor units to a part whose ratio is
   zero. Leftover units now go to the parts with the largest remainder, and the
   arithmetic is exact for any amount and ratios.
+- `kDefaultDisposableDomains` no longer lists `qq.com` and `fastmail.com`, two
+  permanent providers, so `EmailValidationConfig.strict()` stops rejecting
+  their users.
 - `toDateTimeOrNull` (and so `toDateTime`, `year`, `daysUntil`, and the other
   `StringDateX` members) no longer returns `null` for a valid date-time whose
   zone offset moves it to another UTC day, such as
