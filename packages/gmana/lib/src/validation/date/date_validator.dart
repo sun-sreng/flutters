@@ -1,5 +1,6 @@
 import '../../../functional.dart';
 import '../../../predicates.dart' as predicates;
+import '../../core/iso_date.dart';
 
 import '../core/validation_issue.dart';
 import 'date_validation_config.dart';
@@ -59,14 +60,36 @@ final class DateValidator {
       return const Left(DateNotLeapYearIssue());
     }
 
-    if (config.minDate case final min? when parsedDate.isBefore(min.toUtc())) {
+    // A date without a time names a calendar day, not an instant, so it is
+    // compared with each bound's own calendar day. Comparing UTC midnight
+    // with a local bound would make the answer depend on the timezone.
+    final writtenDay =
+        _dateOnly.hasMatch(value.trim())
+            ? _calendarDay(tryParseIsoDateTime(value)!)
+            : null;
+    bool before(DateTime bound) =>
+        writtenDay != null
+            ? writtenDay.isBefore(_calendarDay(bound))
+            : parsedDate.isBefore(bound.toUtc());
+    bool after(DateTime bound) =>
+        writtenDay != null
+            ? writtenDay.isAfter(_calendarDay(bound))
+            : parsedDate.isAfter(bound.toUtc());
+
+    if (config.minDate case final min? when before(min)) {
       return Left(DateBeforeMinIssue(min));
     }
 
-    if (config.maxDate case final max? when parsedDate.isAfter(max.toUtc())) {
+    if (config.maxDate case final max? when after(max)) {
       return Left(DateAfterMaxIssue(max));
     }
 
     return Right(parsedDate);
   }
 }
+
+final RegExp _dateOnly = RegExp(r'^[+-]?\d{4,6}-?\d\d-?\d\d$');
+
+/// The year, month and day of [date] in its own zone, as a UTC midnight.
+DateTime _calendarDay(DateTime date) =>
+    DateTime.utc(date.year, date.month, date.day);

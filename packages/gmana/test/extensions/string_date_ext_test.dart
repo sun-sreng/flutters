@@ -34,6 +34,28 @@ void main() {
         expect('2024-02-29'.toDateTimeOrNull, isNotNull);
       });
 
+      test('toDateTimeOrNull checks the compact and signed-year forms', () {
+        expect('20240231'.toDateTimeOrNull, isNull);
+        expect('20241301'.toDateTimeOrNull, isNull);
+        expect('+002024-02-31'.toDateTimeOrNull, isNull);
+        expect('20240229'.toDateTimeOrNull, DateTime(2024, 2, 29));
+        expect('20240215T103000Z'.toDateTimeOrNull, isNotNull);
+      });
+
+      test('toDateTimeOrNull rejects a time field out of range', () {
+        // Each of these used to roll over into a later minute, hour or day.
+        expect('2024-02-15T10:75'.toDateTimeOrNull, isNull);
+        expect('2024-02-15T10:00:60'.toDateTimeOrNull, isNull);
+        expect('2024-02-15T25:00Z'.toDateTimeOrNull, isNull);
+        expect('2024-02-15T24:00:00Z'.toDateTimeOrNull, isNull);
+        expect('2024-02-15T10:00+24:00'.toDateTimeOrNull, isNull);
+        expect('2024-02-15T10:00+05:60'.toDateTimeOrNull, isNull);
+        expect(
+          '2024-02-15T23:59:59.999Z'.toDateTimeOrNull,
+          DateTime.utc(2024, 2, 15, 23, 59, 59, 999),
+        );
+      });
+
       test('toDateTime throws for invalid date strings', () {
         expect('2024-03-15'.toDateTime, isA<DateTime>());
         expect(() => 'not-a-date'.toDateTime, throwsFormatException);

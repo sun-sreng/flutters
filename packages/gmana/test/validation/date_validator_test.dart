@@ -40,5 +40,57 @@ void main() {
       expect(invalid.isLeft(), isTrue);
       expect(invalid.leftOrNull(), isA<DateInvalidTimeIssue>());
     });
+
+    group('minDate and maxDate', () {
+      // Local bounds: the calendar day as written must not depend on the
+      // timezone the test runs in.
+      final validator = DateValidator(
+        DateValidationConfig(
+          minDate: DateTime(2024, 1, 1),
+          maxDate: DateTime(2024, 1, 31),
+        ),
+      );
+
+      test('a date-only input on either bound is accepted', () {
+        expect(validator.validate('2024-01-01').isRight(), isTrue);
+        expect(validator.validate('2024-01-31').isRight(), isTrue);
+        expect(validator.validate('20240131').isRight(), isTrue);
+      });
+
+      test('a date-only input outside the bounds is rejected', () {
+        expect(
+          validator.validate('2023-12-31').leftOrNull(),
+          isA<DateBeforeMinIssue>(),
+        );
+        expect(
+          validator.validate('2024-02-01').leftOrNull(),
+          isA<DateAfterMaxIssue>(),
+        );
+      });
+
+      test('UTC bounds compare by their UTC calendar day', () {
+        final utcValidator = DateValidator(
+          DateValidationConfig(maxDate: DateTime.utc(2024, 1, 31, 23)),
+        );
+
+        expect(utcValidator.validate('2024-01-31').isRight(), isTrue);
+        expect(utcValidator.validate('2024-02-01').isLeft(), isTrue);
+      });
+
+      test('an input with a time is compared as an instant', () {
+        final instantValidator = DateValidator(
+          DateValidationConfig(minDate: DateTime.utc(2024, 1, 1, 12)),
+        );
+
+        expect(
+          instantValidator.validate('2024-01-01T11:59:59Z').leftOrNull(),
+          isA<DateBeforeMinIssue>(),
+        );
+        expect(
+          instantValidator.validate('2024-01-01T12:00:00Z').isRight(),
+          isTrue,
+        );
+      });
+    });
   });
 }

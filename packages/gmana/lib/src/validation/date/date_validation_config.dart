@@ -27,10 +27,15 @@ final class DateValidationConfig {
   /// Requires input to match 24-hour time format (`HH:mm` or `HH:mm:ss`).
   final bool mustBeTime;
 
-  /// Minimum allowable UTC DateTime.
+  /// The earliest allowed value.
+  ///
+  /// A date-only input such as `2024-01-01` is compared by calendar day with
+  /// this bound's own year, month and day, so `DateTime(2024, 1, 1)` accepts
+  /// `2024-01-01` in every timezone. An input with a time is compared as an
+  /// instant.
   final DateTime? minDate;
 
-  /// Maximum allowable UTC DateTime.
+  /// The latest allowed value, compared the same way as [minDate].
   final DateTime? maxDate;
 
   /// Creates a [DateValidationConfig].

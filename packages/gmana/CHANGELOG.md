@@ -72,10 +72,19 @@ Replace the old dependencies with `gmana` and update imports:
   `TextValue.defaultConfig.copyWith(...)` or `TextValidationConfig.required(...)`
   to keep the previous value-object defaults.
 - **Breaking:** the date predicates and `StringDateX` share one parser that
-  rejects impossible calendar values instead of rolling them over.
-  `isDate('2024-13-01')`, `tryParseDate('2024-02-31')`, and every predicate
-  given such a date now return `false` or `null`. Previously only
-  `toDateTimeOrNull` and `isIso8601` rejected them.
+  rejects impossible values instead of rolling them over, in every form
+  `DateTime.parse` accepts (extended, compact such as `20240215`, and
+  signed-year). The day must exist, the hour must be 0–23, minutes and seconds
+  0–59, and a zone offset at most 23:59. `isDate('2024-13-01')`,
+  `isDate('20240231')`, `tryParseDate('2024-02-31')`,
+  `'2024-02-15T10:75'.toDateTimeOrNull`, and every predicate given such a value
+  now return `false` or `null`. Previously only `toDateTimeOrNull` and
+  `isIso8601` rejected impossible days, and only in the `yyyy-MM-dd` form.
+- **Breaking:** `DateValidator` compares a date-only input with `minDate` and
+  `maxDate` by calendar day, using each bound's own year, month and day.
+  `minDate: DateTime(2024, 1, 1)` now accepts `'2024-01-01'` in every timezone;
+  before, the result depended on the local offset. Input with a time is still
+  compared as an instant.
 - **Breaking:** `Stream.debounce` and `Stream.throttle` use the stricter
   implementation from the former `gmana_utils`: both throw `ArgumentError`
   for a non-positive duration, and `throttle` takes `trailing:`.
