@@ -1,4 +1,4 @@
-import 'package:gmana_spinner/gmana_spinner.dart';
+import '../../spinner.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../design_system/colors.dart';

@@ -1,0 +1,249 @@
+import 'package:gmana/validation.dart' hide contains, equals;
+import 'package:test/test.dart';
+
+void main() {
+  group('StringValidation Extension', () {
+    group('Email Validation', () {
+      test('isValidEmail returns true for valid emails', () {
+        expect('test@example.com'.isValidEmail, isTrue);
+        expect('user.name+tag@sub.example.com'.isValidEmail, isTrue);
+        expect(' valid@email.com '.isValidEmail, isTrue); // Trims
+      });
+
+      test('isValidEmail returns false for invalid emails', () {
+        expect('invalid-email'.isValidEmail, isFalse);
+        expect('@example.com'.isValidEmail, isFalse);
+        expect('test@.com'.isValidEmail, isFalse);
+      });
+    });
+
+    group('Name Validation', () {
+      test('isValidName returns true for valid names', () {
+        expect('John Doe'.isValidName, isTrue);
+        expect('O\'Brian'.isValidName, isTrue);
+        expect('Jane-Doe'.isValidName, isTrue);
+        expect('Sr. Maria'.isValidName, isTrue);
+        expect('José'.isValidName, isTrue);
+      });
+
+      test(
+        'isValidName returns false for invalid names or empty/long names',
+        () {
+          expect(''.isValidName, isFalse);
+          expect('John123'.isValidName, isFalse); // Numbers not allowed
+          expect(
+            'John!'.isValidName,
+            isFalse,
+          ); // Special characters not allowed
+          expect(('a' * 101).isValidName, isFalse); // Over 100 characters
+          expect('...'.isValidName, isFalse);
+          expect(' - '.isValidName, isFalse);
+        },
+      );
+    });
+
+    group('Password Validation', () {
+      test('isValidPassword returns true when all rules are met', () {
+        expect('StrongP@ssw0rd'.isValidPassword, isTrue);
+      });
+
+      test('isValidPassword returns false if rules are unmet', () {
+        expect('weak'.isValidPassword, isFalse); // Too short
+        expect('alllowercase1#'.isValidPassword, isFalse); // No uppercase
+        expect('ALLUPPERCASE1#'.isValidPassword, isFalse); // No lowercase
+        expect('NoDigitsHere!'.isValidPassword, isFalse); // No digit
+        expect('NoSpecialChar123'.isValidPassword, isFalse); // No special char
+      });
+
+      test('passwordStrength returns correct PasswordStrength', () {
+        final strength = 'Str0ng!'.passwordStrength; // length 7 (not 8)
+        expect(strength.hasMinLength, isFalse);
+        expect(strength.hasUppercase, isTrue);
+        expect(strength.hasLowercase, isTrue);
+        expect(strength.hasDigit, isTrue);
+        expect(strength.hasSpecial, isTrue);
+        expect(strength.isStrong, isFalse);
+        expect(strength.score, 4);
+        expect(strength.unmetRequirements, contains('At least 8 characters'));
+      });
+
+      test('passwordStrength reports a strong password', () {
+        final strength = 'Str0ngPass!'.passwordStrength;
+
+        expect(strength.hasMinLength, isTrue);
+        expect(strength.hasUppercase, isTrue);
+        expect(strength.hasLowercase, isTrue);
+        expect(strength.hasDigit, isTrue);
+        expect(strength.hasSpecial, isTrue);
+        expect(strength.isStrong, isTrue);
+        expect(strength.score, 5);
+        expect(strength.unmetRequirements, isEmpty);
+      });
+    });
+
+    group('Phone Validation', () {
+      test('isValidPhone returns true for valid phone formats', () {
+        expect('1234567'.isValidPhone, isTrue);
+        expect('123-456-7890'.isValidPhone, isTrue);
+        expect('+1 (123) 456-7890'.isValidPhone, isTrue);
+      });
+
+      test('isValidPhone returns false for invalid phone formats', () {
+        expect('123'.isValidPhone, isFalse); // Too short
+        expect('1234567890123456'.isValidPhone, isFalse); // Too long
+        expect('phone1234567'.isValidPhone, isFalse); // Letters
+        expect('123/4567'.isValidPhone, isFalse);
+      });
+
+      test('isValidE164Phone returns true for valid E.164 formats', () {
+        expect('+1234567890'.isValidE164Phone, isTrue);
+      });
+
+      test('isValidE164Phone returns false for invalid E.164 formats', () {
+        expect('1234567890'.isValidE164Phone, isFalse); // Missing +
+        expect('+1 (234) 567'.isValidE164Phone, isFalse); // Spaces
+        expect('+123'.isValidE164Phone, isFalse); // Too short
+      });
+    });
+
+    group('General Purpose Validations', () {
+      test('isValidBase64 returns true for Base64 and Base64URL strings', () {
+        expect('aGVsbG8='.isValidBase64, isTrue);
+        expect('aGVsbG8'.isValidBase64, isTrue);
+        expect('eyJhbGciOiJIUzI1NiJ9'.isValidBase64, isTrue);
+        expect('not base64!'.isValidBase64, isFalse);
+        expect(''.isValidBase64, isFalse);
+      });
+
+      test('isValidUrl returns true for valid HTTP/HTTPS URLs', () {
+        expect(
+          'http://example.com'.isUrl(allowedSchemes: const {'http', 'https'}),
+          isTrue,
+        );
+        expect(
+          'https://example.com/path?query=1'.isUrl(
+            allowedSchemes: const {'http', 'https'},
+          ),
+          isTrue,
+        );
+        expect(
+          'ftp://example.com'.isUrl(allowedSchemes: const {'http', 'https'}),
+          isFalse,
+        );
+        expect(
+          'https://'.isUrl(allowedSchemes: const {'http', 'https'}),
+          isFalse,
+        );
+        expect(
+          'example.com'.isUrl(allowedSchemes: const {'http', 'https'}),
+          isFalse,
+        );
+      });
+
+      test('isValidUuid returns true for valid v4 UUIDs', () {
+        expect('f47ac10b-58cc-4372-a567-0e02b2c3d479'.isUuid('4'), isTrue);
+        expect('invalid-uuid'.isUuid('4'), isFalse);
+        expect('550e8400-e29b-11d4-a716-446655440000'.isUuid('4'), isFalse);
+      });
+
+      test('isValidIsoDate returns true for valid YYYY-MM-DD dates', () {
+        expect('2024-01-31'.isValidIsoDate, isTrue);
+        expect('2024-02-29'.isValidIsoDate, isTrue);
+        expect('2024-13-01'.isValidIsoDate, isFalse);
+        expect('2024-02-31'.isValidIsoDate, isFalse);
+        expect('2023-02-29'.isValidIsoDate, isFalse);
+        expect('2024/01/31'.isValidIsoDate, isFalse); // Invalid format
+      });
+
+      test('isValidIpv4 returns true for valid IPv4 addresses', () {
+        expect('192.168.1.1'.isIpv4, isTrue);
+        expect('255.255.255.255'.isIpv4, isTrue);
+        expect(' 192.168.1.1 '.isIpv4, isTrue);
+        expect('256.1.1.1'.isIpv4, isFalse); // Out of range
+        expect('192.168.1'.isIpv4, isFalse); // Missing part
+        expect('192.168.001.1'.isIpv4, isFalse); // Leading zero
+        expect('192..1.1'.isIpv4, isFalse); // Empty part
+      });
+
+      test('isValidIpv6 and isValidIpAddress validate IP addresses', () {
+        expect('2001:db8::1'.isIpv6, isTrue);
+        expect('::1'.isIpv6, isTrue);
+        expect('2001:db8:::1'.isIpv6, isFalse);
+        expect('192.168.1.1'.isIP(), isTrue);
+        expect('2001:db8::1'.isIP(), isTrue);
+        expect('not-an-ip'.isIP(), isFalse);
+      });
+
+      test('isValidJwt validates JWT shape', () {
+        const jwt = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMifQ.signature';
+        expect(jwt.isValidJwt, isTrue);
+        expect('header.payload'.isValidJwt, isFalse);
+        expect('bad!.payload.signature'.isValidJwt, isFalse);
+        expect('eyJhbGciOiJIUzI1NiJ9..signature'.isValidJwt, isFalse);
+      });
+
+      test('isValidMacAddress validates common MAC address formats', () {
+        expect('AA:BB:CC:DD:EE:FF'.isMacAddress, isTrue);
+        expect('aa-bb-cc-dd-ee-ff'.isMacAddress, isTrue);
+        expect('aabb.ccdd.eeff'.isMacAddress, isTrue);
+        expect('AA:BB:CC:DD:EE'.isMacAddress, isFalse);
+        expect('GG:BB:CC:DD:EE:FF'.isMacAddress, isFalse);
+      });
+
+      test('isValidHexColor returns true for valid hex colors', () {
+        expect('#FFF'.isHexColor, isTrue);
+        expect('#FFFFFF'.isHexColor, isTrue);
+        expect('FFF'.isHexColor, isTrue); // validation allows skipping the #
+        expect('ZZZ'.isHexColor, isFalse);
+      });
+
+      test('isValidCreditCard returns true for valid cards', () {
+        expect('4111 1111 1111 1111'.isCreditCard, isTrue);
+        expect('5555-5555-5555-4444'.isCreditCard, isTrue);
+        expect('4111 1111 1111 1112'.isCreditCard, isFalse);
+        expect('not-a-card'.isCreditCard, isFalse);
+      });
+
+      test('isValidSlug validates URL-safe slugs', () {
+        expect('hello-world-2026'.trim().isSlug, isTrue);
+        expect('hello'.trim().isSlug, isTrue);
+        expect('Hello-World'.trim().isSlug, isFalse);
+        expect('-hello'.trim().isSlug, isFalse);
+        expect('hello--world'.trim().isSlug, isFalse);
+      });
+
+      test('isValidUuidAny accepts UUID versions 1 through 5', () {
+        expect('550e8400-e29b-41d4-a716-446655440000'.isValidUuidAny, isTrue);
+        expect('f47ac10b-58cc-4372-a567-0e02b2c3d479'.isValidUuidAny, isTrue);
+        expect('550e8400-e29b-61d4-a716-446655440000'.isValidUuidAny, isFalse);
+        expect('invalid-uuid'.isValidUuidAny, isFalse);
+      });
+
+      test('isWithinLength works correctly', () {
+        expect('abc'.isWithinLength(min: 2, max: 4), isTrue);
+        expect('a'.isWithinLength(min: 2, max: 4), isFalse);
+        expect('abcde'.isWithinLength(min: 2, max: 4), isFalse);
+        expect(
+          () => 'abc'.isWithinLength(min: -1, max: 4),
+          throwsArgumentError,
+        );
+        expect(() => 'abc'.isWithinLength(min: 4, max: 2), throwsArgumentError);
+      });
+
+      test('isValidUsername validates conventional usernames', () {
+        expect('sreng.sun'.isValidUsername(), isTrue);
+        expect('user_123'.isValidUsername(), isTrue);
+        expect('ab'.isValidUsername(), isFalse);
+        expect('_user'.isValidUsername(), isFalse);
+        expect('user_'.isValidUsername(), isFalse);
+        expect('user-name'.isValidUsername(), isFalse);
+        expect('ab'.isValidUsername(min: 2), isTrue);
+        expect(() => 'abc'.isValidUsername(min: 0), throwsArgumentError);
+        expect(
+          () => 'abc'.isValidUsername(min: 4, max: 3),
+          throwsArgumentError,
+        );
+      });
+    });
+  });
+}

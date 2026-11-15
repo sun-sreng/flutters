@@ -10,14 +10,14 @@ Form APIs are re-exported for compatibility. New code can import the focused
 package directly:
 
 ```dart
-import 'package:gmana_form/gmana_form.dart';
+import 'package:gmana_flutter/form.dart';
 ```
 
 Flutter extension APIs are re-exported for compatibility. New code that only
 needs extensions can import the focused package directly:
 
 ```dart
-import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
+import 'package:gmana_flutter/extensions.dart';
 ```
 
 This package builds on `gmana`, so validator config classes such as

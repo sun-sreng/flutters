@@ -1,6 +1,9 @@
 import 'package:gmana_flutter/gmana_flutter.dart';
 import 'package:material_ui/material_ui.dart';
 
+import 'demos/extensions_demo.dart';
+import 'demos/form_demo.dart';
+import 'demos/spinner_demo.dart';
 import 'theme/showcase_theme.dart';
 import 'views/color_ext_view.dart';
 import 'widgets/benefit_tile.dart';
@@ -245,12 +248,36 @@ class _ShowcaseCards extends StatelessWidget {
         ShowcaseCard(
           width: _cardWidth,
           icon: currentThemeMode.toIcon(),
-          title: 'Theme Mode Controls',
+          title: 'Flutter Extensions',
           description:
-              'Preview light, dark, and system behavior with a clearer hierarchy and cleaner controls.',
-          metrics: const ['Material 3', 'Adaptive', 'Focused'],
-          actionLabel: 'Review theme modes',
-          onPressed: () {},
+              'Breakpoints, responsive values, color math, time formatting, icon codecs, and snackbar helpers.',
+          metrics: const ['Responsive', 'Color', 'Theme mode'],
+          actionLabel: 'Open extensions',
+          onPressed:
+              () => _push(
+                context,
+                ExtensionsDemoPage(themeMode: currentThemeMode),
+              ),
+        ),
+        ShowcaseCard(
+          width: _cardWidth,
+          icon: Icons.edit_note_rounded,
+          title: 'Form Fields',
+          description:
+              'Text, email, number, password, and confirm-password fields wired to typed gmana validators.',
+          metrics: const ['Validation', 'GForm', 'Submit'],
+          actionLabel: 'Open form demo',
+          onPressed: () => _push(context, const ExampleFormPage()),
+        ),
+        ShowcaseCard(
+          width: _cardWidth,
+          icon: Icons.autorenew_rounded,
+          title: 'Loading Spinners',
+          description:
+              'Every animated spinner in one gallery, plus the blocking loading overlay.',
+          metrics: const ['Animated', 'Overlay', 'Themed'],
+          actionLabel: 'Open spinner gallery',
+          onPressed: () => _push(context, const SpinnerGalleryPage()),
         ),
         ShowcaseCard(
           width: _cardWidth,
@@ -264,5 +291,9 @@ class _ShowcaseCards extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  void _push(BuildContext context, Widget page) {
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
   }
 }

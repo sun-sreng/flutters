@@ -1,0 +1,262 @@
+import 'package:gmana/extensions.dart';
+import 'package:test/test.dart';
+
+void main() {
+  group('StringX Parsing', () {
+    test('toDoubleOrNull', () {
+      expect('1.5'.toDoubleOrNull, equals(1.5));
+      expect('abc'.toDoubleOrNull, isNull);
+    });
+
+    test('toDoubleOrZero', () {
+      expect('1.5'.toDoubleOrZero, equals(1.5));
+      expect('abc'.toDoubleOrZero, equals(0.0));
+    });
+
+    test('toIntOrNull', () {
+      expect('15'.toIntOrNull, equals(15));
+      expect('1.5'.toIntOrNull, isNull);
+      expect('abc'.toIntOrNull, isNull);
+    });
+
+    test('toIntOrZero', () {
+      expect('15'.toIntOrZero, equals(15));
+      expect('1.5'.toIntOrZero, equals(0));
+      expect('abc'.toIntOrZero, equals(0));
+    });
+
+    test('toBool', () {
+      expect('true'.toBool, isTrue);
+      expect(' TRUE '.toBool, isTrue);
+      expect('false'.toBool, isFalse);
+      expect('abc'.toBool, isFalse);
+    });
+
+    test('toUriOrNull', () {
+      expect(
+        'https://google.com'.toUriOrNull,
+        equals(Uri.parse('https://google.com')),
+      );
+      expect('http://[::1]'.toUriOrNull, equals(Uri.parse('http://[::1]')));
+    });
+
+    test('jsonDecodeOrNull', () {
+      expect('{"a": 1}'.jsonDecodeOrNull, equals({'a': 1}));
+      expect('invalid json'.jsonDecodeOrNull, isNull);
+    });
+  });
+
+  group('StringX Duration', () {
+    test('toDuration', () {
+      expect('45'.toDuration(), equals(const Duration(seconds: 45)));
+      expect(
+        '05:09'.toDuration(),
+        equals(const Duration(minutes: 5, seconds: 9)),
+      );
+      expect(
+        '02:30:45'.toDuration(),
+        equals(const Duration(hours: 2, minutes: 30, seconds: 45)),
+      );
+      expect(
+        '25:10:00'.toDuration(),
+        equals(const Duration(hours: 25, minutes: 10)),
+      );
+      expect(() => '70'.toDuration(), throwsFormatException);
+      expect(() => '05:70'.toDuration(), throwsFormatException);
+      expect(() => 'abc'.toDuration(), throwsFormatException);
+    });
+
+    test('toDurationOrNull', () {
+      expect(
+        '05:09'.toDurationOrNull,
+        equals(const Duration(minutes: 5, seconds: 9)),
+      );
+      expect('abc'.toDurationOrNull, isNull);
+      expect('70'.toDurationOrNull, isNull);
+    });
+  });
+
+  group('StringX Case Formatting', () {
+    test('toSentenceCase', () {
+      expect('hello'.toSentenceCase, equals('Hello'));
+      expect('Hello'.toSentenceCase, equals('Hello'));
+      expect(''.toSentenceCase, equals(''));
+    });
+
+    test('toTitleCase', () {
+      expect('hello world'.toTitleCase, equals('Hello World'));
+      expect(' hello  world '.toTitleCase, equals('Hello World'));
+    });
+
+    test('toCamelCase', () {
+      expect('Hello World'.toCamelCase, equals('helloWorld'));
+      expect('hello_world'.toCamelCase, equals('helloWorld'));
+      expect('hello-world'.toCamelCase, equals('helloWorld'));
+    });
+
+    test('toSnakeCase', () {
+      expect('Hello World'.toSnakeCase, equals('hello_world'));
+      expect('helloWorld'.toSnakeCase, equals('hello_world'));
+    });
+
+    test('toKebabCase', () {
+      expect('Hello World'.toKebabCase, equals('hello-world'));
+      expect('helloWorld'.toKebabCase, equals('hello-world'));
+    });
+
+    test('toScreamingSnakeCase', () {
+      expect('hello world'.toScreamingSnakeCase, equals('HELLO_WORLD'));
+      expect('helloWorld'.toScreamingSnakeCase, equals('HELLO_WORLD'));
+    });
+
+    test('toPascalCase', () {
+      expect('hello world'.toPascalCase, equals('HelloWorld'));
+      expect('hello_world'.toPascalCase, equals('HelloWorld'));
+    });
+
+    test('toDotCase', () {
+      expect('hello world'.toDotCase, equals('hello.world'));
+      expect('helloWorld'.toDotCase, equals('hello.world'));
+    });
+
+    test('capitalize', () {
+      expect('hello world'.capitalize, equals('Hello world'));
+      expect(''.capitalize, equals(''));
+    });
+
+    test('toJsonMapOrNull', () {
+      expect('{"a": 1}'.toJsonMapOrNull, equals({'a': 1}));
+      expect('[1, 2, 3]'.toJsonMapOrNull, isNull);
+      expect('invalid'.toJsonMapOrNull, isNull);
+    });
+
+    test('removePrefix and removeSuffix', () {
+      expect(
+        'https://example.com'.removePrefix('https://'),
+        equals('example.com'),
+      );
+      expect('example.com'.removePrefix('https://'), equals('example.com'));
+
+      expect('image.png'.removeSuffix('.png'), equals('image'));
+      expect('image.png'.removeSuffix('.jpg'), equals('image.png'));
+    });
+
+    test('mask', () {
+      expect(
+        '1234567890'.mask(unmaskedStart: 2, unmaskedEnd: 2),
+        equals('12******90'),
+      );
+      expect(
+        'user@example.com'.mask(unmaskedStart: 1, unmaskedEnd: 4),
+        equals('u***********.com'),
+      );
+      expect('123'.mask(unmaskedStart: 2, unmaskedEnd: 2), equals('123'));
+    });
+  });
+
+  group('StringX Slug', () {
+    test('toSlug', () {
+      expect('Hello World! 2024'.toSlug, equals('hello-world-2024'));
+      expect('  Some   Text--Here  '.toSlug, equals('some-text-here'));
+      expect('---Already---Slug---'.toSlug, equals('already-slug'));
+    });
+  });
+
+  group('StringX Truncation', () {
+    test('truncate', () {
+      expect('Hello World'.truncate(7), equals('Hell...'));
+      expect('Hello'.truncate(10), equals('Hello'));
+      expect(() => 'Hello'.truncate(3), throwsArgumentError);
+    });
+
+    test('truncateWords', () {
+      expect(
+        'Hello World Everyone'.truncateWords(15),
+        equals('Hello World...'),
+      );
+      expect('HelloWorldEveryone'.truncateWords(15), equals('HelloWorldEv...'));
+      expect('Hello'.truncateWords(10), equals('Hello'));
+      expect(() => 'Hello'.truncateWords(3), throwsArgumentError);
+    });
+  });
+
+  group('StringX Validation', () {
+    test('hasLengthBetween', () {
+      expect('abc'.hasLengthBetween(2, 4), isTrue);
+      expect('abc'.hasLengthBetween(4, 5), isFalse);
+      expect(' abc '.hasLengthBetween(1, 3), isTrue);
+      expect(() => 'abc'.hasLengthBetween(-1, 3), throwsArgumentError);
+      expect(() => 'abc'.hasLengthBetween(4, 3), throwsArgumentError);
+    });
+  });
+
+  group('StringX Whitespace / Blank', () {
+    test('blankToNull', () {
+      expect('   '.orNull, isNull);
+      expect('a'.orNull, equals('a'));
+    });
+  });
+
+  group('StringX Reading Time', () {
+    test('readingTimeMinutes', () {
+      expect(''.readingTimeMinutes, equals(0));
+      expect('word '.repeat(225).readingTimeMinutes, equals(1));
+      expect('word '.repeat(400).readingTimeMinutes, equals(2));
+    });
+  });
+
+  group('StringX Misc', () {
+    test('repeat', () {
+      expect('-'.repeat(10), equals('----------'));
+      expect('-'.repeat(0), equals(''));
+      expect(() => '-'.repeat(-1), throwsArgumentError);
+    });
+
+    test('reversed', () {
+      expect('hello'.reversed, equals('olleh'));
+      expect('😎🚀'.reversed, equals('🚀😎'));
+    });
+
+    test('removeWhitespace', () {
+      expect(' a b  c '.removeWhitespace, equals('abc'));
+      expect('\n a \t b \r'.removeWhitespace, equals('ab'));
+    });
+
+    test('countOccurrences', () {
+      expect('hello world hello'.countOccurrences('hello'), equals(2));
+      expect('aaaa'.countOccurrences('aa'), equals(2));
+      expect('abc'.countOccurrences(''), equals(0));
+    });
+
+    test('wrap', () {
+      expect('world'.wrap('**'), equals('**world**'));
+      expect('note'.wrap('<', '>'), equals('<note>'));
+    });
+
+    test('trimHyphens', () {
+      expect('---hello-world---'.trimHyphens(), equals('hello-world'));
+      expect('hello-world'.trimHyphens(), equals('hello-world'));
+      expect('---'.trimHyphens(), equals(''));
+    });
+  });
+
+  group('StringNullableX', () {
+    test('orEmpty', () {
+      expect((null as String?).orEmpty, equals(''));
+      expect('a'.orEmpty, equals('a'));
+    });
+
+    test('orNull', () {
+      expect((null as String?).orNull, isNull);
+      expect(''.orNull, isNull);
+      expect(' '.orNull, isNull);
+      expect('a'.orNull, equals('a'));
+    });
+
+    test('mapNotBlank', () {
+      expect((null as String?).mapNotBlank((s) => s.toUpperCase()), isNull);
+      expect('  '.mapNotBlank((s) => s.toUpperCase()), isNull);
+      expect('a'.mapNotBlank((s) => '${s}b'), equals('ab'));
+    });
+  });
+}

@@ -1,5 +1,5 @@
 name: gmana_flutter
-description: A comprehensive Flutter UI library providing curated widgets, form helpers, theme services, and extensions to accelerate and standardize development.
+description: Flutter UI toolkit — design tokens, widgets, form fields, loading spinners, and Flutter extensions, built on the pure Dart gmana package.
 version: 0.0.11
 repository: https://github.com/sun-sreng/flutters/tree/main/packages/gmana_flutter
 homepage: https://github.com/sun-sreng/flutters/tree/main/packages/gmana_flutter
@@ -10,6 +10,7 @@ topics:
   - ui
   - widgets
   - form
+  - spinner
   - utilities
 
 environment:
@@ -21,10 +22,7 @@ resolution: workspace
 dependencies:
   flutter:
     sdk: flutter
-  gmana_flutter_extensions: ^0.0.3
-  gmana_form: ^0.0.1
-  gmana_spinner: ^0.0.2
-
+  gmana: ^0.2.2
   material_ui: any
 dev_dependencies:
   flutter_test:

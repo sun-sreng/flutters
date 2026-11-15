@@ -1,5 +1,5 @@
 name: gmana
-description: Convenience facade re-exporting gmana_functional, gmana_predicates, gmana_validation, gmana_value_objects, gmana_utils, and gmana_extensions.
+description: Pure Dart toolkit — functional types (Either, Option, GResult), extensions, predicates, typed validators, value objects, and resilience utilities.
 version: 0.2.2
 repository: https://github.com/sun-sreng/flutters/tree/main/packages/gmana
 homepage: https://github.com/sun-sreng/flutters/tree/main/packages/gmana
@@ -10,6 +10,7 @@ topics:
   - utility
   - validator
   - functional-programming
+  - value-objects
 
 environment:
   sdk: ^3.7.2
@@ -17,13 +18,10 @@ environment:
 resolution: workspace
 
 dependencies:
-  gmana_extensions: ^0.0.3
-  gmana_functional: ^0.0.2
-  gmana_predicates: ^0.0.3
-  gmana_utils: ^0.0.3
-  gmana_validation: ^0.0.2
-  gmana_value_objects: ^0.1.0
+  clock: ^1.1.1
+  meta: ^1.17.0
 
 dev_dependencies:
+  fake_async: ^1.3.1
   gmana_lints: ^0.1.0
   test: ^1.30.0

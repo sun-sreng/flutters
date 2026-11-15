@@ -1,4 +1,4 @@
-import 'package:gmana_flutter_extensions/gmana_flutter_extensions.dart';
+import '../../extensions.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Responsive builder widget that renders different layouts for mobile, tablet, and desktop screens.
