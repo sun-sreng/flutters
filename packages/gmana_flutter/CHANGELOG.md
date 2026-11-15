@@ -41,6 +41,13 @@ Replace the old dependencies with `gmana_flutter` and update imports:
   `GButton`'s spinner.
 - **Breaking:** `GValidators.numeric` and `GValidators.range` parse with
   `NumberValidator`, so `NaN` and `Infinity` are rejected.
+- **Breaking:** `GPasswordField` and `GTextFormField.password` default to
+  `PasswordValidationConfig.balanced`, the policy the `Password` value object
+  uses. Previously they used the strong package default, so the field could
+  accept a password (for example one with non-ASCII letters) that made
+  `Password(...)` throw, or reject one `Password` accepts (three of the four
+  character classes). Pass `validationConfig: PasswordValidationConfig.strong()`
+  to keep the old policy.
 - `GTextField`'s password toggle is the shared `VisibilityToggle`: it shows
   the "visibility" icon while the text is hidden, matching the form password
   fields, and has a tooltip. The clear button has a "Clear" tooltip.

@@ -10,6 +10,10 @@ import '../models/field_config.dart';
 import 'text_field.dart';
 
 /// Password preset kept for discoverability.
+///
+/// Defaults to [PasswordValidationConfig.balanced], the policy the `Password`
+/// value object uses, so any password this field accepts also parses as a
+/// `Password`.
 class GPasswordField extends StatelessWidget {
   final GTextFormField field;
 
@@ -24,7 +28,7 @@ class GPasswordField extends StatelessWidget {
     List<TextInputFormatter>? inputFormatters,
     GFormValueParser? valueParser,
     PasswordValidationConfig validationConfig =
-        const PasswordValidationConfig(),
+        PasswordValidationConfig.balanced,
     ValidationMessageResolver<PasswordValidationIssue>?
     validationMessageResolver,
     GFormValidator? validator,

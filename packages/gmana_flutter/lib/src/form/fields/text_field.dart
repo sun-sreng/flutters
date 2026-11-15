@@ -335,6 +335,11 @@ class GTextFormField extends StatelessWidget {
     return GTextFormField(key: key, config: configure?.call(config) ?? config);
   }
 
+  /// A password field validated with [validationConfig].
+  ///
+  /// Defaults to [PasswordValidationConfig.balanced], the policy the
+  /// `Password` value object uses, so any password this field accepts also
+  /// parses as a `Password`.
   factory GTextFormField.password({
     Key? key,
     String? name,
@@ -346,7 +351,7 @@ class GTextFormField extends StatelessWidget {
     List<TextInputFormatter>? inputFormatters,
     GFormValueParser? valueParser,
     PasswordValidationConfig validationConfig =
-        const PasswordValidationConfig(),
+        PasswordValidationConfig.balanced,
     ValidationMessageResolver<PasswordValidationIssue>
         validationMessageResolver =
         resolvePasswordValidationIssue,
