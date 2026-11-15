@@ -137,6 +137,11 @@ Replace the old dependencies with `gmana` and update imports:
   counterparts encode the right timestamp on the web. The time prefix was
   built with bitwise operators, which truncate to 32 bits there, so web ULIDs
   carried a wrong time and did not sort by creation.
+- `CircuitBreaker` ignores the outcome of a call that started before the last
+  state change or `reset()`. Before, a slow call that began while closed and
+  finished in half-open counted as the trial: its success closed the circuit
+  and its failure re-opened it, and a finished trial from an earlier half-open
+  period could free the slot of the current one.
 - `toDateTimeOrNull` (and so `toDateTime`, `year`, `daysUntil`, and the other
   `StringDateX` members) no longer returns `null` for a valid date-time whose
   zone offset moves it to another UTC day, such as
