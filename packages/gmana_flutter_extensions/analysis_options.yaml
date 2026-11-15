@@ -1,4 +1,0 @@
-analyzer:
-  exclude:
-    - build/**
-include: package:gmana_lints/analysis_options.yaml
