@@ -31,6 +31,11 @@ class CircuitBreakerOpenException implements Exception {
 }
 
 /// Guards operations against cascading failures by tripping open when failure threshold is reached.
+///
+/// A call counts toward the state it started in. If the circuit changes state
+/// or is [reset] while a call is running, that call's outcome is ignored, so a
+/// slow call that began while closed cannot close or re-open a half-open
+/// circuit in place of its trial call.
 class CircuitBreaker {
   /// Consecutive failures before opening the circuit.
   final int failureThreshold;
@@ -52,6 +57,10 @@ class CircuitBreaker {
   int _halfOpenSuccessCount = 0;
   bool _halfOpenProbeInFlight = false;
   DateTime? _openedAt;
+
+  /// Increases on every state change and [reset]. A call records it when it
+  /// starts and only counts if it is unchanged when the call ends.
+  int _generation = 0;
 
   /// Creates a [CircuitBreaker].
   CircuitBreaker({
@@ -98,7 +107,15 @@ class CircuitBreaker {
   void _setState(CircuitState next) {
     if (_state == next) return;
     _state = next;
+    _startGeneration();
     onStateChange?.call(next);
+  }
+
+  /// Makes every call still running stale, and frees the half-open trial slot
+  /// for the new state.
+  void _startGeneration() {
+    _generation++;
+    _halfOpenProbeInFlight = false;
   }
 
   /// Runs [action] guarded by the circuit breaker.
@@ -131,15 +148,20 @@ class CircuitBreaker {
       isTrialCall = true;
     }
 
+    final generation = _generation;
     try {
       final result = await action();
-      _onSuccess();
+      if (generation == _generation) _onSuccess();
       return result;
     } catch (e) {
-      _onFailure();
+      if (generation == _generation) _onFailure();
       rethrow;
     } finally {
-      if (isTrialCall) _halfOpenProbeInFlight = false;
+      // A trial call that is still current frees its slot. If the state moved
+      // on, the slot was already freed and may belong to a newer trial.
+      if (isTrialCall && generation == _generation) {
+        _halfOpenProbeInFlight = false;
+      }
     }
   }
 
@@ -173,11 +195,13 @@ class CircuitBreaker {
   }
 
   /// Manually resets the circuit breaker to [CircuitState.closed].
+  ///
+  /// Calls still running when this is called no longer count.
   void reset() {
     _failureCount = 0;
     _halfOpenSuccessCount = 0;
-    _halfOpenProbeInFlight = false;
     _openedAt = null;
+    _startGeneration();
     _setState(CircuitState.closed);
   }
 }

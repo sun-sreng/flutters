@@ -54,6 +54,26 @@ void main() {
       expect(result.leftOrNull(), isA<EmailDisposableDomainIssue>());
     });
 
+    test('accepts well-known permanent providers in strict mode', () {
+      final validator = EmailValidator(EmailValidationConfig.strict());
+
+      for (final domain in const [
+        'gmail.com',
+        'outlook.com',
+        'yahoo.com',
+        'icloud.com',
+        'proton.me',
+        'qq.com',
+        'fastmail.com',
+      ]) {
+        expect(
+          validator.validate('user@$domain').isRight(),
+          isTrue,
+          reason: '$domain is a permanent provider, not a disposable one',
+        );
+      }
+    });
+
     test('normalizes configured disposable domains before matching', () {
       final result = const EmailValidator(
         EmailValidationConfig(

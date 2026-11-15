@@ -196,13 +196,14 @@ void main() {
       expect(controller.value<int>('count'), isNull);
     });
 
-    test('text fields still clear', () {
+    test('text fields return to their pristine text', () {
       final controller = newController();
       controller
         ..textController('name', text: 'Ada')
+        ..setText('name', 'Grace')
         ..reset();
 
-      expect(controller.text('name'), isEmpty);
+      expect(controller.text('name'), 'Ada');
     });
   });
 

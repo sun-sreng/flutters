@@ -257,5 +257,50 @@ void main() {
             (r) => fail('should be left'),
           );
     });
+
+    group('amounts beyond Money.maxMinorUnits', () {
+      const validator = MoneyValidator();
+
+      test('a long digit string is an issue, not an exception', () {
+        final result = validator.validate('9' * 25, currency: 'USD');
+
+        expect(result.leftOrNull(), isA<MoneyOutOfRangeIssue>());
+      });
+
+      test('an amount that would overflow when scaled is rejected', () {
+        // 92233720368547759 * 100 wraps past the 64-bit limit.
+        final result = validator.validate('92233720368547759', currency: 'USD');
+
+        expect(result.leftOrNull(), isA<MoneyOutOfRangeIssue>());
+      });
+
+      test('the largest representable amount is accepted', () {
+        final result = validator.validate('90071992547409.91', currency: 'USD');
+
+        expect(result.rightOrNull()?.minorUnits, Money.maxMinorUnits);
+      });
+
+      test('one minor unit above the limit is rejected', () {
+        final result = validator.validate('90071992547409.92', currency: 'USD');
+
+        expect(result.leftOrNull(), isA<MoneyOutOfRangeIssue>());
+      });
+
+      test('validateMinorUnits rejects values above the limit', () {
+        final result = validator.validateMinorUnits(
+          Money.maxMinorUnits + 1,
+          currency: 'USD',
+        );
+
+        expect(result.leftOrNull(), isA<MoneyOutOfRangeIssue>());
+      });
+
+      test('the issue has a stable code and a default message', () {
+        const issue = MoneyOutOfRangeIssue(maxMinorUnits: 10);
+
+        expect(issue.code, 'money.outOfRange');
+        expect(resolveValidationIssue(issue).contains('10'), isTrue);
+      });
+    });
   });
 }

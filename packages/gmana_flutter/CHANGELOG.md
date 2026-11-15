@@ -31,6 +31,9 @@ Replace the old dependencies with `gmana_flutter` and update imports:
   `GDropdownField`, and `GDateField` widgets.
 - The example app has pages for the Flutter extensions, form fields, and
   loading spinners, replacing the three separate example apps.
+- `GFormController.unregister(name)` removes a field, such as a conditional
+  one that was hidden, from `values()`, `textValues()`, `errors()`, `isDirty`,
+  and `validate()`. Fields stay registered when their widget leaves the tree.
 
 ### Changed
 
@@ -41,6 +44,32 @@ Replace the old dependencies with `gmana_flutter` and update imports:
   `GButton`'s spinner.
 - **Breaking:** `GValidators.numeric` and `GValidators.range` parse with
   `NumberValidator`, so `NaN` and `Infinity` are rejected.
+- **Breaking:** `GPasswordField` and `GTextFormField.password` default to
+  `PasswordValidationConfig.balanced`, the policy the `Password` value object
+  uses. Previously they used the strong package default, so the field could
+  accept a password (for example one with non-ASCII letters) that made
+  `Password(...)` throw, or reject one `Password` accepts (three of the four
+  character classes). Pass `validationConfig: PasswordValidationConfig.strong()`
+  to keep the old policy.
+- **Breaking:** `GFormController.reset()` restores the pristine baseline: text
+  fields go back to their initial text (or the text at the last
+  `markPristine()`) instead of being cleared, typed fields go back to their
+  registered or last-pristine value, and stale error text is cleared.
+  Afterwards `isDirty` is `false`. Call `clearText` for each field to empty
+  it instead.
+- **Breaking:** `GFormController.validate()` returns `true` when no `Form` is
+  mounted and every validator passes; before, it always returned `false`
+  without a mounted form. It also runs the text validators bound with
+  `bindTextValidator`, so it agrees with `errors()` and `hasErrors`, including
+  for fields whose widget is not mounted.
+- `GFormController.isDirty` and `isFieldDirty` cover typed fields such as
+  checkboxes and dropdowns, not only text, and `markPristine()` rebaselines
+  them.
+- Number fields (`GNumberField`, `GTextFormField.number`) ignore an edit that
+  would not leave a number or the start of one, keeping the previous text.
+  Before, a decimal or signed field was emptied by a second `.` or `-`, or by
+  pasting text such as `1,234`. An integer field without negatives also
+  rejects such an edit now, rather than dropping the stray characters.
 - `GTextField`'s password toggle is the shared `VisibilityToggle`: it shows
   the "visibility" icon while the text is hidden, matching the form password
   fields, and has a tooltip. The clear button has a "Clear" tooltip.

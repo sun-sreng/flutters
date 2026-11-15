@@ -39,7 +39,12 @@ final class TextValidationConfig {
   /// Optional pattern that the whole value must match.
   final RegExp? pattern;
 
-  /// Allowed characters. Null means all characters are allowed.
+  /// The characters the value may contain, or `null` to allow any.
+  ///
+  /// Each character is literal: `'a-z'` allows `a`, `-` and `z`, not the
+  /// range. List every character, or use [pattern] for ranges and classes.
+  /// An emoji or other character outside the Basic Multilingual Plane counts
+  /// as one character.
   final String? allowedCharacters;
 
   /// Words that are not allowed in the input.

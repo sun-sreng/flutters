@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 
 import 'either.dart';
+import 'either_value_equality.dart';
 import 'right.dart';
 
 /// Represents the failure or error side of an [Either].
@@ -97,16 +98,17 @@ class Left<L, R> extends Either<L, R> {
   @override
   Either<R, L> swap() => Right<R, L>(value);
 
+  /// Whether [other] is a [Left] with an equal value.
+  ///
+  /// Type arguments are not compared, so the result is the same either way
+  /// round. Two list values are equal when their elements are, in order.
   @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        other.runtimeType == runtimeType &&
-            other is Left &&
-            other.value == value;
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Left && eitherValueEquals(value, other.value);
 
   @override
-  int get hashCode => Object.hash(runtimeType, value);
+  int get hashCode => Object.hash(Left, eitherValueHash(value));
 
   @override
   String toString() => 'Left($value)';

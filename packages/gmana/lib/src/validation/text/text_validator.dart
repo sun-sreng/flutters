@@ -9,14 +9,16 @@ final class TextValidator {
   /// Rules used during validation.
   final TextValidationConfig config;
 
-  final RegExp? _disallowedPattern;
+  /// The allowed characters as Unicode code points, or `null` for any.
+  ///
+  /// A set rather than a regex character class, so every character in
+  /// [TextValidationConfig.allowedCharacters] is literal: `-` is a hyphen,
+  /// not a range, and an emoji is one character.
+  final Set<int>? _allowedRunes;
 
   /// Creates a text validator.
   TextValidator([this.config = const TextValidationConfig()])
-    : _disallowedPattern =
-          config.allowedCharacters != null
-              ? RegExp('[^${RegExp.escape(config.allowedCharacters!)}]')
-              : null;
+    : _allowedRunes = config.allowedCharacters?.runes.toSet();
 
   /// Validates and normalizes [input].
   ValidationResult<TextValidationIssue, String> validate(String input) {
@@ -45,11 +47,13 @@ final class TextValidator {
       return const Left(TextInvalidPatternIssue());
     }
 
-    if (_disallowedPattern case final re?) {
-      final invalid =
-          re.allMatches(value).map((m) => m.group(0)!).toSet().join();
+    if (_allowedRunes case final allowed?) {
+      final invalid = {
+        for (final rune in value.runes)
+          if (!allowed.contains(rune)) rune,
+      };
       if (invalid.isNotEmpty) {
-        return Left(TextInvalidCharactersIssue(invalid));
+        return Left(TextInvalidCharactersIssue(String.fromCharCodes(invalid)));
       }
     }
 
@@ -59,19 +63,32 @@ final class TextValidator {
           config.blacklistedWords.where((word) {
             final w = word.toLowerCase();
             if (!config.wholeWordBlacklist) return lowered.contains(w);
-            final idx = lowered.indexOf(w);
-            if (idx == -1) return false;
-            final before = idx == 0 || !_isWordChar(lowered[idx - 1]);
-            final after =
-                idx + w.length == lowered.length ||
-                !_isWordChar(lowered[idx + w.length]);
-            return before && after;
+            return _containsWholeWord(lowered, w);
           }).toList();
 
       if (found.isNotEmpty) return Left(TextContainsBlacklistedIssue(found));
     }
 
     return Right(value);
+  }
+
+  /// Whether [word] occurs in [text] with no word character on either side.
+  ///
+  /// Every occurrence is checked, so a match inside a longer word (`class`)
+  /// does not hide a later whole-word match (`class ass`).
+  static bool _containsWholeWord(String text, String word) {
+    if (word.isEmpty) return false;
+    for (
+      var index = text.indexOf(word);
+      index != -1;
+      index = text.indexOf(word, index + 1)
+    ) {
+      final end = index + word.length;
+      final before = index == 0 || !_isWordChar(text[index - 1]);
+      final after = end == text.length || !_isWordChar(text[end]);
+      if (before && after) return true;
+    }
+    return false;
   }
 
   static bool _isWordChar(String char) {

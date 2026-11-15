@@ -39,6 +39,9 @@ Replace the old dependencies with `gmana` and update imports:
   passed.
 - `MoneyValidationIssue` and `DateRangeValidationIssue` hierarchies with
   `resolveMoneyValidationIssue` and `resolveDateRangeValidationIssue`.
+- `Money.maxMinorUnits` (2^53 − 1), the largest amount `Money` holds exactly on
+  every platform, and `MoneyOutOfRangeIssue` (`money.outOfRange`), which
+  `MoneyValidator` returns for amounts above it.
 
 ### Changed
 
@@ -69,10 +72,33 @@ Replace the old dependencies with `gmana` and update imports:
   `TextValue.defaultConfig.copyWith(...)` or `TextValidationConfig.required(...)`
   to keep the previous value-object defaults.
 - **Breaking:** the date predicates and `StringDateX` share one parser that
-  rejects impossible calendar values instead of rolling them over.
-  `isDate('2024-13-01')`, `tryParseDate('2024-02-31')`, and every predicate
-  given such a date now return `false` or `null`. Previously only
-  `toDateTimeOrNull` and `isIso8601` rejected them.
+  rejects impossible values instead of rolling them over, in every form
+  `DateTime.parse` accepts (extended, compact such as `20240215`, and
+  signed-year). The day must exist, the hour must be 0–23, minutes and seconds
+  0–59, and a zone offset at most 23:59. `isDate('2024-13-01')`,
+  `isDate('20240231')`, `tryParseDate('2024-02-31')`,
+  `'2024-02-15T10:75'.toDateTimeOrNull`, and every predicate given such a value
+  now return `false` or `null`. Previously only `toDateTimeOrNull` and
+  `isIso8601` rejected impossible days, and only in the `yyyy-MM-dd` form.
+- **Breaking:** `DateValidator` compares a date-only input with `minDate` and
+  `maxDate` by calendar day, using each bound's own year, month and day.
+  `minDate: DateTime(2024, 1, 1)` now accepts `'2024-01-01'` in every timezone;
+  before, the result depended on the local offset. Input with a time is still
+  compared as an instant.
+- **Breaking:** `TextValidationConfig.allowedCharacters` is a literal set of
+  characters. `'a-z'` allows `a`, `-`, and `z`, not a range, and an emoji
+  counts as one character. Before, the string was spliced into a regex
+  character class, so `'a_-.'` threw a `FormatException` and `'+-.0123456789'`
+  silently allowed `,`. List every allowed character.
+- **Breaking:** `NumberValidator` accepts plain decimal notation only
+  (`12`, `-2.50`, `.5`). Exponent (`1e-5`) and hexadecimal (`0x1F`) input is
+  now `NumberInvalidFormatIssue`; before, `1e-5` passed a two-decimal-place
+  limit and `0x1F` was read as 31.
+- **Breaking:** `Money.fromDecimalString` parses with `MoneyValidator`, so the
+  two accept exactly the same text. A comma must start a group of three
+  digits: `'1,50'` now throws `FormatException` instead of becoming 150.00. A
+  leading `+` is accepted, and an amount above `Money.maxMinorUnits` throws
+  `RangeError`.
 - **Breaking:** `Stream.debounce` and `Stream.throttle` use the stricter
   implementation from the former `gmana_utils`: both throw `ArgumentError`
   for a non-positive duration, and `throttle` takes `trailing:`.
@@ -80,6 +106,47 @@ Replace the old dependencies with `gmana` and update imports:
 
 ### Fixed
 
+- `MoneyValidator.validate` no longer throws a `FormatException` for an amount
+  with more digits than an `int` holds, and no longer lets a large amount
+  overflow into a wrong or negative value. Both now return
+  `MoneyOutOfRangeIssue`. `Money` constructors, `+`, `*`, and `fromNum` throw a
+  `RangeError` instead of overflowing, and `*`/`fromNum` reject non-finite
+  numbers with an `ArgumentError`.
+- `Money.allocate` no longer gives leftover minor units to a part whose ratio is
+  zero. Leftover units now go to the parts with the largest remainder, and the
+  arithmetic is exact for any amount and ratios.
+- `kDefaultDisposableDomains` no longer lists `qq.com` and `fastmail.com`, two
+  permanent providers, so `EmailValidationConfig.strict()` stops rejecting
+  their users.
+- The whole-word blacklist in `TextValidator` checks every occurrence of a
+  word, so `'class ass'` with `{'ass'}` is rejected. Before, it stopped after
+  the first partial match.
+- `AsyncCache.invalidate`, `invalidateWhere`, `set`, and `clear` now supersede
+  a fetch in flight for the key. Before, the fetch stored its stale result when
+  it finished, and a fetch from before `clear()` removed the newer in-flight
+  entry, so the next `get` fetched a third time.
+- `Batcher` never sends more than `maxBatchSize` items in one batch. Items
+  added while a batch is being sent go out in further batches of at most that
+  size; before, they all went out in one oversized batch. `flush()` now waits
+  until the queue is empty instead of returning at once while a batch is
+  running.
+- `package:gmana` compiles for the web with dart2js. The `retry` backoff cap was
+  a 64-bit integer literal that JavaScript cannot represent; the cap is now
+  2^53 − 1 microseconds (about 285 years).
+- `IdGenerator.ulid`, `ulidMonotonic`, and their `SecureIdGenerator`
+  counterparts encode the right timestamp on the web. The time prefix was
+  built with bitwise operators, which truncate to 32 bits there, so web ULIDs
+  carried a wrong time and did not sort by creation.
+- `CircuitBreaker` ignores the outcome of a call that started before the last
+  state change or `reset()`. Before, a slow call that began while closed and
+  finished in half-open counted as the trial: its success closed the circuit
+  and its failure re-opened it, and a finished trial from an earlier half-open
+  period could free the slot of the current one.
+- `Right.hashCode` agrees with `==`: two `Right`s holding equal lists compared
+  equal but hashed differently, so a `Set` or `Map` kept both. `Left` and
+  `Right` now share one rule: `==` ignores type arguments (it was asymmetric for
+  `Right`, and `Left<String, int>('e') != Left<String, Never>('e')`), and list
+  values compare element by element on both sides (before, only on `Right`).
 - `toDateTimeOrNull` (and so `toDateTime`, `year`, `daysUntil`, and the other
   `StringDateX` members) no longer returns `null` for a valid date-time whose
   zone offset moves it to another UTC day, such as

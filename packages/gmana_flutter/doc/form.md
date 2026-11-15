@@ -168,6 +168,23 @@ form.changedTextValues();     // only what moved
 
 await repository.save(form.textValues());
 form.markPristine();          // new baseline after a successful save
+
+form.reset();                 // back to the baseline; isDirty is false again
+```
+
+`isDirty` covers typed fields such as checkboxes and dropdowns as well as text.
+
+### Conditional fields
+
+A field stays registered when its widget leaves the tree, so a multi-step form
+keeps the values and validators of steps that are not on screen, and
+`validate()` still checks them. When a field is gone for good, unregister it
+after hiding it so it no longer counts towards `values()`, `errors()`,
+`isDirty`, or `validate()`:
+
+```dart
+setState(() => showCompany = false);
+form.unregister('company');
 ```
 
 ## Fields

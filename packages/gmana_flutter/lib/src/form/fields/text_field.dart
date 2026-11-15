@@ -335,6 +335,11 @@ class GTextFormField extends StatelessWidget {
     return GTextFormField(key: key, config: configure?.call(config) ?? config);
   }
 
+  /// A password field validated with [validationConfig].
+  ///
+  /// Defaults to [PasswordValidationConfig.balanced], the policy the
+  /// `Password` value object uses, so any password this field accepts also
+  /// parses as a `Password`.
   factory GTextFormField.password({
     Key? key,
     String? name,
@@ -346,7 +351,7 @@ class GTextFormField extends StatelessWidget {
     List<TextInputFormatter>? inputFormatters,
     GFormValueParser? valueParser,
     PasswordValidationConfig validationConfig =
-        const PasswordValidationConfig(),
+        PasswordValidationConfig.balanced,
     ValidationMessageResolver<PasswordValidationIssue>
         validationMessageResolver =
         resolvePasswordValidationIssue,
@@ -607,19 +612,44 @@ class GTextFormField extends StatelessWidget {
   }
 
   static TextInputFormatter _numberFormatter(NumberValidationConfig config) {
-    return switch ((config.integerOnly, config.allowNegative)) {
-      (true, false) => FilteringTextInputFormatter.digitsOnly,
-      (true, true) => FilteringTextInputFormatter.allow(RegExp(r'^-?\d*$')),
-      (false, false) => FilteringTextInputFormatter.allow(
-        RegExp(r'^\d*\.?\d*$'),
-      ),
-      (false, true) => FilteringTextInputFormatter.allow(
-        RegExp(r'^-?\d*\.?\d*$'),
-      ),
-    };
+    return _PartialNumberFormatter(switch ((
+      config.integerOnly,
+      config.allowNegative,
+    )) {
+      (true, false) => RegExp(r'^\d*$'),
+      (true, true) => RegExp(r'^-?\d*$'),
+      (false, false) => RegExp(r'^\d*\.?\d*$'),
+      (false, true) => RegExp(r'^-?\d*\.?\d*$'),
+    });
   }
 
   static GFormValueParser _numberParser(NumberValidationConfig config) {
     return config.integerOnly ? int.tryParse : double.tryParse;
+  }
+}
+
+/// Keeps a number field's text a valid number, or the start of one.
+///
+/// An edit whose result does not match [_partial] is rejected and the field
+/// keeps its previous text, so a stray keystroke or a paste such as `1,234`
+/// is ignored. `FilteringTextInputFormatter.allow` cannot do this with an
+/// anchored pattern: it keeps only the matching parts of the new text, and
+/// when the whole text fails to match it empties the field.
+final class _PartialNumberFormatter extends TextInputFormatter {
+  _PartialNumberFormatter(this._partial);
+
+  /// Matches every text the field may hold, including `''`, `-`, and `1.`.
+  final RegExp _partial;
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (_partial.hasMatch(newValue.text)) return newValue;
+    // Text set in code can already be invalid; let the user edit their way
+    // out of it rather than locking the field.
+    if (!_partial.hasMatch(oldValue.text)) return newValue;
+    return oldValue;
   }
 }

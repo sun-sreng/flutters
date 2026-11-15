@@ -49,6 +49,7 @@ final discounted = lineTotal.applyDiscountPercent(15);
 | `MoneyInvalidCurrencyIssue`      | Currency is not a three-letter code.                                    |
 | `MoneyUnsupportedCurrencyIssue`  | Currency is outside the configured allowed set.                         |
 | `MoneyTooSmallIssue`, `MoneyTooLargeIssue`                             | Minor-unit amount is outside configured limits.                         |
+| `MoneyOutOfRangeIssue`           | Amount is above `Money.maxMinorUnits` (2^53 − 1), the most `Money` holds. |
 
 ## Why Minor Units
 
@@ -142,8 +143,12 @@ Money.fromDecimalString('500', Currency.jpy); // 500
 Money.fromDecimalString('3.500', Currency.kwd); // 3500
 ```
 
-The parser pads missing minor digits and rejects extra minor digits beyond the
-currency precision. Invalid input throws `FormatException`.
+The parser follows the same rules as `MoneyValidator`: it pads missing minor
+digits, rejects extra minor digits beyond the currency precision, and accepts
+commas only as thousands separators in groups of three (`1,234.56`, but not
+`1,50`). Invalid input throws `FormatException`; an amount above
+`Money.maxMinorUnits` throws `RangeError`. Use `MoneyValidator` when you want
+an issue instead of an exception.
 
 ```dart
 try {
@@ -215,8 +220,10 @@ final discounted = price.applyDiscountPercent(15); // $85.00
 
 ## Allocation
 
-`allocate` splits an amount across ratios without losing minor units. Remainders
-are distributed one minor unit at a time from the front.
+`allocate` splits an amount across ratios without losing minor units. Each part
+gets its exact share rounded down, and the leftover minor units go one at a time
+to the parts with the largest fractional remainder (earlier parts win ties). A
+zero ratio always receives zero.
 
 Use it for split payments, line-item tax distribution, refunds, and installment
 plans.

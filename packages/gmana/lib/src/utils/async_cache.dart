@@ -50,6 +50,12 @@ class _CacheEntry<V> {
 }
 
 /// An asynchronous key-value cache supporting TTL expiration and request deduplication.
+///
+/// A fetch started by [get] stores its result only if it is still the current
+/// fetch for its key when it finishes. [invalidate], [invalidateWhere], [set],
+/// and [clear] all supersede a fetch in flight: its callers still receive its
+/// result, but the cache does not keep it, and the next [get] starts a new
+/// fetch.
 class AsyncCache<K, V> {
   /// Default Time-To-Live duration for cached entries.
   final Duration? defaultTtl;
@@ -61,7 +67,10 @@ class AsyncCache<K, V> {
   final int? maxEntries;
 
   final Map<K, _CacheEntry<V>> _cache = {};
-  final Map<K, Future<V>> _inFlight = {};
+
+  /// The current fetch for each key. A fetch acts on the cache only while its
+  /// completer is still the one stored here.
+  final Map<K, Completer<V>> _inFlight = {};
 
   /// Creates an [AsyncCache].
   ///
@@ -102,31 +111,34 @@ class AsyncCache<K, V> {
     }
 
     // Check in-flight request deduplication
-    if (_inFlight.containsKey(key)) {
-      return _inFlight[key]!;
-    }
+    final running = _inFlight[key];
+    if (running != null) return running.future;
 
-    final completer = Completer<V>();
-    _inFlight[key] = completer.future;
-
+    final completer = _inFlight[key] = Completer<V>();
     unawaited(
       _fetchAndCache(
         key,
         ifAbsent,
+        completer,
       ).then(completer.complete).catchError(completer.completeError),
     );
 
     return completer.future;
   }
 
-  Future<V> _fetchAndCache(K key, Future<V> Function() ifAbsent) async {
+  /// Runs [ifAbsent] for [key] and stores the result, unless [fetch] has
+  /// been superseded by then.
+  Future<V> _fetchAndCache(
+    K key,
+    Future<V> Function() ifAbsent,
+    Completer<V> fetch,
+  ) async {
     try {
       final val = await ifAbsent();
-      _store(key, val);
+      if (identical(_inFlight[key], fetch)) _store(key, val);
       return val;
     } finally {
-      // ignore: unawaited_futures
-      _inFlight.remove(key);
+      if (identical(_inFlight[key], fetch)) _inFlight.remove(key);
     }
   }
 
@@ -150,17 +162,22 @@ class AsyncCache<K, V> {
 
   /// Stores [value] under [key], replacing any existing entry.
   ///
-  /// The entry's TTL starts now.
+  /// The entry's TTL starts now. A fetch for [key] that is still in flight
+  /// will not overwrite it.
   void set(K key, V value) {
+    _inFlight.remove(key);
     _store(key, value);
   }
 
-  /// Manually invalidates [key] in the cache.
+  /// Removes [key] from the cache and drops any fetch for it in flight.
   void invalidate(K key) {
     _cache.remove(key);
+    _inFlight.remove(key);
   }
 
   /// Removes every entry whose key satisfies [test], returning how many went.
+  ///
+  /// Fetches in flight for matching keys are dropped too, but not counted.
   ///
   /// Example:
   /// ```dart
@@ -172,6 +189,7 @@ class AsyncCache<K, V> {
     for (final key in doomed) {
       _cache.remove(key);
     }
+    _inFlight.removeWhere((key, _) => test(key));
     return doomed.length;
   }
 

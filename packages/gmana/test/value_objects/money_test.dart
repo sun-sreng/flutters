@@ -74,6 +74,65 @@ void main() {
       );
     });
 
+    test('fromDecimalString rejects a comma that is not a thousands group', () {
+      // A European decimal comma used to be stripped, making 1,50 into 150.00.
+      expect(
+        () => Money.fromDecimalString('1,50', Currency.usd),
+        throwsFormatException,
+      );
+      expect(
+        () => Money.fromDecimalString('1,234,56', Currency.usd),
+        throwsFormatException,
+      );
+    });
+
+    test('fromDecimalString throws RangeError above maxMinorUnits', () {
+      expect(
+        () => Money.fromDecimalString('9' * 25, Currency.usd),
+        throwsRangeError,
+      );
+    });
+
+    test('fromDecimalString accepts exactly what MoneyValidator accepts', () {
+      const inputs = [
+        '19.99',
+        ' 19.9 ',
+        '1,234.56',
+        '+5.00',
+        '1,50',
+        '12,34.5',
+        '-1.00',
+        '19.999',
+        '1e3',
+        '',
+        '90071992547409.91',
+        '90071992547409.92',
+      ];
+
+      for (final currency in [Currency.usd, Currency.jpy, Currency.kwd]) {
+        final validator = MoneyValidator(
+          MoneyValidationConfig(defaultCurrency: currency.code),
+        );
+        for (final input in inputs) {
+          final expected = validator.validate(input).rightOrNull();
+          Money? actual;
+          try {
+            actual = Money.fromDecimalString(input, currency);
+          } on FormatException {
+            actual = null;
+          } on RangeError {
+            actual = null;
+          }
+
+          expect(
+            actual,
+            expected,
+            reason: '"$input" in ${currency.code} must parse the same way',
+          );
+        }
+      }
+    });
+
     test('constructs from numeric decimal values', () {
       final price = Money.fromNum(19.99, Currency.usd);
       final rounded = Money.fromNum(10.005, Currency.usd);
@@ -151,6 +210,66 @@ void main() {
       expect(() => amount.allocate([]), throwsArgumentError);
       expect(() => amount.allocate([1, -1]), throwsArgumentError);
       expect(() => amount.allocate([0, 0]), throwsArgumentError);
+    });
+
+    test('never allocates to a zero ratio', () {
+      final amount = Money(minorUnits: 3, currency: Currency.usd);
+
+      final parts = amount.allocate([0, 1, 1]);
+
+      expect(parts.first.minorUnits, 0);
+      expect(parts.map((part) => part.minorUnits), [0, 2, 1]);
+      expect(parts.sum(emptyCurrency: Currency.usd), amount);
+    });
+
+    test('gives leftover units to the largest remainders', () {
+      final amount = Money(minorUnits: 100, currency: Currency.usd);
+
+      // Exact shares are 16.67, 33.33 and 50.0, so the single leftover unit
+      // belongs to the first share (remainder .67), not the second (.33).
+      final parts = amount.allocate([1, 2, 3]);
+
+      expect(parts.map((part) => part.minorUnits), [17, 33, 50]);
+    });
+
+    test('allocates large amounts and ratios without overflow', () {
+      final amount = Money(
+        minorUnits: Money.maxMinorUnits,
+        currency: Currency.usd,
+      );
+
+      // 2^40 each; `1 << 40` would be 0 on the web.
+      const ratio = 1099511627776;
+      final parts = amount.allocate([ratio, ratio]);
+
+      expect(parts.sum(emptyCurrency: Currency.usd), amount);
+      expect(
+        (parts[0].minorUnits - parts[1].minorUnits).abs(),
+        lessThanOrEqualTo(1),
+      );
+    });
+
+    test('rejects amounts beyond maxMinorUnits', () {
+      final max = Money(
+        minorUnits: Money.maxMinorUnits,
+        currency: Currency.usd,
+      );
+      final cent = Money(minorUnits: 1, currency: Currency.usd);
+
+      expect(
+        () =>
+            Money(minorUnits: Money.maxMinorUnits + 1, currency: Currency.usd),
+        throwsRangeError,
+      );
+      expect(() => max + cent, throwsRangeError);
+      expect(() => max * 2, throwsRangeError);
+      expect(
+        () => Money.ofMajor(Money.maxMinorUnits, 0, Currency.usd),
+        throwsRangeError,
+      );
+      expect(() => Money.fromNum(1e300, Currency.usd), throwsRangeError);
+      expect(() => cent * double.nan, throwsArgumentError);
+      expect(() => cent * double.infinity, throwsArgumentError);
     });
 
     test('compares, min, max, and sorts same-currency amounts', () {

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:clock/clock.dart';
 import 'package:gmana/utilities.dart';
 import 'package:test/test.dart';
 
@@ -224,6 +225,26 @@ void main() {
 
         expect(a.compareTo(b), lessThan(0));
       });
+
+      // Bitwise operators truncate to 32 bits on the web, so these check that
+      // the 48-bit timestamp survives on every platform.
+      final instants = [
+        DateTime.utc(2024, 2, 15, 10, 30, 0, 123),
+        DateTime.utc(2106, 2, 7, 6, 28, 16), // just past 2^32 seconds
+        DateTime.utc(9999, 12, 31, 23, 59, 59, 999),
+      ];
+
+      test('the time prefix decodes back to the clock time', () {
+        for (final instant in instants) {
+          final ms = instant.millisecondsSinceEpoch;
+          withClock(Clock.fixed(instant), () {
+            expect(_ulidTime(IdGenerator.ulid()), ms, reason: '$instant');
+            expect(_ulidTime(IdGenerator.ulidMonotonic()), ms);
+            expect(_ulidTime(SecureIdGenerator.ulid()), ms);
+            expect(_ulidTime(SecureIdGenerator.ulidMonotonic()), ms);
+          });
+        }
+      });
     });
 
     // -----------------------------------------------------------------------
@@ -392,4 +413,14 @@ void main() {
       });
     });
   });
+}
+
+/// Decodes the 10-character Crockford base32 time prefix of a ULID.
+int _ulidTime(String ulid) {
+  const alphabet = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+  var ms = 0;
+  for (final char in ulid.substring(0, 10).split('')) {
+    ms = ms * 32 + alphabet.indexOf(char);
+  }
+  return ms;
 }

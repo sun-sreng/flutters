@@ -6,6 +6,12 @@ import 'money_validation_config.dart';
 
 /// A class responsible for validating monetary inputs according to a [MoneyValidationConfig].
 final class MoneyValidator {
+  static const MoneyOutOfRangeIssue _outOfRange = MoneyOutOfRangeIssue(
+    maxMinorUnits: Money.maxMinorUnits,
+  );
+
+  static final BigInt _maxMinorUnits = BigInt.from(Money.maxMinorUnits);
+
   /// The configuration rules to apply during validation.
   final MoneyValidationConfig config;
 
@@ -52,6 +58,9 @@ final class MoneyValidator {
     }
 
     final minorUnits = _toMinorUnits(normalizedInput, decimalDigits);
+    if (minorUnits == null) {
+      return const Left(_outOfRange);
+    }
 
     if (minorUnits < 0) {
       return Left(MoneyNegativeNotAllowedIssue(minorUnits));
@@ -104,6 +113,10 @@ final class MoneyValidator {
       return Left(MoneyNegativeNotAllowedIssue(minorUnits));
     }
 
+    if (minorUnits > Money.maxMinorUnits) {
+      return const Left(_outOfRange);
+    }
+
     if (config.minMinorUnits != null && minorUnits < config.minMinorUnits!) {
       return Left(
         MoneyTooSmallIssue(
@@ -147,20 +160,28 @@ final class MoneyValidator {
     return input.length - decimalIndex - 1;
   }
 
-  int _toMinorUnits(String input, int decimalDigits) {
+  /// Converts [input] to signed minor units, or `null` when its magnitude is
+  /// above [Money.maxMinorUnits].
+  ///
+  /// The caller has already checked the format and that the fraction has at
+  /// most [decimalDigits] digits, so the whole and padded fraction digits
+  /// together spell the minor-unit count. [BigInt] keeps that exact however
+  /// many digits the input has.
+  int? _toMinorUnits(String input, int decimalDigits) {
     final isNegative = input.startsWith('-');
     final unsigned =
         input.startsWith('-') || input.startsWith('+')
             ? input.substring(1)
             : input;
     final parts = unsigned.split('.');
-    final whole = int.parse(parts.first);
-    final fraction =
-        parts.length == 1 ? '' : parts.last.padRight(decimalDigits, '0');
-    final fractionUnits = fraction.isEmpty ? 0 : int.parse(fraction);
-    final units = whole * _scale(decimalDigits) + fractionUnits;
+    final fraction = parts.length == 1 ? '' : parts.last;
+    final units = BigInt.parse(
+      parts.first + fraction.padRight(decimalDigits, '0'),
+    );
+    if (units > _maxMinorUnits) return null;
 
-    return isNegative ? -units : units;
+    final value = units.toInt();
+    return isNegative ? -value : value;
   }
 
   String _normalizeCurrency(String currency) {
@@ -190,13 +211,5 @@ final class MoneyValidator {
     }
 
     return null;
-  }
-
-  int _scale(int decimalDigits) {
-    var scale = 1;
-    for (var i = 0; i < decimalDigits; i++) {
-      scale *= 10;
-    }
-    return scale;
   }
 }
