@@ -80,6 +80,33 @@ void main() {
       expect(isBetweenInclusive('2024-06-15', 'nope', '2024-12-31'), isFalse);
       expect(isBetweenInclusive('2024-06-15', '2024-01-01', 'nope'), isFalse);
     });
+
+    test('rejects a reversed range', () {
+      expect(
+        isBetweenInclusive('2024-06-01', '2024-12-31', '2024-01-01'),
+        isFalse,
+      );
+    });
+
+    test('is available as a String extension member', () {
+      expect(
+        '2024-01-01'.isBetweenInclusive('2024-01-01', '2024-12-31'),
+        isTrue,
+      );
+      expect(
+        '2023-12-31'.isBetweenInclusive('2024-01-01', '2024-12-31'),
+        isFalse,
+      );
+    });
+  });
+
+  group('isSameDay', () {
+    test('compares UTC calendar days, ignoring the time', () {
+      expect('2024-03-15T10:30:00Z'.isSameDay('2024-03-15T20:00:00Z'), isTrue);
+      expect('2024-03-15'.isSameDay('2024-03-15T12:00:00Z'), isTrue);
+      expect('2024-03-15'.isSameDay('2024-03-16'), isFalse);
+      expect('not-a-date'.isSameDay('2024-03-15'), isFalse);
+    });
   });
 
   group('isYesterday and isTomorrow', () {
@@ -234,14 +261,24 @@ void main() {
       expect(isIso8601(''), isFalse);
     });
 
-    test('rejects out-of-range components that isDate rolls over', () {
+    test('rejects out-of-range components', () {
       expect(isIso8601('2024-13-01'), isFalse);
       expect(isIso8601('2023-02-29'), isFalse);
       expect(isIso8601('2024-06-31'), isFalse);
-
-      // isDate accepts them because DateTime.tryParse rolls them forward.
-      expect(isDate('2024-13-01'), isTrue);
       expect(isIso8601('2024-02-29'), isTrue, reason: '2024 is a leap year');
+    });
+
+    test('isDate rejects the same impossible dates', () {
+      expect(isDate('2024-13-01'), isFalse);
+      expect(isDate('2023-02-29'), isFalse);
+      expect(isDate('2024-06-31'), isFalse);
+      expect(tryParseDate('2024-02-31'), isNull);
+      expect(isSameDay('2024-02-31', '2024-03-02'), isFalse);
+    });
+
+    test('isDate stays looser than isIso8601 about layout', () {
+      expect(isDate('2024-06-15 10:30:00'), isTrue);
+      expect(isIso8601('2024-06-15 10:30:00'), isFalse);
     });
   });
 

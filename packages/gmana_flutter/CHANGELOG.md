@@ -41,12 +41,13 @@ Replace the old dependencies with `gmana_flutter` and update imports:
   `GButton`'s spinner.
 - **Breaking:** `GValidators.numeric` and `GValidators.range` parse with
   `NumberValidator`, so `NaN` and `Infinity` are rejected.
-- **Breaking:** `GSearchField.debounceDelay` must be greater than zero (it now
-  uses `Debouncer` from `gmana`).
 - `GTextField`'s password toggle is the shared `VisibilityToggle`: it shows
   the "visibility" icon while the text is hidden, matching the form password
   fields, and has a tooltip. The clear button has a "Clear" tooltip.
-- `GAvatar` derives initials with `String.initials` from `gmana`.
+- `GAvatar` derives initials with `String.initials`, and `GSearchField`
+  debounces with `Debouncer`, both from `gmana`. A `GSearchField` with a zero
+  `debounceDelay` now reports every change immediately. `GSearchField` no longer
+  re-runs a search when only the selection or focus changes.
 
 ### Removed
 

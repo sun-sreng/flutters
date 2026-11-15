@@ -242,10 +242,16 @@ extension GmanaStringPredicatesX on String {
   /// Returns `true` if this date string is before [reference].
   bool isBefore([String? reference]) => date_p.isBefore(this, reference);
 
-  /// Returns `true` if this date string is between [from] and [to].
+  /// Returns `true` if this date string is strictly between [from] and [to].
   bool isBetween(String from, String to) => date_p.isBetween(this, from, to);
 
-  /// Returns `true` if this date string shares the same day as [comparisonDate].
+  /// Returns `true` if this date string is between [from] and [to], bounds
+  /// included.
+  bool isBetweenInclusive(String from, String to) =>
+      date_p.isBetweenInclusive(this, from, to);
+
+  /// Returns `true` if this date string shares the same UTC calendar day as
+  /// [comparisonDate].
   bool isSameDay(String comparisonDate) =>
       date_p.isSameDay(this, comparisonDate);
 

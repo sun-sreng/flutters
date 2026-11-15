@@ -11,6 +11,29 @@ void main() {
         expect('not-a-date'.toDateTimeOrNull, isNull);
       });
 
+      test('toDateTimeOrNull keeps local time unless a zone is given', () {
+        expect('2024-03-15'.toDateTimeOrNull!.isUtc, isFalse);
+        expect('2024-03-15T10:30:00'.toDateTimeOrNull!.isUtc, isFalse);
+        expect(
+          '2024-03-15T10:30:00Z'.toDateTimeOrNull,
+          DateTime.utc(2024, 3, 15, 10, 30),
+        );
+      });
+
+      test('toDateTimeOrNull accepts an offset that crosses midnight', () {
+        expect(
+          '2024-06-15T23:00:00-05:00'.toDateTimeOrNull,
+          DateTime.utc(2024, 6, 16, 4),
+        );
+      });
+
+      test('toDateTimeOrNull rejects a local time that overflows the day', () {
+        expect('2024-06-15T24:00:00'.toDateTimeOrNull, isNull);
+        expect('2024-13-01'.toDateTimeOrNull, isNull);
+        expect('2023-02-29'.toDateTimeOrNull, isNull);
+        expect('2024-02-29'.toDateTimeOrNull, isNotNull);
+      });
+
       test('toDateTime throws for invalid date strings', () {
         expect('2024-03-15'.toDateTime, isA<DateTime>());
         expect(() => 'not-a-date'.toDateTime, throwsFormatException);
@@ -31,38 +54,6 @@ void main() {
     });
 
     group('date comparison', () {
-      test('isBetweenInclusive includes boundaries', () {
-        expect(
-          '2024-01-01'.isBetweenInclusive('2024-01-01', '2024-12-31'),
-          isTrue,
-        );
-        expect(
-          '2024-12-31'.isBetweenInclusive('2024-01-01', '2024-12-31'),
-          isTrue,
-        );
-        expect(
-          '2023-12-31'.isBetweenInclusive('2024-01-01', '2024-12-31'),
-          isFalse,
-        );
-        expect(
-          '2024-06-01'.isBetweenInclusive('2024-12-31', '2024-01-01'),
-          isFalse,
-        );
-        expect(
-          'not-a-date'.isBetweenInclusive('2024-01-01', '2024-12-31'),
-          isFalse,
-        );
-      });
-
-      test('isSameDayAs compares calendar dates', () {
-        expect(
-          '2024-03-15T10:30:00'.isSameDayAs('2024-03-15T20:00:00'),
-          isTrue,
-        );
-        expect('2024-03-15'.isSameDayAs('2024-03-16'), isFalse);
-        expect('not-a-date'.isSameDayAs('2024-03-15'), isFalse);
-      });
-
       test('differenceFrom and daysUntil compare valid dates', () {
         expect(
           '2024-03-16'.differenceFrom('2024-03-15'),

@@ -68,10 +68,22 @@ Replace the old dependencies with `gmana` and update imports:
   defaults (empty allowed, no trimming, whole-word blacklist). Use
   `TextValue.defaultConfig.copyWith(...)` or `TextValidationConfig.required(...)`
   to keep the previous value-object defaults.
+- **Breaking:** the date predicates and `StringDateX` share one parser that
+  rejects impossible calendar values instead of rolling them over.
+  `isDate('2024-13-01')`, `tryParseDate('2024-02-31')`, and every predicate
+  given such a date now return `false` or `null`. Previously only
+  `toDateTimeOrNull` and `isIso8601` rejected them.
 - **Breaking:** `Stream.debounce` and `Stream.throttle` use the stricter
   implementation from the former `gmana_utils`: both throw `ArgumentError`
   for a non-positive duration, and `throttle` takes `trailing:`.
 - `package:gmana/gmana.dart` exports every area with no `hide` clauses.
+
+### Fixed
+
+- `toDateTimeOrNull` (and so `toDateTime`, `year`, `daysUntil`, and the other
+  `StringDateX` members) no longer returns `null` for a valid date-time whose
+  zone offset moves it to another UTC day, such as
+  `2024-06-15T23:00:00-05:00`.
 
 ### Removed
 
@@ -109,6 +121,10 @@ Replace the old dependencies with `gmana` and update imports:
 
   `isLength` counts a surrogate pair (an emoji) as one character and does not
   check its arguments.
+- **Breaking:** `StringDateX.isSameDayAs` and `StringDateX.isBetweenInclusive`.
+  Use the predicate members `isSameDay` and `isBetweenInclusive`, which have
+  the same call syntax. They compare in UTC, so a string with a local time
+  near midnight can land on a different day than before.
 
 ## 0.2.2 - 2026-10-13
 

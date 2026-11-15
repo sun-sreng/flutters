@@ -21,7 +21,9 @@ class GSearchField extends StatefulWidget {
   /// Hint text.
   final String hint;
 
-  /// Debounce delay before invoking [onSearchChanged]. Must be positive.
+  /// Debounce delay before invoking [onSearchChanged].
+  ///
+  /// A zero or negative delay calls [onSearchChanged] on every change.
   final Duration debounceDelay;
 
   /// Callback fired when search query changes (debounced).
@@ -61,10 +63,7 @@ class GSearchField extends StatefulWidget {
     this.focusNode,
     this.enabled,
     this.decoration,
-  }) : assert(
-         debounceDelay > Duration.zero,
-         'debounceDelay must be greater than zero',
-       );
+  });
 
   @override
   State<GSearchField> createState() => _GSearchFieldState();
@@ -73,7 +72,8 @@ class GSearchField extends StatefulWidget {
 class _GSearchFieldState extends State<GSearchField> {
   late final TextEditingController _controller;
   bool _ownsController = false;
-  late Debouncer _debouncer;
+  Debouncer? _debouncer;
+  late String _lastText;
   bool _hasText = false;
 
   @override
@@ -106,7 +106,7 @@ class _GSearchFieldState extends State<GSearchField> {
 
   @override
   void dispose() {
-    _debouncer.dispose();
+    _debouncer?.dispose();
     _controller.removeListener(_onTextChanged);
     if (_ownsController) {
       _controller.dispose();
@@ -124,8 +124,9 @@ class _GSearchFieldState extends State<GSearchField> {
       _ownsController = true;
     }
 
-    _debouncer = Debouncer(duration: widget.debounceDelay);
-    _hasText = _controller.text.isNotEmpty;
+    _debouncer = _createDebouncer();
+    _lastText = _controller.text;
+    _hasText = _lastText.isNotEmpty;
     _controller.addListener(_onTextChanged);
   }
 
@@ -133,10 +134,15 @@ class _GSearchFieldState extends State<GSearchField> {
   void didUpdateWidget(covariant GSearchField oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.debounceDelay != widget.debounceDelay) {
-      _debouncer.dispose();
-      _debouncer = Debouncer(duration: widget.debounceDelay);
+      _debouncer?.dispose();
+      _debouncer = _createDebouncer();
     }
   }
+
+  Debouncer? _createDebouncer() =>
+      widget.debounceDelay > Duration.zero
+          ? Debouncer(duration: widget.debounceDelay)
+          : null;
 
   void _clear() {
     _controller.clear();
@@ -145,16 +151,25 @@ class _GSearchFieldState extends State<GSearchField> {
 
   void _onTextChanged() {
     final text = _controller.text;
+    // The listener also fires for selection and focus changes; only a text
+    // change should trigger a search.
+    if (text == _lastText) return;
+    _lastText = text;
+
     if (_hasText != text.isNotEmpty) {
       setState(() {
         _hasText = text.isNotEmpty;
       });
     }
 
-    if (widget.onSearchChanged == null) {
-      _debouncer.cancel();
+    final onSearchChanged = widget.onSearchChanged;
+    final debouncer = _debouncer;
+    if (onSearchChanged == null) {
+      debouncer?.cancel();
+    } else if (debouncer == null) {
+      onSearchChanged(text);
     } else {
-      _debouncer.run(() => widget.onSearchChanged?.call(text));
+      debouncer.run(() => widget.onSearchChanged?.call(text));
     }
   }
 }

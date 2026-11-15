@@ -1,8 +1,12 @@
+import '../core/iso_date.dart';
+
 final _dateOnlyReg = RegExp(r'^\d{4}-\d{2}-\d{2}$');
 
 /// Parses [str] as a UTC [DateTime], returning `null` on failure.
 ///
-/// Accepts ISO 8601 formats supported by [DateTime.tryParse].
+/// Accepts the ISO 8601 formats [DateTime.tryParse] supports, but rejects
+/// impossible calendar values that it would roll over: `2024-02-31`,
+/// `2024-13-01`, and `2023-02-29` return `null`.
 ///
 /// A string carrying no time and no zone — `2024-06-15` — names a calendar
 /// day, so it is read as UTC midnight. [DateTime.tryParse] would otherwise
@@ -15,7 +19,7 @@ DateTime? tryParseDate(String str) {
   final trimmed = str.trim();
   final normalized =
       _dateOnlyReg.hasMatch(trimmed) ? '${trimmed}T00:00:00Z' : trimmed;
-  return DateTime.tryParse(normalized)?.toUtc();
+  return tryParseIsoDateTime(normalized)?.toUtc();
 }
 
 /// Returns `true` if [str] is a parseable date string.
@@ -231,28 +235,17 @@ bool isAgeAtLeast(String str, int years) {
 
 /// Returns `true` if [str] is a full ISO 8601 date or date-time.
 ///
-/// Stricter than [isDate] in two ways: the space-separated form
-/// `2024-06-15 10:00:00` that [DateTime.tryParse] tolerates is rejected, and
-/// so is an out-of-range component. [DateTime.tryParse] silently rolls those
-/// over — `2024-13-01` becomes January 2025 and `2023-02-29` becomes March —
-/// whereas this returns `false`.
+/// Stricter than [isDate] about layout: it requires the `T` separator, so the
+/// space-separated `2024-06-15 10:00:00` that [isDate] accepts is rejected,
+/// as are the compact and extended-year forms. Like [isDate], it rejects
+/// impossible calendar values such as `2024-13-01`.
 bool isIso8601(String str) {
   final trimmed = str.trim();
-  final match = _iso8601Reg.firstMatch(trimmed);
-  if (match == null) return false;
-  if (DateTime.tryParse(trimmed) == null) return false;
-
-  // Reject rolled-over dates by checking the calendar day survives a
-  // round-trip through DateTime.utc.
-  final year = int.parse(match.group(1)!);
-  final month = int.parse(match.group(2)!);
-  final day = int.parse(match.group(3)!);
-  final probe = DateTime.utc(year, month, day);
-  return probe.year == year && probe.month == month && probe.day == day;
+  return _iso8601Reg.hasMatch(trimmed) && tryParseIsoDateTime(trimmed) != null;
 }
 
 final _iso8601Reg = RegExp(
-  r'^(\d{4})-(\d{2})-(\d{2})'
+  r'^\d{4}-\d{2}-\d{2}'
   r'(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})?)?$',
 );
 

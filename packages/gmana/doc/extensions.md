@@ -483,9 +483,14 @@ predicates: use `isUrl()`, `isUuid()`, `isIP()`, `isMacAddress`,
 
 ### Date strings (`StringDateX`)
 
+Parsing rejects impossible calendar values (`'2024-02-31'.toDateTimeOrNull` is
+`null`). Comparisons such as `isSameDay`, `isBetween`, and
+`isBetweenInclusive` are [predicates](predicates.md#how-dates-are-parsed) and
+compare in UTC.
+
 ```dart
-'2024-01-01'.isBetweenInclusive('2024-01-01', '2024-12-31') // true
-'2024-03-15'.isSameDayAs('2024-03-15T12:00:00') // true
+'2024-01-01'.isBetweenInclusive('2024-01-01', '2024-12-31') // true (predicate)
+'2024-03-15'.isSameDay('2024-03-15T12:00:00Z') // true (predicate)
 '2024-03-15'.daysUntil('2024-03-20') // 5
 '2024-03-16'.differenceFrom('2024-03-15') // Duration(days: 1)
 '2024-02-28'.addDays(1)              // '2024-02-29'

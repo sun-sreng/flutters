@@ -258,12 +258,15 @@ isEndOfMonth('2024-02-29')    // true — leap-year aware
 // isBetween is exclusive; isBetweenInclusive admits the bounds
 isBetween('2024-01-01', '2024-01-01', '2024-12-31')          // false
 isBetweenInclusive('2024-01-01', '2024-01-01', '2024-12-31') // true
+'2024-01-01'.isBetweenInclusive('2024-01-01', '2024-12-31')   // true
 
-// isIso8601 is stricter than isDate
+// isIso8601 is stricter than isDate about layout
 isDate('2024-06-15 10:00:00')     // true  — DateTime.tryParse accepts it
 isIso8601('2024-06-15 10:00:00')  // false — not the T form
-isDate('2024-13-01')              // true  — silently rolls into 2025
-isIso8601('2024-13-01')           // false
+
+// Both reject impossible calendar values
+isDate('2024-13-01')              // false
+isIso8601('2023-02-29')           // false — 2023 is not a leap year
 ```
 
 ### How dates are parsed
@@ -271,12 +274,19 @@ isIso8601('2024-13-01')           // false
 A string with no time and no zone names a **calendar day** and is read as UTC
 midnight, so these predicates give the same answer in every timezone. A value
 that does carry a time but no zone is treated as local, since a wall-clock
-reading without a zone is a local one.
+reading without a zone is a local one. Every predicate then compares in UTC.
+
+Impossible calendar values are rejected rather than rolled over the way
+`DateTime.tryParse` does: `2024-02-31`, `2024-13-01`, and `2023-02-29` all
+parse to `null`. `StringDateX.toDateTimeOrNull` uses the same parser, but
+returns the local `DateTime` for a string without a zone instead of converting
+it to UTC.
 
 ```dart
 tryParseDate('2024-06-15')            // 2024-06-15 00:00:00.000Z
 tryParseDate('2024-06-15T10:30:00')   // local 10:30, converted to UTC
 tryParseDate('2024-06-15T10:30:00Z')  // 2024-06-15 10:30:00.000Z
+tryParseDate('2024-02-31')            // null
 ```
 
 ---
