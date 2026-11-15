@@ -247,6 +247,10 @@ final class NumberValidator {
   const NumberValidator([this.config = const NumberValidationConfig()]);
 
   /// Validates and parses a number.
+  ///
+  /// Accepts plain decimal notation only: an optional sign, digits, and an
+  /// optional decimal point (`-2.50`, `.5`, `5.`). Exponent (`1e-5`) and
+  /// hexadecimal (`0x1F`) input is a [NumberInvalidFormatIssue].
   ValidationResult<NumberValidationIssue, num> validate(String input) {
     final trimmed = input.trim();
 
@@ -254,7 +258,9 @@ final class NumberValidator {
       return const Left(NumberEmptyIssue());
     }
 
-    final parsed = num.tryParse(trimmed);
+    // num.tryParse also reads exponents (1e-5) and hex (0x1F). Both would
+    // slip past the decimal-place count below, so only plain decimals pass.
+    final parsed = _decimal.hasMatch(trimmed) ? num.tryParse(trimmed) : null;
     if (parsed == null || !parsed.isFinite) {
       return const Left(NumberInvalidFormatIssue());
     }
@@ -293,6 +299,8 @@ final class NumberValidator {
 
     return Right(parsed);
   }
+
+  static final RegExp _decimal = RegExp(r'^[+-]?(?:\d+\.?\d*|\.\d+)$');
 
   int _countDecimalPlaces(String value) {
     final decimalIndex = value.indexOf('.');

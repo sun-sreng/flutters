@@ -50,5 +50,38 @@ void main() {
 
       expect(result.leftOrNull(), isA<NumberDecimalPlacesExceededIssue>());
     });
+
+    group('accepts plain decimal notation only', () {
+      final price = NumberValidator(NumberValidationConfig.price());
+
+      test('rejects exponent notation', () {
+        // 1e-5 has five decimal places, more than price() allows.
+        expect(
+          price.validate('1e-5').leftOrNull(),
+          isA<NumberInvalidFormatIssue>(),
+        );
+        expect(
+          const NumberValidator().validate('1.5E3').leftOrNull(),
+          isA<NumberInvalidFormatIssue>(),
+        );
+      });
+
+      test('rejects hexadecimal', () {
+        expect(
+          const NumberValidator().validate('0x1F').leftOrNull(),
+          isA<NumberInvalidFormatIssue>(),
+        );
+      });
+
+      test('still accepts signs and bare decimal points', () {
+        const validator = NumberValidator();
+
+        expect(validator.validate('+5').rightOrNull(), 5);
+        expect(validator.validate('-2.50').rightOrNull(), -2.5);
+        expect(validator.validate('.5').rightOrNull(), 0.5);
+        expect(validator.validate('5.').rightOrNull(), 5);
+        expect(price.validate('19.99').rightOrNull(), 19.99);
+      });
+    });
   });
 }

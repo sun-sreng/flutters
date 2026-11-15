@@ -85,6 +85,15 @@ Replace the old dependencies with `gmana` and update imports:
   `minDate: DateTime(2024, 1, 1)` now accepts `'2024-01-01'` in every timezone;
   before, the result depended on the local offset. Input with a time is still
   compared as an instant.
+- **Breaking:** `TextValidationConfig.allowedCharacters` is a literal set of
+  characters. `'a-z'` allows `a`, `-`, and `z`, not a range, and an emoji
+  counts as one character. Before, the string was spliced into a regex
+  character class, so `'a_-.'` threw a `FormatException` and `'+-.0123456789'`
+  silently allowed `,`. List every allowed character.
+- **Breaking:** `NumberValidator` accepts plain decimal notation only
+  (`12`, `-2.50`, `.5`). Exponent (`1e-5`) and hexadecimal (`0x1F`) input is
+  now `NumberInvalidFormatIssue`; before, `1e-5` passed a two-decimal-place
+  limit and `0x1F` was read as 31.
 - **Breaking:** `Stream.debounce` and `Stream.throttle` use the stricter
   implementation from the former `gmana_utils`: both throw `ArgumentError`
   for a non-positive duration, and `throttle` takes `trailing:`.
@@ -104,6 +113,9 @@ Replace the old dependencies with `gmana` and update imports:
 - `kDefaultDisposableDomains` no longer lists `qq.com` and `fastmail.com`, two
   permanent providers, so `EmailValidationConfig.strict()` stops rejecting
   their users.
+- The whole-word blacklist in `TextValidator` checks every occurrence of a
+  word, so `'class ass'` with `{'ass'}` is rejected. Before, it stopped after
+  the first partial match.
 - `toDateTimeOrNull` (and so `toDateTime`, `year`, `daysUntil`, and the other
   `StringDateX` members) no longer returns `null` for a valid date-time whose
   zone offset moves it to another UTC day, such as
